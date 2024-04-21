@@ -17,6 +17,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
     """
     Creates a callable function from the Genz family and given hyperparameters c and w.
     Note that in the original definition, the functions are only defined for [0,1]^d
+    For the Genz functions, see https://link.springer.com/chapter/10.1007/978-94-009-3889-2_33
     :param function_type: Specifies which function we want to create.
     :param c: The higher this parameter, the more difficult the function gets
     :param w: Operates as a shift parameter
@@ -43,22 +44,22 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
         return lambda x: np.exp(-np.sum(np.multiply(c, np.abs(x - w)))).squeeze()
 
     if function_type == GenzFunctionType.DISCONTINUOUS:
-        def f(x):
-            if d == 1:
+        if d == 1:
+            def f(x):
                 if x[0] > w[0]:
                     return 0
                 else:
                     return np.exp(np.inner(c, x)).squeeze()
-            if d > 1:
+        if d > 1:
+            def f(x):
                 if x[0] > w[0] or x[1] > w[1]:
                     return 0
                 else:
                     return np.exp(np.inner(c, x)).squeeze()
-
         return f
 
 
-class MyTestCase(unittest.TestCase):
+class GenzFunctionTests(unittest.TestCase):
 
     @staticmethod
     def get_1d_testpoints():
