@@ -1,16 +1,25 @@
 """
-Provides sparse grid and random grid.
+Provides sparse grids and random grids.
 """
-from grid_type import GridType
+import numpy
+import numpy as np
+
+from grid.grid_type import GridType
 
 
 class GridProvider:
-    def __init__(self, grid_type: GridType):
+
+    def __init__(self,
+                 grid_type: GridType,
+                 dimension: np.int8,
+                 upper: np.ndarray,
+                 lower: np.ndarray,
+                 seed: np.int8 = None):
         if not isinstance(grid_type, GridType):
             raise TypeError("Invalid grid type")
         self.grid_type = grid_type
 
-    def generate(self):
+    def generate(self) -> numpy.ndarray:
         """
         Generates a grid according to type and returns it.
         :return:
