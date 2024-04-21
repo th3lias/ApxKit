@@ -34,6 +34,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
         return lambda x: np.exp(-np.sum(np.multiply(c, np.abs(x - w)))).squeeze()
 
     if function_type == GenzFunctionType.DISCONTINUOUS:
+        f = Callable
         if d == 1:
             def f(x):
                 if x[0] > w[0]:

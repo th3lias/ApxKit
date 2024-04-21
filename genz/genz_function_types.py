@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class GenzFunctionType(Enum):
     OSCILLATORY = 1,
     PRODUCT_PEAK = 2,
