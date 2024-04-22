@@ -16,8 +16,8 @@ class GridProvider:
     """
     def __init__(self,
                  dimension: np.int8,
-                 upper_bound: np.ndarray,
-                 lower_bound: np.ndarray,
+                 upper_bound: np.float16,
+                 lower_bound: np.float16,
                  q: np.int8,
                  seed: np.int8 = None):
         self.dim = dimension
@@ -26,6 +26,9 @@ class GridProvider:
         self.lower_bound = lower_bound
         self.seed = seed
         if self.q < self.dim: raise ValueError(f"fineness must at least exceed dimension")
+
+        self.mid_point = (self.upper_bound - self.lower_bound) / 2
+        self.avg = (self.upper_bound + self.lower_bound) / 2
 
     def generate(self, grid_type: GridType) -> np.ndarray:
         """
@@ -60,5 +63,8 @@ class GridProvider:
     def _generate_x(m_i: np.int32):
         arr = np.arange(m_i, dtype=np.float32)+1
         arr[0] = np.float32(0.0)
+        # needs to be tested
+        # the following line incorporates a rescaling to the interval [-1, 1]
+        # arr[1:] = self.avg + self.mid_point * np.cos(np.pi * (2 * (m_i - arr[1:]) - 1) / (2 * m_i))
         arr[1:] = - np.cos(np.pi * (arr[1:]-1)/(m_i-1))
         return arr
