@@ -23,7 +23,7 @@ def ell_2_error_estimate(f: Callable, f_hat: Callable, d: np.int8, no_samples: n
     y_hat = f_hat(points)
     y = f(points)
 
-    error = np.mean(np.square(np.abs(y - y_hat))).squeeze()
+    error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)))).squeeze()
 
     return error
 
