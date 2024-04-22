@@ -44,13 +44,14 @@ class GridProvider:
         pass
 
     def _generate_chebyshev_grid(self):
-        m = self._generate_m_i()
+        m = self._generate_m()
         x = np.zeros(shape=(len(m), m[-1]))
+        # TODO: Vectorise this.
         for i in range(1, len(m)):
             x[i, :m[i]] = self._generate_x(m[i])
         return x
 
-    def _generate_m_i(self) -> np.ndarray:
+    def _generate_m(self) -> np.ndarray:
         arr = np.arange(self.dim, dtype=np.int32)+1
         arr[1:] = 2**(arr[1:]-1)+1
         return arr

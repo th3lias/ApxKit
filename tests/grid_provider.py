@@ -17,7 +17,7 @@ class TestGridProvider(unittest.TestCase):
     def test_provider_create_chebyshev_x_i(self):
         provider = grid_provider.GridProvider(np.int8(4), np.zeros(1), np.zeros(1), np.int8(4))
         provider.generate(grid_type=GridType.CHEBYSHEV)
-        m = provider._generate_m_i()
+        m = provider._generate_m()
         self.assertIsInstance(m, np.ndarray)
         np.testing.assert_array_equal(m, np.array([1, 3, 5, 9], dtype=np.int8))
         # TODO: Expand this test case.
