@@ -3,6 +3,7 @@ import numpy as np
 from genz.genz_functions import get_genz_function
 from genz.genz_function_types import GenzFunctionType
 
+
 class GenzFunctionTests(unittest.TestCase):
 
     @staticmethod
