@@ -47,15 +47,18 @@ if __name__ == '__main__':
     # TODO: Does not work well (but maybe functional -> not sure for now) TODO: Basis of multivariate polynomial
     #  function grows with combin(d+n, d) where d is the dimension and n the number of variables
     np.random.seed(23)
-    n_samples = 1000
-    n_test_samples = 10
+    n_samples = 5
+    n_test_samples = 5
 
-    dimension = np.int8(10)
+    dimension = np.int8(5)
 
     c = np.random.uniform(size=dimension)
     w = np.random.uniform(size=dimension)
 
-    f = get_genz_function(GenzFunctionType.OSCILLATORY, d=dimension, c=c, w=w)
+    # works for OSCILLATORY, CORNER_PEAK, CONTINUOUS, PRODUCT_PEAK, DISCONTINUOUS, CORNER_PEAK
+    # does not work for CONTINUOUS (dimension mismatch)
+
+    f = get_genz_function(GenzFunctionType.DISCONTINUOUS, d=dimension, c=c, w=w)
 
     data = np.random.uniform(0, 1, (n_samples, dimension))
 
