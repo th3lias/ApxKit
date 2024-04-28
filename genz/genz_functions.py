@@ -22,28 +22,36 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
         return lambda x: np.cos(np.inner(c, x) + 2 * np.pi * w[0]).squeeze()
 
     if function_type == GenzFunctionType.PRODUCT_PEAK:
-        return lambda x: np.prod(1 / (1 / (np.square(c)) + np.square(x - w))).squeeze()
+        return lambda x: np.prod(1 / (1 / (np.square(c)) + np.square(x - w)), axis=1).squeeze()
 
     if function_type == GenzFunctionType.CORNER_PEAK:
         return lambda x: 1 / (np.power((1 + np.inner(c, x)), d + 1)).squeeze()
 
     if function_type == GenzFunctionType.GAUSSIAN:
-        return lambda x: np.exp(-np.sum(np.square(np.multiply(c, x - w)))).squeeze()
+        return lambda x: np.exp(-np.sum(np.square(np.multiply(c, x - w)), axis=1)).squeeze()
 
     if function_type == GenzFunctionType.CONTINUOUS:
-        return lambda x: np.exp(-np.sum(np.multiply(c, np.abs(x - w)))).squeeze()
+        return lambda x: np.exp(-np.sum(np.multiply(c, np.abs(x - w)), axis=1)).squeeze()
 
     if function_type == GenzFunctionType.DISCONTINUOUS:
         if d == 1:
             def f(x):
-                if x[0] > w[0]:
-                    return 0
-                else:
-                    return np.exp(np.inner(c, x)).squeeze()
-        if d > 1:
+                x = x.squeeze()
+                mask = x > w[0]
+                res = np.exp(c[0]*x)
+                res[mask] = 0
+                return res
+        elif d > 1:
             def f(x):
-                if x[0] > w[0] or x[1] > w[1]:
-                    return 0
-                else:
-                    return np.exp(np.inner(c, x)).squeeze()
+                x = x.squeeze()
+                mask1 = x[:,0] > w[0]
+                mask2 = x[:,1] > w[1]
+                mask = np.empty_like(mask1)
+                np.bitwise_or(mask1, mask2, out=mask)
+                res = np.exp(np.inner(x, c)).squeeze()
+                res[mask] = 0
+                return res
+        else:
+            raise ValueError("Wrong dimension!")
         return f
+
