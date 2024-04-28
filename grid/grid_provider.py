@@ -34,27 +34,31 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, num_points: np.int64 = None) -> np.ndarray:
+    def generate(self, grid_type: GridType, scale: np.int64 = None) -> np.ndarray:
         """
         Generate a grid of given type.
-        :param num_points:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
+        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
                             If GridType == EQUIDISTANT we sample uniformly per dimension, i.e. we have num_points**dim
                             points. If GridType == RANDOM we aim to have the same number of points as in the regular
-                            grid and therefore sample the same num_points**dim number of points uniformly.
+                            grid and therefore sample the same num_points**dim number of points uniformly. If
+                            GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse
+                            grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
         :return: np.ndarray representing the grid
         """
         if not isinstance(grid_type, GridType):
             raise ValueError(f"grid type not supported: {grid_type}")
         if grid_type == GridType.CHEBYSHEV:
-            return self._generate_chebyshev_grid()
+            if scale is None:
+                raise ValueError(f"Please provide the level of fineness of the chebyshev grid.")
+            return self._generate_chebyshev_grid(num_points=scale)
         else:
-            if num_points is None:
+            if scale is None:
                 raise ValueError(f"Please provide how many points to generate subspace.")
             if grid_type == GridType.REGULAR:
-                return self._generate_equidistant_grid(num_points=num_points)
+                return self._generate_equidistant_grid(num_points=scale)
             if grid_type == GridType.RANDOM:
-                return self._generate_random_grid(num_points=num_points)
+                return self._generate_random_grid(num_points=scale)
 
     def _generate_random_grid(self, num_points: np.int64) -> np.ndarray:
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points ** self.dim, self.dim))
@@ -69,13 +73,11 @@ class GridProvider:
         mesh = np.meshgrid(*axes, indexing='ij')
         return np.stack(mesh, axis=-1).reshape(-1, self.dim)
 
-    def _generate_chebyshev_grid(self):
-        m = self._generate_m()
-        x = np.zeros(shape=(len(m), m[-1]))
-        # TODO: Vectorise this.
-        for i in range(1, len(m)):
-            x[i, :m[i]] = self._generate_x(m[i])
-        return x
+    @staticmethod
+    def _generate_chebyshev_grid(num_points: np.int64) -> np.ndarray:
+        J = np.arange(2**(num_points-1))+1
+        X = (-1) * np.cos( np.pi * (J[1:]-1)/(J[-1]-1) )
+        return X
 
     def _generate_m(self) -> np.ndarray:
         arr = np.arange(self.dim, dtype=np.int32)+1
@@ -91,3 +93,12 @@ class GridProvider:
         # arr[1:] = self.avg + self.mid_point * np.cos(np.pi * (2 * (m_i - arr[1:]) - 1) / (2 * m_i))
         arr[1:] = - np.cos(np.pi * (arr[1:]-1)/(m_i-1))
         return arr
+
+    @staticmethod
+    def _tensor(*arrays):
+        la = len(arrays)
+        dtype = np.result_type(*arrays)
+        arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
+        for i, a in enumerate(np.ix_(*arrays)):
+            arr[..., i] = a
+        return arr.reshape(-1, la)
