@@ -21,7 +21,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
     if function_type == GenzFunctionType.OSCILLATORY:
         def f(x):
 
-            if type(x) != np.ndarray:
+            if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
 
             x = x.squeeze()
@@ -40,7 +40,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
     if function_type == GenzFunctionType.PRODUCT_PEAK:
 
         def f(x):
-            if type(x) != np.ndarray:
+            if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
             if x.ndim == 1:
                 return 1 / (1 / (np.square(c)) + np.square(x - w)).squeeze()
@@ -54,7 +54,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
     if function_type == GenzFunctionType.CORNER_PEAK:
 
         def f(x):
-            if type(x) != np.ndarray:
+            if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
             if x.ndim == 1:
                 if d != 1:
@@ -70,9 +70,8 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
     if function_type == GenzFunctionType.GAUSSIAN:
         def f(x):
-            if type(x) != np.ndarray:
+            if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
-
             if x.ndim == 1:
                 return np.exp(-np.square(np.multiply(c, x - w))).squeeze()
             elif x.ndim == 2:
@@ -84,7 +83,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
     if function_type == GenzFunctionType.CONTINUOUS:
         def f(x):
-            if type(x) != np.ndarray:
+            if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
             if x.ndim == 1:
                 return np.exp(-np.multiply(c, np.abs(x - w))).squeeze()
@@ -98,11 +97,15 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
     if function_type == GenzFunctionType.DISCONTINUOUS:
         if d == 1:
             def f(x):
+                if not isinstance(x, np.ndarray):
+                    raise ValueError("Cannot work with non-numpy arrays")
                 x = x.squeeze()
                 return np.array([0 if i > w[0] else np.exp(c[0] * i) for i in x])
 
         elif d > 1:
             def f(x):
+                if not isinstance(x, np.ndarray):
+                    raise ValueError("Cannot work with non-numpy arrays")
                 x = x.squeeze()
                 return np.array([0 if i[0] > w[0] or i[1] > w[1] else np.exp(np.inner(i, c)) for i in x])
         else:
