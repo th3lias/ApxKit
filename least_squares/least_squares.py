@@ -2,20 +2,20 @@ import numpy as np
 import sklearn
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
-from typing import Callable, Union
-from genz.genz_functions import get_genz_function
-from genz.genz_functions import GenzFunctionType
-from utils.utils import ell_2_error_estimate
+from typing import Callable
 from scipy.sparse.linalg import lsmr
 
 
-def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degree: Union[np.int8, None],
-                                                 grid: np.ndarray) -> sklearn.linear_model:
-    n_samples = grid.shape[0]
-
-    if degree is None:
-        degree = n_samples - 1
-
+def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
+                                                           grid: np.ndarray) -> np.ndarray:
+    """
+    Approximation of a function with a polynomial with least squares iterative approach (using the lsmr algorithm).
+    :param f: function that needs to be approximated
+    :param dim: dimension of the data
+    :param degree: maximum allowed degree of the polynomials
+    :param grid: data array containing the points where the function should be approximated
+    :return: coefficients
+    """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
 
@@ -28,58 +28,30 @@ def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degr
     res = lsmr(X_poly, y)
 
     coef = res[0]
-    n_iter = res[2]
-
-    print(f'Number of iterations: {n_iter}')
-    print(coef) # returns combin(d + n, n) coefficients (without intercept)
-
-    # model = LinearRegression()
-    # model.fit(X_poly, y)
-
-    # return model
 
     return coef
 
 
+def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degree: np.int8,
+                                                 grid: np.ndarray) -> sklearn.linear_model:
+    """
+    Approximates a function with a polynomial with least squares approach.
+    :param f: function that needs to be approximated
+    :param dim: dimension of the data
+    :param degree: degree of the polynomials
+    :param grid: data array containing the points where the function should be approximated
+    :return: sklearn linear model
+    """
+    if np.shape(grid)[1] != dim:
+        raise ValueError("Grid dimension must be equal to input dimension of f")
 
+    y = f(grid)
 
-if __name__ == '__main__':
-    # TODO: Does not work well (but maybe functional -> not sure for now) TODO: Basis of multivariate polynomial
-    #  function grows with combin(d+n, d) where d is the dimension and n the number of variables
-    np.random.seed(23)
-    n_samples = 5
-    n_test_samples = 5
+    poly = PolynomialFeatures(degree=degree, include_bias=False)
 
-    dimension = np.int8(5)
+    X_poly = poly.fit_transform(grid)
 
-    c = np.random.uniform(size=dimension)
-    w = np.random.uniform(size=dimension)
+    model = LinearRegression()
+    model.fit(X_poly, y)
 
-    # works for OSCILLATORY, CORNER_PEAK, CONTINUOUS, PRODUCT_PEAK, DISCONTINUOUS, CORNER_PEAK
-    # does not work for CONTINUOUS (dimension mismatch)
-
-    f = get_genz_function(GenzFunctionType.DISCONTINUOUS, d=dimension, c=c, w=w)
-
-    data = np.random.uniform(0, 1, (n_samples, dimension))
-
-    # model = approximate_by_polynomial_with_least_squares(f, dimension, None, data)
-    # print(model.coef_)
-
-    coef = approximate_by_polynomial_with_least_squares(f, dimension, None, data)
-
-    test_data = np.random.uniform(low=0, high=1, size=(n_test_samples, dimension))
-
-    poly = PolynomialFeatures(degree=n_samples - 1, include_bias=False)
-
-    test_data_poly = poly.fit_transform(test_data)
-
-    # y_hat = model.predict(test_data_poly)
-    y = f(test_data)
-    y_hat = test_data_poly@coef
-    print(y_hat)
-    print(y)
-
-    err = np.mean(np.square(y-y_hat))
-    print(f'Error: {err}')
-    # print(y_hat)
-    # print(y)
+    return model
