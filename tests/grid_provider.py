@@ -36,7 +36,7 @@ class VisualTests(unittest.TestCase):
     @staticmethod
     def test_random_provider_2d():
         provider = GridProvider(np.int8(2), np.float16(1), np.float16(0), seed=np.int8(42))
-        grid = provider.generate(grid_type=GridType.RANDOM, scale=np.int8(16))
+        grid = provider.generate(grid_type=GridType.RANDOM, scale=np.int32(16))
         utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
 
     @staticmethod
