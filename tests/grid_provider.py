@@ -19,30 +19,25 @@ class VisualTests(unittest.TestCase):
     def test_equidistant_provider_2d():
         provider = GridProvider(np.int8(2), np.float16(1), np.float16(0))
         grid = provider.generate(grid_type=GridType.REGULAR, scale=16)
-        print(f"Grid dimensions: {grid.shape}")
         utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
 
     @staticmethod
     def test_random_provider_3d():
         provider = GridProvider(np.int8(3), np.float16(1), np.float16(0), seed=np.int8(42))
         grid = provider.generate(grid_type=GridType.RANDOM, scale=16)
-        print(f"Grid dimensions: {grid.shape}")
         utils.visualize_point_grid_3d(grid, alpha=np.int8(1))
 
     @staticmethod
     def test_equidistant_provider_3d():
         provider = GridProvider(np.int8(3), np.float16(1), np.float16(0))
         grid = provider.generate(grid_type=GridType.REGULAR, scale=16)
-        print(f"Grid dimensions: {grid.shape}")
         utils.visualize_point_grid_3d(grid, alpha=np.int8(1))
 
     @staticmethod
     def test_random_provider_2d():
         provider = GridProvider(np.int8(2), np.float16(1), np.float16(0), seed=np.int8(42))
         grid = provider.generate(grid_type=GridType.RANDOM, scale=16)
-        print(f"Grid dimensions: {grid.shape}")
         utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
-
 
     @staticmethod
     def test_chebyshev_2d():
