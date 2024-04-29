@@ -3,6 +3,7 @@ Provides sparse grids and random grids.
 """
 import numpy as np
 from grid.grid_type import GridType
+from itertools import product, combinations_with_replacement
 
 
 class GridProvider:
@@ -34,11 +35,11 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, scale: np.int64 = None) -> np.ndarray:
+    def generate(self, grid_type: GridType, scale: np.int32 = None) -> np.ndarray:
         """
         Generate a grid of given type.
         :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
-                            If GridType == EQUIDISTANT we sample uniformly per dimension, i.e. we have num_points**dim
+                            If GridType == EQUIDISTANT we sample per dimension, i.e. we have num_points**dim
                             points. If GridType == RANDOM we aim to have the same number of points as in the regular
                             grid and therefore sample the same num_points**dim number of points uniformly. If
                             GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse
@@ -51,7 +52,7 @@ class GridProvider:
         if grid_type == GridType.CHEBYSHEV:
             if scale is None:
                 raise ValueError(f"Please provide the level of fineness of the chebyshev grid.")
-            return self._generate_chebyshev_grid(num_points=scale)
+            return self._full_cheby_grid(level=scale)
         else:
             if scale is None:
                 raise ValueError(f"Please provide how many points to generate subspace.")
@@ -60,45 +61,47 @@ class GridProvider:
             if grid_type == GridType.RANDOM:
                 return self._generate_random_grid(num_points=scale)
 
-    def _generate_random_grid(self, num_points: np.int64) -> np.ndarray:
+    def _generate_random_grid(self, num_points: np.int32) -> np.ndarray:
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points ** self.dim, self.dim))
 
-    def _generate_equidistant_grid(self, num_points: np.int64) -> np.ndarray:
-        lower = [self.lower_bound] * self.dim
-        upper = [self.upper_bound] * self.dim
-        num_points = [num_points] * self.dim
+    def _generate_equidistant_grid(self, num_points: np.int32) -> np.ndarray:
+        num_points = np.full(shape=self.dim, fill_value=num_points)
 
-        axes = [np.linspace(lower[i], upper[i], num_points[i]) for i in range(self.dim)]
+        axes = [np.linspace(self.lower_bound, self.upper_bound, num_points[i]) for i in range(self.dim)]
 
         mesh = np.meshgrid(*axes, indexing='ij')
         return np.stack(mesh, axis=-1).reshape(-1, self.dim)
 
-    @staticmethod
-    def _generate_chebyshev_grid(num_points: np.int64) -> np.ndarray:
-        J = np.arange(2**(num_points-1))+1
-        X = (-1) * np.cos( np.pi * (J[1:]-1)/(J[-1]-1) )
-        return X
+    def _full_cheby_grid(self, level: np.int32):
+        grids = [self._uni_grid(np.int32(l)) for l in range(level + 1)]
 
-    def _generate_m(self) -> np.ndarray:
-        arr = np.arange(self.dim, dtype=np.int32)+1
-        arr[1:] = 2**(arr[1:]-1)+1
-        return arr
+        memo = {}
+        valid_levels = self._valid_combinations(self.dim, level, memo)
+
+        grid_points = []
+        for levels in valid_levels:
+            mesh = np.ix_(*[grids[levels[i]] for i in range(self.dim)])
+            grid_points.append(np.stack(np.meshgrid(*mesh, indexing='ij')).reshape(self.dim, -1).T)
+
+        return np.concatenate(grid_points, axis=0)
+
+    def _valid_combinations(self, d, level, memo: dict = None):
+        if (d, level) in memo:
+            return memo[(d, level)]
+        if d == 1:
+            result = [[l] for l in range(level + 1)]
+        else:
+            result = []
+            for current_level in range(level + 1):
+                for sub_combination in self._valid_combinations(d - 1, level - current_level, memo):
+                    result.append([current_level] + sub_combination)
+        memo[(d, level)] = result
+        return result
+
+    def _uni_grid(self, level: np.int32) -> np.ndarray:
+        return np.zeros(1) if level == 0 else self._cheby_nodes(2**level+1)
 
     @staticmethod
-    def _generate_x(m_i: np.int32):
-        arr = np.arange(m_i, dtype=np.float32)+1
-        arr[0] = np.float32(0.0)
-        # needs to be tested
-        # the following line incorporates a rescaling to the interval [-1, 1]
-        # arr[1:] = self.avg + self.mid_point * np.cos(np.pi * (2 * (m_i - arr[1:]) - 1) / (2 * m_i))
-        arr[1:] = - np.cos(np.pi * (arr[1:]-1)/(m_i-1))
-        return arr
-
-    @staticmethod
-    def _tensor(*arrays):
-        la = len(arrays)
-        dtype = np.result_type(*arrays)
-        arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
-        for i, a in enumerate(np.ix_(*arrays)):
-            arr[..., i] = a
-        return arr.reshape(-1, la)
+    def _cheby_nodes(n: np.int8) -> np.ndarray:
+        arr = np.arange(1, n+1)
+        return (-1) * np.cos(np.pi * (arr-1)/(n-1))

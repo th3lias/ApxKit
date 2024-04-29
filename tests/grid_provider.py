@@ -43,17 +43,19 @@ class VisualTests(unittest.TestCase):
         print(f"Grid dimensions: {grid.shape}")
         utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
 
-    @staticmethod
-    def test_chebyshev_1d(self):
-        provider = GridProvider(np.int8(2), np.float16(1), np.float16(0), seed=np.int8(42))
-        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=8)
-        grid = np.dstack((grid, np.zeros_like(grid))).reshape(127, -1)
-        print(f"Grid dimensions: {grid.shape}")
-        utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
 
     @staticmethod
-    def test_tensor_product_2d():
-        pass
+    def test_chebyshev_2d():
+        provider = GridProvider(np.int8(2), np.float16(1), np.float16(0), seed=np.int8(42))
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=np.int8(5))
+        utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
+        return True
+
+    @staticmethod
+    def test_chebyshev_3d():
+        provider = GridProvider(np.int8(3), np.float16(1), np.float16(0), seed=np.int8(42))
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=np.int8(5))
+        utils.visualize_point_grid_3d(grid, alpha=np.int8(1))
 
 
 if __name__ == '__main__':
