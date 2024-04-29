@@ -83,7 +83,7 @@ class GridProvider:
 
         return np.concatenate(grid_points, axis=0)
 
-    def _valid_combinations(self, d, level, memo: dict = None):
+    def _valid_combinations(self, d: np.int32, level: np.int32, memo: dict = None):
         if (d, level) in memo:
             return memo[(d, level)]
         if d == 1:
@@ -91,7 +91,7 @@ class GridProvider:
         else:
             result = []
             for current_level in range(level + 1):
-                for sub_combination in self._valid_combinations(d - 1, level - current_level, memo):
+                for sub_combination in self._valid_combinations(np.int32(d - 1), np.int32(level - current_level), memo):
                     result.append([current_level] + sub_combination)
         memo[(d, level)] = result
         return result
