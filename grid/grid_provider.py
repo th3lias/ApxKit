@@ -3,7 +3,6 @@ Provides sparse grids and random grids.
 """
 import numpy as np
 from grid.grid_type import GridType
-from itertools import product, combinations_with_replacement
 
 
 class GridProvider:
@@ -12,7 +11,6 @@ class GridProvider:
     :param dimension: dimension of the function to be approximated
     :param upper_bound: upper bound of the domain of each function in the tensor product to be approximated as array
     :param lower_bound: lower bound of the domain of each function in the tensor product as np.ndarray
-    :param q: fineness scale of the grid
     :param seed: random seed to be used when option RANDOM is used
     """
     def __init__(self,
@@ -73,7 +71,7 @@ class GridProvider:
         return np.stack(mesh, axis=-1).reshape(-1, self.dim)
 
     def _full_cheby_grid(self, level: np.int32):
-        grids = [self._uni_grid(np.int32(l)) for l in range(level + 1)]
+        grids = [self._uni_grid(np.int32(k)) for k in range(level + 1)]
 
         memo = {}
         valid_levels = self._valid_combinations(self.dim, level, memo)
@@ -89,7 +87,7 @@ class GridProvider:
         if (d, level) in memo:
             return memo[(d, level)]
         if d == 1:
-            result = [[l] for l in range(level + 1)]
+            result = [[k] for k in range(level + 1)]
         else:
             result = []
             for current_level in range(level + 1):
