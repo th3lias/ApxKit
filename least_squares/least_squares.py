@@ -5,9 +5,12 @@ from sklearn.linear_model import LinearRegression
 from typing import Callable
 from scipy.sparse.linalg import lsmr
 
+from genz.genz_function_types import GenzFunctionType
+from genz.genz_functions import get_genz_function
+
 
 def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
-                                                           grid: np.ndarray) -> Callable:
+                                                           grid: np.ndarray, input_bias:np.bool) -> Callable:
     """
     Approximation of a function with a polynomial with least squares iterative approach (using the lsmr algorithm).
     :param f: function that needs to be approximated
@@ -21,7 +24,7 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
 
     y = f(grid)
 
-    poly = PolynomialFeatures(degree=degree, include_bias=False)
+    poly = PolynomialFeatures(degree=degree, include_bias=input_bias)
 
     X_poly = poly.fit_transform(grid)
 
@@ -30,7 +33,7 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
     coef = res[0]
 
     def f_hat(x):
-        poly = PolynomialFeatures(degree=degree, include_bias=False)
+        poly = PolynomialFeatures(degree=degree, include_bias=input_bias)
         X_poly = poly.fit_transform(x)
         return X_poly@coef
     return f_hat
@@ -38,7 +41,7 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
 
 
 def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degree: np.int8,
-                                                 grid: np.ndarray) -> Callable:
+                                                 grid: np.ndarray, input_bias:np.bool) -> Callable:
     """
     Approximates a function with a polynomial with least squares approach.
     :param f: function that needs to be approximated
@@ -52,7 +55,7 @@ def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degr
 
     y = f(grid)
 
-    poly = PolynomialFeatures(degree=degree, include_bias=False)
+    poly = PolynomialFeatures(degree=degree, include_bias=input_bias)
 
     X_poly = poly.fit_transform(grid)
 
@@ -60,7 +63,7 @@ def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degr
     model.fit(X_poly, y)
 
     def f_hat(x):
-        poly = PolynomialFeatures(degree=degree, include_bias=False)
+        poly = PolynomialFeatures(degree=degree, include_bias=input_bias)
         X_poly = poly.fit_transform(x)
         return model.predict(X_poly)
 
