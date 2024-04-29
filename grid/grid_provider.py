@@ -55,7 +55,7 @@ class GridProvider:
             return self._full_cheby_grid(level=scale)
         else:
             if scale is None:
-                raise ValueError(f"Please provide how many points to generate subspace.")
+                raise ValueError(f"Please provide how many points to generate in each subspace.")
             if grid_type == GridType.REGULAR:
                 return self._generate_equidistant_grid(num_points=scale)
             if grid_type == GridType.RANDOM:
