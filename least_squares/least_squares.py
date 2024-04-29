@@ -7,14 +7,14 @@ from scipy.sparse.linalg import lsmr
 
 
 def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
-                                                           grid: np.ndarray) -> np.ndarray:
+                                                           grid: np.ndarray) -> Callable:
     """
     Approximation of a function with a polynomial with least squares iterative approach (using the lsmr algorithm).
     :param f: function that needs to be approximated
     :param dim: dimension of the data
     :param degree: maximum allowed degree of the polynomials
     :param grid: data array containing the points where the function should be approximated
-    :return: coefficients
+    :return: fitted function
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
@@ -29,18 +29,23 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
 
     coef = res[0]
 
-    return coef
+    def f_hat(x):
+        poly = PolynomialFeatures(degree=degree, include_bias=False)
+        X_poly = poly.fit_transform(x)
+        return X_poly@coef
+    return f_hat
+
 
 
 def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degree: np.int8,
-                                                 grid: np.ndarray) -> sklearn.linear_model:
+                                                 grid: np.ndarray) -> Callable:
     """
     Approximates a function with a polynomial with least squares approach.
     :param f: function that needs to be approximated
     :param dim: dimension of the data
     :param degree: degree of the polynomials
     :param grid: data array containing the points where the function should be approximated
-    :return: sklearn linear model
+    :return: fitted function
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
@@ -54,4 +59,9 @@ def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degr
     model = LinearRegression()
     model.fit(X_poly, y)
 
-    return model
+    def f_hat(x):
+        poly = PolynomialFeatures(degree=degree, include_bias=False)
+        X_poly = poly.fit_transform(x)
+        return model.predict(X_poly)
+
+    return f_hat
