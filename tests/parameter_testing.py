@@ -1,0 +1,115 @@
+import itertools
+import time
+import multiprocessing
+from genz.genz_functions import get_genz_function
+from genz.genz_functions import GenzFunctionType
+import numpy as np
+
+from least_squares.least_squares import approximate_by_polynomial_with_least_squares_iterative
+from least_squares.least_squares import approximate_by_polynomial_with_least_squares
+
+
+def test_configuration_iterative(param_dict, q):
+    start_time = time.time()
+    w = param_dict.get('w')
+    c = param_dict.get('c')
+    del param_dict['w']
+    del param_dict['c']
+    n_samples = param_dict.get('n_samples')
+    del param_dict['n_samples']
+    f = get_genz_function(GenzFunctionType.OSCILLATORY, w=w, c=c, d=param_dict['dim'])
+    approximate_by_polynomial_with_least_squares_iterative(f=f, **param_dict)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    del param_dict['grid']
+    del param_dict['include_bias']
+    param_dict['n_samples'] = int(n_samples)
+    print(f"Done iterative with parameters {param_dict}")
+
+    q.put((param_dict, execution_time))
+
+def test_configuration(param_dict, q):
+    start_time = time.time()
+    w = param_dict.get('w')
+    c = param_dict.get('c')
+    del param_dict['w']
+    del param_dict['c']
+    n_samples = param_dict.get('n_samples')
+    del param_dict['n_samples']
+    f = get_genz_function(GenzFunctionType.OSCILLATORY, w=w, c=c, d=param_dict['dim'])
+    approximate_by_polynomial_with_least_squares(f=f, **param_dict)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    del param_dict['grid']
+    del param_dict['include_bias']
+    param_dict['n_samples'] = int(n_samples)
+    print(f"Done with parameters {param_dict}")
+
+    q.put((param_dict, execution_time))
+
+
+def grid_search(parameters, timeout, filename, iterative):
+    results = []
+    with open(filename, "w") as f:
+        f.write("degree,dim,n_samples,time\n")
+
+    q = multiprocessing.Queue()
+    for param_combo in itertools.product(*parameters.values()):
+        param_dict = dict(zip(parameters.keys(), param_combo))
+
+        c = np.random.uniform(low=0, high=1, size=(param_dict['dim']))
+        w = np.random.uniform(low=0, high=1, size=(param_dict['dim']))
+
+        param_dict['w'] = w
+        param_dict['c'] = c
+
+        grid = np.random.uniform(low=0, high=1, size=(np.int32(param_dict['n_samples']), param_dict['dim']))
+
+        param_dict['grid'] = grid
+        param_dict['include_bias'] = np.bool(False)
+
+        # Run each configuration in a separate process
+        if iterative:
+            p = multiprocessing.Process(target=test_configuration_iterative, args=(param_dict, q))
+        else:
+            p = multiprocessing.Process(target=test_configuration, args=(param_dict, q))
+
+        p.start()
+
+        p.join(timeout=timeout)
+
+        if p.is_alive():
+            del param_dict['grid']
+            del param_dict['include_bias']
+            del param_dict['w']
+            del param_dict['c']
+            param_dict['n_samples'] = int(param_dict['n_samples'])
+            with open(filename, "a") as f:
+                f.write(
+                    f"{param_dict['degree']},{param_dict['dim']},{param_dict['n_samples']},took longer than {timeout} seconds\n")
+            print(f"Parameters: {param_dict}, took longer than {timeout} seconds")
+            p.terminate()
+            p.join()
+
+    while not q.empty():
+        result = q.get()
+        param, exec_time = result
+        with open(filename, "a") as f:
+            f.write(f"{param['degree']},{param['dim']},{param['n_samples']},{exec_time}\n")
+        print(f"Parameters: {param}, Time: {exec_time}")
+        results.append((param, exec_time))
+
+    return results
+
+
+if __name__ == '__main__':
+
+    parameters = {
+        'degree': [1, 2, 3],
+        'dim': [5, 10, 15, 20, 25, 30],
+        'n_samples' : [1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5],
+    }
+
+    # Run grid search
+    grid_results = grid_search(parameters, 150, filename="grid_search_results.txt", iterative=False)
+    grid_results_iterative = grid_search(parameters, 150, filename="grid_search_results_iterative.txt", iterative=True)
