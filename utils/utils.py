@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable
-import pandas as pd
 
 
 def ell_2_error_estimate(f: Callable, f_hat: Callable, d: np.int8, no_samples: np.int16,
