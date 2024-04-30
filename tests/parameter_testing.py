@@ -28,6 +28,7 @@ def test_configuration_iterative(param_dict, q):
 
     q.put((param_dict, execution_time))
 
+
 def test_configuration(param_dict, q):
     start_time = time.time()
     w = param_dict.get('w')
@@ -48,14 +49,14 @@ def test_configuration(param_dict, q):
     q.put((param_dict, execution_time))
 
 
-def grid_search(parameters, timeout, filename, iterative):
+def grid_search(params, timeout, filename, iterative):
     results = []
     with open(filename, "w") as f:
         f.write("degree,dim,n_samples,time\n")
 
     q = multiprocessing.Queue()
-    for param_combo in itertools.product(*parameters.values()):
-        param_dict = dict(zip(parameters.keys(), param_combo))
+    for param_combo in itertools.product(*params.values()):
+        param_dict = dict(zip(params.keys(), param_combo))
 
         c = np.random.uniform(low=0, high=1, size=(param_dict['dim']))
         w = np.random.uniform(low=0, high=1, size=(param_dict['dim']))
@@ -66,7 +67,7 @@ def grid_search(parameters, timeout, filename, iterative):
         grid = np.random.uniform(low=0, high=1, size=(np.int32(param_dict['n_samples']), param_dict['dim']))
 
         param_dict['grid'] = grid
-        param_dict['include_bias'] = np.bool(False)
+        param_dict['include_bias'] = False
 
         # Run each configuration in a separate process
         if iterative:
@@ -86,7 +87,8 @@ def grid_search(parameters, timeout, filename, iterative):
             param_dict['n_samples'] = int(param_dict['n_samples'])
             with open(filename, "a") as f:
                 f.write(
-                    f"{param_dict['degree']},{param_dict['dim']},{param_dict['n_samples']},took longer than {timeout} seconds\n")
+                    f"{param_dict['degree']},{param_dict['dim']},{param_dict['n_samples']},took longer than {timeout} "
+                    f"seconds\n")
             print(f"Parameters: {param_dict}, took longer than {timeout} seconds")
             p.terminate()
             p.join()
@@ -103,12 +105,7 @@ def grid_search(parameters, timeout, filename, iterative):
 
 
 if __name__ == '__main__':
-
-    parameters = {
-        'degree': [1, 2, 3],
-        'dim': [5, 10, 15, 20, 25, 30],
-        'n_samples' : [1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5],
-    }
+    parameters = dict(degree=[1, 2, 3], dim=[5, 10, 15, 20, 25, 30], n_samples=[1e3, 2e3, 5e3, 1e4, 2e4, 5e4, 1e5])
 
     # Run grid search
     grid_results = grid_search(parameters, 150, filename="grid_search_results.txt", iterative=False)

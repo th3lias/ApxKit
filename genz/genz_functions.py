@@ -15,7 +15,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
     :return: A callable function
     """
 
-    if type(function_type) != GenzFunctionType:
+    if not isinstance(function_type, GenzFunctionType):
         raise ValueError("Wrong input type for function_type. Use a GenzFunctionType")
 
     if function_type == GenzFunctionType.OSCILLATORY:

@@ -2,6 +2,7 @@
 Provides sparse grids and random grids.
 """
 import numpy as np
+
 from grid.grid_type import GridType
 
 
@@ -13,11 +14,8 @@ class GridProvider:
     :param lower_bound: lower bound of the domain of each function in the tensor product as np.ndarray
     :param seed: random seed to be used when option RANDOM is used
     """
-    def __init__(self,
-                 dimension: np.int8,
-                 upper_bound: np.float16,
-                 lower_bound: np.float16,
-                 seed: np.int8 = None):
+
+    def __init__(self, dimension: np.int8, upper_bound: np.float16, lower_bound: np.float16, seed: np.int8 = None):
         self.dim = dimension
         self.upper_bound = upper_bound
         self.lower_bound = lower_bound
@@ -46,14 +44,14 @@ class GridProvider:
         :return: np.ndarray representing the grid
         """
         if not isinstance(grid_type, GridType):
-            raise ValueError(f"grid type not supported: {grid_type}")
+            raise ValueError("grid type not supported: " + str(grid_type))
         if grid_type == GridType.CHEBYSHEV:
             if scale is None:
-                raise ValueError(f"Please provide the level of fineness of the chebyshev grid.")
+                raise ValueError("Please provide the level of fineness of the chebyshev grid.")
             return self._full_cheby_grid(level=scale)
         else:
             if scale is None:
-                raise ValueError(f"Please provide how many points to generate in each subspace.")
+                raise ValueError("Please provide how many points to generate in each subspace.")
             if grid_type == GridType.REGULAR:
                 return self._generate_equidistant_grid(num_points=scale)
             if grid_type == GridType.RANDOM:
@@ -97,9 +95,9 @@ class GridProvider:
         return result
 
     def _uni_grid(self, level: np.int32) -> np.ndarray:
-        return np.zeros(1) if level == 0 else self._cheby_nodes(2**level+1)
+        return np.zeros(1) if level == 0 else self._cheby_nodes(2 ** level + 1)
 
     @staticmethod
     def _cheby_nodes(n: np.int8) -> np.ndarray:
-        arr = np.arange(1, n+1)
-        return (-1) * np.cos(np.pi * (arr-1)/(n-1))
+        arr = np.arange(1, n + 1)
+        return (-1) * np.cos(np.pi * (arr - 1) / (n - 1))
