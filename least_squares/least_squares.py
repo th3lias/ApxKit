@@ -1,3 +1,5 @@
+from ctypes import c_int
+
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
@@ -39,7 +41,8 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
 
 
 def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degree: np.int8,
-                                                 grid: np.ndarray, include_bias: bool) -> Callable:
+                                                 grid: np.ndarray, include_bias: bool,
+                                                 self_implement: bool = True) -> Callable:
     """
     Approximates a function with a polynomial with least squares approach.
     :param f: function that needs to be approximated
@@ -47,10 +50,14 @@ def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degr
     :param degree: degree of the polynomials
     :param grid: data array containing the points where the function should be approximated
     :param include_bias: whether to include bias (equivalent to intercept) in the polynomial
+    :param self_implement: whether to use the self-implemented version as it is faster and only relies on numpy
     :return: fitted function
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
+
+    if self_implement and not include_bias:
+        print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
 
     y = f(grid)
 
@@ -58,13 +65,23 @@ def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degr
 
     x_poly = poly.fit_transform(grid)
 
-    model = LinearRegression()
-    model.fit(x_poly, y)
+    if self_implement:
+        pseudo_inverse = np.linalg.inv(x_poly.T @ x_poly) @ x_poly
+        coeff = pseudo_inverse @ y
 
-    def f_hat(x):
-        pol = PolynomialFeatures(degree=degree, include_bias=include_bias)
-        x_pol = pol.fit_transform(x)
-        return model.predict(x_pol)
+        def f_hat(x):
+            pol = PolynomialFeatures(degree=degree, include_bias=include_bias)
+            x_pol = pol.fit_transform(x)
+            return x_pol @ coeff
+
+    else:
+        model = LinearRegression()
+        model.fit(x_poly, y)
+
+        def f_hat(x):
+            pol = PolynomialFeatures(degree=degree, include_bias=include_bias)
+            x_pol = pol.fit_transform(x)
+            return model.predict(x_pol)
 
     return f_hat
 
