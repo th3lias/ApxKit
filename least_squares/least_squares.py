@@ -78,7 +78,7 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
     x_poly = poly.fit_transform(grid)
 
     if self_implemented:
-        pseudo_inverse = np.linalg.inv(x_poly.T @ x_poly) @ x_poly
+        pseudo_inverse = np.linalg.inv(x_poly.T @ x_poly) @ x_poly.T
         coeff = pseudo_inverse @ y
 
         def f_hat(x):
