@@ -81,24 +81,9 @@ class GridProvider:
 
         concat_grid = np.concatenate(grid_points, axis=0)
 
-        return self._remove_almost_identical_rows(concat_grid) # return np.unique(concat_grid, axis=0)
+        unique_grid = np.unique(concat_grid, axis=0) # doesn't solve the problem with almost equal rows->another method
 
-    def _remove_almost_identical_rows(self, arr:np.ndarray, tol=1e-8):
-        """
-        Removes duplicate rows whenever they are closer than the tolerance
-        :param arr:
-        :param tol:
-        :return:
-        """
-
-        # TODO: This needs to be optimized! Or Chebyshev Grid provider needs to be changed such equal rows do not appear
-
-        unique_rows = [arr[0]]
-        for row in arr[1:]:
-            # Check if the row is almost identical to any of the unique rows
-            if not any(np.allclose(row, unique_row, atol=tol) for unique_row in unique_rows):
-                unique_rows.append(row)
-        return np.array(unique_rows)
+        return self._remove_almost_identical_rows(unique_grid)
 
     def _valid_combinations(self, d: np.int32, level: np.int32, memo: dict = None):
         if (d, level) in memo:
@@ -118,5 +103,23 @@ class GridProvider:
 
     @staticmethod
     def _cheby_nodes(n: np.int8) -> np.ndarray:
-        arr = np.arange(1, n+1)
+        arr = np.arange(1, n + 1)
         return (-1) * np.cos(np.pi * (arr - 1) / (n - 1))
+
+    @staticmethod
+    def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
+        """
+        Removes duplicate rows whenever they are closer than the tolerance
+        :param arr:
+        :param tol:
+        :return:
+        """
+
+        # TODO: This needs to be optimized! Or Chebyshev Grid provider needs to be changed such equal rows do not appear
+
+        unique_rows = [arr[0]]
+        for row in arr[1:]:
+            # Check if the row is almost identical to any of the unique rows
+            if not any(np.allclose(row, unique_row, atol=tol) for unique_row in unique_rows):
+                unique_rows.append(row)
+        return np.array(unique_rows)
