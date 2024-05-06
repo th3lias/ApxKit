@@ -40,32 +40,44 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
     return f_hat
 
 
-def approximate_by_polynomial_with_least_squares(f: Callable, dim: np.int8, degree: np.int8,
+def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callable]], dim: np.int8, degree: np.int8,
                                                  grid: np.ndarray, include_bias: bool,
-                                                 self_implement: bool = True) -> Callable:
+                                                 self_implemented: bool = True) -> Callable:
     """
-    Approximates a function with a polynomial with least squares approach.
-    :param f: function that needs to be approximated
+    Approximates a (or multiple) function(s) with polynomials via least squares.
+    :param f: function or list of functions that need to be approximated on the same points
     :param dim: dimension of the data
     :param degree: degree of the polynomials
     :param grid: data array containing the points where the function should be approximated
     :param include_bias: whether to include bias (equivalent to intercept) in the polynomial
-    :param self_implement: whether to use the self-implemented version as it is faster and only relies on numpy
+    :param self_implemented: whether to use the self-implemented version as it is faster and only relies on numpy
     :return: fitted function
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
 
-    if self_implement and not include_bias:
+    if self_implemented and not include_bias:
         print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
 
-    y = f(grid)
+    if not isinstance(f, list) and not isinstance(f, Callable):
+        raise ValueError(f"f needs to be a function or a list of functions but is {type(list)}")
+
+    n_samples = grid.shape[0]
+
+    if isinstance(f, list):
+        y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+        for i, func in enumerate(f):
+            if not isinstance(func, Callable):
+                raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+            y[:, i] = func(grid)
+    else:
+        y = f(grid)
 
     poly = PolynomialFeatures(degree=degree, include_bias=include_bias)
 
     x_poly = poly.fit_transform(grid)
 
-    if self_implement:
+    if self_implemented:
         pseudo_inverse = np.linalg.inv(x_poly.T @ x_poly) @ x_poly
         coeff = pseudo_inverse @ y
 
