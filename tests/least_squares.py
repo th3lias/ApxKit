@@ -9,9 +9,6 @@ from least_squares.least_squares import approximate_by_polynomial_with_least_squ
 
 class LeastSquaresTests(unittest.TestCase):
 
-    def test_self_implementation(self):
-        self.assertEqual(True, True)
-
     def test_parallel_oscillatory(self):
         degree = np.int8(3)
         dimension = np.int8(20)
