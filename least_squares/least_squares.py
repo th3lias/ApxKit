@@ -3,7 +3,7 @@ from ctypes import c_int
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
-from typing import Callable
+from typing import Callable, Union, List
 from scipy.sparse.linalg import lsmr
 from utils.utils import ell_2_error_estimate
 
