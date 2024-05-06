@@ -118,5 +118,5 @@ class GridProvider:
 
     @staticmethod
     def _cheby_nodes(n: np.int8) -> np.ndarray:
-        arr = np.arange(1, n+1) # TODO: Jakob: Changed from n+1 to n
+        arr = np.arange(1, n+1)
         return (-1) * np.cos(np.pi * (arr - 1) / (n - 1))
