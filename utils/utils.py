@@ -1,10 +1,11 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from typing import Callable
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def ell_2_error_estimate(f: Callable, f_hat: Callable, d: np.int8, no_samples: np.int16,
-                         lower_bound: np.float64 = np.float64(0.0),
+                         lower_bound: np.float64 = np.float64(-1.0),
                          upper_bound: np.float64 = np.float64(1.0)) -> np.float64:
     """
     Calculates the ell_2 error estimate by sampling no_samples points in [lower_bound, upper_bound]^d and
@@ -28,7 +29,7 @@ def ell_2_error_estimate(f: Callable, f_hat: Callable, d: np.int8, no_samples: n
 
 
 def max_abs_error(f: Callable, f_hat: Callable, d: np.int8, no_samples: np.int16,
-                  lower_bound: np.float64 = np.float64(0.0),
+                  lower_bound: np.float64 = np.float64(-1.0),
                   upper_bound: np.float64 = np.float64(1.0)) -> np.float64:
     """
         Calculates the estimated max absolute value distance by sampling no_samples points in
