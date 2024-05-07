@@ -36,12 +36,9 @@ class GridProvider:
     def generate(self, grid_type: GridType, scale: np.int32 = None) -> np.ndarray:
         """
         Generate a grid of given type.
-        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
-                            If GridType == EQUIDISTANT we sample per dimension, i.e. we have num_points**dim
-                            points. If GridType == RANDOM we aim to have the same number of points as in the regular
-                            grid and therefore sample the same num_points**dim number of points uniformly. If
-                            GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse
-                            grid.
+        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly. If GridType == RANDOM we aim to have the same number of points as in the regular
+        grid and therefore sample the same num_points**dim number of points uniformly. If
+        GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
         :return: np.ndarray representing the grid
         """
