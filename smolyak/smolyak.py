@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.linalg import lu as lu_decomp
+from scipy.linalg import lu
 
 from typing import Callable, Union, List, Tuple
 from itertools import chain, combinations_with_replacement, product
@@ -37,14 +37,14 @@ class SmolyakInterpolation:
 
     def _poly_inds(self, inds: Union[List[List[int]], None] = None) -> List[Tuple[int]]:
         """
-        Build indices specifying all the Cartesian products of Chebychev
+        Build indices specifying all the Cartesian products of Chebyshev
         polynomials needed to build Smolyak polynomial
 
         Parameters
         ----------
         inds : list (list (int)), optional (default=None)
-            The Smolyak indices for parameters d and mu. Should be computed
-            by calling `smol_inds(d, mu)`. If None is given, the indices
+            The Smolyak indices for parameters dim and scale. Should be computed
+            by calling `smol_inds(dim, scale)`. If None is given, the indices
             are computed using this function call
 
         Returns
@@ -75,7 +75,7 @@ class SmolyakInterpolation:
         for el in inds:
             temp = [aphi[i] for i in el]
             # Save these indices that we iterate through because
-            # we need them for the chebychev polynomial combination
+            # we need them for the Chebyshev polynomial combination
             # inds.append(el)
             base_polys.extend(list(product(*temp)))
 
@@ -84,7 +84,8 @@ class SmolyakInterpolation:
     def _smol_inds(self) -> List[List[int]]:
         """
         Finds all the indices that satisfy the requirement that
-        :math:`d \leq \sum_{i=1}^d \leq d + scale`.
+        math::
+        d \\leq \\sum_{i=1}^d \\leq d + scale.
 
         Returns
         -------
@@ -135,9 +136,9 @@ class SmolyakInterpolation:
         scale = self.scale
 
         ts = self._cheby2n(grid.T, self._m_i(scale + 1))
-        npolys = len(self._b_inds)
+        n_polys = len(self._b_inds)
         npts = grid.shape[0]
-        basis = np.empty((npts, npolys), order='F')
+        basis = np.empty((npts, n_polys), order='F')
         for ind, comb in enumerate(self._b_inds):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
 
@@ -146,13 +147,13 @@ class SmolyakInterpolation:
     def approximate(self, f: Callable) -> Callable:
         basis = self._build_basis(None)
 
-        l, u = lu_decomp(basis, permute_l=True)
+        l, u = lu(basis, permute_l=True)
 
         coeff = np.linalg.solve(u, np.linalg.solve(l, f(self.grid)))
 
         def f_hat(data):
-            X_smolyak = self._build_basis(grid=data, b_inds=self._b_inds)
-            return X_smolyak @ coeff
+            data_smolyak = self._build_basis(grid=data, b_inds=self._b_inds)
+            return data_smolyak @ coeff
 
         return f_hat
 
@@ -196,10 +197,10 @@ class SmolyakInterpolation:
     def _m_i(i: np.int16):
         r"""
         Compute one plus the "total degree of the interpolating
-        polynoimals" (Kruger & Kubler, 2004). This shows up many times in
+        polynomials" (Kruger & Kubler, 2004). This shows up many times in
         Smolyak's algorithm. It is defined as:
 
-        .. math::
+        math::
 
             m_i = \begin{cases}
             1 \quad & \text{if } i = 1 \\
@@ -275,7 +276,7 @@ class SmolyakInterpolation:
     @staticmethod
     def _cheby2n(x, n):
         """
-        Computes the first :math:`n+1` Chebychev polynomials of the first
+        Computes the first :math:`n+1` Chebyshev polynomials of the first
         kind evaluated at each point in :math:`x` .
 
         Parameters
@@ -285,7 +286,7 @@ class SmolyakInterpolation:
             polynomial should be evaluated
 
         n : int
-            The integer specifying which Chebychev polynomial is the last
+            The integer specifying which Chebyshev polynomial is the last
             to be computed
 
         Returns
@@ -293,7 +294,7 @@ class SmolyakInterpolation:
         results : array (float, ndim=x.ndim+1)
             The results of computation. This will be an :math:`(n+1 \\times
             dim \\dots)` where :math:`(dim \\dots)` is the shape of x. Each
-            slice along the first dimension represents a new Chebychev
+            slice along the first dimension represents a new Chebyshev
             polynomial. This dimension has length :math:`n+1` because it
             includes :math:`\\phi_0` which is equal to 1 :math:`\\forall x`
 

@@ -81,7 +81,7 @@ class GridProvider:
 
         concat_grid = np.concatenate(grid_points, axis=0)
 
-        unique_grid = np.unique(concat_grid, axis=0) # doesn't solve the problem with almost equal rows->another method
+        unique_grid = np.unique(concat_grid, axis=0)  # doesn't solve the problem with almost equal rows->another method
 
         return self._remove_almost_identical_rows(unique_grid)
 

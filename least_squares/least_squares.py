@@ -1,5 +1,3 @@
-from ctypes import c_int
-
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
@@ -11,7 +9,7 @@ from utils.utils import ell_2_error_estimate
 def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
                                                            grid: np.ndarray, include_bias: bool) -> Callable:
     """
-    Approximation of a function with a polynomial with least squares iterative approach (using the lsmr algorithm).
+    Approximation of a function with a polynomial by least squares iterative approach (using the lsmr algorithm).
     :param f: function that needs to be approximated
     :param dim: dimension of the data
     :param degree: maximum allowed degree of the polynomials
@@ -44,7 +42,7 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
                                                  grid: np.ndarray, include_bias: bool,
                                                  self_implemented: bool = True) -> Callable:
     """
-    Approximates a (or multiple) function(s) with polynomials via least squares.
+    Approximates a (or multiple) function(s) with polynomials by least squares.
     :param f: function or list of functions that need to be approximated on the same points
     :param dim: dimension of the data
     :param degree: degree of the polynomials

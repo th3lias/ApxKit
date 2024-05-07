@@ -1,15 +1,14 @@
 import unittest
 import numpy as np
 
-
-from genz.genz_functions import get_genz_function,GenzFunctionType
+from genz.genz_functions import get_genz_function, GenzFunctionType
 from smolyak.smolyak import SmolyakInterpolation
+
 
 class Smolyak(unittest.TestCase):
 
-
-    def test_smolyak_implementation_oscillatory(self):
-
+    @staticmethod
+    def test_smolyak_implementation_oscillatory():
         np.random.seed(42)
 
         dim = np.int8(5)
@@ -18,8 +17,8 @@ class Smolyak(unittest.TestCase):
         upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
-        c = np.random.uniform(low=0, high=1, size=(dim))
-        w = np.random.uniform(low=0, high=1, size=(dim))
+        c = np.random.uniform(low=0, high=1, size=dim)
+        w = np.random.uniform(low=0, high=1, size=dim)
         f = get_genz_function(GenzFunctionType.CONTINUOUS, c=c, w=w, d=dim)
 
         test_grid = np.random.uniform(low=0, high=1, size=(n_test_samples, dim))
@@ -43,8 +42,8 @@ class Smolyak(unittest.TestCase):
 
         print('\n')
 
-    def test_smolyak_implementation_product_peak(self):
-
+    @staticmethod
+    def test_smolyak_implementation_product_peak():
         np.random.seed(42)
 
         dim = np.int8(5)
@@ -53,8 +52,8 @@ class Smolyak(unittest.TestCase):
         upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
-        c = np.random.uniform(low=0, high=1, size=(dim))
-        w = np.random.uniform(low=0, high=1, size=(dim))
+        c = np.random.uniform(low=0, high=1, size=dim)
+        w = np.random.uniform(low=0, high=1, size=dim)
         f = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=c, w=w, d=dim)
 
         test_grid = np.random.uniform(low=0, high=1, size=(n_test_samples, dim))
@@ -78,8 +77,8 @@ class Smolyak(unittest.TestCase):
 
         print('\n')
 
-    def test_smolyak_implementation_corner_peak(self):
-
+    @staticmethod
+    def test_smolyak_implementation_corner_peak():
         np.random.seed(42)
 
         dim = np.int8(5)
@@ -88,8 +87,8 @@ class Smolyak(unittest.TestCase):
         upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
-        c = np.random.uniform(low=0, high=1, size=(dim))
-        w = np.random.uniform(low=0, high=1, size=(dim))
+        c = np.random.uniform(low=0, high=1, size=dim)
+        w = np.random.uniform(low=0, high=1, size=dim)
         f = get_genz_function(GenzFunctionType.CORNER_PEAK, c=c, w=w, d=dim)
 
         test_grid = np.random.uniform(low=0, high=1, size=(n_test_samples, dim))
@@ -113,8 +112,8 @@ class Smolyak(unittest.TestCase):
 
         print('\n')
 
-    def test_smolyak_implementation_gaussian(self):
-
+    @staticmethod
+    def test_smolyak_implementation_gaussian():
         np.random.seed(42)
 
         dim = np.int8(5)
@@ -123,8 +122,8 @@ class Smolyak(unittest.TestCase):
         upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
-        c = np.random.uniform(low=0, high=1, size=(dim))
-        w = np.random.uniform(low=0, high=1, size=(dim))
+        c = np.random.uniform(low=0, high=1, size=dim)
+        w = np.random.uniform(low=0, high=1, size=dim)
         f = get_genz_function(GenzFunctionType.GAUSSIAN, c=c, w=w, d=dim)
 
         test_grid = np.random.uniform(low=0, high=1, size=(n_test_samples, dim))
@@ -148,8 +147,8 @@ class Smolyak(unittest.TestCase):
 
         print('\n')
 
-    def test_smolyak_implementation_continuous(self):
-
+    @staticmethod
+    def test_smolyak_implementation_continuous():
         np.random.seed(42)
 
         dim = np.int8(5)
@@ -158,8 +157,8 @@ class Smolyak(unittest.TestCase):
         upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
-        c = np.random.uniform(low=0, high=1, size=(dim))
-        w = np.random.uniform(low=0, high=1, size=(dim))
+        c = np.random.uniform(low=0, high=1, size=dim)
+        w = np.random.uniform(low=0, high=1, size=dim)
         f = get_genz_function(GenzFunctionType.CONTINUOUS, c=c, w=w, d=dim)
 
         test_grid = np.random.uniform(low=0, high=1, size=(n_test_samples, dim))
@@ -183,8 +182,8 @@ class Smolyak(unittest.TestCase):
 
         print('\n')
 
-    def test_smolyak_implementation_discontinuous(self):
-
+    @staticmethod
+    def test_smolyak_implementation_discontinuous():
         np.random.seed(42)
 
         dim = np.int8(5)
@@ -193,8 +192,8 @@ class Smolyak(unittest.TestCase):
         upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
-        c = np.random.uniform(low=0, high=1, size=(dim))
-        w = np.random.uniform(low=0, high=1, size=(dim))
+        c = np.random.uniform(low=0, high=1, size=dim)
+        w = np.random.uniform(low=0, high=1, size=dim)
         f = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=c, w=w, d=dim)
 
         test_grid = np.random.uniform(low=0, high=1, size=(n_test_samples, dim))
@@ -217,7 +216,6 @@ class Smolyak(unittest.TestCase):
         print(msg.format(mean_ad, max_ad, min_ad))
 
         print('\n')
-
 
 
 if __name__ == '__main__':
