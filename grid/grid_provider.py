@@ -26,6 +26,8 @@ class GridProvider:
         if isinstance(seed, np.int8) or isinstance(seed, int):
             self.seed = seed
             self.rng = np.random.default_rng(seed=seed)
+        else:
+            self.rng = np.random.default_rng(seed=None)
 
     def set_seed(self, seed: np.int8):
         self.seed = seed
@@ -58,7 +60,7 @@ class GridProvider:
                 return self._generate_random_grid(num_points=scale)
 
     def _generate_random_grid(self, num_points: np.int32) -> np.ndarray:
-        return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points ** self.dim, self.dim))
+        return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
 
     def _generate_equidistant_grid(self, num_points: np.int32) -> np.ndarray:
         num_points = np.full(shape=self.dim, fill_value=num_points)
