@@ -1,4 +1,5 @@
 import unittest
+
 import numpy as np
 
 from genz.genz_functions import get_genz_function, GenzFunctionType
@@ -13,8 +14,6 @@ class Smolyak(unittest.TestCase):
 
         dim = np.int8(5)
         scale = np.int8(3)
-        lower_bound = np.float16(-1.0)
-        upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -25,7 +24,7 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale, lower_bound, upper_bound)
+        sy = SmolyakInterpolation(dim, scale)
 
         f_hat_smolyak = sy.approximate(f)
 
@@ -48,8 +47,6 @@ class Smolyak(unittest.TestCase):
 
         dim = np.int8(5)
         scale = np.int8(3)
-        lower_bound = np.float16(-1.0)
-        upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -60,7 +57,7 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale, lower_bound, upper_bound)
+        sy = SmolyakInterpolation(dim, scale)
 
         f_hat_smolyak = sy.approximate(f)
 
@@ -83,8 +80,6 @@ class Smolyak(unittest.TestCase):
 
         dim = np.int8(5)
         scale = np.int8(3)
-        lower_bound = np.float16(-1.0)
-        upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -95,7 +90,7 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale, lower_bound, upper_bound)
+        sy = SmolyakInterpolation(dim, scale)
 
         f_hat_smolyak = sy.approximate(f)
 
@@ -118,8 +113,6 @@ class Smolyak(unittest.TestCase):
 
         dim = np.int8(5)
         scale = np.int8(3)
-        lower_bound = np.float16(-1.0)
-        upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -130,7 +123,7 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale, lower_bound, upper_bound)
+        sy = SmolyakInterpolation(dim, scale)
 
         f_hat_smolyak = sy.approximate(f)
 
@@ -153,8 +146,6 @@ class Smolyak(unittest.TestCase):
 
         dim = np.int8(5)
         scale = np.int8(3)
-        lower_bound = np.float16(-1.0)
-        upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -165,7 +156,7 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale, lower_bound, upper_bound)
+        sy = SmolyakInterpolation(dim, scale)
 
         f_hat_smolyak = sy.approximate(f)
 
@@ -188,8 +179,6 @@ class Smolyak(unittest.TestCase):
 
         dim = np.int8(5)
         scale = np.int8(3)
-        lower_bound = np.float16(-1.0)
-        upper_bound = np.float16(1.0)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -200,7 +189,7 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale, lower_bound, upper_bound)
+        sy = SmolyakInterpolation(dim, scale)
 
         f_hat_smolyak = sy.approximate(f)
 

@@ -98,7 +98,7 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
 
 def evaluate_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_samples: np.int16,
                            n_test_samples: np.int16, include_bias: bool,
-                           lower_bound: np.float64 = np.float64(0.0),
+                           lower_bound: np.float64 = np.float64(-1.0),
                            upper_bound: np.float64 = np.float64(1.0),
                            seed: np.int16 = np.int16(42)) -> np.float64:
     """
@@ -127,7 +127,7 @@ def evaluate_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_s
 
 def evaluate_iterative_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_samples: np.int16,
                                      n_test_samples: np.int16, include_bias: bool,
-                                     lower_bound: np.float64 = np.float64(0.0),
+                                     lower_bound: np.float64 = np.float64(-1.0),
                                      upper_bound: np.float64 = np.float64(1.0),
                                      seed: np.int16 = np.int16(42)) -> np.float64:
     """

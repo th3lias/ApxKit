@@ -1,10 +1,10 @@
+from functools import reduce
+from itertools import chain, combinations_with_replacement, product
+from operator import mul
+from typing import Callable, Union, List, Tuple
+
 import numpy as np
 from scipy.linalg import lu
-
-from typing import Callable, Union, List, Tuple
-from itertools import chain, combinations_with_replacement, product
-from functools import reduce
-from operator import mul
 
 from grid.grid_provider import GridProvider, GridType
 
@@ -22,16 +22,13 @@ class SmolyakInterpolation:
 
     """
 
-    def __init__(self, dimension: np.int8, scale: np.int8, lower_bound: np.float16, upper_bound: np.float16,
-                 seed: np.int8 = None):
+    def __init__(self, dimension: np.int8, scale: np.int8, seed: np.int8 = None):
         self.dim = dimension
         self.scale = scale
-        self.lower_bound = lower_bound
-        self.upper_bound = upper_bound
 
         # TODO: Type checks for dumb values for scale and dim
 
-        gp = GridProvider(self.dim, lower_bound=self.lower_bound, upper_bound=self.upper_bound, seed=seed)
+        gp = GridProvider(self.dim, seed=seed)
 
         self.grid = gp.generate(GridType.CHEBYSHEV, self.scale)
 

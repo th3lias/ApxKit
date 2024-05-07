@@ -10,18 +10,13 @@ class GridProvider:
     """
     Provides sparse grids, random grids and grids sampled from the chebyshev extrema.
     :param dimension: dimension of the function to be approximated
-    :param upper_bound: upper bound of the domain of each function in the tensor product to be approximated as array
-    :param lower_bound: lower bound of the domain of each function in the tensor product as np.ndarray
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: np.int8, upper_bound: np.float16, lower_bound: np.float16, seed: np.int8 = None):
+    def __init__(self, dimension: np.int8, seed: np.int8 = None):
         self.dim = dimension
-        self.upper_bound = upper_bound
-        self.lower_bound = lower_bound
-
-        self.mid_point = (self.upper_bound - self.lower_bound) / 2
-        self.avg = (self.upper_bound + self.lower_bound) / 2
+        self.lower_bound = np.float16(-1.)
+        self.upper_bound = np.float16(1.)
 
         if isinstance(seed, np.int8) or isinstance(seed, int):
             self.seed = seed
@@ -36,7 +31,8 @@ class GridProvider:
     def generate(self, grid_type: GridType, scale: np.int32 = None) -> np.ndarray:
         """
         Generate a grid of given type.
-        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly. If GridType == RANDOM we aim to have the same number of points as in the regular
+        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
+        If GridType == RANDOM we aim to have the same number of points as in the regular
         grid and therefore sample the same num_points**dim number of points uniformly. If
         GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
