@@ -33,13 +33,15 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, scale: np.int32 = None) -> np.ndarray:
+    def generate(self, grid_type: GridType, scale: np.int32 = None, remove_duplicates: bool = True) -> np.ndarray:
         """
         Generate a grid of given type.
-        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly. If GridType == RANDOM we aim to have the same number of points as in the regular
+        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
+        If GridType == RANDOM we aim to have the same number of points as in the regular
         grid and therefore sample the same num_points**dim number of points uniformly. If
         GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
+        :param remove_duplicates: Remove duplicate values in the grid up to a small distance. Needed for Smolyak.
         :return: np.ndarray representing the grid
         """
         if not isinstance(grid_type, GridType):
@@ -47,7 +49,7 @@ class GridProvider:
         if grid_type == GridType.CHEBYSHEV:
             if scale is None:
                 raise ValueError("Please provide the level of fineness of the chebyshev grid.")
-            return self._full_cheby_grid(level=scale)
+            return self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
         else:
             if scale is None:
                 raise ValueError("Please provide how many points to generate in each subspace.")
@@ -61,13 +63,11 @@ class GridProvider:
 
     def _generate_equidistant_grid(self, num_points: np.int32) -> np.ndarray:
         num_points = np.full(shape=self.dim, fill_value=num_points)
-
         axes = [np.linspace(self.lower_bound, self.upper_bound, num_points[i]) for i in range(self.dim)]
-
         mesh = np.meshgrid(*axes, indexing='ij')
         return np.stack(mesh, axis=-1).reshape(-1, self.dim)
 
-    def _full_cheby_grid(self, level: np.int32):
+    def _full_cheby_grid(self, level: np.int32, remove_duplicates: bool = True) -> np.ndarray:
         grids = [self._uni_grid(np.int32(k)) for k in range(level + 1)]
 
         memo = {}
@@ -77,12 +77,9 @@ class GridProvider:
         for levels in valid_levels:
             mesh = np.ix_(*[grids[levels[i]] for i in range(self.dim)])
             grid_points.append(np.stack(np.meshgrid(*mesh, indexing='ij')).reshape(self.dim, -1).T)
-
         concat_grid = np.concatenate(grid_points, axis=0)
-
-        unique_grid = np.unique(concat_grid, axis=0)  # doesn't solve the problem with almost equal rows->another method
-
-        return self._remove_almost_identical_rows(unique_grid)
+        unique_grid = np.unique(concat_grid, axis=0)
+        return self._remove_duplicates(unique_grid) if remove_duplicates else unique_grid
 
     def _valid_combinations(self, d: np.int32, level: np.int32, memo: dict = None):
         if (d, level) in memo:
@@ -106,19 +103,17 @@ class GridProvider:
         return (-1) * np.cos(np.pi * (arr - 1) / (n - 1))
 
     @staticmethod
-    def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
+    def _remove_duplicates(arr: np.ndarray, tol: np.float32=np.float32(1e-8)):
         """
         Removes duplicate rows whenever they are closer than the tolerance
         :param arr:
         :param tol:
         :return:
         """
-
-        # TODO: This needs to be optimized! Or Chebyshev Grid provider needs to be changed such equal rows do not appear
-
-        unique_rows = [arr[0]]
-        for row in arr[1:]:
-            # Check if the row is almost identical to any of the unique rows
-            if not any(np.allclose(row, unique_row, atol=tol) for unique_row in unique_rows):
-                unique_rows.append(row)
-        return np.array(unique_rows)
+        if arr.size == 0:
+            return arr
+        diffs = np.sqrt(((arr[:, np.newaxis] - arr[np.newaxis, :]) ** 2).sum(axis=2))
+        close = diffs <= tol
+        not_dominated = ~np.any(np.triu(close, k=1), axis=0)
+        unique_rows = arr[not_dominated]
+        return unique_rows
