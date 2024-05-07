@@ -3,7 +3,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from typing import Callable, Union, List
 from scipy.sparse.linalg import lsmr
-from utils.utils import ell_2_error_estimate
+from utils.utils import l2_error
 
 
 def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
@@ -121,8 +121,8 @@ def evaluate_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_s
 
     f_hat = approximate_by_polynomial_with_least_squares(f, dimension, degree, grid, include_bias=include_bias)
 
-    return ell_2_error_estimate(f=f, f_hat=f_hat, d=dimension, no_samples=n_test_samples, lower_bound=lower_bound,
-                                upper_bound=upper_bound)
+    return l2_error(f=f, f_hat=f_hat, d=dimension, no_samples=n_test_samples, lower_bound=lower_bound,
+                    upper_bound=upper_bound)
 
 
 def evaluate_iterative_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_samples: np.int16,
@@ -152,5 +152,5 @@ def evaluate_iterative_least_squares(f: Callable, dimension: np.int8, degree: np
     f_hat = approximate_by_polynomial_with_least_squares_iterative(f, dimension, degree, grid,
                                                                    include_bias=include_bias)
 
-    return ell_2_error_estimate(f=f, f_hat=f_hat, d=dimension, no_samples=n_test_samples, lower_bound=lower_bound,
-                                upper_bound=upper_bound)
+    return l2_error(f=f, f_hat=f_hat, d=dimension, no_samples=n_test_samples, lower_bound=lower_bound,
+                    upper_bound=upper_bound)
