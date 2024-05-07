@@ -98,17 +98,27 @@ class GridProvider:
         return (-1) * np.cos(np.pi * (arr - 1) / (n - 1))
 
     @staticmethod
-    def _remove_duplicates(arr: np.ndarray, tol: np.float32=np.float32(1e-8)):
+    def _remove_duplicates(arr: np.ndarray, tol=1e-8):
         """
-        Removes duplicate rows whenever they are closer than the tolerance
-        :param arr:
-        :param tol:
-        :return:
+        Removes duplicate rows whenever they are closer than the tolerance using optimized NumPy operations
+        to ensure memory and compute efficiency.
+        :param arr: 2D NumPy array from which to remove nearly duplicate rows.
+        :param tol: Tolerance for determining "near-duplicate" rows.
+        :return: Array with near-duplicates removed.
         """
         if arr.size == 0:
             return arr
-        diffs = np.sqrt(((arr[:, np.newaxis] - arr[np.newaxis, :]) ** 2).sum(axis=2))
-        close = diffs <= tol
-        not_dominated = ~np.any(np.triu(close, k=1), axis=0)
-        unique_rows = arr[not_dominated]
+
+        # Initialize an empty array for unique rows with a size that will dynamically grow.
+        # We initialize with the first row of the input array to avoid handling an empty array.
+        unique_rows = arr[:1]
+
+        # Iterate over each row starting from the second row
+        for row in arr[1:]:
+            # Compute the Euclidean distance from the current row to all rows stored as unique
+            diffs = np.linalg.norm(unique_rows - row, axis=1)
+            # If no existing unique row is within the tolerance, append the new row to unique_rows
+            if not np.any(diffs <= tol):
+                unique_rows = np.vstack([unique_rows, row])
+
         return unique_rows

@@ -9,29 +9,23 @@ from utils import utils
 
 class TestGridProvider(unittest.TestCase):
 
-    def test_performance_of_duplicates(self):
-        provider = GridProvider(np.int8(4), np.float16(1), np.float16(-1))
+    def test_duplicate_removal(self):
+        provider = GridProvider(np.int8(4))
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=np.int8(4), remove_duplicates=False)
         print(f"{grid.shape}")
 
-        @utils.timeit
-        def _naive_implementation(arr):
-            for i in range(10):
-                grid_copy = utils._remove_almost_identical_rows(arr)
-            print(f"{grid_copy.shape}")
-            return None
-
-        @utils.timeit
-        def _numpy_implementation(arr):
-            for i in range(10):
-                grid_copy = provider._remove_duplicates(arr)
-            print(f"{grid_copy.shape}")
-            return None
-
-        print("Naive implementation.")
-        _naive_implementation(grid)
-        print("Pure numpy implementation")
-        _numpy_implementation(grid)
+        print("Naive Python implementation.")
+        new_grid = utils.test_function_time(utils._remove_almost_identical_rows, 10, grid)
+        print(f"{new_grid.shape}")
+        print("Numpy implementation - n^2 memory")
+        new_grid = utils.test_function_time(utils._remove_duplicates_squared_memory, 10, grid)
+        print(f"{new_grid.shape}")
+        print("Numpy implementation - linear memory")
+        new_grid = utils.test_function_time(utils._remove_duplicates_linear_memory_naive, 10, grid)
+        print(f"{new_grid.shape}")
+        print("Numpy implementation - optimised linear memory")
+        new_grid = utils.test_function_time(provider._remove_duplicates, 10, grid)
+        print(f"{new_grid.shape}")
 
     def test_provider_type_error(self):
         provider = GridProvider(np.int8(4))
