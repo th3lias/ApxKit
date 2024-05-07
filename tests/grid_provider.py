@@ -9,6 +9,30 @@ from utils import utils
 
 class TestGridProvider(unittest.TestCase):
 
+    def test_performance_of_duplicates(self):
+        provider = GridProvider(np.int8(4), np.float16(1), np.float16(-1))
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=np.int8(4), remove_duplicates=False)
+        print(f"{grid.shape}")
+
+        @utils.timeit
+        def _naive_implementation(arr):
+            for i in range(10):
+                grid_copy = utils._remove_almost_identical_rows(arr)
+            print(f"{grid_copy.shape}")
+            return None
+
+        @utils.timeit
+        def _numpy_implementation(arr):
+            for i in range(10):
+                grid_copy = provider._remove_duplicates(arr)
+            print(f"{grid_copy.shape}")
+            return None
+
+        print("Naive implementation.")
+        _naive_implementation(grid)
+        print("Pure numpy implementation")
+        _numpy_implementation(grid)
+
     def test_provider_type_error(self):
         provider = GridProvider(np.int8(4))
         with self.assertRaises(ValueError):

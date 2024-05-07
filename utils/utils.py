@@ -1,4 +1,5 @@
 from typing import Callable
+import time
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -97,3 +98,27 @@ def visualize_point_grid_3d(points: np.ndarray, alpha: np.float64) -> None:
 
     plt.grid(True)
     plt.show()
+
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        print(f"{method.__name__}, {args}, {kw}, {te-ts}")
+        return result
+    return timed
+
+
+def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
+    """
+    This method is only reference for testing purposes. It should not be used in production.
+    :param arr:
+    :param tol:
+    :return:
+    """
+    unique_rows = [arr[0]]
+    for row in arr[1:]:
+        if not any(np.allclose(row, unique_row, atol=tol) for unique_row in unique_rows):
+            unique_rows.append(row)
+    return np.array(unique_rows)
