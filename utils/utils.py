@@ -5,48 +5,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def ell_2_error_estimate(f: Callable, f_hat: Callable, d: np.int8, no_samples: np.int16,
-                         lower_bound: np.float64 = np.float64(-1.0),
-                         upper_bound: np.float64 = np.float64(1.0)) -> np.float64:
+def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     """
-    Calculates the ell_2 error estimate by sampling no_samples points in [lower_bound, upper_bound]^d and
+    Calculates the ell_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
     calculating the mean-squared absolute difference
     :param f: function that should be approximated
     :param f_hat: approximation of the function
-    :param d: dimension of the function
-    :param no_samples: number of samples
-    :param lower_bound: lower bound of the rectangle to sample from
-    :param upper_bound: upper bound of the rectangle to sample from
+    :param grid: grid where the approximation should be compared vs the original function
     :return: error estimate
     """
-    points = np.random.uniform(low=lower_bound, high=upper_bound, size=(no_samples, d))
 
-    y_hat = f_hat(points)
-    y = f(points)
+    y_hat = f_hat(grid)
+    y = f(grid)
 
     error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)))).squeeze()
 
     return error
 
 
-def max_abs_error(f: Callable, f_hat: Callable, d: np.int8, no_samples: np.int16,
-                  lower_bound: np.float64 = np.float64(-1.0),
-                  upper_bound: np.float64 = np.float64(1.0)) -> np.float64:
+def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     """
-        Calculates the estimated max absolute value distance by sampling no_samples points in
-        [lower_bound, upper_bound]^d and calculating the max absolute value difference at those points
+        Calculates the estimated max absolute value distance by comparing the true function and the approximation f_hat
+        on a test grid by calculating the mean-squared absolute difference
         :param f: function that should be approximated
         :param f_hat: approximation of the function
-        :param d: dimension of the function
-        :param no_samples: number of samples
-        :param lower_bound: lower bound of the rectangle to sample from
-        :param upper_bound: upper bound of the rectangle to sample from
+        :param grid: grid where the approximation should be compared vs the original function
         :return: error estimate
         """
 
-    points = np.random.uniform(low=lower_bound, high=upper_bound, size=(no_samples, d))
-    y_hat = f_hat(points)
-    y = f(points)
+    y_hat = f_hat(grid)
+    y = f(grid)
 
     error = np.max(np.abs(y_hat - y)).squeeze()
 
@@ -132,7 +120,7 @@ def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
     return np.array(unique_rows)
 
 
-def _remove_duplicates_squared_memory(arr: np.ndarray, tol: np.float32=np.float32(1e-8)):
+def _remove_duplicates_squared_memory(arr: np.ndarray, tol: np.float32 = np.float32(1e-8)):
     """
     This method is only reference for testing purposes. It should not be used in production.
     :param arr:
@@ -171,3 +159,43 @@ def _remove_duplicates_linear_memory_naive(arr: np.ndarray, tol: np.float32 = np
             unique_rows.append(row)
 
     return np.array(unique_rows)
+
+
+def plot_results(results: dict, scale_range: range, name: str) -> None:
+    """
+    Plot the results of the experiments
+    :param results: dictionary containing the results
+    :param scale_range: range of scales
+    :param name: name of the experiment
+    :return:
+    """
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+    scales = scale_range
+    smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scales]
+    least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scales]
+
+    smolyak_ell_2 = [results['smolyak'][scale]['ell_2'] for scale in scales]
+    least_squares_ell_2 = [results['least_squares'][scale]['ell_2'] for scale in scales]
+
+    axs[0].plot(scales, smolyak_max_diff, label='Smolyak')
+    axs[0].plot(scales, least_squares_max_diff, label='Least Squares')
+    axs[0].set_xticks(scale_range)
+    axs[0].set_title('Max (Abs) Error')
+    axs[0].set_xlabel('Scale')
+    axs[0].set_ylabel('Max Error')
+    axs[0].set_yscale('log')
+    axs[0].legend()
+
+    axs[1].plot(scales, smolyak_ell_2, label='Smolyak')
+    axs[1].plot(scales, least_squares_ell_2, label='Least Squares')
+    axs[1].set_xticks(scale_range)
+    axs[1].set_title('L2 Error')
+    axs[1].set_xlabel('Scale')
+    axs[1].set_ylabel('L2 Error')
+    axs[1].set_yscale('log')
+    axs[1].legend()
+
+    fig.suptitle(name)
+    plt.tight_layout()
+    plt.show()
