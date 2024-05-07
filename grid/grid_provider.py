@@ -26,6 +26,8 @@ class GridProvider:
         if isinstance(seed, np.int8) or isinstance(seed, int):
             self.seed = seed
             self.rng = np.random.default_rng(seed=seed)
+        else:
+            self.rng = np.random.default_rng(seed=None)
 
     def set_seed(self, seed: np.int8):
         self.seed = seed
@@ -34,12 +36,9 @@ class GridProvider:
     def generate(self, grid_type: GridType, scale: np.int32 = None) -> np.ndarray:
         """
         Generate a grid of given type.
-        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
-                            If GridType == EQUIDISTANT we sample per dimension, i.e. we have num_points**dim
-                            points. If GridType == RANDOM we aim to have the same number of points as in the regular
-                            grid and therefore sample the same num_points**dim number of points uniformly. If
-                            GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse
-                            grid.
+        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly. If GridType == RANDOM we aim to have the same number of points as in the regular
+        grid and therefore sample the same num_points**dim number of points uniformly. If
+        GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
         :return: np.ndarray representing the grid
         """
@@ -58,7 +57,7 @@ class GridProvider:
                 return self._generate_random_grid(num_points=scale)
 
     def _generate_random_grid(self, num_points: np.int32) -> np.ndarray:
-        return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points ** self.dim, self.dim))
+        return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
 
     def _generate_equidistant_grid(self, num_points: np.int32) -> np.ndarray:
         num_points = np.full(shape=self.dim, fill_value=num_points)
@@ -79,7 +78,11 @@ class GridProvider:
             mesh = np.ix_(*[grids[levels[i]] for i in range(self.dim)])
             grid_points.append(np.stack(np.meshgrid(*mesh, indexing='ij')).reshape(self.dim, -1).T)
 
-        return np.concatenate(grid_points, axis=0)
+        concat_grid = np.concatenate(grid_points, axis=0)
+
+        unique_grid = np.unique(concat_grid, axis=0)  # doesn't solve the problem with almost equal rows->another method
+
+        return self._remove_almost_identical_rows(unique_grid)
 
     def _valid_combinations(self, d: np.int32, level: np.int32, memo: dict = None):
         if (d, level) in memo:
@@ -101,3 +104,21 @@ class GridProvider:
     def _cheby_nodes(n: np.int8) -> np.ndarray:
         arr = np.arange(1, n + 1)
         return (-1) * np.cos(np.pi * (arr - 1) / (n - 1))
+
+    @staticmethod
+    def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
+        """
+        Removes duplicate rows whenever they are closer than the tolerance
+        :param arr:
+        :param tol:
+        :return:
+        """
+
+        # TODO: This needs to be optimized! Or Chebyshev Grid provider needs to be changed such equal rows do not appear
+
+        unique_rows = [arr[0]]
+        for row in arr[1:]:
+            # Check if the row is almost identical to any of the unique rows
+            if not any(np.allclose(row, unique_row, atol=tol) for unique_row in unique_rows):
+                unique_rows.append(row)
+        return np.array(unique_rows)

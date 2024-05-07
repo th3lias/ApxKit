@@ -10,7 +10,7 @@ class TestGridProvider(unittest.TestCase):
     def test_provider_type_error(self):
         provider = GridProvider(np.int8(4), np.float16(1), np.float16(0))
         with self.assertRaises(ValueError):
-            grid = provider.generate(grid_type='1')
+            provider.generate(grid_type='1')
 
 
 class VisualTests(unittest.TestCase):

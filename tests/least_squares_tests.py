@@ -6,6 +6,7 @@ from genz.genz_functions import get_genz_function, GenzFunctionType
 from least_squares.least_squares import approximate_by_polynomial_with_least_squares_iterative
 from least_squares.least_squares import approximate_by_polynomial_with_least_squares
 
+
 class LeastSquaresTests(unittest.TestCase):
 
     def test_parallel_oscillatory(self):
@@ -16,10 +17,10 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        c_2 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_2 = np.random.uniform(low=0, high=1, size=(dimension))
+        c_1 = np.random.uniform(low=0, high=1, size=dimension)
+        w_1 = np.random.uniform(low=0, high=1, size=dimension)
+        c_2 = np.random.uniform(low=0, high=1, size=dimension)
+        w_2 = np.random.uniform(low=0, high=1, size=dimension)
 
         f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=c_1, w=w_1, d=dimension)
         f_2 = get_genz_function(GenzFunctionType.OSCILLATORY, c=c_2, w=w_2, d=dimension)
@@ -56,10 +57,10 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        c_2 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_2 = np.random.uniform(low=0, high=1, size=(dimension))
+        c_1 = np.random.uniform(low=0, high=1, size=dimension)
+        w_1 = np.random.uniform(low=0, high=1, size=dimension)
+        c_2 = np.random.uniform(low=0, high=1, size=dimension)
+        w_2 = np.random.uniform(low=0, high=1, size=dimension)
 
         f_1 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=c_1, w=w_1, d=dimension)
         f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=c_2, w=w_2, d=dimension)
@@ -96,10 +97,10 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        c_2 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_2 = np.random.uniform(low=0, high=1, size=(dimension))
+        c_1 = np.random.uniform(low=0, high=1, size=dimension)
+        w_1 = np.random.uniform(low=0, high=1, size=dimension)
+        c_2 = np.random.uniform(low=0, high=1, size=dimension)
+        w_2 = np.random.uniform(low=0, high=1, size=dimension)
 
         f_1 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=c_1, w=w_1, d=dimension)
         f_2 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=c_2, w=w_2, d=dimension)
@@ -136,10 +137,10 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        c_2 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_2 = np.random.uniform(low=0, high=1, size=(dimension))
+        c_1 = np.random.uniform(low=0, high=1, size=dimension)
+        w_1 = np.random.uniform(low=0, high=1, size=dimension)
+        c_2 = np.random.uniform(low=0, high=1, size=dimension)
+        w_2 = np.random.uniform(low=0, high=1, size=dimension)
 
         f_1 = get_genz_function(GenzFunctionType.GAUSSIAN, c=c_1, w=w_1, d=dimension)
         f_2 = get_genz_function(GenzFunctionType.GAUSSIAN, c=c_2, w=w_2, d=dimension)
@@ -176,10 +177,10 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        c_2 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_2 = np.random.uniform(low=0, high=1, size=(dimension))
+        c_1 = np.random.uniform(low=0, high=1, size=dimension)
+        w_1 = np.random.uniform(low=0, high=1, size=dimension)
+        c_2 = np.random.uniform(low=0, high=1, size=dimension)
+        w_2 = np.random.uniform(low=0, high=1, size=dimension)
 
         f_1 = get_genz_function(GenzFunctionType.CONTINUOUS, c=c_1, w=w_1, d=dimension)
         f_2 = get_genz_function(GenzFunctionType.CONTINUOUS, c=c_2, w=w_2, d=dimension)
@@ -208,7 +209,7 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
-    def test_parallel_discontinous(self):
+    def test_parallel_discontinuous(self):
         degree = np.int8(3)
         dimension = np.int8(20)
         n_samples = 10000
@@ -216,10 +217,10 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_1 = np.random.uniform(low=0, high=1, size=(dimension))
-        c_2 = np.random.uniform(low=0, high=1, size=(dimension))
-        w_2 = np.random.uniform(low=0, high=1, size=(dimension))
+        c_1 = np.random.uniform(low=0, high=1, size=dimension)
+        w_1 = np.random.uniform(low=0, high=1, size=dimension)
+        c_2 = np.random.uniform(low=0, high=1, size=dimension)
+        w_2 = np.random.uniform(low=0, high=1, size=dimension)
 
         f_1 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=c_1, w=w_1, d=dimension)
         f_2 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=c_2, w=w_2, d=dimension)
@@ -256,8 +257,8 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c = np.random.uniform(low=0, high=1, size=(dimension))
-        w = np.random.uniform(low=0, high=1, size=(dimension))
+        c = np.random.uniform(low=0, high=1, size=dimension)
+        w = np.random.uniform(low=0, high=1, size=dimension)
 
         f = get_genz_function(GenzFunctionType.OSCILLATORY, c=c, w=w, d=dimension)
 
@@ -288,8 +289,8 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c = np.random.uniform(low=0, high=1, size=(dimension))
-        w = np.random.uniform(low=0, high=1, size=(dimension))
+        c = np.random.uniform(low=0, high=1, size=dimension)
+        w = np.random.uniform(low=0, high=1, size=dimension)
 
         f = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=c, w=w, d=dimension)
 
@@ -320,8 +321,8 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c = np.random.uniform(low=0, high=1, size=(dimension))
-        w = np.random.uniform(low=0, high=1, size=(dimension))
+        c = np.random.uniform(low=0, high=1, size=dimension)
+        w = np.random.uniform(low=0, high=1, size=dimension)
 
         f = get_genz_function(GenzFunctionType.CORNER_PEAK, c=c, w=w, d=dimension)
 
@@ -352,8 +353,8 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c = np.random.uniform(low=0, high=1, size=(dimension))
-        w = np.random.uniform(low=0, high=1, size=(dimension))
+        c = np.random.uniform(low=0, high=1, size=dimension)
+        w = np.random.uniform(low=0, high=1, size=dimension)
 
         f = get_genz_function(GenzFunctionType.GAUSSIAN, c=c, w=w, d=dimension)
 
@@ -384,8 +385,8 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c = np.random.uniform(low=0, high=1, size=(dimension))
-        w = np.random.uniform(low=0, high=1, size=(dimension))
+        c = np.random.uniform(low=0, high=1, size=dimension)
+        w = np.random.uniform(low=0, high=1, size=dimension)
 
         f = get_genz_function(GenzFunctionType.CONTINUOUS, c=c, w=w, d=dimension)
 
@@ -416,8 +417,8 @@ class LeastSquaresTests(unittest.TestCase):
 
         grid = np.random.uniform(low=0, high=1, size=(n_samples, dimension))
 
-        c = np.random.uniform(low=0, high=1, size=(dimension))
-        w = np.random.uniform(low=0, high=1, size=(dimension))
+        c = np.random.uniform(low=0, high=1, size=dimension)
+        w = np.random.uniform(low=0, high=1, size=dimension)
 
         f = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=c, w=w, d=dimension)
 
