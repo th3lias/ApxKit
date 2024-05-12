@@ -18,7 +18,6 @@ def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float
         error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)))).squeeze()
     else:
         error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)), axis=1)).squeeze()
-
     return error
 
 
