@@ -49,7 +49,7 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
     :param grid: data array containing the points where the function should be approximated
     :param include_bias: whether to include bias (equivalent to intercept) in the polynomial
     :param self_implemented: whether to use the self-implemented version as it is faster and only relies on numpy
-    :return: fitted function
+    :return: fitted function(s)
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
