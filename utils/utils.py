@@ -1,13 +1,59 @@
-from typing import Callable
+from typing import Callable, Union
 import time
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
+def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
+    """
+    Calculates the L_2 error estimate by comparing the true function values and the approximated function values by
+    calculating the mean-squared absolute difference
+    :param y: true function values
+    :param y_hat: approximated function values
+    :return: L_2 error estimate
+    """
+
+    if y_hat.ndim == 1:
+        error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)))).squeeze()
+    else:
+        error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)), axis=1)).squeeze()
+    return error
+
+
+def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
+    """
+    Calculates the estimated max absolute value distance by comparing the true function values and the approximated
+    function values by calculating the max absolute difference
+    :param y: true function values
+    :param y_hat: approximated function values
+    :return: error estimate
+    """
+    if y_hat.ndim == 1:
+        error = np.max(np.abs(y_hat - y)).squeeze()
+    else:
+        error = np.max(np.abs(y_hat - y), axis=1).squeeze()
+    return error
+
+
+def min_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
+    """
+    Calculates the estimated min absolute value distance by comparing the true function values and the approximated
+    function values by calculating the min absolute difference
+    :param y: true function values
+    :param y_hat: approximated function values
+    :return: error estimate
+    """
+    if y_hat.ndim == 1:
+        error = np.min(np.abs(y_hat - y)).squeeze()
+    else:
+        error = np.min(np.abs(y_hat - y), axis=1).squeeze()
+    return error
+
+
 def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     """
-    Calculates the ell_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
+    Calculates the L_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
     calculating the mean-squared absolute difference
     :param f: function that should be approximated
     :param f_hat: approximation of the function
@@ -18,9 +64,7 @@ def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     y_hat = f_hat(grid)
     y = f(grid)
 
-    error = np.sqrt(np.mean(np.square(np.abs(y - y_hat)))).squeeze()
-
-    return error
+    return l2_error_function_values(y=y, y_hat=y_hat)
 
 
 def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
@@ -36,9 +80,23 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     y_hat = f_hat(grid)
     y = f(grid)
 
-    error = np.max(np.abs(y_hat - y)).squeeze()
+    return max_error_function_values(y=y, y_hat=y_hat)
 
-    return error
+
+def min_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
+    """
+        Calculates the estimated min absolute value distance by comparing the true function and the approximation f_hat
+        on a test grid by calculating the mean-squared absolute difference
+        :param f: function that should be approximated
+        :param f_hat: approximation of the function
+        :param grid: grid where the approximation should be compared vs the original function
+        :return: error estimate
+        """
+
+    y_hat = f_hat(grid)
+    y = f(grid)
+
+    return min_error_function_values(y=y, y_hat=y_hat)
 
 
 def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
@@ -93,8 +151,9 @@ def timeit(method):
         ts = time.time()
         result = method(*args, **kw)
         te = time.time()
-        print(f"{method.__name__}, {args}, {kw}, {te-ts}")
+        print(f"{method.__name__}, {args}, {kw}, {te - ts}")
         return result
+
     return timed
 
 
