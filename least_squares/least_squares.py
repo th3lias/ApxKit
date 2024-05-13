@@ -83,8 +83,8 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
         def f_hat(x):
             pol = PolynomialFeatures(degree=degree, include_bias=include_bias)
             x_pol = pol.fit_transform(x)
-            pred = x_pol @coeff
-            if pred.ndim==2:
+            pred = x_pol @ coeff
+            if pred.ndim == 2:
                 return pred.T
             return pred
 
