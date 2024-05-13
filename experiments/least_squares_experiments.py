@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 
-from typing import Union, Callable, List
+from typing import Union
 
 from tqdm import tqdm
 
@@ -53,13 +53,13 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     function_names = list()
     y = np.empty(shape=(n_parallel * 6, n_test_samples), dtype=np.float64)
 
-    for i, type in enumerate(GenzFunctionType):
+    for i, fun_type in enumerate(GenzFunctionType):
         for j in range(n_parallel):
             index = i * 6 + j
-            f = get_genz_function(function_type=type, d=dim, c=c[index, :], w=w[index, :])
+            f = get_genz_function(function_type=fun_type, d=dim, c=c[index, :], w=w[index, :])
             functions.append(f)
             y[index, :] = f(test_grid)
-            function_names.append(type.name)
+            function_names.append(fun_type.name)
 
     f_hat = approximate_by_polynomial_with_least_squares(functions, degree=degree, include_bias=True,
                                                          self_implemented=True,
@@ -110,7 +110,8 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     else:
         data = pd.DataFrame()
 
-    data = data._append(results, ignore_index=True)
+    new_data = pd.DataFrame(results)
+    data = pd.concat([data, new_data], ignore_index=True)
     data.to_csv(path, sep=',', index=False)
 
 
@@ -153,6 +154,7 @@ def run_experiments():
                     lb=lb,
                     up=up,
                     path=None)
+
 
 if __name__ == '__main__':
     run_experiments()
