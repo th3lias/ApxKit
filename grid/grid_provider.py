@@ -13,10 +13,11 @@ class GridProvider:
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: np.int8, seed: np.int8 = None):
+    def __init__(self, dimension: np.int8, seed: np.int8 = None, lower_bound: np.float16 = -1.,
+                 upper_bound: np.float16 = 1.):
         self.dim = dimension
-        self.lower_bound = np.float16(-1.)
-        self.upper_bound = np.float16(1.)
+        self.lower_bound = lower_bound
+        self.upper_bound = upper_bound
 
         if isinstance(seed, np.int8) or isinstance(seed, int):
             self.seed = seed
@@ -72,9 +73,10 @@ class GridProvider:
         for levels in valid_levels:
             mesh = np.ix_(*[grids[levels[i]] for i in range(self.dim)])
             grid_points.append(np.stack(np.meshgrid(*mesh, indexing='ij')).reshape(self.dim, -1).T)
-        concat_grid = np.concatenate(grid_points, axis=0)
-        unique_grid = np.unique(concat_grid, axis=0)
-        return self._remove_duplicates(unique_grid) if remove_duplicates else unique_grid
+        grid = np.concatenate(grid_points, axis=0)
+        if remove_duplicates:
+            grid = self._remove_duplicates(grid)
+        return self._rescale(grid)
 
     def _valid_combinations(self, d: np.int32, level: np.int32, memo: dict = None):
         if (d, level) in memo:
@@ -108,6 +110,7 @@ class GridProvider:
         """
         if arr.size == 0:
             return arr
+        arr = np.unique(arr, axis=0)  # Remove exact duplicates
 
         # Initialize an empty array for unique rows with a size that will dynamically grow.
         # We initialize with the first row of the input array to avoid handling an empty array.
@@ -122,3 +125,9 @@ class GridProvider:
                 unique_rows = np.vstack([unique_rows, row])
 
         return unique_rows
+
+    def _rescale(self, grid: np.ndarray) -> np.ndarray:
+        if self.lower_bound == -1. and self.upper_bound == 1.:
+            return grid
+        grid = (grid + 1) / 2
+        return grid * (self.upper_bound - self.lower_bound) + self.lower_bound
