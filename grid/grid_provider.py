@@ -13,8 +13,8 @@ class GridProvider:
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: np.int8, seed: np.int8 = None, lower_bound: np.float16 = -1.,
-                 upper_bound: np.float16 = 1.):
+    def __init__(self, dimension: np.int8, seed: np.int8 = None, lower_bound: np.float16 = np.float16(-1.),
+                 upper_bound: np.float16 = np.float16(1.)):
         self.dim = dimension
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
