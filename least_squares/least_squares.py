@@ -3,7 +3,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from typing import Callable, Union, List
 from scipy.sparse.linalg import lsmr
-from utils.utils import l2_error
 
 
 def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
@@ -98,63 +97,3 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
             return model.predict(x_pol)
 
     return f_hat
-
-
-def evaluate_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_samples: np.int16,
-                           n_test_samples: np.int16, include_bias: bool,
-                           lower_bound: np.float64 = np.float64(-1.0),
-                           upper_bound: np.float64 = np.float64(1.0),
-                           seed: np.int16 = np.int16(42)) -> np.float64:
-    """
-    Assess the performance of Least-Squares by approximating a function f with a certain with a polynomial of at most a
-    certain degree in a given interval. Returns the ell_2 error estimate
-    :param f: function that needs to be approximated
-    :param dimension: dimension of the data
-    :param degree: maximum allowed degree of the polynomials
-    :param n_samples: number of samples for which the algorithm tries to optimize
-    :param n_test_samples: number of test samples used to compare the resulting approximation with the original function
-    :param include_bias: whether to include bias (equivalent to intercept) in the polynomial
-    :param lower_bound: lower bound of the interval where the function should be approximated
-    :param upper_bound: upper bound of the interval where the function should be approximated
-    :param seed: seed for reproducibility
-    :return: the approximated function
-    """
-    np.random.seed(seed)
-
-    grid = np.random.uniform(low=lower_bound, high=upper_bound, size=(n_samples, dimension))
-
-    f_hat = approximate_by_polynomial_with_least_squares(f, dimension, degree, grid, include_bias=include_bias)
-
-    return l2_error(f=f, f_hat=f_hat, d=dimension, no_samples=n_test_samples, lower_bound=lower_bound,
-                    upper_bound=upper_bound)
-
-
-def evaluate_iterative_least_squares(f: Callable, dimension: np.int8, degree: np.int8, n_samples: np.int16,
-                                     n_test_samples: np.int16, include_bias: bool,
-                                     lower_bound: np.float64 = np.float64(-1.0),
-                                     upper_bound: np.float64 = np.float64(1.0),
-                                     seed: np.int16 = np.int16(42)) -> np.float64:
-    """
-        Assess the performance of iterative Least-Squares by approximating a function f with a polynomial of at most a
-        certain degree in a given interval. Returns the ell_2 error estimate
-        :param f: function that needs to be approximated
-        :param dimension: dimension of the data
-        :param degree: maximum allowed degree of the polynomials
-        :param n_samples: number of samples for which the algorithm tries to optimize
-        :param n_test_samples: number of test samples which are used to compare approximation and function
-        :param include_bias: whether to include bias (equivalent to intercept) in the polynomial
-        :param lower_bound: lower bound of the interval where the function should be approximated
-        :param upper_bound: upper bound of the interval where the function should be approximated
-        :param seed: seed for reproducibility
-        :return: the approximated function
-        """
-
-    np.random.seed(seed)
-
-    grid = np.random.uniform(low=lower_bound, high=upper_bound, size=(n_samples, dimension))
-
-    f_hat = approximate_by_polynomial_with_least_squares_iterative(f, dimension, degree, grid,
-                                                                   include_bias=include_bias)
-
-    return l2_error(f=f, f_hat=f_hat, d=dimension, no_samples=n_test_samples, lower_bound=lower_bound,
-                    upper_bound=upper_bound)
