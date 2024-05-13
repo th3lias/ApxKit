@@ -64,14 +64,12 @@ class VisualTests(unittest.TestCase):
         provider = GridProvider(np.int8(2), seed=np.int8(42))
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=np.int8(5))
         utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
-        return True
 
     @staticmethod
     def test_chebyshev_2d_custom_range():
         provider = GridProvider(np.int8(2), seed=np.int8(42),  lower_bound=np.float16(1.), upper_bound=np.float16(4.))
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=np.int8(5))
         utils.visualize_point_grid_2d(grid, alpha=np.int8(1))
-        return True
 
     @staticmethod
     def test_chebyshev_3d():
