@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 from least_squares.least_squares import approximate_by_polynomial_with_least_squares
 from utils.utils import max_error_function_values, min_error_function_values, l2_error_function_values
+from utils.utils import plot_errors, plot_average_errors
 
 from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid_provider import GridType, GridProvider
@@ -21,8 +22,7 @@ import datetime
 
 def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, c: np.ndarray, n_parallel: np.int8,
                                   n_samples: np.int32, test_grid_seed: np.int8, n_test_samples: np.int16,
-                                  lb: np.float16, ub: np.float16,
-                                  path: Union[str, None] = None):
+                                  lb: np.float16, ub: np.float16, path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
@@ -34,7 +34,7 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     :param test_grid_seed: seed used to generate test grid
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
-    :param up: upper bound of the interval
+    :param ub: upper bound of the interval
     :param path: path of the results file. If None, the default path is used
     """
     start_time = time.time()
@@ -42,7 +42,8 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     np.random.seed(test_grid_seed)
 
     grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_samples)
-    test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_test_samples)
+    test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
+                                                                                     scale=n_test_samples)
 
     functions = list()
     function_names = list()
@@ -107,6 +108,9 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
 
     new_data = pd.DataFrame(results)
     data = pd.concat([data, new_data], ignore_index=True)
+
+    data['sum_c'] = data['sum_c'].apply(lambda x: round(x, 3))
+
     data.to_csv(path, sep=',', index=False)
 
 
@@ -116,7 +120,7 @@ def run_experiments():
     """
     n_functions_per_type_parallel = np.int8(10)
     lb = np.float16(0.0)
-    up = np.float16(1.0)
+    ub = np.float16(1.0)
     test_grid_seed = np.int8(42)
     n_test_samples = np.int8(50)
 
@@ -125,11 +129,12 @@ def run_experiments():
     sum_c = [np.float16(9.0), np.float16(7.25), np.float16(1.85), np.float16(7.03), np.float16(20.4), np.float16(4.3)]
 
     for dim in tqdm(range(10, 31), desc="Dimension"):
+
+        w = np.random.uniform(low=lb, high=ub, size=(np.int8(6) * n_functions_per_type_parallel, dim))
+        c = np.random.uniform(low=lb, high=ub, size=(np.int8(6) * n_functions_per_type_parallel, dim))
+
         for degree in tqdm(range(1, 4), desc="Degree", leave=False):
             for n_samples in tqdm(n_samples_list, desc="No_Samples", leave=False, dynamic_ncols=False):
-
-                w = np.random.uniform(low=lb, high=up, size=(np.int8(6) * n_functions_per_type_parallel, dim))
-                c = np.random.uniform(low=lb, high=up, size=(np.int8(6) * n_functions_per_type_parallel, dim))
 
                 for i in range(6):
                     cur_slice = c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :]
@@ -147,9 +152,10 @@ def run_experiments():
                     test_grid_seed=test_grid_seed,
                     n_test_samples=n_test_samples,
                     lb=lb,
-                    up=up,
+                    ub=ub,
                     path=None)
 
 
 if __name__ == '__main__':
-    run_experiments()
+    # run_experiments()
+    plot_average_errors(20, 3, GenzFunctionType.PRODUCT_PEAK)
