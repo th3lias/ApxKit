@@ -21,7 +21,7 @@ import datetime
 
 def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, c: np.ndarray, n_parallel: np.int8,
                                   n_samples: np.int32, test_grid_seed: np.int8, n_test_samples: np.int16,
-                                  lb: np.float16, up: np.float16,
+                                  lb: np.float16, ub: np.float16,
                                   path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
@@ -41,13 +41,8 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
 
     np.random.seed(test_grid_seed)
 
-    grid = np.random.uniform(low=lb, high=up, size=(n_samples, dim))
-    test_grid = np.random.uniform(low=lb, high=up, size=(n_test_samples, dim))
-
-    # the following can be used as soon the Grids also support variable intervals
-
-    # grid = GridProvider(dimension=dim).generate(GridType.RANDOM, scale=n_samples)
-    # test_grid = GridProvider(dimension=dim, seed=test_grid_seed).generate(GridType.RANDOM, scale=n_test_samples)
+    grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_samples)
+    test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_test_samples)
 
     functions = list()
     function_names = list()
