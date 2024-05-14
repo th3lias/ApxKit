@@ -234,55 +234,50 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     """
     fig, axs = plt.subplots(1, 3, figsize=(18, 6))
 
-    scales = scale_range
+    smolyak_min_diff = [results['smolyak'][scale]['min_diff'] for scale in scale_range]
+    least_squares_min_diff = [results['least_squares'][scale]['min_diff'] for scale in scale_range]
 
-    smolyak_min_diff = [results['smolyak'][scale]['min_diff'] for scale in scales]
-    least_squares_min_diff = [results['least_squares'][scale]['min_diff'] for scale in scales]
+    smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scale_range]
+    least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scale_range]
 
-    smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scales]
-    least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scales]
+    smolyak_ell_2 = [results['smolyak'][scale]['ell_2'] for scale in scale_range]
+    least_squares_ell_2 = [results['least_squares'][scale]['ell_2'] for scale in scale_range]
 
-    smolyak_ell_2 = [results['smolyak'][scale]['ell_2'] for scale in scales]
-    least_squares_ell_2 = [results['least_squares'][scale]['ell_2'] for scale in scales]
-
-    axs[0].plot(scales, smolyak_max_diff, label='Smolyak')
-    axs[0].plot(scales, least_squares_max_diff, label='Least Squares')
+    axs[0].plot(scale_range, smolyak_max_diff, label='Smolyak')
+    axs[0].plot(scale_range, least_squares_max_diff, label='Least Squares')
     axs[0].set_xticks(scale_range)
     axs[0].set_title('Max (Abs) Error')
-    axs[0].set_xlabel('Scale') # TODO: Change maybe
+    axs[0].set_xlabel('Scale')  # TODO: Change maybe
     axs[0].set_ylabel('Max Error')
     axs[0].set_yscale('log')
     axs[0].legend()
 
-    axs[1].plot(scales, smolyak_min_diff, label='Smolyak')
-    axs[1].plot(scales, least_squares_min_diff, label='Least Squares')
+    axs[1].plot(scale_range, smolyak_min_diff, label='Smolyak')
+    axs[1].plot(scale_range, least_squares_min_diff, label='Least Squares')
     axs[1].set_xticks(scale_range)
     axs[1].set_title('Min (Abs) Error')
-    axs[1].set_xlabel('Scale') # TODO: Change maybe
+    axs[1].set_xlabel('Scale')  # TODO: Change maybe
     axs[1].set_ylabel('Min Error')
     axs[1].set_yscale('log')
     axs[1].legend()
 
-    axs[1].plot(scales, smolyak_ell_2, label='Smolyak')
-    axs[1].plot(scales, least_squares_ell_2, label='Least Squares')
-    axs[1].set_xticks(scale_range)
-    axs[1].set_title('L2 Error')
-    axs[1].set_xlabel('Scale') # TODO: Change maybe
-    axs[1].set_ylabel('L2 Error')
-    axs[1].set_yscale('log')
-    axs[1].legend()
+    axs[2].plot(scale_range, smolyak_ell_2, label='Smolyak')
+    axs[2].plot(scale_range, least_squares_ell_2, label='Least Squares')
+    axs[2].set_xticks(scale_range)
+    axs[2].set_title('L2 Error')
+    axs[2].set_xlabel('Scale')  # TODO: Change maybe
+    axs[2].set_ylabel('L2 Error')
+    axs[2].set_yscale('log')
+    axs[2].legend()
 
     fig.suptitle(name)
     plt.tight_layout()
     plt.show()
 
 
-
-def plot_from_result_file_ls(dim:np.int8, degree:np.int8, fun_type:GenzFunctionType, path:Union[str, None]=None):
-
+def plot_from_result_file_ls(dim: np.int8, degree: np.int8, fun_type: GenzFunctionType, path: Union[str, None] = None):
     if path is None:
         path = os.path.join("..", "results", "results_least_squares.csv")
-
 
     data = pd.read_csv(path, sep=',', header=0)
 
@@ -296,8 +291,6 @@ def plot_from_result_file_ls(dim:np.int8, degree:np.int8, fun_type:GenzFunctionT
     l_2_error_min_error = data_c['l_2_error_min_error']
     max_error = data_c['max_error']
     needed_time = data_c['needed_time']
-
-
 
 
 def plot_data(df):
@@ -340,7 +333,8 @@ def plot_data(df):
     return fig, axs
 
 
-def plot_errors(dimension, degree, function_type:GenzFunctionType, errors=['l_2_error','min_error','max_error'], path:Union[str, None]=None):
+def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
+                path: Union[str, None] = None):
     """
     Plots errors vs. number of samples for a given dimension and function_name, grouped by 'c'.
 
@@ -351,61 +345,92 @@ def plot_errors(dimension, degree, function_type:GenzFunctionType, errors=['l_2_
     - errors: List of errors to plot (default: ['error1', 'error2', 'error3'])
     """
 
-    if path is None:
-        path = os.path.join("..", "results", "[original]results_least_squares.csv") # TODO: Change
+    # TODO: [Jakob] Rework Docstring
 
+    if path is None:
+        path = os.path.join("..", "results", "results_numerical_experiments.csv")
 
     data = pd.read_csv(path, sep=',', header=0)
 
     # Filter data based on dimension and function_name
-    filtered_data = data[(data['dim'] == dimension) & (data['degree'] == degree) & (data['f_name'] == function_type.name)]
 
-    # Group by 'c' parameter and plot
-    grouped_data = filtered_data.groupby('c')
+    filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
 
-    for name, group in grouped_data:
-        plt.figure(figsize=(10, 6))
-        for error in errors:
-            plt.plot(group['n_samples'], group[error], label=f"{error} (c={name})")
-        plt.xlabel('Number of Samples')
-        plt.ylabel('Error')
-        plt.title(f'Errors vs. Number of Samples (dimension={dimension}, function={function_type.name}, c={name})')
-        plt.legend()
-        plt.show()
+    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'],
+                       axis=1, inplace=True)
 
+    degrees = filtered_data['degree'].unique()
 
-def plot_average_errors(dimension, degree, function_type:GenzFunctionType, errors=['l_2_error','min_error','max_error'],path:Union[str, None]=None):
-    """
-    Plots average errors vs. number of samples for a given dimension and function_name.
+    smolyak_data = filtered_data[(filtered_data['degree']) == 0]
 
-    Parameters:
-    - data: DataFrame containing the dataset
-    - dimension: The dimension to filter on
-    - function_name: The function name to filter on
-    - errors: List of errors to plot (default: ['error1', 'error2', 'error3'])
-    """
+    least_squares_data = filtered_data[(filtered_data['degree']) != 0]
 
-    if path is None:
-        path = os.path.join("..", "results", "[original]results_least_squares.csv") # TODO: Change
+    smolyak_data = smolyak_data.sort_values(by='scale')
+    least_squares_data = least_squares_data.sort_values(by='scale')
 
+    fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18,6))
 
-    data = pd.read_csv(path, sep=',', header=0)
+    titles = ['Min (Abs) Error', 'Max (Abs) Error', 'L2 Error']
 
-    # Filter data based on dimension and function_name
-    filtered_data = data[(data['dim'] == dimension) & (data['degree'] == degree) & (data['f_name'] == function_type.name)]
+    errors = ['l_2_error', 'min_error', 'max_error']
 
-    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'w', 'c', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,inplace=True)
+    for name, group in smolyak_data.groupby('c'):
+        for i, error in enumerate(errors):
+            for degree in degrees:
+                if degree == 0:  # TODO: [Jakob] Make it more beautiful
+                    label = 'Smolyak'
+                    axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+                else:
+                    label = f'LS degr. {degree}'
+                    ls_filtered = least_squares_data[least_squares_data['c'] == name]
+                    ls_filtered = ls_filtered[least_squares_data['degree']==degree]
+                    axs[i].plot(scales, ls_filtered[error], label=label)
+            axs[i].set_xticks(scales)
+            axs[i].set_title(titles[i])
+            axs[i].set_xlabel('Scale/no points')
+            axs[i].set_ylabel('Error')
+            axs[i].set_yscale('log')
+            axs[i].legend()
 
-    # Group by n_samples and calculate mean of errors
-    mean_data = filtered_data.groupby('n_samples').mean().reset_index()
-
-    plt.figure(figsize=(10, 6))
-    for error in errors:
-        plt.plot(mean_data['n_samples'], mean_data[error], label=error)
-
-    plt.yscale('log')
-    plt.xlabel('Number of Samples')
-    plt.ylabel('Average Error')
-    plt.title(f'Average Errors vs. Number of Samples (dimension={dimension}, function={function_type.name})')
-    plt.legend()
+    fig.suptitle(function_type.name)  # TODO [Jakob] additionally include c,w, dimension
+    plt.tight_layout()
     plt.show()
+
+
+# def plot_average_errors(dimension, degree, function_type: GenzFunctionType,
+#                         errors=['l_2_error', 'min_error', 'max_error'], path: Union[str, None] = None):
+#     """
+#     Plots average errors vs. number of samples for a given dimension and function_name.
+#
+#     Parameters:
+#     - data: DataFrame containing the dataset
+#     - dimension: The dimension to filter on
+#     - function_name: The function name to filter on
+#     - errors: List of errors to plot (default: ['error1', 'error2', 'error3'])
+#     """
+#
+#     if path is None:
+#         path = os.path.join("..", "results", "results_numerical_experiments.csv")
+#
+#     data = pd.read_csv(path, sep=',', header=0)
+#
+#     # Filter data based on dimension and function_name
+#     filtered_data = data[
+#         (data['dim'] == dimension) & (data['degree'] == degree) & (data['f_name'] == function_type.name)]
+#
+#     filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'w', 'c', 'sum_c', 'f_name', 'test_grid_seed'],
+#                        axis=1, inplace=True)
+#
+#     # Group by n_samples and calculate mean of errors
+#     mean_data = filtered_data.groupby('n_samples').mean().reset_index()
+#
+#     plt.figure(figsize=(10, 6))
+#     for error in errors:
+#         plt.plot(mean_data['n_samples'], mean_data[error], label=error)
+#
+#     plt.yscale('log')
+#     plt.xlabel('Number of Samples')
+#     plt.ylabel('Average Error')
+#     plt.title(f'Average Errors vs. Number of Samples (dimension={dimension}, function={function_type.name})')
+#     plt.legend()
+#     plt.show()
