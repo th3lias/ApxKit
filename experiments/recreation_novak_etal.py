@@ -1,7 +1,7 @@
 import numpy as np
 
 from utils import utils
-from utils.utils import l2_error, max_abs_error
+from utils.utils import l2_error, max_abs_error, min_abs_error
 
 from typing import Callable
 
@@ -45,7 +45,7 @@ def test_params_novak(fun_type: GenzFunctionType, scale: np.int8, sum_c: np.floa
     print('Smolyak:')
     print(f'max_abs_error = {max_abs_error(f, f_hat_smolyak, grid=grid)}')
     print(f'L2_error = {l2_error(f, f_hat_smolyak, grid=grid)}')
-    print('_'*100)
+    print('_' * 100)
 
 
 def plots_novak(f: Callable, name: str, grid: np.ndarray, degree_ls: np.int8, scales: range):
@@ -72,15 +72,17 @@ def plots_novak(f: Callable, name: str, grid: np.ndarray, degree_ls: np.int8, sc
 
         max_abs_ls = max_abs_error(f, f_hat_ls, grid=grid)
         max_abs_smolyak = max_abs_error(f, f_hat_smolyak, grid=grid)
+        min_abs_ls = min_abs_error(f, f_hat_ls, grid=grid)
+        min_abs_smolyak = min_abs_error(f, f_hat_smolyak, grid=grid)
         ell_2_ls = l2_error(f, f_hat_ls, grid=grid)
         ell_2_smolyak = l2_error(f, f_hat_smolyak, grid=grid)
 
-        results['smolyak'][scale] = {'max_diff': max_abs_smolyak, 'ell_2': ell_2_smolyak}
-        results['least_squares'][scale] = {'max_diff': max_abs_ls, 'ell_2': ell_2_ls}
+        results['smolyak'][scale] = {'max_diff': max_abs_smolyak, 'ell_2': ell_2_smolyak, 'min_diff': min_abs_smolyak}
+        results['least_squares'][scale] = {'max_diff': max_abs_ls, 'ell_2': ell_2_ls, 'min_diff': min_abs_ls}
 
         print(f'Done with scale {scale} for {name}')
 
-    utils.plot_results(results, scales, name)
+    utils.plot_error_vs_scale(results, scales, name)
 
 
 if __name__ == '__main__':
@@ -93,7 +95,7 @@ if __name__ == '__main__':
 
     # Tests for finding parameter c
 
-    print('_'*100)
+    print('_' * 100)
 
     # test_parameters_like_in_2000_paper(GenzFunctionType.OSCILLATORY, np.int8(1), sum_c=np.float16(9.0), test_grid)
     # test_parameters_like_in_2000_paper(GenzFunctionType.PRODUCT_PEAK, np.int8(1), np.float16(7.25), test_grid)
