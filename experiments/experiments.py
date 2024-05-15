@@ -239,9 +239,9 @@ def run_experiments():
     test_grid_seed = np.int8(42)
     n_test_samples = np.int8(50)
 
-    scale_range = range(1,5) # TODO: [Jakob] Change back
+    scale_range = range(1,5)
     dim_range = range(10, 31)
-    degree_range = range(0, 4)  # degree 0 means Smolyak
+    degree_range = range(0, 10)  # degree 0 means Smolyak
 
     n_iterations = len(scale_range) * len(dim_range) * len(degree_range)
 

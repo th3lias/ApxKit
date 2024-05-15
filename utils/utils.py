@@ -232,6 +232,7 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     :param name: name of the experiment
     :return:
     """
+    # TODO: [Jakob] Maybe remove
     fig, axs = plt.subplots(1, 3, figsize=(18, 6))
 
     smolyak_min_diff = [results['smolyak'][scale]['min_diff'] for scale in scale_range]
@@ -274,65 +275,6 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     plt.tight_layout()
     plt.show()
 
-
-def plot_from_result_file_ls(dim: np.int8, degree: np.int8, fun_type: GenzFunctionType, path: Union[str, None] = None):
-    if path is None:
-        path = os.path.join("..", "results", "results_least_squares.csv")
-
-    data = pd.read_csv(path, sep=',', header=0)
-
-    data = data[data['f_name'] == fun_type.name]
-    data = data[data['dim'] == dim]
-    data = data[data['degree'] == degree]
-
-    data_c = data.groupby('c')
-
-    n_samples = data_c['n_samples']
-    l_2_error_min_error = data_c['l_2_error_min_error']
-    max_error = data_c['max_error']
-    needed_time = data_c['needed_time']
-
-
-def plot_data(df):
-    # Extract the relevant columns from the dataframe
-    dim = df['dim']
-    degree = df['degree']
-    w = df['w']
-    c = df['c']
-    sum_c = df['sum_c']
-    n_samples = df['n_samples']
-    test_grid_seed = df['test_grid_seed']
-    n_test_samples = df['n_test_samples']
-    f_name = df['f_name']
-    l_2_error_min_error = df['l_2_error_min_error']
-    max_error = df['max_error']
-    needed_time = df['needed_time']
-
-    # Create a subplot with 3 rows and 1 column
-    fig, axs = plt.subplots(nrows=3, ncols=1)
-
-    # Plot the l_2 error as a function of the degree on the first row
-    axs[0].plot(degree, l_2_error_min_error)
-    axs[0].set_title('L_2 Error vs. Degree')
-    axs[0].set_xlabel('Degree')
-    axs[0].set_ylabel('L_2 Error')
-
-    # Plot the max error as a function of the dimension on the second row
-    axs[1].plot(dim, max_error)
-    axs[1].set_title('Max Error vs. Dimension')
-    axs[1].set_xlabel('Dimension')
-    axs[1].set_ylabel('Max Error')
-
-    # Plot the needed time as a function of the number of samples on the third row
-    axs[2].plot(n_samples, needed_time)
-    axs[2].set_title('Needed Time vs. Number of Samples')
-    axs[2].set_xlabel('Number of Samples')
-    axs[2].set_ylabel('Needed Time (s)')
-
-    # Return the figure and axis handles
-    return fig, axs
-
-
 def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                 path: Union[str, None] = None):
     """
@@ -368,13 +310,12 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
     smolyak_data = smolyak_data.sort_values(by='scale')
     least_squares_data = least_squares_data.sort_values(by='scale')
 
-    fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18,6))
-
     titles = ['Min (Abs) Error', 'Max (Abs) Error', 'L2 Error']
 
     errors = ['l_2_error', 'min_error', 'max_error']
 
     for name, group in smolyak_data.groupby('c'):
+        fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
         for i, error in enumerate(errors):
             for degree in degrees:
                 if degree == 0:  # TODO: [Jakob] Make it more beautiful
@@ -384,7 +325,8 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                     label = f'LS degr. {degree}'
                     ls_filtered = least_squares_data[least_squares_data['c'] == name]
                     ls_filtered = ls_filtered[least_squares_data['degree']==degree]
-                    axs[i].plot(scales, ls_filtered[error], label=label)
+                    if not ls_filtered.empty and len(ls_filtered) == len(scales):
+                        axs[i].plot(scales, ls_filtered[error], label=label)
             axs[i].set_xticks(scales)
             axs[i].set_title(titles[i])
             axs[i].set_xlabel('Scale/no points')
@@ -392,45 +334,6 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
             axs[i].set_yscale('log')
             axs[i].legend()
 
-    fig.suptitle(function_type.name)  # TODO [Jakob] additionally include c,w, dimension
-    plt.tight_layout()
-    plt.show()
-
-
-# def plot_average_errors(dimension, degree, function_type: GenzFunctionType,
-#                         errors=['l_2_error', 'min_error', 'max_error'], path: Union[str, None] = None):
-#     """
-#     Plots average errors vs. number of samples for a given dimension and function_name.
-#
-#     Parameters:
-#     - data: DataFrame containing the dataset
-#     - dimension: The dimension to filter on
-#     - function_name: The function name to filter on
-#     - errors: List of errors to plot (default: ['error1', 'error2', 'error3'])
-#     """
-#
-#     if path is None:
-#         path = os.path.join("..", "results", "results_numerical_experiments.csv")
-#
-#     data = pd.read_csv(path, sep=',', header=0)
-#
-#     # Filter data based on dimension and function_name
-#     filtered_data = data[
-#         (data['dim'] == dimension) & (data['degree'] == degree) & (data['f_name'] == function_type.name)]
-#
-#     filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'w', 'c', 'sum_c', 'f_name', 'test_grid_seed'],
-#                        axis=1, inplace=True)
-#
-#     # Group by n_samples and calculate mean of errors
-#     mean_data = filtered_data.groupby('n_samples').mean().reset_index()
-#
-#     plt.figure(figsize=(10, 6))
-#     for error in errors:
-#         plt.plot(mean_data['n_samples'], mean_data[error], label=error)
-#
-#     plt.yscale('log')
-#     plt.xlabel('Number of Samples')
-#     plt.ylabel('Average Error')
-#     plt.title(f'Average Errors vs. Number of Samples (dimension={dimension}, function={function_type.name})')
-#     plt.legend()
-#     plt.show()
+        fig.suptitle(f'{function_type.name}, c={name}')  # TODO [Jakob] additionally include c,w, dimension
+        plt.tight_layout()
+        plt.show()
