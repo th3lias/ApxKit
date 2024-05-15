@@ -20,10 +20,13 @@ import platform
 
 import datetime
 
-def get_no_samples(dim:np.int8, scale:np.int8):
+
+def get_no_samples(dim: np.int8, scale: np.int8):
+    # only holds for dim=10
     n_samples_list = [21, 221, 1581, 8801, 41265, 171425, 652065]  # TODO: [Jakob] Make valid function here
 
-    return np.int32(n_samples_list[scale-1])
+    return np.int32(n_samples_list[scale - 1])
+
 
 def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
                             scale: np.int8, test_grid_seed: np.int8, n_test_samples: np.int16,
@@ -31,11 +34,9 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
-    :param degree: maximum degree that least-squares approximation has (sum of all exponents)
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
-    :param n_parallel: number of parallel functions per type
-    :param n_samples: number of samples used to fit the least-squares model
+    :param scale: related to the number of samples used to fit the smolyak model
     :param test_grid_seed: seed used to generate test grid
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
@@ -43,14 +44,12 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
     :param path: path of the results file. If None, the default path is used
     """
 
-    # TODO: [Jakob] Adapt docstring
-
     np.random.seed(test_grid_seed)
 
     test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
                                                                                      scale=n_test_samples)
 
-    n_function_types = np.int16(6)
+    n_function_types = np.int16(len(GenzFunctionType))
 
     n_samples = get_no_samples(dim, scale)
 
@@ -66,7 +65,7 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
     for i, fun_type in enumerate(GenzFunctionType):
         start_time = time.time()
         f = get_genz_function(function_type=fun_type, d=dim, c=c[i], w=w[i])
-        y= f(test_grid)
+        y = f(test_grid)
         function_names.append(fun_type.name)
         f_hat = si.approximate(f)
         y_hat = f_hat(test_grid)
@@ -85,7 +84,7 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
 
     results = list()
 
-    for i in range(n_function_types): # TODO: [Jakob] Remove n_function_type as a parameter but use len(GenzFunctionType) instead
+    for i in range(n_function_types):
         row_entry = dict()
         row_entry['dim'] = dim
         row_entry['degree'] = 0
@@ -134,15 +133,13 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param n_parallel: number of parallel functions per type
-    :param n_samples: number of samples used to fit the least-squares model
+    :param scale: related to the number of samples used to fit the least-squares model
     :param test_grid_seed: seed used to generate test grid
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
     :param path: path of the results file. If None, the default path is used
     """
-
-    # TODO: [Jakob] Adapt docstring
 
     start_time = time.time()
 
@@ -239,7 +236,7 @@ def run_experiments():
     test_grid_seed = np.int8(42)
     n_test_samples = np.int8(50)
 
-    scale_range = range(1,8)
+    scale_range = range(1, 8)
     dim_range = range(10, 31)
     degree_range = range(1, 4)  # degree 0 means Smolyak
 
@@ -297,11 +294,9 @@ def run_experiments():
 
                 pbar.update(1)
 
-
     pbar.close()
 
 
 if __name__ == '__main__':
     # run_experiments()
-    plot_errors(10, GenzFunctionType.GAUSSIAN, range(1,7))
-
+    plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 8))

@@ -330,7 +330,9 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                         ls_filtered = least_squares_data[least_squares_data['c'] == name]
                         ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
                         if not ls_filtered.empty:
-                            axs[i].plot(scales, ls_filtered[error][start:end+1], label=label)
+                            x = scales
+                            y = ls_filtered[error][start - 1:end]
+                            axs[i].plot(x, y, label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
@@ -350,7 +352,9 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                     ls_filtered = least_squares_data[least_squares_data['c'] == name]
                     ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
                     if not ls_filtered.empty:
-                        axs[i].plot(scales, ls_filtered[error][start:end+1], label=label)
+                        x = scales
+                        y = ls_filtered[error][start-1:end]
+                        axs[i].plot(x, y, label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
