@@ -23,7 +23,7 @@ import datetime
 def get_no_samples(dim:np.int8, scale:np.int8):
     n_samples_list = [21, 221, 1581, 8801, 41265, 171425, 652065]  # TODO: [Jakob] Make valid function here
 
-    return np.int32(n_samples_list[scale])
+    return np.int32(n_samples_list[scale-1])
 
 def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
                             scale: np.int8, test_grid_seed: np.int8, n_test_samples: np.int16,
@@ -239,9 +239,9 @@ def run_experiments():
     test_grid_seed = np.int8(42)
     n_test_samples = np.int8(50)
 
-    scale_range = range(1,5)
+    scale_range = range(1,8)
     dim_range = range(10, 31)
-    degree_range = range(0, 10)  # degree 0 means Smolyak
+    degree_range = range(1, 4)  # degree 0 means Smolyak
 
     n_iterations = len(scale_range) * len(dim_range) * len(degree_range)
 
@@ -280,7 +280,7 @@ def run_experiments():
                         n_test_samples=n_test_samples,
                         lb=lb,
                         ub=ub,
-                        path=None)
+                        path=r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\BSc_JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\results_currently.csv")
                 else:
                     run_experiments_least_squares(
                         dim=np.int8(dim),
@@ -293,7 +293,7 @@ def run_experiments():
                         n_test_samples=n_test_samples,
                         lb=lb,
                         ub=ub,
-                        path=None)
+                        path=r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\BSc_JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\results_currently.csv")
 
                 pbar.update(1)
 
@@ -302,6 +302,6 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    # run_experiments()
-    plot_errors(10, GenzFunctionType.GAUSSIAN, range(1,5))
+    run_experiments()
+    # plot_errors(10, GenzFunctionType.GAUSSIAN, range(1,5))
 
