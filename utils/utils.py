@@ -314,26 +314,50 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
 
     errors = ['l_2_error', 'min_error', 'max_error']
 
-    for name, group in smolyak_data.groupby('c'):
-        fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
-        for i, error in enumerate(errors):
-            for degree in degrees:
-                if degree == 0:  # TODO: [Jakob] Make it more beautiful
-                    label = 'Smolyak'
-                    axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
-                else:
+    start = scales[0]
+    end = scales[-1]
+
+    if not smolyak_data.empty:
+        for name, group in smolyak_data.groupby('c'):
+            fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+            for i, error in enumerate(errors):
+                for degree in degrees:
+                    if degree == 0:  # TODO: [Jakob] Make it more beautiful
+                        label = 'Smolyak'
+                        axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+                    else:
+                        label = f'LS degr. {degree}'
+                        ls_filtered = least_squares_data[least_squares_data['c'] == name]
+                        ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
+                        if not ls_filtered.empty:
+                            axs[i].plot(scales, ls_filtered[error][start:end+1], label=label)
+                axs[i].set_xticks(scales)
+                axs[i].set_title(titles[i])
+                axs[i].set_xlabel('Scale/no points')
+                axs[i].set_ylabel('Error')
+                axs[i].set_yscale('log')
+                axs[i].legend()
+
+            fig.suptitle(f'{function_type.name}, c={name}')  # TODO [Jakob] additionally include c,w, dimension
+            plt.tight_layout()
+            plt.show()
+    else:
+        for name, group in least_squares_data.groupby('c'):
+            fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+            for i, error in enumerate(errors):
+                for degree in degrees:
                     label = f'LS degr. {degree}'
                     ls_filtered = least_squares_data[least_squares_data['c'] == name]
-                    ls_filtered = ls_filtered[least_squares_data['degree']==degree]
-                    if not ls_filtered.empty and len(ls_filtered) == len(scales):
-                        axs[i].plot(scales, ls_filtered[error], label=label)
-            axs[i].set_xticks(scales)
-            axs[i].set_title(titles[i])
-            axs[i].set_xlabel('Scale/no points')
-            axs[i].set_ylabel('Error')
-            axs[i].set_yscale('log')
-            axs[i].legend()
+                    ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
+                    if not ls_filtered.empty:
+                        axs[i].plot(scales, ls_filtered[error][start:end+1], label=label)
+                axs[i].set_xticks(scales)
+                axs[i].set_title(titles[i])
+                axs[i].set_xlabel('Scale/no points')
+                axs[i].set_ylabel('Error')
+                axs[i].set_yscale('log')
+                axs[i].legend()
 
-        fig.suptitle(f'{function_type.name}, c={name}')  # TODO [Jakob] additionally include c,w, dimension
-        plt.tight_layout()
-        plt.show()
+            fig.suptitle(f'{function_type.name}, c={name}')  # TODO [Jakob] additionally include c,w, dimension
+            plt.tight_layout()
+            plt.show()

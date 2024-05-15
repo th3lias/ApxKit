@@ -280,7 +280,7 @@ def run_experiments():
                         n_test_samples=n_test_samples,
                         lb=lb,
                         ub=ub,
-                        path=r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\BSc_JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\results_currently.csv")
+                        path=None)
                 else:
                     run_experiments_least_squares(
                         dim=np.int8(dim),
@@ -293,7 +293,7 @@ def run_experiments():
                         n_test_samples=n_test_samples,
                         lb=lb,
                         ub=ub,
-                        path=r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\BSc_JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\results_currently.csv")
+                        path=None)
 
                 pbar.update(1)
 
@@ -302,6 +302,6 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    run_experiments()
-    # plot_errors(10, GenzFunctionType.GAUSSIAN, range(1,5))
+    # run_experiments()
+    plot_errors(10, GenzFunctionType.GAUSSIAN, range(1,7))
 
