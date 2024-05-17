@@ -1,7 +1,7 @@
 import numpy as np
 
 from utils import utils
-from utils.utils import l2_error, max_abs_error, min_abs_error
+from utils.utils import l2_error, max_abs_error
 
 from typing import Callable
 
@@ -72,13 +72,11 @@ def plots_novak(f: Callable, name: str, grid: np.ndarray, degree_ls: np.int8, sc
 
         max_abs_ls = max_abs_error(f, f_hat_ls, grid=grid)
         max_abs_smolyak = max_abs_error(f, f_hat_smolyak, grid=grid)
-        min_abs_ls = min_abs_error(f, f_hat_ls, grid=grid)
-        min_abs_smolyak = min_abs_error(f, f_hat_smolyak, grid=grid)
         ell_2_ls = l2_error(f, f_hat_ls, grid=grid)
         ell_2_smolyak = l2_error(f, f_hat_smolyak, grid=grid)
 
-        results['smolyak'][scale] = {'max_diff': max_abs_smolyak, 'ell_2': ell_2_smolyak, 'min_diff': min_abs_smolyak}
-        results['least_squares'][scale] = {'max_diff': max_abs_ls, 'ell_2': ell_2_ls, 'min_diff': min_abs_ls}
+        results['smolyak'][scale] = {'max_diff': max_abs_smolyak, 'ell_2': ell_2_smolyak}
+        results['least_squares'][scale] = {'max_diff': max_abs_ls, 'ell_2': ell_2_ls}
 
         print(f'Done with scale {scale} for {name}')
 
@@ -91,7 +89,8 @@ if __name__ == '__main__':
     upper_bound = np.float16(1.0)
     n_test_samples = np.int8(50)
 
-    test_grid = GridProvider(dim, lower_bound=lower_bound, upper_bound=upper_bound).generate(GridType.RANDOM, scale=n_test_samples)
+    test_grid = GridProvider(dim, lower_bound=lower_bound, upper_bound=upper_bound).generate(GridType.RANDOM,
+                                                                                             scale=n_test_samples)
 
     # Tests for finding parameter c
 

@@ -9,7 +9,7 @@ from typing import Union
 from tqdm import tqdm
 
 from least_squares.least_squares import approximate_by_polynomial_with_least_squares
-from utils.utils import max_error_function_values, min_error_function_values, l2_error_function_values
+from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import plot_errors
 from smolyak.smolyak import SmolyakInterpolation
 
@@ -53,7 +53,7 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
 
     n_samples = get_no_samples(dim, scale)
 
-    si = SmolyakInterpolation(dimension=dim, scale=np.int8(scale))
+    si = SmolyakInterpolation(dimension=dim, scale=scale)
 
     function_names = list()
 
@@ -71,7 +71,6 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
         y_hat = f_hat(test_grid)
 
         ell_2_error_list.append(l2_error_function_values(y, y_hat))
-        min_error_list.append(min_error_function_values(y, y_hat))
         max_error_list.append(max_error_function_values(y, y_hat))
 
         end_time = time.time()
@@ -97,7 +96,6 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
         row_entry['n_test_samples'] = n_test_samples
         row_entry['f_name'] = function_names[i]
         row_entry['l_2_error'] = ell_2_error_list[i]
-        row_entry['min_error'] = min_error_list[i]
         row_entry['max_error'] = max_error_list[i]
         row_entry['user'] = username
         row_entry['cpu'] = cpu
@@ -173,7 +171,6 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     y_hat = f_hat(test_grid)
 
     l_2_error = l2_error_function_values(y, y_hat)
-    min_error = min_error_function_values(y, y_hat)
     max_error = max_error_function_values(y, y_hat)
 
     end_time = time.time()
@@ -198,7 +195,6 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
         row_entry['n_test_samples'] = n_test_samples
         row_entry['f_name'] = function_names[i]
         row_entry['l_2_error'] = l_2_error[i]
-        row_entry['min_error'] = min_error[i]
         row_entry['max_error'] = max_error[i]
         row_entry['user'] = username
         row_entry['cpu'] = cpu

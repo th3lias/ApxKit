@@ -40,21 +40,6 @@ def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.floa
     return error
 
 
-def min_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
-    """
-    Calculates the estimated min absolute value distance by comparing the true function values and the approximated
-    function values by calculating the min absolute difference
-    :param y: true function values
-    :param y_hat: approximated function values
-    :return: error estimate
-    """
-    if y_hat.ndim == 1:
-        error = np.min(np.abs(y_hat - y)).squeeze()
-    else:
-        error = np.min(np.abs(y_hat - y), axis=1).squeeze()
-    return error
-
-
 def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     """
     Calculates the L_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
@@ -85,22 +70,6 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     y = f(grid)
 
     return max_error_function_values(y=y, y_hat=y_hat)
-
-
-def min_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
-    """
-        Calculates the estimated min absolute value distance by comparing the true function and the approximation f_hat
-        on a test grid by calculating the mean-squared absolute difference
-        :param f: function that should be approximated
-        :param f_hat: approximation of the function
-        :param grid: grid where the approximation should be compared vs the original function
-        :return: error estimate
-        """
-
-    y_hat = f_hat(grid)
-    y = f(grid)
-
-    return min_error_function_values(y=y, y_hat=y_hat)
 
 
 def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
@@ -232,11 +201,8 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     :param name: name of the experiment
     :return:
     """
-    # TODO: [Jakob] Maybe remove
-    fig, axs = plt.subplots(1, 3, figsize=(18, 6))
 
-    smolyak_min_diff = [results['smolyak'][scale]['min_diff'] for scale in scale_range]
-    least_squares_min_diff = [results['least_squares'][scale]['min_diff'] for scale in scale_range]
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 
     smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scale_range]
     least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scale_range]
@@ -248,53 +214,41 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     axs[0].plot(scale_range, least_squares_max_diff, label='Least Squares')
     axs[0].set_xticks(scale_range)
     axs[0].set_title('Max (Abs) Error')
-    axs[0].set_xlabel('Scale')  # TODO: Change maybe
+    axs[0].set_xlabel('Scale')
     axs[0].set_ylabel('Max Error')
     axs[0].set_yscale('log')
     axs[0].legend()
 
-    axs[1].plot(scale_range, smolyak_min_diff, label='Smolyak')
-    axs[1].plot(scale_range, least_squares_min_diff, label='Least Squares')
+    axs[1].plot(scale_range, smolyak_ell_2, label='Smolyak')
+    axs[1].plot(scale_range, least_squares_ell_2, label='Least Squares')
     axs[1].set_xticks(scale_range)
-    axs[1].set_title('Min (Abs) Error')
-    axs[1].set_xlabel('Scale')  # TODO: Change maybe
-    axs[1].set_ylabel('Min Error')
+    axs[1].set_title('L2 Error')
+    axs[1].set_xlabel('Scale')
+    axs[1].set_ylabel('L2 Error')
     axs[1].set_yscale('log')
     axs[1].legend()
-
-    axs[2].plot(scale_range, smolyak_ell_2, label='Smolyak')
-    axs[2].plot(scale_range, least_squares_ell_2, label='Least Squares')
-    axs[2].set_xticks(scale_range)
-    axs[2].set_title('L2 Error')
-    axs[2].set_xlabel('Scale')  # TODO: Change maybe
-    axs[2].set_ylabel('L2 Error')
-    axs[2].set_yscale('log')
-    axs[2].legend()
 
     fig.suptitle(name)
     plt.tight_layout()
     plt.show()
 
+
 def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                 path: Union[str, None] = None):
     """
-    Plots errors vs. number of samples for a given dimension and function_name, grouped by 'c'.
+    Creates plots of each different c-value for a given function type, given the path of the results-csv file.
+    The ell2 and the max error are plotted.
 
-    Parameters:
-    - data: DataFrame containing the dataset
-    - dimension: The dimension to filter on
-    - function_name: The function name to filter on
-    - errors: List of errors to plot (default: ['error1', 'error2', 'error3'])
+    :param dimension: dimension which should be considered from the results file
+    :param function_type: Specifies which function should be considered
+    :param scales: range of scales, which are considered
+    :param path: Path of the results-csv file. If None, a default path will be used.
     """
-
-    # TODO: [Jakob] Rework Docstring
 
     if path is None:
         path = os.path.join("..", "results", "results_numerical_experiments.csv")
 
     data = pd.read_csv(path, sep=',', header=0)
-
-    # Filter data based on dimension and function_name
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
 
@@ -310,19 +264,19 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
     smolyak_data = smolyak_data.sort_values(by='scale')
     least_squares_data = least_squares_data.sort_values(by='scale')
 
-    titles = ['Min (Abs) Error', 'Max (Abs) Error', 'L2 Error']
+    titles = ['Max (Abs) Error', 'L2 Error']
 
-    errors = ['l_2_error', 'min_error', 'max_error']
+    errors = ['max_error', 'l_2_error']
 
     start = scales[0]
     end = scales[-1]
 
     if not smolyak_data.empty:
         for name, group in smolyak_data.groupby('c'):
-            fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
                 for degree in degrees:
-                    if degree == 0:  # TODO: [Jakob] Make it more beautiful
+                    if degree == 0:
                         label = 'Smolyak'
                         axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
                     else:
@@ -340,7 +294,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}, c={name}')  # TODO [Jakob] additionally include c,w, dimension
+            fig.suptitle(f'{function_type.name}, c={name}')
             plt.tight_layout()
             plt.show()
     else:
@@ -353,7 +307,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                     ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
                     if not ls_filtered.empty:
                         x = scales
-                        y = ls_filtered[error][start-1:end]
+                        y = ls_filtered[error][start - 1:end]
                         axs[i].plot(x, y, label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
@@ -362,6 +316,6 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}, c={name}')  # TODO [Jakob] additionally include c,w, dimension
+            fig.suptitle(f'{function_type.name}, c={name}')
             plt.tight_layout()
             plt.show()
