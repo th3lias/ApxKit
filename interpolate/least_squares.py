@@ -4,6 +4,9 @@ from sklearn.linear_model import LinearRegression
 from typing import Callable, Union, List
 from scipy.sparse.linalg import lsmr
 
+from grid.grid import Grid
+from interpolate.interpolator import Interpolator
+
 
 def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
                                                            grid: np.ndarray, include_bias: bool) -> Callable:
@@ -18,22 +21,16 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
-
     y = f(grid)
-
     poly = PolynomialFeatures(degree=degree, include_bias=include_bias)
-
     x_poly = poly.fit_transform(grid)
-
     res = lsmr(x_poly, y)
-
     coeff = res[0]
 
     def f_hat(x):
         pol = PolynomialFeatures(degree=degree, include_bias=include_bias)
         x_pol = pol.fit_transform(x)
         return x_pol @ coeff
-
     return f_hat
 
 
@@ -52,15 +49,11 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
     """
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
-
     if self_implemented and not include_bias:
         print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
-
     if not isinstance(f, list) and not isinstance(f, Callable):
         raise ValueError(f"f needs to be a function or a list of functions but is {type(list)}")
-
     n_samples = grid.shape[0]
-
     if isinstance(f, list):
         y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
         for i, func in enumerate(f):
@@ -69,11 +62,8 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
             y[:, i] = func(grid)
     else:
         y = f(grid)
-
     poly = PolynomialFeatures(degree=degree, include_bias=include_bias)
-
     x_poly = poly.fit_transform(grid)
-
     if self_implemented:
         y_prime = x_poly.T @ y
         del y
@@ -88,7 +78,6 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
             if pred.ndim == 2:
                 return pred.T
             return pred
-
     else:
         model = LinearRegression()
         model.fit(x_poly, y)
@@ -99,3 +88,13 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
             return model.predict(x_pol)
 
     return f_hat
+
+
+class LeastSquaresInterpolator(Interpolator):
+    def __init__(self, degree: np.int8, include_bias: bool, grid: Grid):
+        super().__init__(grid)
+        self.include_bias = include_bias
+        self.degree = degree
+
+    def interpolate(self, f: Callable) -> Callable:
+        return approximate_by_polynomial_with_least_squares(f, self.grid.dim, self.degree, self.grid, self.include_bias)

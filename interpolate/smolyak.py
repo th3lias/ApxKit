@@ -6,8 +6,25 @@ from typing import Callable, Union, List, Tuple
 import numpy as np
 from scipy.linalg import lu
 
+from grid.grid import Grid
 from grid.grid_provider import GridProvider, GridType
+from interpolate.interpolator import Interpolator
 
+
+class SmolyakInterpolator(Interpolator):
+    def __init__(self, grid: Grid):
+        super().__init__(grid)
+
+    def interpolate(self, f: Callable) -> Callable:
+        basis = self._build_basis()
+        l, u = lu(basis, permute_l=True)
+        coeff = np.linalg.solve(u, np.linalg.solve(l, f(self.grid.get_grid())))
+
+        def f_hat(data):
+            data_smolyak = self._build_basis(data)
+            return data_smolyak @ coeff
+
+        return f_hat
 
 # most of the content is adapted from https://github.com/EconForge/Smolyak, which implemented the Smolyak algorithm
 # based on the paper:

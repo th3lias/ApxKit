@@ -5,8 +5,8 @@ from genz.genz_functions import get_genz_function
 from genz.genz_functions import GenzFunctionType
 import numpy as np
 
-from least_squares.least_squares import approximate_by_polynomial_with_least_squares_iterative
-from least_squares.least_squares import approximate_by_polynomial_with_least_squares
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares_iterative
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares
 
 
 def test_configuration_iterative(param_dict, q):

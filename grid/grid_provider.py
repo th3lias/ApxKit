@@ -3,6 +3,7 @@ Provides sparse grids and random grids.
 """
 import numpy as np
 
+from grid.grid import Grid
 from grid.grid_type import GridType
 
 
@@ -19,7 +20,7 @@ class GridProvider:
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
 
-        if isinstance(seed, np.int8) or isinstance(seed, int):
+        if isinstance(seed, np.int8):
             self.seed = seed
             self.rng = np.random.default_rng(seed=seed)
         else:
@@ -29,7 +30,7 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, scale: np.int32 = None, remove_duplicates: bool = True) -> np.ndarray:
+    def generate(self, grid_type: GridType, scale: np.int32 = None, remove_duplicates: bool = True) -> Grid:
         """
         Generate a grid of given type.
         :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
@@ -42,17 +43,17 @@ class GridProvider:
         """
         if not isinstance(grid_type, GridType):
             raise ValueError("grid type not supported: " + str(grid_type))
+        if scale is None:
+            raise ValueError("Please provide the fineness parameter of the grid")
         if grid_type == GridType.CHEBYSHEV:
-            if scale is None:
-                raise ValueError("Please provide the level of fineness of the chebyshev grid.")
-            return self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
-        else:
-            if scale is None:
-                raise ValueError("Please provide how many points to generate in each subspace.")
-            if grid_type == GridType.REGULAR:
-                return self._generate_equidistant_grid(num_points=scale)
-            if grid_type == GridType.RANDOM:
-                return self._generate_random_grid(num_points=scale)
+            points = self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
+            return Grid(self.dim, scale, points, grid_type)
+        if grid_type == GridType.REGULAR:
+            points = self._generate_equidistant_grid(num_points=scale)
+            return Grid(self.dim, scale, points, grid_type)
+        if grid_type == GridType.RANDOM:
+            points = self._generate_random_grid(num_points=scale)
+            return Grid(self.dim, scale, points, grid_type)
 
     def _generate_random_grid(self, num_points: np.int32) -> np.ndarray:
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))

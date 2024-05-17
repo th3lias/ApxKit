@@ -7,8 +7,8 @@ from typing import Callable
 
 from grid.grid_provider import GridProvider, GridType
 from genz.genz_functions import GenzFunctionType, get_genz_function
-from smolyak.smolyak import SmolyakInterpolation
-from least_squares.least_squares import approximate_by_polynomial_with_least_squares as least_squares
+from interpolate.smolyak import SmolyakInterpolation
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares as least_squares
 
 
 def test_params_novak(fun_type: GenzFunctionType, scale: np.int8, sum_c: np.float16,

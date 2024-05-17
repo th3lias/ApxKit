@@ -3,8 +3,8 @@ import numpy as np
 
 from genz.genz_functions import get_genz_function, GenzFunctionType
 
-from least_squares.least_squares import approximate_by_polynomial_with_least_squares_iterative
-from least_squares.least_squares import approximate_by_polynomial_with_least_squares
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares_iterative
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares
 
 
 class LeastSquaresTests(unittest.TestCase):

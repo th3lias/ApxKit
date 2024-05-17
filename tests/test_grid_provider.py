@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+import utils.test_utils
 from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from utils import utils
@@ -15,13 +16,13 @@ class TestGridProvider(unittest.TestCase):
         print(f"{grid.shape}")
 
         print("Naive Python implementation.")
-        new_grid = utils.test_function_time(utils._remove_almost_identical_rows, 10, grid)
+        new_grid = utils.test_function_time(utils.test_utils._remove_almost_identical_rows, 10, grid)
         print(f"{new_grid.shape}")
         print("Numpy implementation - n^2 memory")
-        new_grid = utils.test_function_time(utils._remove_duplicates_squared_memory, 10, grid)
+        new_grid = utils.test_function_time(utils.test_utils._remove_duplicates_squared_memory, 10, grid)
         print(f"{new_grid.shape}")
         print("Numpy implementation - linear memory")
-        new_grid = utils.test_function_time(utils._remove_duplicates_linear_memory_naive, 10, grid)
+        new_grid = utils.test_function_time(utils.test_utils._remove_duplicates_linear_memory_naive, 10, grid)
         print(f"{new_grid.shape}")
         print("Numpy implementation - optimised linear memory")
         new_grid = utils.test_function_time(provider._remove_duplicates, 10, grid)

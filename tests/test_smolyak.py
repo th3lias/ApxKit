@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from genz.genz_functions import get_genz_function, GenzFunctionType
-from smolyak.smolyak import SmolyakInterpolation
+from interpolate.smolyak import SmolyakInterpolation
 
 
 class Smolyak(unittest.TestCase):
