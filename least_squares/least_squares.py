@@ -77,7 +77,9 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
     if self_implemented:
         y_prime = x_poly.T @ y
         del y
-        coeff = np.linalg.inv(x_poly.T @ x_poly) @ y_prime
+        xTx = x_poly.T @ x_poly
+        del x_poly
+        coeff = np.linalg.solve(xTx, y_prime)
 
         def f_hat(x):
             pol = PolynomialFeatures(degree=degree, include_bias=include_bias)

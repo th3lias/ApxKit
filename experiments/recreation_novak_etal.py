@@ -45,7 +45,7 @@ def test_params_novak(fun_type: GenzFunctionType, scale: np.int8, sum_c: np.floa
     print('Smolyak:')
     print(f'max_abs_error = {max_abs_error(f, f_hat_smolyak, grid=grid)}')
     print(f'L2_error = {l2_error(f, f_hat_smolyak, grid=grid)}')
-    print('_'*100)
+    print('_' * 100)
 
 
 def plots_novak(f: Callable, name: str, grid: np.ndarray, degree_ls: np.int8, scales: range):
@@ -80,7 +80,7 @@ def plots_novak(f: Callable, name: str, grid: np.ndarray, degree_ls: np.int8, sc
 
         print(f'Done with scale {scale} for {name}')
 
-    utils.plot_results(results, scales, name)
+    utils.plot_error_vs_scale(results, scales, name)
 
 
 if __name__ == '__main__':
@@ -89,18 +89,19 @@ if __name__ == '__main__':
     upper_bound = np.float16(1.0)
     n_test_samples = np.int8(50)
 
-    test_grid = GridProvider(dim).generate(GridType.RANDOM, scale=n_test_samples)
+    test_grid = GridProvider(dim, lower_bound=lower_bound, upper_bound=upper_bound).generate(GridType.RANDOM,
+                                                                                             scale=n_test_samples)
 
     # Tests for finding parameter c
 
-    print('_'*100)
+    print('_' * 100)
 
-    # test_parameters_like_in_2000_paper(GenzFunctionType.OSCILLATORY, np.int8(1), sum_c=np.float16(9.0), test_grid)
-    # test_parameters_like_in_2000_paper(GenzFunctionType.PRODUCT_PEAK, np.int8(1), np.float16(7.25), test_grid)
-    # test_parameters_like_in_2000_paper(GenzFunctionType.CORNER_PEAK, np.int8(1), np.float16(1.85))
-    # test_parameters_like_in_2000_paper(GenzFunctionType.GAUSSIAN, np.int8(1), np.float16(7.03))
-    # test_parameters_like_in_2000_paper(GenzFunctionType.CONTINUOUS, np.int8(1), np.float16(20.4))
-    # test_parameters_like_in_2000_paper(GenzFunctionType.DISCONTINUOUS, np.int8(1), np.float16(4.3))
+    # test_params_novak(GenzFunctionType.OSCILLATORY, np.int8(1), np.float16(9.0), test_grid)
+    # test_params_novak(GenzFunctionType.PRODUCT_PEAK, np.int8(1), np.float16(7.25), test_grid)
+    # test_params_novak(GenzFunctionType.CORNER_PEAK, np.int8(1), np.float16(1.85), test_grid)
+    # test_params_novak(GenzFunctionType.GAUSSIAN, np.int8(1), np.float16(7.03), test_grid)
+    # test_params_novak(GenzFunctionType.CONTINUOUS, np.int8(1), np.float16(20.4), test_grid)
+    # test_params_novak(GenzFunctionType.DISCONTINUOUS, np.int8(1), np.float16(4.3), test_grid)
     # Tests as soon as parameter c is found
 
     w = np.random.uniform(low=lower_bound, high=upper_bound, size=dim)
@@ -110,5 +111,5 @@ if __name__ == '__main__':
     c = 9.0 * c
     f = get_genz_function(GenzFunctionType.OSCILLATORY, c=c, w=w, d=dim)
 
-    scale_range = range(1, 5)
+    scale_range = range(1, 7)
     plots_novak(f, "Oscillatory", test_grid, np.int8(3), scale_range)

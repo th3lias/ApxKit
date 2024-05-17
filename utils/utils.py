@@ -1,8 +1,12 @@
+import os
 from typing import Callable, Union
 import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
+from genz.genz_functions import GenzFunctionType
 
 
 def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
@@ -36,21 +40,6 @@ def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.floa
     return error
 
 
-def min_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
-    """
-    Calculates the estimated min absolute value distance by comparing the true function values and the approximated
-    function values by calculating the min absolute difference
-    :param y: true function values
-    :param y_hat: approximated function values
-    :return: error estimate
-    """
-    if y_hat.ndim == 1:
-        error = np.min(np.abs(y_hat - y)).squeeze()
-    else:
-        error = np.min(np.abs(y_hat - y), axis=1).squeeze()
-    return error
-
-
 def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     """
     Calculates the L_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
@@ -81,22 +70,6 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     y = f(grid)
 
     return max_error_function_values(y=y, y_hat=y_hat)
-
-
-def min_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
-    """
-        Calculates the estimated min absolute value distance by comparing the true function and the approximation f_hat
-        on a test grid by calculating the mean-squared absolute difference
-        :param f: function that should be approximated
-        :param f_hat: approximation of the function
-        :param grid: grid where the approximation should be compared vs the original function
-        :return: error estimate
-        """
-
-    y_hat = f_hat(grid)
-    y = f(grid)
-
-    return min_error_function_values(y=y, y_hat=y_hat)
 
 
 def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
@@ -220,25 +193,25 @@ def _remove_duplicates_linear_memory_naive(arr: np.ndarray, tol: np.float32 = np
     return np.array(unique_rows)
 
 
-def plot_results(results: dict, scale_range: range, name: str) -> None:
+def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     """
-    Plot the results of the experiments
+    Plot the results of the experiments by plotting the errors vs the scale (proportional to number of samples)
     :param results: dictionary containing the results
     :param scale_range: range of scales
     :param name: name of the experiment
     :return:
     """
+
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 
-    scales = scale_range
-    smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scales]
-    least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scales]
+    smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scale_range]
+    least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scale_range]
 
-    smolyak_ell_2 = [results['smolyak'][scale]['ell_2'] for scale in scales]
-    least_squares_ell_2 = [results['least_squares'][scale]['ell_2'] for scale in scales]
+    smolyak_ell_2 = [results['smolyak'][scale]['ell_2'] for scale in scale_range]
+    least_squares_ell_2 = [results['least_squares'][scale]['ell_2'] for scale in scale_range]
 
-    axs[0].plot(scales, smolyak_max_diff, label='Smolyak')
-    axs[0].plot(scales, least_squares_max_diff, label='Least Squares')
+    axs[0].plot(scale_range, smolyak_max_diff, label='Smolyak')
+    axs[0].plot(scale_range, least_squares_max_diff, label='Least Squares')
     axs[0].set_xticks(scale_range)
     axs[0].set_title('Max (Abs) Error')
     axs[0].set_xlabel('Scale')
@@ -246,8 +219,8 @@ def plot_results(results: dict, scale_range: range, name: str) -> None:
     axs[0].set_yscale('log')
     axs[0].legend()
 
-    axs[1].plot(scales, smolyak_ell_2, label='Smolyak')
-    axs[1].plot(scales, least_squares_ell_2, label='Least Squares')
+    axs[1].plot(scale_range, smolyak_ell_2, label='Smolyak')
+    axs[1].plot(scale_range, least_squares_ell_2, label='Least Squares')
     axs[1].set_xticks(scale_range)
     axs[1].set_title('L2 Error')
     axs[1].set_xlabel('Scale')
@@ -258,3 +231,91 @@ def plot_results(results: dict, scale_range: range, name: str) -> None:
     fig.suptitle(name)
     plt.tight_layout()
     plt.show()
+
+
+def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
+                path: Union[str, None] = None):
+    """
+    Creates plots of each different c-value for a given function type, given the path of the results-csv file.
+    The ell2 and the max error are plotted.
+
+    :param dimension: dimension which should be considered from the results file
+    :param function_type: Specifies which function should be considered
+    :param scales: range of scales, which are considered
+    :param path: Path of the results-csv file. If None, a default path will be used.
+    """
+
+    if path is None:
+        path = os.path.join("..", "results", "results_numerical_experiments.csv")
+
+    data = pd.read_csv(path, sep=',', header=0)
+
+    filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
+
+    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'],
+                       axis=1, inplace=True)
+
+    degrees = filtered_data['degree'].unique()
+
+    smolyak_data = filtered_data[(filtered_data['degree']) == 0]
+
+    least_squares_data = filtered_data[(filtered_data['degree']) != 0]
+
+    smolyak_data = smolyak_data.sort_values(by='scale')
+    least_squares_data = least_squares_data.sort_values(by='scale')
+
+    titles = ['Max (Abs) Error', 'L2 Error']
+
+    errors = ['max_error', 'l_2_error']
+
+    start = scales[0]
+    end = scales[-1]
+
+    if not smolyak_data.empty:
+        for name, group in smolyak_data.groupby('c'):
+            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+            for i, error in enumerate(errors):
+                for degree in degrees:
+                    if degree == 0:
+                        label = 'Smolyak'
+                        axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+                    else:
+                        label = f'LS degr. {degree}'
+                        ls_filtered = least_squares_data[least_squares_data['c'] == name]
+                        ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
+                        if not ls_filtered.empty:
+                            x = scales
+                            y = ls_filtered[error][start - 1:end]
+                            axs[i].plot(x, y, label=label)
+                axs[i].set_xticks(scales)
+                axs[i].set_title(titles[i])
+                axs[i].set_xlabel('Scale/no points')
+                axs[i].set_ylabel('Error')
+                axs[i].set_yscale('log')
+                axs[i].legend()
+
+            fig.suptitle(f'{function_type.name}, c={name}')
+            plt.tight_layout()
+            plt.show()
+    else:
+        for name, group in least_squares_data.groupby('c'):
+            fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+            for i, error in enumerate(errors):
+                for degree in degrees:
+                    label = f'LS degr. {degree}'
+                    ls_filtered = least_squares_data[least_squares_data['c'] == name]
+                    ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
+                    if not ls_filtered.empty:
+                        x = scales
+                        y = ls_filtered[error][start - 1:end]
+                        axs[i].plot(x, y, label=label)
+                axs[i].set_xticks(scales)
+                axs[i].set_title(titles[i])
+                axs[i].set_xlabel('Scale/no points')
+                axs[i].set_ylabel('Error')
+                axs[i].set_yscale('log')
+                axs[i].legend()
+
+            fig.suptitle(f'{function_type.name}, c={name}')
+            plt.tight_layout()
+            plt.show()
