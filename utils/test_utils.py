@@ -15,7 +15,7 @@ def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
     return np.array(unique_rows)
 
 
-def _remove_duplicates_squared_memory(arr: np.ndarray, tol: np.float32 = np.float32(1e-8)):
+def _remove_duplicates_squared_memory(arr: np.ndarray, tol: float = 1e-8):
     """
     This method is only reference for testing purposes. It should not be used in production.
     :param arr:
@@ -31,7 +31,7 @@ def _remove_duplicates_squared_memory(arr: np.ndarray, tol: np.float32 = np.floa
     return unique_rows
 
 
-def _remove_duplicates_linear_memory_naive(arr: np.ndarray, tol: np.float32 = np.float32(1e-8)):
+def _remove_duplicates_linear_memory_naive(arr: np.ndarray, tol: float = 1e-8):
     """
     This method is only reference for testing purposes. It should not be used in production.
     :param arr:

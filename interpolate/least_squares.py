@@ -8,7 +8,7 @@ from grid.grid import Grid
 from interpolate.interpolator import Interpolator
 
 
-def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.int8, degree: np.int8,
+def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: int, degree: int,
                                                            grid: np.ndarray, include_bias: bool) -> Callable:
     """
     Approximation of a function with a polynomial by least squares iterative approach (using the lsmr algorithm).
@@ -34,19 +34,20 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: np.
     return f_hat
 
 
-def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callable]], dim: np.int8, degree: np.int8,
-                                                 grid: np.ndarray, include_bias: bool,
+def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callable]], dim: int, degree: int,
+                                                 points: Grid, include_bias: bool,
                                                  self_implemented: bool = True) -> Callable:
     """
     Approximates a (or multiple) function(s) with polynomials by least squares.
     :param f: function or list of functions that need to be approximated on the same points
     :param dim: dimension of the data
     :param degree: degree of the polynomials
-    :param grid: data array containing the points where the function should be approximated
+    :param points: Grid object containing data array containing the points where the function should be approximated
     :param include_bias: whether to include bias (equivalent to intercept) in the polynomial
     :param self_implemented: whether to use the self-implemented version as it is faster and only relies on numpy
     :return: fitted function(s)
     """
+    grid = points.grid
     if np.shape(grid)[1] != dim:
         raise ValueError("Grid dimension must be equal to input dimension of f")
     if self_implemented and not include_bias:
@@ -91,7 +92,7 @@ def approximate_by_polynomial_with_least_squares(f: Union[Callable, List[Callabl
 
 
 class LeastSquaresInterpolator(Interpolator):
-    def __init__(self, degree: np.int8, include_bias: bool, grid: Grid):
+    def __init__(self, degree: int, include_bias: bool, grid: Grid):
         super().__init__(grid)
         self.include_bias = include_bias
         self.degree = degree

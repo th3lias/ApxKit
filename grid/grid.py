@@ -1,3 +1,5 @@
+from typing import Union
+
 import jax.numpy as jnp
 import numpy as np
 
@@ -5,8 +7,8 @@ from grid.grid_type import GridType
 
 
 class Grid:
-    def __init__(self, dim: np.int8, scale: np.int32, grid: jnp.ndarray | np.ndarray, grid_type: GridType,
-                 lower_bound: np.float16 = np.float16(-1.), upper_bound: np.float16 = np.float16(1.)):
+    def __init__(self, dim: int, scale: int, grid: Union[jnp.ndarray, np.ndarray], grid_type: GridType,
+                 lower_bound: float = -1., upper_bound: float = 1.):
         self.dim = dim
         self.scale = scale
         self.grid = grid
@@ -21,9 +23,10 @@ class Grid:
         self.grid = jnp.array(self.grid)
 
     def numpy(self):
-        self.grid = self.grid.asnumpy()
+        assert isinstance(self.grid, jnp.ndarray), "Grid is already a numpy array"
+        self.grid = np.asarray(self.grid)
 
-    def get_grid(self) -> jnp.ndarray | np.ndarray:
+    def get_grid(self) -> Union[jnp.ndarray, np.ndarray]:
         return self.grid
 
     def __eq__(self, other):

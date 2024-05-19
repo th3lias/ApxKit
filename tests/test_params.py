@@ -23,7 +23,7 @@ def test_configuration_iterative(param_dict, q):
     execution_time = end_time - start_time
     del param_dict['grid']
     del param_dict['include_bias']
-    param_dict['n_samples'] = int(n_samples)
+    param_dict['n_samples'] = n_samples
     print(f"Done iterative with parameters {param_dict}")
 
     q.put((param_dict, execution_time))
@@ -43,7 +43,7 @@ def test_configuration(param_dict, q):
     execution_time = end_time - start_time
     del param_dict['grid']
     del param_dict['include_bias']
-    param_dict['n_samples'] = int(n_samples)
+    param_dict['n_samples'] = n_samples
     print(f"Done with parameters {param_dict}")
 
     q.put((param_dict, execution_time))
@@ -64,7 +64,7 @@ def grid_search(params, timeout, filename, iterative):
         param_dict['w'] = w
         param_dict['c'] = c
 
-        grid = np.random.uniform(low=0, high=1, size=(np.int32(param_dict['n_samples']), param_dict['dim']))
+        grid = np.random.uniform(low=0, high=1, size=(int(param_dict['n_samples']), param_dict['dim']))
 
         param_dict['grid'] = grid
         param_dict['include_bias'] = False
@@ -84,7 +84,7 @@ def grid_search(params, timeout, filename, iterative):
             del param_dict['include_bias']
             del param_dict['w']
             del param_dict['c']
-            param_dict['n_samples'] = int(param_dict['n_samples'])
+            param_dict['n_samples'] = param_dict['n_samples']
             with open(filename, "a") as f:
                 f.write(
                     f"{param_dict['degree']},{param_dict['dim']},{param_dict['n_samples']},took longer than {timeout} "

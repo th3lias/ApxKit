@@ -8,6 +8,8 @@ from typing import Union
 
 from tqdm import tqdm
 
+from grid.grid_provider import GridProvider
+from grid.grid_type import GridType
 from interpolate.least_squares import approximate_by_polynomial_with_least_squares
 from utils.utils import max_error_function_values, min_error_function_values, l2_error_function_values
 
@@ -18,9 +20,9 @@ import platform
 import datetime
 
 
-def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, c: np.ndarray, n_parallel: np.int8,
-                                  n_samples: np.int32, test_grid_seed: np.int8, n_test_samples: np.int16,
-                                  lb: np.float16, up: np.float16,
+def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.ndarray, n_parallel: int,
+                                  n_samples: int, test_grid_seed: int, n_test_samples: int,
+                                  lb: float, up: float,
                                   path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
@@ -38,15 +40,10 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
     """
     start_time = time.time()
 
-    np.random.seed(test_grid_seed)
-
-    grid = np.random.uniform(low=lb, high=up, size=(n_samples, dim))
-    test_grid = np.random.uniform(low=lb, high=up, size=(n_test_samples, dim))
-
-    # the following can be used as soon the Grids also support variable intervals
-
-    # grid = GridProvider(dimension=dim).generate(GridType.RANDOM, scale=n_samples)
-    # test_grid = GridProvider(dimension=dim, seed=test_grid_seed).generate(GridType.RANDOM, scale=n_test_samples)
+    gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=up)
+    grid = gp.generate(GridType.RANDOM, scale=n_samples)
+    gp.set_seed(test_grid_seed)
+    test_grid = gp.generate(GridType.RANDOM, scale=n_test_samples)
 
     functions = list()
     function_names = list()
@@ -62,7 +59,7 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
 
     f_hat = approximate_by_polynomial_with_least_squares(functions, degree=degree, include_bias=True,
                                                          self_implemented=True,
-                                                         dim=dim, grid=grid)
+                                                         dim=dim, points=grid)
 
     y_hat = f_hat(test_grid)
 
@@ -118,22 +115,22 @@ def run_experiments():
     """
     Runs multiple experiments for least-squares with various parameter combinations
     """
-    n_functions_per_type_parallel = np.int8(10)
-    lb = np.float16(0.0)
-    up = np.float16(1.0)
-    test_grid_seed = np.int8(42)
-    n_test_samples = np.int8(50)
+    n_functions_per_type_parallel = 10
+    lb = 0.0
+    up = 1.0
+    test_grid_seed = 42
+    n_test_samples = 50
 
     n_samples_list = [21, 221, 1581, 8801, 41265, 171425, 652065]
 
-    sum_c = [np.float16(9.0), np.float16(7.25), np.float16(1.85), np.float16(7.03), np.float16(20.4), np.float16(4.3)]
+    sum_c = [9.0, 7.25, 1.85, 7.03, 20.4, 4.3]
 
     for dim in tqdm(range(10, 31), desc="Dimension"):
         for degree in tqdm(range(1, 4), desc="Degree", leave=False):
             for n_samples in tqdm(n_samples_list, desc="No_Samples", leave=False, dynamic_ncols=False):
 
-                w = np.random.uniform(low=lb, high=up, size=(np.int8(6) * n_functions_per_type_parallel, dim))
-                c = np.random.uniform(low=lb, high=up, size=(np.int8(6) * n_functions_per_type_parallel, dim))
+                w = np.random.uniform(low=lb, high=up, size=(6 * n_functions_per_type_parallel, dim))
+                c = np.random.uniform(low=lb, high=up, size=(6 * n_functions_per_type_parallel, dim))
 
                 for i in range(6):
                     cur_slice = c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :]
@@ -142,12 +139,12 @@ def run_experiments():
                     c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :] *= factor
 
                 run_experiments_least_squares(
-                    dim=np.int8(dim),
-                    degree=np.int8(degree),
+                    dim=dim,
+                    degree=degree,
                     w=w,
                     c=c,
                     n_parallel=n_functions_per_type_parallel,
-                    n_samples=np.int32(n_samples),
+                    n_samples=int(n_samples),
                     test_grid_seed=test_grid_seed,
                     n_test_samples=n_test_samples,
                     lb=lb,

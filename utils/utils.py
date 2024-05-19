@@ -1,12 +1,13 @@
-import os
-from typing import Callable, Union
+from __future__ import annotations
+
 import time
+from typing import Callable, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 
-from genz.genz_functions import GenzFunctionType
+from genz.genz_function_types import GenzFunctionType
+from grid.grid import Grid
 
 
 def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
@@ -72,13 +73,14 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     return max_error_function_values(y=y, y_hat=y_hat)
 
 
-def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
+def visualize_point_grid_2d(points: Grid, alpha: np.float64) -> None:
     """
     Visualizes a 2D point grid in a scatter plot
     :param points: array that contains the points. Needs to be of shape (n, 2)
     :param alpha: specifies the opacity of the points
     :return:
     """
+    points = points.grid
     if np.shape(points)[1] != 2:
         raise ValueError("points must be a 2-dimensional array")
 
@@ -94,13 +96,14 @@ def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
     plt.show()
 
 
-def visualize_point_grid_3d(points: np.ndarray, alpha: np.float64) -> None:
+def visualize_point_grid_3d(points: Grid, alpha: float) -> None:
     """
         Visualizes a 3D point grid in a scatter plot
         :param points: array that contains the points. Needs to be of shape (n, 3)
         :param alpha: specifies the opacity of the points
         :return:
         """
+    points = points.grid
     if np.shape(points)[1] != 3:
         raise ValueError("points must be a 3-dimensional array")
 
@@ -231,6 +234,10 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     fig.suptitle(name)
     plt.tight_layout()
     plt.show()
+
+
+def sample(dim: int | tuple[int], low: float = 0., high: float = 1.):
+    return np.random.uniform(low=low, high=high, size=dim)
 
 
 def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
