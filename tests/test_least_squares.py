@@ -50,10 +50,10 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
     def test_parallel_product_peak(self):
-        f_1 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
+        f_1 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
         f_hat_1 = approximate_by_polynomial_with_least_squares(points=self.grid, f=f_1, degree=self.degree,
                                                                include_bias=True, dim=self.dimension,
                                                                self_implemented=True)
@@ -76,10 +76,10 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
     def test_parallel_corner_peak(self):
-        f_1 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
+        f_1 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
 
         f_hat_1 = approximate_by_polynomial_with_least_squares(points=self.grid, f=f_1, degree=self.degree,
                                                                include_bias=True, dim=self.dimension,
@@ -103,10 +103,10 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
     def test_parallel_gaussian(self):
-        f_1 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
+        f_1 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
         f_hat_1 = approximate_by_polynomial_with_least_squares(points=self.grid, f=f_1, degree=self.degree,
                                                                include_bias=True, dim=self.dimension,
                                                                self_implemented=True)
@@ -129,10 +129,10 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
     def test_parallel_continuous(self):
-        f_1 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
+        f_1 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
         f_hat_1 = approximate_by_polynomial_with_least_squares(points=self.grid, f=f_1, degree=self.degree,
                                                                include_bias=True, dim=self.dimension,
                                                                self_implemented=True)
@@ -155,10 +155,10 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
     def test_parallel_discontinuous(self):
-        f_1 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension),
-                                w=sample(self.dimension), d=self.dimension)
+        f_1 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
+                                d=self.dimension)
         f_hat_1 = approximate_by_polynomial_with_least_squares(points=self.grid, f=f_1, degree=self.degree,
                                                                include_bias=True, dim=self.dimension,
                                                                self_implemented=True)
@@ -181,8 +181,8 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
 
     def test_self_implemented_oscillatory(self):
-        f = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(self.dimension),
-                              w=sample(self.dimension), d=self.dimension)
+        f = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(self.dimension), w=sample(self.dimension),
+                              d=self.dimension)
         f_hat_self, f_hat_sklearn, f_hat_iterative = self._approximate(f, self.grid, True, self.degree, self.dimension)
 
         y_hat_self = f_hat_self(self.test_grid)
@@ -193,8 +193,8 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=1e-2).all())
 
     def test_self_implemented_product_peak(self):
-        f = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension),
-                              w=sample(self.dimension), d=self.dimension)
+        f = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension), w=sample(self.dimension),
+                              d=self.dimension)
         f_hat_self, f_hat_sklearn, f_hat_iterative = self._approximate(f, self.grid, True, self.degree, self.dimension)
 
         y_hat_self = f_hat_self(self.test_grid)
@@ -205,8 +205,8 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_self, y_hat_iterative).all())
 
     def test_self_implemented_corner_peak(self):
-        f = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension),
-                              w=sample(self.dimension), d=self.dimension)
+        f = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension), w=sample(self.dimension),
+                              d=self.dimension)
         f_hat_self, f_hat_sklearn, f_hat_iterative = self._approximate(f, self.grid, True, self.degree, self.dimension)
 
         y_hat_self = f_hat_self(self.test_grid)
@@ -217,8 +217,8 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_self, y_hat_iterative).all())
 
     def test_self_implemented_gaussian(self):
-        f = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension),
-                              w=sample(self.dimension), d=self.dimension)
+        f = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension), w=sample(self.dimension),
+                              d=self.dimension)
         f_hat_self, f_hat_sklearn, f_hat_iterative = self._approximate(f, self.grid, True, self.degree, self.dimension)
 
         y_hat_self = f_hat_self(self.test_grid)
@@ -229,8 +229,8 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=1e-3).all())
 
     def test_self_implemented_continuous(self):
-        f = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension),
-                              w=sample(self.dimension), d=self.dimension)
+        f = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
+                              d=self.dimension)
         f_hat_self, f_hat_sklearn, f_hat_iterative = self._approximate(f, self.grid, True, self.degree, self.dimension)
 
         y_hat_self = f_hat_self(self.test_grid)
@@ -241,8 +241,8 @@ class LeastSquaresTests(unittest.TestCase):
         self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=1e-3).all())
 
     def test_self_implemented_discontinuous(self):
-        f = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension),
-                              w=sample(self.dimension), d=self.dimension)
+        f = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
+                              d=self.dimension)
         f_hat_self, f_hat_sklearn, f_hat_iterative = self._approximate(f, self.grid, True, self.degree, self.dimension)
 
         y_hat_self = f_hat_self(self.test_grid)
