@@ -256,11 +256,12 @@ def run_experiments():
                     c_smol = c[0::n_functions_per_type_parallel, :]
 
                     run_experiments_smolyak(dim=dim, w=w_smol, c=c_smol, scale=scale, test_grid_seed=test_grid_seed,
-                        n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
+                                            n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
                 else:
                     run_experiments_least_squares(dim=dim, degree=degree, w=w, c=c,
-                        n_parallel=n_functions_per_type_parallel, scale=scale, test_grid_seed=test_grid_seed,
-                        n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
+                                                  n_parallel=n_functions_per_type_parallel, scale=scale,
+                                                  test_grid_seed=test_grid_seed, n_test_samples=n_test_samples, lb=lb,
+                                                  ub=ub, path=None)
 
                 pbar.update(1)
 

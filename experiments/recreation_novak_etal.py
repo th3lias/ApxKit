@@ -1,21 +1,18 @@
+from typing import Callable
+
 import numpy as np
 
+from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid import Grid
+from grid.grid_provider import GridProvider, GridType
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares as least_squares
+from interpolate.smolyak import SmolyakInterpolator
 from utils import utils
 from utils.utils import l2_error, max_abs_error, sample
 
-from typing import Callable
 
-from grid.grid_provider import GridProvider, GridType
-from genz.genz_functions import GenzFunctionType, get_genz_function
-from interpolate.smolyak import SmolyakInterpolator
-from interpolate.least_squares import approximate_by_polynomial_with_least_squares as least_squares
-
-
-def test_params_novak(fun_type: GenzFunctionType, scale: int, sum_c: float,
-                      grid: np.ndarray, dimension: int = 10,
-                      lower: float = 0.0,
-                      upper: float = 1.0):
+def test_params_novak(fun_type: GenzFunctionType, scale: int, sum_c: float, grid: np.ndarray, dimension: int = 10,
+                      lower: float = 0.0, upper: float = 1.0):
     """
     tests the parameters such that we can figure out the corresponding hyperparameter c and w in order to reproduce
     results from the paper from 2000

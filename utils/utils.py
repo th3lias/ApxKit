@@ -201,8 +201,7 @@ def sample(dim: int | tuple[int], low: float = 0., high: float = 1.):
     return np.random.uniform(low=low, high=high, size=dim)
 
 
-def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
-                path: Union[str, None] = None):
+def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path: Union[str, None] = None):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
@@ -220,8 +219,8 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
 
-    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'],
-                       axis=1, inplace=True)
+    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
+                       inplace=True)
 
     degrees = filtered_data['degree'].unique()
 

@@ -1,12 +1,13 @@
 import itertools
-import time
 import multiprocessing
-from genz.genz_functions import get_genz_function
-from genz.genz_functions import GenzFunctionType
+import time
+
 import numpy as np
 
-from interpolate.least_squares import approximate_by_polynomial_with_least_squares_iterative
+from genz.genz_functions import GenzFunctionType
+from genz.genz_functions import get_genz_function
 from interpolate.least_squares import approximate_by_polynomial_with_least_squares
+from interpolate.least_squares import approximate_by_polynomial_with_least_squares_iterative
 
 
 def test_configuration_iterative(param_dict, q):

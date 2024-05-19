@@ -1,7 +1,9 @@
 import unittest
+
 import numpy as np
-from genz.genz_functions import get_genz_function
+
 from genz.genz_function_types import GenzFunctionType
+from genz.genz_functions import get_genz_function
 
 
 class GenzFunctionTests(unittest.TestCase):
@@ -77,8 +79,8 @@ class GenzFunctionTests(unittest.TestCase):
     def test_oscillatory_4d(self):
         d = 4
 
-        f_hat = get_genz_function(GenzFunctionType.OSCILLATORY,
-                                  np.array([-12, -12, 1, 2.3]), np.array([1.2, 0, 1, 4]), d)
+        f_hat = get_genz_function(GenzFunctionType.OSCILLATORY, np.array([-12, -12, 1, 2.3]), np.array([1.2, 0, 1, 4]),
+                                  d)
         f = lambda t: np.cos(- 12 * t[:, 0] - 12 * t[:, 1] + t[:, 2] + 2.3 * t[:, 3] + 2 * np.pi * 1.2)
 
         data = self.get_4d_test_points()
@@ -307,8 +309,7 @@ class GenzFunctionTests(unittest.TestCase):
         d = 4
 
         f_hat = get_genz_function(GenzFunctionType.CONTINUOUS, c=np.array([np.sqrt(2), 1 / 6, 0.237, -3]),
-                                  w=np.array([0, -2, 1, -1 / 2]),
-                                  d=d)
+                                  w=np.array([0, -2, 1, -1 / 2]), d=d)
         f = lambda t: np.exp(
             -np.sqrt(2) * np.abs(t[:, 0]) - 1 / 6 * np.abs(t[:, 1] + 2) - 0.237 * np.abs(t[:, 2] - 1) + 3 * np.abs(
                 t[:, 3] + 1 / 2))
@@ -373,8 +374,7 @@ class GenzFunctionTests(unittest.TestCase):
         d = 4
 
         f_hat = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=np.array([np.sqrt(2), 1 / 6, 1.1, -0.7]),
-                                  w=np.array([0, -2, 0, 0]),
-                                  d=d)
+                                  w=np.array([0, -2, 0, 0]), d=d)
 
         def f(x):
             return np.array(

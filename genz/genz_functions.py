@@ -1,5 +1,7 @@
 from typing import Callable
+
 import numpy as np
+
 from genz.genz_function_types import GenzFunctionType
 
 

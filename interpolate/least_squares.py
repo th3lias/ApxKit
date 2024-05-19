@@ -1,15 +1,16 @@
-import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
 from typing import Callable, Union, List
+
+import numpy as np
 from scipy.sparse.linalg import lsmr
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 
 from grid.grid import Grid
 from interpolate.interpolator import Interpolator
 
 
-def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: int, degree: int,
-                                                           grid: np.ndarray, include_bias: bool) -> Callable:
+def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: int, degree: int, grid: np.ndarray,
+                                                           include_bias: bool) -> Callable:
     """
     Approximation of a function with a polynomial by least squares iterative approach (using the lsmr algorithm).
     :param f: function that needs to be approximated
@@ -31,6 +32,7 @@ def approximate_by_polynomial_with_least_squares_iterative(f: Callable, dim: int
         pol = PolynomialFeatures(degree=degree, include_bias=include_bias)
         x_pol = pol.fit_transform(x)
         return x_pol @ coeff
+
     return f_hat
 
 

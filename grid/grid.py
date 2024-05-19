@@ -30,8 +30,8 @@ class Grid:
         return self.grid
 
     def __eq__(self, other):
-        return (self.dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound) == \
-               (other.dim, other.scale, other.grid_type, other.lower_bound, other.upper_bound)
+        return (self.dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound) == (
+            other.dim, other.scale, other.grid_type, other.lower_bound, other.upper_bound)
 
     def __hash__(self):
         return hash((self.dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound))
