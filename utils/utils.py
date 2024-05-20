@@ -1,15 +1,18 @@
+from __future__ import annotations
+
 import os
-from typing import Callable, Union
 import time
+from typing import Callable, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from genz.genz_functions import GenzFunctionType
+from genz.genz_function_types import GenzFunctionType
+from grid.grid import Grid
 
 
-def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
+def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[float, np.ndarray]:
     """
     Calculates the L_2 error estimate by comparing the true function values and the approximated function values by
     calculating the mean-squared absolute difference
@@ -25,7 +28,7 @@ def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float
     return error
 
 
-def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.float64, np.ndarray]:
+def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[float, np.ndarray]:
     """
     Calculates the estimated max absolute value distance by comparing the true function values and the approximated
     function values by calculating the max absolute difference
@@ -40,7 +43,7 @@ def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[np.floa
     return error
 
 
-def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
+def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> float:
     """
     Calculates the L_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
     calculating the mean-squared absolute difference
@@ -56,7 +59,7 @@ def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     return l2_error_function_values(y=y, y_hat=y_hat)
 
 
-def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
+def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> float:
     """
         Calculates the estimated max absolute value distance by comparing the true function and the approximation f_hat
         on a test grid by calculating the mean-squared absolute difference
@@ -72,13 +75,14 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> np.float64:
     return max_error_function_values(y=y, y_hat=y_hat)
 
 
-def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
+def visualize_point_grid_2d(points: Grid, alpha: float) -> None:
     """
     Visualizes a 2D point grid in a scatter plot
     :param points: array that contains the points. Needs to be of shape (n, 2)
     :param alpha: specifies the opacity of the points
     :return:
     """
+    points = points.grid
     if np.shape(points)[1] != 2:
         raise ValueError("points must be a 2-dimensional array")
 
@@ -94,13 +98,14 @@ def visualize_point_grid_2d(points: np.ndarray, alpha: np.float64) -> None:
     plt.show()
 
 
-def visualize_point_grid_3d(points: np.ndarray, alpha: np.float64) -> None:
+def visualize_point_grid_3d(points: Grid, alpha: float) -> None:
     """
         Visualizes a 3D point grid in a scatter plot
         :param points: array that contains the points. Needs to be of shape (n, 3)
         :param alpha: specifies the opacity of the points
         :return:
         """
+    points = points.grid
     if np.shape(points)[1] != 3:
         raise ValueError("points must be a 3-dimensional array")
 
@@ -152,47 +157,6 @@ def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
     return np.array(unique_rows)
 
 
-def _remove_duplicates_squared_memory(arr: np.ndarray, tol: np.float32 = np.float32(1e-8)):
-    """
-    This method is only reference for testing purposes. It should not be used in production.
-    :param arr:
-    :param tol:
-    :return:
-    """
-    if arr.size == 0:
-        return arr
-    diffs = np.sqrt(((arr[:, np.newaxis] - arr[np.newaxis, :]) ** 2).sum(axis=2))
-    close = diffs <= tol
-    not_dominated = ~np.any(np.triu(close, k=1), axis=0)
-    unique_rows = arr[not_dominated]
-    return unique_rows
-
-
-def _remove_duplicates_linear_memory_naive(arr: np.ndarray, tol: np.float32 = np.float32(1e-8)):
-    """
-    This method is only reference for testing purposes. It should not be used in production.
-    :param arr:
-    :param tol:
-    :return:
-    """
-    if arr.size == 0:
-        return arr
-
-    unique_rows = []
-    # Iterate over each row
-    for row in arr:
-        # Compute the distance from the current row to all unique rows
-        if unique_rows:
-            diffs = np.linalg.norm(np.array(unique_rows) - row, axis=1)
-            # Check if there is any row in the unique_rows close to the current row
-            if not np.any(diffs <= tol):
-                unique_rows.append(row)
-        else:
-            unique_rows.append(row)
-
-    return np.array(unique_rows)
-
-
 def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     """
     Plot the results of the experiments by plotting the errors vs the scale (proportional to number of samples)
@@ -233,8 +197,11 @@ def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
     plt.show()
 
 
-def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
-                path: Union[str, None] = None):
+def sample(dim: int | tuple[int], low: float = 0., high: float = 1.):
+    return np.random.uniform(low=low, high=high, size=dim)
+
+
+def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path: Union[str, None] = None):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
@@ -252,8 +219,8 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range,
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
 
-    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'],
-                       axis=1, inplace=True)
+    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
+                       inplace=True)
 
     degrees = filtered_data['degree'].unique()
 

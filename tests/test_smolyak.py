@@ -3,17 +3,17 @@ import unittest
 import numpy as np
 
 from genz.genz_functions import get_genz_function, GenzFunctionType
-from smolyak.smolyak import SmolyakInterpolation
+from interpolate.smolyak import SmolyakInterpolator
 
 
 class Smolyak(unittest.TestCase):
-
+    # TODO: Clean this up a bit
     @staticmethod
     def test_smolyak_implementation_oscillatory():
         np.random.seed(42)
 
-        dim = np.int8(5)
-        scale = np.int8(3)
+        dim = 5
+        scale = 3
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -24,9 +24,9 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale)
+        sy = SmolyakInterpolator(dim, scale)
 
-        f_hat_smolyak = sy.approximate(f)
+        f_hat_smolyak = sy.interpolate(f)
 
         y_hat_smolyak = f_hat_smolyak(test_grid)
 
@@ -45,8 +45,8 @@ class Smolyak(unittest.TestCase):
     def test_smolyak_implementation_product_peak():
         np.random.seed(42)
 
-        dim = np.int8(5)
-        scale = np.int8(3)
+        dim = 5
+        scale = 3
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -57,9 +57,9 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale)
+        sy = SmolyakInterpolator(dim, scale)
 
-        f_hat_smolyak = sy.approximate(f)
+        f_hat_smolyak = sy.interpolate(f)
 
         y_hat_smolyak = f_hat_smolyak(test_grid)
 
@@ -78,8 +78,8 @@ class Smolyak(unittest.TestCase):
     def test_smolyak_implementation_corner_peak():
         np.random.seed(42)
 
-        dim = np.int8(5)
-        scale = np.int8(3)
+        dim = 5
+        scale = 3
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -90,9 +90,9 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale)
+        sy = SmolyakInterpolator(dim, scale)
 
-        f_hat_smolyak = sy.approximate(f)
+        f_hat_smolyak = sy.interpolate(f)
 
         y_hat_smolyak = f_hat_smolyak(test_grid)
 
@@ -111,8 +111,8 @@ class Smolyak(unittest.TestCase):
     def test_smolyak_implementation_gaussian():
         np.random.seed(42)
 
-        dim = np.int8(5)
-        scale = np.int8(3)
+        dim = int(5)
+        scale = int(3)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -123,9 +123,9 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale)
+        sy = SmolyakInterpolator(dim, scale)
 
-        f_hat_smolyak = sy.approximate(f)
+        f_hat_smolyak = sy.interpolate(f)
 
         y_hat_smolyak = f_hat_smolyak(test_grid)
 
@@ -144,8 +144,8 @@ class Smolyak(unittest.TestCase):
     def test_smolyak_implementation_continuous():
         np.random.seed(42)
 
-        dim = np.int8(5)
-        scale = np.int8(3)
+        dim = int(5)
+        scale = int(3)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -156,9 +156,9 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale)
+        sy = SmolyakInterpolator(dim, scale)
 
-        f_hat_smolyak = sy.approximate(f)
+        f_hat_smolyak = sy.interpolate(f)
 
         y_hat_smolyak = f_hat_smolyak(test_grid)
 
@@ -177,8 +177,8 @@ class Smolyak(unittest.TestCase):
     def test_smolyak_implementation_discontinuous():
         np.random.seed(42)
 
-        dim = np.int8(5)
-        scale = np.int8(3)
+        dim = int(5)
+        scale = int(3)
         n_test_samples = 1000
 
         c = np.random.uniform(low=0, high=1, size=dim)
@@ -189,9 +189,9 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolation(dim, scale)
+        sy = SmolyakInterpolator(dim, scale)
 
-        f_hat_smolyak = sy.approximate(f)
+        f_hat_smolyak = sy.interpolate(f)
 
         y_hat_smolyak = f_hat_smolyak(test_grid)
 

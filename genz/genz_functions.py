@@ -1,9 +1,11 @@
 from typing import Callable
+
 import numpy as np
+
 from genz.genz_function_types import GenzFunctionType
 
 
-def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array, d: np.int8) -> Callable:
+def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array, d: int) -> Callable:
     """
     Creates a callable function from the Genz family and given hyperparameters c and w.
     Note that in the original definition, the functions are only defined for [0,1]^d

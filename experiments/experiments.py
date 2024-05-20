@@ -1,36 +1,29 @@
+import datetime
 import os
+import platform
 import time
+from typing import Union
 
 import numpy as np
 import pandas as pd
-
-from typing import Union
-
 from tqdm import tqdm
-
-from least_squares.least_squares import approximate_by_polynomial_with_least_squares
-from utils.utils import max_error_function_values, l2_error_function_values
-from utils.utils import plot_errors
-from smolyak.smolyak import SmolyakInterpolation
 
 from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid_provider import GridType, GridProvider
+from interpolate.least_squares import LeastSquaresInterpolator
+from interpolate.smolyak import SmolyakInterpolator
+from utils.utils import max_error_function_values, l2_error_function_values
+from utils.utils import plot_errors
 
-import platform
 
-import datetime
-
-
-def get_no_samples(dim: np.int8, scale: np.int8):
+def get_no_samples(scale: int, dim: int = 10):
     # only holds for dim=10
     n_samples_list = [21, 221, 1581, 8801, 41265, 171425, 652065]  # TODO: [Jakob] Make valid function here
+    return int(n_samples_list[scale - 1])
 
-    return np.int32(n_samples_list[scale - 1])
 
-
-def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
-                            scale: np.int8, test_grid_seed: np.int8, n_test_samples: np.int16,
-                            lb: np.float16, ub: np.float16, path: Union[str, None] = None):
+def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, test_grid_seed: int,
+                            n_test_samples: int, lb: float, ub: float, path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
@@ -49,16 +42,15 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
     test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
                                                                                      scale=n_test_samples)
 
-    n_function_types = np.int16(len(GenzFunctionType))
+    n_function_types = int(len(GenzFunctionType))
 
-    n_samples = get_no_samples(dim, scale)
+    n_samples = get_no_samples(scale)
 
-    si = SmolyakInterpolation(dimension=dim, scale=scale)
+    si = SmolyakInterpolator(dimension=dim, scale=scale)
 
     function_names = list()
 
     ell_2_error_list = list()
-    min_error_list = list()
     max_error_list = list()
     needed_time_list = list()
 
@@ -67,7 +59,7 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
         f = get_genz_function(function_type=fun_type, d=dim, c=c[i], w=w[i])
         y = f(test_grid)
         function_names.append(fun_type.name)
-        f_hat = si.approximate(f)
+        f_hat = si.interpolate(f)
         y_hat = f_hat(test_grid)
 
         ell_2_error_list.append(l2_error_function_values(y, y_hat))
@@ -121,9 +113,9 @@ def run_experiments_smolyak(dim: np.int8, w: np.ndarray, c: np.ndarray,
     data.to_csv(path, sep=',', index=False)
 
 
-def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, c: np.ndarray, n_parallel: np.int16,
-                                  scale: np.int8, test_grid_seed: np.int8, n_test_samples: np.int16,
-                                  lb: np.float16, ub: np.float16, path: Union[str, None] = None):
+def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.ndarray, n_parallel: int, scale: int,
+                                  test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
+                                  path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
@@ -143,13 +135,13 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
 
     np.random.seed(test_grid_seed)
 
-    n_samples = get_no_samples(dim, scale)
+    n_samples = get_no_samples(scale)
 
     grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_samples)
     test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
                                                                                      scale=n_test_samples)
 
-    n_function_types = np.int16(6)
+    n_function_types = int(6)
 
     functions = list()
     function_names = list()
@@ -164,10 +156,9 @@ def run_experiments_least_squares(dim: np.int8, degree: np.int8, w: np.ndarray, 
             y[index, :] = f(test_grid)
             function_names.append(fun_type.name)
 
-    f_hat = approximate_by_polynomial_with_least_squares(functions, degree=degree, include_bias=True,
-                                                         self_implemented=True,
-                                                         dim=dim, grid=grid)
-
+    lsq = LeastSquaresInterpolator(degree, include_bias=True, grid=grid)
+    f_hat = lsq.interpolate(functions)
+    
     y_hat = f_hat(test_grid)
 
     l_2_error = l2_error_function_values(y, y_hat)
@@ -224,13 +215,13 @@ def run_experiments():
     """
     Runs multiple experiments for least-squares with various parameter combinations
     """
-    n_functions_per_type_parallel = np.int16(25)
-    n_function_types = np.int16(6)
+    n_functions_per_type_parallel = int(25)
+    n_function_types = int(6)
 
-    lb = np.float16(0.0)
-    ub = np.float16(1.0)
-    test_grid_seed = np.int8(42)
-    n_test_samples = np.int8(50)
+    lb = float(0.0)
+    ub = float(1.0)
+    test_grid_seed = 42
+    n_test_samples = 50
 
     scale_range = range(1, 8)
     dim_range = range(10, 31)
@@ -238,7 +229,7 @@ def run_experiments():
 
     n_iterations = len(scale_range) * len(dim_range) * len(degree_range)
 
-    sum_c = [np.float16(9.0), np.float16(7.25), np.float16(1.85), np.float16(7.03), np.float16(20.4), np.float16(4.3)]
+    sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
 
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
@@ -249,7 +240,7 @@ def run_experiments():
         for degree in degree_range:
             for scale in scale_range:
 
-                n_samples = get_no_samples(np.int8(dim), np.int8(scale))
+                n_samples = get_no_samples(scale)
 
                 pbar.set_postfix({"Dimension": dim, "Degree": degree, "Scale": scale, "n_samples": n_samples})
 
@@ -264,29 +255,13 @@ def run_experiments():
                     w_smol = w[0::n_functions_per_type_parallel, :]
                     c_smol = c[0::n_functions_per_type_parallel, :]
 
-                    run_experiments_smolyak(
-                        dim=np.int8(dim),
-                        w=w_smol,
-                        c=c_smol,
-                        scale=np.int8(scale),
-                        test_grid_seed=test_grid_seed,
-                        n_test_samples=n_test_samples,
-                        lb=lb,
-                        ub=ub,
-                        path=None)
+                    run_experiments_smolyak(dim=dim, w=w_smol, c=c_smol, scale=scale, test_grid_seed=test_grid_seed,
+                                            n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
                 else:
-                    run_experiments_least_squares(
-                        dim=np.int8(dim),
-                        degree=np.int8(degree),
-                        w=w,
-                        c=c,
-                        n_parallel=n_functions_per_type_parallel,
-                        scale=np.int8(scale),
-                        test_grid_seed=test_grid_seed,
-                        n_test_samples=n_test_samples,
-                        lb=lb,
-                        ub=ub,
-                        path=None)
+                    run_experiments_least_squares(dim=dim, degree=degree, w=w, c=c,
+                                                  n_parallel=n_functions_per_type_parallel, scale=scale,
+                                                  test_grid_seed=test_grid_seed, n_test_samples=n_test_samples, lb=lb,
+                                                  ub=ub, path=None)
 
                 pbar.update(1)
 
