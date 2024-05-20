@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Callable, Union
+from typing import Callable, Union, List
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -286,3 +286,85 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
             fig.suptitle(f'{function_type.name}, c={name}')
             plt.tight_layout()
             plt.show()
+
+
+def _comp_next(n: int, k: int, a: List[int], more, h, t) -> bool:
+    """
+    Helper method which is used to calculate the number of points in a chebyshev sparse grid.
+
+    This function generates the next lexicographical composition of the integer `n` into `k` parts.
+    A composition of `n` is a way of writing `n` as the sum of `k` non-negative integers.
+
+    based on method comp_next in
+    https://people.math.sc.edu/Burkardt/cpp_src/sandia_rules/sandia_rules.cpp
+
+    Parameters:
+    :param n: The integer to be composed.
+    :param k: The number of parts in the composition.
+    :param a: The current composition (to be modified in place).
+    :param more: A flag indicating if there are more compositions to generate.
+    :param h: A helper list used for intermediate calculations (modified in place).
+    :param t: A helper list used for intermediate calculations (modified in place).
+
+    Returns:
+    :return: True if the composition `a` is not the final composition of `n` into `k` parts, False otherwise.
+    """
+
+    if not more:
+        t[0] = n
+        h[0] = 0
+        a[0] = n
+        for i in range(1, k):
+            a[i] = 0
+    else:
+        if t[0] > 1:
+            h[0] = 0
+        h[0] += 1
+        t[0] = a[h[0] - 1]
+        a[h[0] - 1] = 0
+        a[0] = t[0] - 1
+        a[h[0]] += 1
+
+    return a[k - 1] != n
+
+
+def no_points_in_chebyshev_grid(scale: int, dimension: int) -> int:
+    """
+    Calculates the number of points in a sparse chebyshev grid
+    based on
+    http://people.sc.fsu.edu/∼jburkardt/presentations/sgmga_counting.pdf
+
+    Parameters:
+    :param scale: The fineness parameter of the chebyshev sparse grid
+    :param dimension: The dimension of the chebyshev sparse grid
+
+    Returns:
+    :return: The number of points in the chebyshev grid
+    """
+
+    array = [0] * (scale + 1)
+    array[0] = 1
+    array[1] = 2
+    j = 1
+    for l in range(2, scale + 1):
+        j *= 2
+        array[l] = j
+
+    level = [0] * dimension
+    no_points = 0
+
+    for l in range(scale + 1):
+        more = False
+        h = [0]
+        t = [0]
+
+        while True:
+            more = _comp_next(l, dimension, level, more, h, t)
+            v = 1
+            for dim in range(dimension):
+                v *= array[level[dim]]
+            no_points += v
+            if not more:
+                break
+
+    return no_points

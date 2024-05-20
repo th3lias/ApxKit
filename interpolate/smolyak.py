@@ -1,7 +1,9 @@
 from functools import reduce
 from itertools import chain, combinations_with_replacement, product
 from operator import mul
-from typing import Callable, Union, List, Tuple
+from typing import Callable, Union, List, Tuple, Generator
+from grid.grid import Grid
+import math
 
 import numpy as np
 from scipy.linalg import lu
@@ -31,7 +33,7 @@ class SmolyakInterpolator(Interpolator):
         l, u = lu(basis, permute_l=True)[-2:]
         coeff = np.linalg.solve(u, np.linalg.solve(l, f(self.grid.grid)))
 
-        def f_hat(data):
+        def f_hat(data:Union[np.ndarray, jnp.ndarray])->Union[np.ndarray, jnp.ndarray]:
             data_smolyak = self._build_basis(grid=data, b_idx=self._b_idx)
             return data_smolyak @ coeff
 
@@ -180,37 +182,37 @@ class SmolyakInterpolator(Interpolator):
             return 2 ** (i - 1) + 1
 
     @staticmethod
-    def _permute(a):
+    def _permute(array: Union[list, np.array]) -> Generator:
         """
-        Creates all unique combinations of a list a that is passed in.
-        Function is based off of a function written by John Lettman:
-        TCHS Computer Information Systems.  My thanks to him.
+        Creates a generator object that yields all permutations of the given array/list. At the beginning, the array/list
+        gets sorted.
+        :param array: Array or List where the permutations should be calculated
         """
-        a.sort()  # Sort.
-        # Output the first input sorted.
-        yield list(a)
-        first = 0
-        alen = len(a)
-        # "alen" could also be used for the reference to the last element.
-        while True:
-            i = alen - 1
-            while True:
-                i -= 1  # i--
-                if a[i] < a[(i + 1)]:
-                    j = alen - 1
-                    while a[i] >= a[j]:
-                        j -= 1  # j--
-                    a[i], a[j] = a[j], a[i]  # swap(a[j], a[i])
-                    t = a[(i + 1):alen]
-                    t.reverse()
-                    a[(i + 1):alen] = t
-                    # Output current.
-                    yield list(a)
-                    break  # next.
-                if i == first:
-                    a.reverse()
-                    # yield list(a)
-                    return
+        if isinstance(array, np.ndarray):
+            if array.ndim == 1:
+                n = array.shape[0]
+                array = np.sort(array)
+            else:
+                raise ValueError(
+                    f"Wrong number of dimension for the parameter 'array'. Expected ndim=1 but got {array.ndim}")
+        elif isinstance(array, list):
+            n = len(array)
+            array = np.array(sorted(array))
+        else:
+            raise ValueError(f"Expected 'array' to be a list or a np.ndarray but got {type(array)}")
+
+        idx_permutation_array = np.zeros((math.factorial(n), n), np.uint8)
+        f = 1
+        for m in range(2, n + 1):
+            b = idx_permutation_array[:f, n - m + 1:]
+            for i in range(1, m):
+                idx_permutation_array[i * f:(i + 1) * f, n - m] = i
+                idx_permutation_array[i * f:(i + 1) * f, n - m + 1:] = b + (b >= i)
+            b += 1
+            f *= m
+
+        for permuted_index in idx_permutation_array:
+            yield array[permuted_index].tolist()
 
     @staticmethod
     def _cheby2n(x, n):

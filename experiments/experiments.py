@@ -14,12 +14,7 @@ from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import plot_errors
-
-
-def get_no_samples(scale: int, dim: int = 10):
-    # only holds for dim=10
-    n_samples_list = [21, 221, 1581, 8801, 41265, 171425, 652065]  # TODO: [Jakob] Make valid function here
-    return int(n_samples_list[scale - 1])
+from utils.utils import no_points_in_chebyshev_grid
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, test_grid_seed: int,
@@ -40,11 +35,11 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
     np.random.seed(test_grid_seed)
 
     test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
-                                                                                     scale=n_test_samples)
+                                                                                     scale=scale)
 
     n_function_types = int(len(GenzFunctionType))
 
-    n_samples = get_no_samples(scale)
+    n_samples = no_points_in_chebyshev_grid(scale, dim)
 
     si = SmolyakInterpolator(dimension=dim, scale=scale)
 
@@ -57,10 +52,10 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
     for i, fun_type in enumerate(GenzFunctionType):
         start_time = time.time()
         f = get_genz_function(function_type=fun_type, d=dim, c=c[i], w=w[i])
-        y = f(test_grid)
+        y = f(test_grid.grid)
         function_names.append(fun_type.name)
         f_hat = si.interpolate(f)
-        y_hat = f_hat(test_grid)
+        y_hat = f_hat(test_grid.grid)
 
         ell_2_error_list.append(l2_error_function_values(y, y_hat))
         max_error_list.append(max_error_function_values(y, y_hat))
@@ -135,11 +130,11 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
 
     np.random.seed(test_grid_seed)
 
-    n_samples = get_no_samples(scale)
+    n_samples = no_points_in_chebyshev_grid(scale, dim)
 
-    grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_samples)
+    grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=scale)
     test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
-                                                                                     scale=n_test_samples)
+                                                                                     scale=scale)
 
     n_function_types = int(6)
 
@@ -153,13 +148,13 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
             index = i * n_function_types + j
             f = get_genz_function(function_type=fun_type, d=dim, c=c[index, :], w=w[index, :])
             functions.append(f)
-            y[index, :] = f(test_grid)
+            y[index, :] = f(test_grid.grid)
             function_names.append(fun_type.name)
 
     lsq = LeastSquaresInterpolator(degree, include_bias=True, grid=grid)
     f_hat = lsq.interpolate(functions)
-    
-    y_hat = f_hat(test_grid)
+
+    y_hat = f_hat(test_grid.grid)
 
     l_2_error = l2_error_function_values(y, y_hat)
     max_error = max_error_function_values(y, y_hat)
@@ -240,7 +235,7 @@ def run_experiments():
         for degree in degree_range:
             for scale in scale_range:
 
-                n_samples = get_no_samples(scale)
+                n_samples = no_points_in_chebyshev_grid(scale, dim)
 
                 pbar.set_postfix({"Dimension": dim, "Degree": degree, "Scale": scale, "n_samples": n_samples})
 

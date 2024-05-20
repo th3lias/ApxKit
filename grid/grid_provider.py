@@ -6,6 +6,8 @@ import numpy as np
 from grid.grid import Grid
 from grid.grid_type import GridType
 
+from utils.utils import no_points_in_chebyshev_grid
+
 
 class GridProvider:
     """
@@ -48,10 +50,12 @@ class GridProvider:
             points = self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
             return Grid(self.dim, scale, points, grid_type)
         if grid_type == GridType.REGULAR:
-            points = self._generate_equidistant_grid(num_points=scale)
+            n_points = no_points_in_chebyshev_grid(scale, self.dim)
+            points = self._generate_equidistant_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
         if grid_type == GridType.RANDOM:
-            points = self._generate_random_grid(num_points=scale)
+            n_points = no_points_in_chebyshev_grid(scale, self.dim)
+            points = self._generate_random_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
 
     def _generate_random_grid(self, num_points: int) -> np.ndarray:
