@@ -5,7 +5,7 @@ import numpy as np
 from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid import Grid
 from grid.grid_provider import GridProvider, GridType
-from interpolate.least_squares import approximate_by_polynomial_with_least_squares as least_squares
+from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils import utils
 from utils.utils import l2_error, max_abs_error, sample
@@ -48,20 +48,22 @@ def plots_novak(f: Callable, name: str, grid: Grid, degree_ls: int, scales: rang
     results['smolyak'] = dict()
     results['least_squares'] = dict()
 
+    lsq = LeastSquaresInterpolator(degree_ls, True, None, True, False)
     for scale in scales:
+        print(f'Starting with scale {scale} for {name}')
+        print(f'Starting Smolyak Approximation')
         si = SmolyakInterpolator(dim, scale)
-        print("Done with Smolyak Interpolation")
         n_samples = si.grid.grid.shape[0]
         f_hat_smolyak = si.interpolate(f)
-
         print("Done with Smolyak Approximation")
 
+        print(f'Starting Least Squares Approximation')
         train_grid = GridProvider(dim).generate(GridType.RANDOM, scale=n_samples)
-
-        f_hat_ls = least_squares(f, dim, degree_ls, train_grid, include_bias=True, self_implemented=True)
-
+        lsq.set_grid(train_grid)
+        f_hat_ls = lsq.interpolate(f)
         print("Done with Least Squares Approximation")
 
+        print(f'Calculating errors')
         max_abs_ls = max_abs_error(f, f_hat_ls, grid=grid.grid)
         max_abs_smolyak = max_abs_error(f, f_hat_smolyak, grid=grid.grid)
         ell_2_ls = l2_error(f, f_hat_ls, grid=grid.grid)
@@ -103,5 +105,5 @@ if __name__ == '__main__':
     _c = 9.0 * _c
     fun = get_genz_function(GenzFunctionType.OSCILLATORY, c=_w, w=_w, d=dim)
 
-    scale_range = range(1, 7)
+    scale_range = range(1, 4)
     plots_novak(fun, "Oscillatory", test_grid, int(3), scale_range)

@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid_provider import GridType, GridProvider
-from interpolate.least_squares import approximate_by_polynomial_with_least_squares
+from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import plot_errors
@@ -156,9 +156,9 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
             y[index, :] = f(test_grid)
             function_names.append(fun_type.name)
 
-    f_hat = approximate_by_polynomial_with_least_squares(functions, degree=degree, include_bias=True,
-                                                         self_implemented=True, dim=dim, points=grid)
-
+    lsq = LeastSquaresInterpolator(degree, include_bias=True, grid=grid)
+    f_hat = lsq.interpolate(functions)
+    
     y_hat = f_hat(test_grid)
 
     l_2_error = l2_error_function_values(y, y_hat)

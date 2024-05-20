@@ -6,8 +6,9 @@ import numpy as np
 
 from genz.genz_functions import GenzFunctionType
 from genz.genz_functions import get_genz_function
-from interpolate.least_squares import approximate_by_polynomial_with_least_squares
-from interpolate.least_squares import approximate_by_polynomial_with_least_squares_iterative
+from grid.grid_provider import GridProvider
+from grid.grid_type import GridType
+from interpolate.least_squares import LeastSquaresInterpolator
 
 
 def test_configuration_iterative(param_dict, q):
@@ -19,7 +20,10 @@ def test_configuration_iterative(param_dict, q):
     n_samples = param_dict.get('n_samples')
     del param_dict['n_samples']
     f = get_genz_function(GenzFunctionType.OSCILLATORY, w=w, c=c, d=param_dict['dim'])
-    approximate_by_polynomial_with_least_squares_iterative(f=f, **param_dict)
+    lsq = LeastSquaresInterpolator(degree=param_dict['degree'], include_bias=param_dict['include_bias'],
+                                   grid=param_dict['grid'],
+                                   self_implemented=True, iterative=True)
+    lsq.interpolate(f=f)
     end_time = time.time()
     execution_time = end_time - start_time
     del param_dict['grid']
@@ -39,7 +43,10 @@ def test_configuration(param_dict, q):
     n_samples = param_dict.get('n_samples')
     del param_dict['n_samples']
     f = get_genz_function(GenzFunctionType.OSCILLATORY, w=w, c=c, d=param_dict['dim'])
-    approximate_by_polynomial_with_least_squares(f=f, **param_dict)
+    lsq = LeastSquaresInterpolator(degree=param_dict['degree'], include_bias=param_dict['include_bias'],
+                                   grid=param_dict['grid'],
+                                   self_implemented=True, iterative=False)
+    lsq.interpolate(f=f)
     end_time = time.time()
     execution_time = end_time - start_time
     del param_dict['grid']
@@ -65,21 +72,18 @@ def grid_search(params, timeout, filename, iterative):
         param_dict['w'] = w
         param_dict['c'] = c
 
-        grid = np.random.uniform(low=0, high=1, size=(int(param_dict['n_samples']), param_dict['dim']))
+        grid = GridProvider(param_dict['dim']).generate(GridType.RANDOM, scale=param_dict['n_samples'])
 
         param_dict['grid'] = grid
         param_dict['include_bias'] = False
 
-        # Run each configuration in a separate process
         if iterative:
             p = multiprocessing.Process(target=test_configuration_iterative, args=(param_dict, q))
         else:
             p = multiprocessing.Process(target=test_configuration, args=(param_dict, q))
 
         p.start()
-
         p.join(timeout=timeout)
-
         if p.is_alive():
             del param_dict['grid']
             del param_dict['include_bias']
