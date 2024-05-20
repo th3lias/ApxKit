@@ -2,7 +2,6 @@ from functools import reduce
 from itertools import chain, combinations_with_replacement, product
 from operator import mul
 from typing import Callable, Union, List, Tuple, Generator
-from grid.grid import Grid
 import math
 
 import numpy as np
@@ -33,7 +32,7 @@ class SmolyakInterpolator(Interpolator):
         l, u = lu(basis, permute_l=True)[-2:]
         coeff = np.linalg.solve(u, np.linalg.solve(l, f(self.grid.grid)))
 
-        def f_hat(data:Union[np.ndarray, jnp.ndarray])->Union[np.ndarray, jnp.ndarray]:
+        def f_hat(data: np.ndarray) -> np.ndarray:
             data_smolyak = self._build_basis(grid=data, b_idx=self._b_idx)
             return data_smolyak @ coeff
 
@@ -184,8 +183,8 @@ class SmolyakInterpolator(Interpolator):
     @staticmethod
     def _permute(array: Union[list, np.array]) -> Generator:
         """
-        Creates a generator object that yields all permutations of the given array/list. At the beginning, the array/list
-        gets sorted.
+        Creates a generator object that yields all permutations of the given array/list. At the beginning,
+        the array/list gets sorted.
         :param array: Array or List where the permutations should be calculated
         """
         if isinstance(array, np.ndarray):

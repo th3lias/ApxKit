@@ -6,7 +6,7 @@ import numpy as np
 from grid.grid import Grid
 from grid.grid_type import GridType
 
-from utils.utils import no_points_in_chebyshev_grid
+from utils.utils import calculate_num_points
 
 
 class GridProvider:
@@ -50,11 +50,11 @@ class GridProvider:
             points = self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
             return Grid(self.dim, scale, points, grid_type)
         if grid_type == GridType.REGULAR:
-            n_points = no_points_in_chebyshev_grid(scale, self.dim)
+            n_points = calculate_num_points(scale, self.dim)
             points = self._generate_equidistant_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
         if grid_type == GridType.RANDOM:
-            n_points = no_points_in_chebyshev_grid(scale, self.dim)
+            n_points = calculate_num_points(scale, self.dim)
             points = self._generate_random_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
 

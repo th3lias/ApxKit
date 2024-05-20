@@ -328,11 +328,11 @@ def _comp_next(n: int, k: int, a: List[int], more, h, t) -> bool:
     return a[k - 1] != n
 
 
-def no_points_in_chebyshev_grid(scale: int, dimension: int) -> int:
+def calculate_num_points(scale: int, dimension: int) -> int:
     """
     Calculates the number of points in a sparse chebyshev grid
     based on
-    http://people.sc.fsu.edu/∼jburkardt/presentations/sgmga_counting.pdf
+    https://people.math.sc.edu/Burkardt/presentations/sgmga_counting.pdf
 
     Parameters:
     :param scale: The fineness parameter of the chebyshev sparse grid
@@ -346,20 +346,20 @@ def no_points_in_chebyshev_grid(scale: int, dimension: int) -> int:
     array[0] = 1
     array[1] = 2
     j = 1
-    for l in range(2, scale + 1):
+    for i in range(2, scale + 1):
         j *= 2
-        array[l] = j
+        array[i] = j
 
     level = [0] * dimension
     no_points = 0
 
-    for l in range(scale + 1):
+    for i in range(scale + 1):
         more = False
         h = [0]
         t = [0]
 
         while True:
-            more = _comp_next(l, dimension, level, more, h, t)
+            more = _comp_next(i, dimension, level, more, h, t)
             v = 1
             for dim in range(dimension):
                 v *= array[level[dim]]
