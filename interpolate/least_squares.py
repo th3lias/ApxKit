@@ -107,9 +107,9 @@ class LeastSquaresInterpolator(Interpolator):
         res = lsmr(x_poly, y)
         coeff = res[0]
 
-        def f_hat(x):
+        def f_hat(data:Union[np.ndarray, jnp.ndarray])->Union[np.ndarray, jnp.ndarray]:
             pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
-            x_pol = pol.fit_transform(x)
-            return x_pol @ coeff
+            data_pol = pol.fit_transform(data)
+            return data @ coeff
 
         return f_hat
