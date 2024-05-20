@@ -27,10 +27,10 @@ class LeastSquaresInterpolator(Interpolator):
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
         assert self.grid is not None, "Grid needs to be set before interpolation"
         if self.iterative:
-            return self._approximate_by_polynomial_with_least_squares_iterative(f)
-        return self._approximate_by_polynomial_with_least_squares(f)
+            return self._approximate_iterative(f)
+        return self._approximate(f)
 
-    def _approximate_by_polynomial_with_least_squares(self, f: Union[Callable, List[Callable]]) -> Callable:
+    def _approximate(self, f: Union[Callable, List[Callable]]) -> Callable:
         """
         Approximates a (or multiple) function(s) with polynomials by least squares.
         :param f: function or list of functions that need to be approximated on the same points
@@ -50,36 +50,51 @@ class LeastSquaresInterpolator(Interpolator):
                 y[:, i] = func(grid)
         else:
             y = f(grid)
+        if self.self_implemented:
+            return self._self_implementation(y)
+        else:
+            return self._sklearn(y)
+
+    def _self_implementation(self, y: np.ndarray) -> Callable:
+        """
+        Approximation of a function with a polynomial by least squares (self-implemented).
+        :param y: calculated function values
+        :return: fitted function
+        """
+        grid = self.grid.grid
         poly = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
         x_poly = poly.fit_transform(grid)
-        if self.self_implemented:
+        y_prime = x_poly.T @ y
+        x2 = x_poly.T @ x_poly
+        coeff = np.linalg.solve(x2, y_prime)
 
-            y_prime = x_poly.T @ y
-            del y
-            x2 = x_poly.T @ x_poly
-            del x_poly
-            coeff = np.linalg.solve(x2, y_prime)
-
-            def f_hat(x):
-                pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
-                x_pol = pol.fit_transform(x)
-                pred = x_pol @ coeff
-                if pred.ndim == 2:
-                    return pred.T
-                return pred
-
-        else:
-            model = LinearRegression()
-            model.fit(x_poly, y)
-
-            def f_hat(x):
-                pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
-                x_pol = pol.fit_transform(x)
-                return model.predict(x_pol)
+        def f_hat(x):
+            pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
+            x_pol = pol.fit_transform(x)
+            return x_pol @ coeff
 
         return f_hat
 
-    def _approximate_by_polynomial_with_least_squares_iterative(self, f: Callable) -> Callable:
+    def _sklearn(self, y: np.ndarray) -> Callable:
+        """
+        Approximation of a function with a polynomial by least squares (using the sklearn library).
+        :param y: calculated function values
+        :return: fitted function
+        """
+        grid = self.grid.grid
+        poly = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
+        x_poly = poly.fit_transform(grid)
+        model = LinearRegression()
+        model.fit(x_poly, y)
+
+        def f_hat(x):
+            pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
+            x_pol = pol.fit_transform(x)
+            return model.predict(x_pol)
+
+        return f_hat
+
+    def _approximate_iterative(self, f: Callable) -> Callable:
         """
         Approximation of a function with a polynomial by least squares iterative approach (using the lsmr algorithm).
         :param f: function that needs to be approximated
