@@ -47,11 +47,12 @@ class GridProvider:
         if scale is None:
             raise ValueError("Please provide the fineness parameter of the grid")
 
-        n_points = calculate_num_points(scale, self.dim)
-
         if grid_type == GridType.CHEBYSHEV:
             points = self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
             return Grid(self.dim, scale, points, grid_type)
+
+        n_points = calculate_num_points(scale, self.dim)
+
         if grid_type == GridType.REGULAR:
             points = self._generate_equidistant_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
