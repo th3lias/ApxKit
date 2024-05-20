@@ -63,7 +63,6 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
         needed_time = end_time - start_time
         needed_time_list.append(needed_time)
 
-    username = os.getlogin()
     cpu = platform.processor()
     cur_datetime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
@@ -83,7 +82,6 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
         row_entry['f_name'] = function_names[i]
         row_entry['l_2_error'] = ell_2_error_list[i]
         row_entry['max_error'] = max_error_list[i]
-        row_entry['user'] = username
         row_entry['cpu'] = cpu
         row_entry['datetime'] = cur_datetime
         row_entry['needed_time'] = needed_time_list[i]
@@ -162,7 +160,6 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
     end_time = time.time()
     needed_time = end_time - start_time
 
-    username = os.getlogin()
     cpu = platform.processor()
     cur_datetime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
@@ -182,7 +179,6 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
         row_entry['f_name'] = function_names[i]
         row_entry['l_2_error'] = l_2_error[i]
         row_entry['max_error'] = max_error[i]
-        row_entry['user'] = username
         row_entry['cpu'] = cpu
         row_entry['datetime'] = cur_datetime
         row_entry['needed_time'] = needed_time
@@ -264,5 +260,5 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    # run_experiments()
-    plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 8))
+    run_experiments()
+    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 8))

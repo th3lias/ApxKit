@@ -1,8 +1,7 @@
 from functools import reduce
-from itertools import chain, combinations_with_replacement, product
+from itertools import chain, combinations_with_replacement, product, permutations
 from operator import mul
 from typing import Callable, Union, List, Tuple, Generator
-import math
 
 import numpy as np
 from scipy.linalg import lu
@@ -114,11 +113,12 @@ class SmolyakInterpolator(Interpolator):
         if grid is None:
             grid = self.grid.grid
 
-        ts = self._cheby2n(grid.T, self._m_i(scale + 1))
+        ts = self._cheby2n(x=grid.T, n=self._m_i(scale + 1))
         n_polys = len(self._b_idx)
         npts = grid.shape[0]
         basis = np.empty((npts, n_polys), order='F')
         for ind, comb in enumerate(self._b_idx):
+            # multiplying the polynomials for each dimension
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
         return basis
 
@@ -181,37 +181,33 @@ class SmolyakInterpolator(Interpolator):
             return 2 ** (i - 1) + 1
 
     @staticmethod
-    def _permute(array: Union[list, np.array]) -> Generator:
+    def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
         """
-        Creates a generator object that yields all permutations of the given array/list. At the beginning,
-        the array/list gets sorted.
+        Creates a generator object that yields all permutations of the given array/list. The permutations are unique,
+        if the parameter drop_duplicates is set to True
+        At the beginning, the array/list gets sorted.
         :param array: Array or List where the permutations should be calculated
+        :param drop_duplicates: If True, a permutation which is the same as another permutation since there were
+        duplicate values in the array is dropped, otherwise it is kept
         """
         if isinstance(array, np.ndarray):
             if array.ndim == 1:
-                n = array.shape[0]
                 array = np.sort(array)
             else:
                 raise ValueError(
-                    f"Wrong number of dimension for the parameter 'array'. Expected ndim=1 but got {array.ndim}")
+                    f"Wrong number of dimensions for the parameter 'array'. Expected ndim=1 but got {array.ndim}"
+                )
         elif isinstance(array, list):
-            n = len(array)
-            array = np.array(sorted(array))
+            array = sorted(array)
         else:
             raise ValueError(f"Expected 'array' to be a list or a np.ndarray but got {type(array)}")
 
-        idx_permutation_array = np.zeros((math.factorial(n), n), np.uint8)
-        f = 1
-        for m in range(2, n + 1):
-            b = idx_permutation_array[:f, n - m + 1:]
-            for i in range(1, m):
-                idx_permutation_array[i * f:(i + 1) * f, n - m] = i
-                idx_permutation_array[i * f:(i + 1) * f, n - m + 1:] = b + (b >= i)
-            b += 1
-            f *= m
+        seen = set()
 
-        for permuted_index in idx_permutation_array:
-            yield array[permuted_index].tolist()
+        for perm in permutations(array):
+            if perm not in seen or not drop_duplicates:
+                seen.add(perm)
+                yield list(perm)
 
     @staticmethod
     def _cheby2n(x, n):
@@ -241,5 +237,5 @@ class SmolyakInterpolator(Interpolator):
         results[0, ...] = np.ones(dim)
         results[1, ...] = x
         for i in range(2, n + 1):
-            results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
+            results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]  # T_{n+1} = 2 x T_n - T_{n-1}
         return results
