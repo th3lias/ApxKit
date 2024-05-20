@@ -68,10 +68,10 @@ class LeastSquaresInterpolator(Interpolator):
         x2 = x_poly.T @ x_poly
         coeff = np.linalg.solve(x2, y_prime)
 
-        def f_hat(x):
+        def f_hat(data: np.ndarray) -> np.ndarray:
             pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
-            x_pol = pol.fit_transform(x)
-            return x_pol @ coeff
+            data_pol = pol.fit_transform(data)
+            return data_pol @ coeff
 
         return f_hat
 
@@ -87,10 +87,10 @@ class LeastSquaresInterpolator(Interpolator):
         model = LinearRegression()
         model.fit(x_poly, y)
 
-        def f_hat(x):
+        def f_hat(data: np.ndarray) -> np.ndarray:
             pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
-            x_pol = pol.fit_transform(x)
-            return model.predict(x_pol)
+            data_pol = pol.fit_transform(data)
+            return model.predict(data_pol)
 
         return f_hat
 
@@ -107,9 +107,9 @@ class LeastSquaresInterpolator(Interpolator):
         res = lsmr(x_poly, y)
         coeff = res[0]
 
-        def f_hat(x):
+        def f_hat(data: np.ndarray) -> np.ndarray:
             pol = PolynomialFeatures(degree=self.degree, include_bias=self.include_bias)
-            x_pol = pol.fit_transform(x)
-            return x_pol @ coeff
+            data_pol = pol.fit_transform(data)
+            return data_pol @ coeff
 
         return f_hat

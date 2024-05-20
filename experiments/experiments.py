@@ -14,12 +14,7 @@ from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import plot_errors
-
-
-def get_no_samples(scale: int, dim: int = 10):
-    # only holds for dim=10
-    n_samples_list = [21, 221, 1581, 8801, 41265, 171425, 652065]  # TODO: [Jakob] Make valid function here
-    return int(n_samples_list[scale - 1])
+from utils.utils import calculate_num_points
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, test_grid_seed: int,
@@ -39,12 +34,11 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
 
     np.random.seed(test_grid_seed)
 
-    test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
-                                                                                     scale=n_test_samples)
+    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
     n_function_types = int(len(GenzFunctionType))
 
-    n_samples = get_no_samples(scale)
+    n_samples = calculate_num_points(scale, dim)
 
     si = SmolyakInterpolator(dimension=dim, scale=scale)
 
@@ -135,11 +129,12 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
 
     np.random.seed(test_grid_seed)
 
-    n_samples = get_no_samples(scale)
+    n_samples = calculate_num_points(scale, dim)
 
-    grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM, scale=n_samples)
-    test_grid = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub).generate(GridType.RANDOM,
-                                                                                     scale=n_test_samples)
+    gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
+
+    grid = gp.generate(GridType.RANDOM, scale=scale)
+    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
     n_function_types = int(6)
 
@@ -158,7 +153,7 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
 
     lsq = LeastSquaresInterpolator(degree, include_bias=True, grid=grid)
     f_hat = lsq.interpolate(functions)
-    
+
     y_hat = f_hat(test_grid)
 
     l_2_error = l2_error_function_values(y, y_hat)
@@ -240,7 +235,7 @@ def run_experiments():
         for degree in degree_range:
             for scale in scale_range:
 
-                n_samples = get_no_samples(scale)
+                n_samples = calculate_num_points(scale, dim)
 
                 pbar.set_postfix({"Dimension": dim, "Degree": degree, "Scale": scale, "n_samples": n_samples})
 
