@@ -18,7 +18,7 @@ class PermutationTests(unittest.TestCase):
         next(gen)
         next(gen)
 
-        self.assertTrue(np.all(next(gen) == np.array([1,2,3,4,5,6,7,9,8])))
+        self.assertTrue(np.all(next(gen) == np.array([0,1,2,3,4,5,6,9,7,8])))
 
     def test_length_size10(self):
         size = 10
@@ -42,7 +42,7 @@ class PermutationTests(unittest.TestCase):
         next(gen)
         next(gen)
 
-        self.assertTrue(np.all(next(gen) == np.array([2,1,3])))
+        self.assertTrue(np.all(next(gen) == np.array([2,0,1])))
 
     def test_length_size3(self):
         size = 3
