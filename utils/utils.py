@@ -219,14 +219,11 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
 
-    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
+    filtered_data.drop(['cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
                        inplace=True)
 
-    degrees = filtered_data['degree'].unique()
-
-    smolyak_data = filtered_data[(filtered_data['degree']) == 0]
-
-    least_squares_data = filtered_data[(filtered_data['degree']) != 0]
+    smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
+    least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
 
     smolyak_data = smolyak_data.sort_values(by='scale')
     least_squares_data = least_squares_data.sort_values(by='scale')
@@ -242,18 +239,10 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
         for name, group in smolyak_data.groupby('c'):
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
-                for degree in degrees:
-                    if degree == 0:
-                        label = 'Smolyak'
-                        axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
-                    else:
-                        label = f'LS degr. {degree}'
-                        ls_filtered = least_squares_data[least_squares_data['c'] == name]
-                        ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
-                        if not ls_filtered.empty:
-                            x = scales
-                            y = ls_filtered[error][start - 1:end]
-                            axs[i].plot(x, y, label=label)
+                label = 'Smolyak'
+                axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+                label = 'Least Squares'
+                axs[i].plot(scales, least_squares_data[least_squares_data['c'] == name][error], label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
@@ -268,14 +257,8 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
         for name, group in least_squares_data.groupby('c'):
             fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
             for i, error in enumerate(errors):
-                for degree in degrees:
-                    label = f'LS degr. {degree}'
-                    ls_filtered = least_squares_data[least_squares_data['c'] == name]
-                    ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
-                    if not ls_filtered.empty:
-                        x = scales
-                        y = ls_filtered[error][start - 1:end]
-                        axs[i].plot(x, y, label=label)
+                label = 'Least Squares'
+                axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')

@@ -10,7 +10,8 @@ from tqdm import tqdm
 
 from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid_provider import GridType, GridProvider
-from interpolate.least_squares import LeastSquaresInterpolator
+from interpolate.basis_types import BasisType
+from interpolate.least_squares import
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import plot_errors
@@ -71,7 +72,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
     for i in range(n_function_types):
         row_entry = dict()
         row_entry['dim'] = dim
-        row_entry['degree'] = 0
+        row_entry['method'] = 'Smolyak'
         row_entry['w'] = w[i, :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
@@ -105,13 +106,12 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, scale: int, 
     data.to_csv(path, sep=',', index=False)
 
 
-def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.ndarray, n_parallel: int, scale: int,
+def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, n_parallel: int, scale: int,
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
                                   path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
-    :param degree: maximum degree that least-squares approximation has (sum of all exponents)
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param n_parallel: number of parallel functions per type
@@ -149,7 +149,7 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
             y[index, :] = f(test_grid)
             function_names.append(fun_type.name)
 
-    lsq = LeastSquaresInterpolator(degree, include_bias=True, grid=grid)
+    lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid)
     f_hat = lsq.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -168,7 +168,7 @@ def run_experiments_least_squares(dim: int, degree: int, w: np.ndarray, c: np.nd
     for i in range(n_parallel * n_function_types):
         row_entry = dict()
         row_entry['dim'] = dim
-        row_entry['degree'] = degree
+        row_entry['method'] = 'Least_Squares'
         row_entry['w'] = w[i, :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
@@ -215,10 +215,10 @@ def run_experiments():
     n_test_samples = 50
 
     scale_range = range(1, 8)
-    dim_range = range(10, 31)
-    degree_range = range(1, 4)  # degree 0 means Smolyak
+    dim_range = range(10, 15)
+    methods = ['Smolyak', 'Least_Squares']
 
-    n_iterations = len(scale_range) * len(dim_range) * len(degree_range)
+    n_iterations = len(scale_range) * len(dim_range) * len(methods)
 
     sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
 
@@ -228,12 +228,13 @@ def run_experiments():
         w = np.random.uniform(low=lb, high=ub, size=(n_function_types * n_functions_per_type_parallel, dim))
         c = np.random.uniform(low=lb, high=ub, size=(n_function_types * n_functions_per_type_parallel, dim))
 
-        for degree in degree_range:
-            for scale in scale_range:
+        for scale in scale_range:
 
-                n_samples = calculate_num_points(scale, dim)
+            n_samples = calculate_num_points(scale, dim)
 
-                pbar.set_postfix({"Dimension": dim, "Degree": degree, "Scale": scale, "n_samples": n_samples})
+            for method in methods:
+
+                pbar.set_postfix({"Dimension": dim, "Method": method, "Scale": scale, "n_samples": n_samples})
 
                 for i in range(n_function_types):
                     cur_slice = c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :]
@@ -241,19 +242,21 @@ def run_experiments():
                     factor = sum_c[i] / cur_sum
                     c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :] *= factor
 
-                if degree == 0:
+                if method == 'Smolyak':
 
                     w_smol = w[0::n_functions_per_type_parallel, :]
                     c_smol = c[0::n_functions_per_type_parallel, :]
 
                     run_experiments_smolyak(dim=dim, w=w_smol, c=c_smol, scale=scale, test_grid_seed=test_grid_seed,
                                             n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
-                else:
-                    run_experiments_least_squares(dim=dim, degree=degree, w=w, c=c,
+                elif method == 'Least_Squares':
+                    run_experiments_least_squares(dim=dim, w=w, c=c,
                                                   n_parallel=n_functions_per_type_parallel, scale=scale,
                                                   test_grid_seed=test_grid_seed, n_test_samples=n_test_samples, lb=lb,
                                                   ub=ub, path=None)
 
+                else:
+                    raise ValueError(f"The method {method} is not supported. Please use 'Smolyak' or 'Least_Squares!")
                 pbar.update(1)
 
     pbar.close()
@@ -261,4 +264,4 @@ def run_experiments():
 
 if __name__ == '__main__':
     run_experiments()
-    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 8))
+    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5))
