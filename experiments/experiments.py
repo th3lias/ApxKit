@@ -174,7 +174,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, n_para
         row_entry['w'] = w[i, :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
-        row_entry['n_samples'] = n_samples
+        row_entry['n_samples'] = int(n_samples*multiplier)
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
         row_entry['n_test_samples'] = n_test_samples
@@ -216,7 +216,7 @@ def run_experiments():
     test_grid_seed = 42
     n_test_samples = 50
 
-    scale_range = range(1, 8)
+    scale_range = range(1, 5)
     dim_range = range(10, 15)
     methods = ['Smolyak', 'Least_Squares']
 
@@ -265,5 +265,5 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    run_experiments()
-    # plot_errors(10, GenzFunctionType.DISCONTINUOUS, range(1, 5))
+    # run_experiments()
+    plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5))
