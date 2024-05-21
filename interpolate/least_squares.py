@@ -1,242 +1,139 @@
-from typing import Callable, Union, List, Tuple, Generator
+from typing import Callable, Union, List, Tuple
 
 import numpy as np
+from scipy.sparse.linalg import lsmr
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 
 from grid.grid import Grid
-
-from functools import reduce
-
-from operator import mul
-
-from itertools import chain, combinations_with_replacement, product
-
-from itertools import permutations
+from interpolate.basis_types import BasisType
+from interpolate.interpolator import Interpolator
 
 
-class Interpolator:
-    def __init__(self, grid: Grid):
-        self.grid = grid
-        self.scale = grid.scale
-        self.dim = grid.dim
-        self._b_idx = None
-        self._idx = None
-        self.basis = None
-        self.l = None
-        self.u = None
+class LeastSquaresInterpolator(Interpolator):
+    def __init__(self, include_bias: bool, basis_type: BasisType, grid: Grid = None,
+                 self_implemented: bool = True,
+                 iterative: bool = False):
+        super().__init__(grid)
+        self.include_bias = include_bias
+        self.self_implemented = self_implemented
+        self.iterative = iterative
+        self.basis_type = basis_type
+
+    def set_self_implemented(self, self_implemented: bool):
+        self.self_implemented = self_implemented
+
+    def set_iterative(self, iterative: bool):
+        self.iterative = iterative
 
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
-        raise NotImplementedError
+        assert self.grid is not None, "Grid needs to be set before interpolation"
 
-    def set_grid(self, grid: Grid):
-        self.grid = grid
-        self.basis = None
-        self.l = None
-        self.u = None
+        if self.basis is None:
+            self.basis = self._build_basis()
+            # TODO: Also LU-decomposition here?
 
-    def _build_poly_basis(self, grid: Union[None, np.ndarray], b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
-        """Builds smolyak polynomial basis"""
+        if self.iterative:
+            return self._approximate_iterative(f)
+        return self._approximate(f)
 
-        # TODO: Maybe use Grid as Type instead np.nd
-        # TODO: Maybe already implement here
+    def _build_basis(self, basis_type: Union[BasisType, None] = None, grid: Union[None, np.ndarray] = None,
+                     b_idx: Union[List[Tuple[int]], None] = None, degree:Union[int, None]=None):
+        # TODO: Remove degree here
 
-        if b_idx is None:
-            self._idx = self._smolyak_idx()
-            self._b_idx = self._poly_idx(self._idx)
-        else:
-            self._b_idx = b_idx
-        scale = self.scale
+        if basis_type is None:
+            basis_type = self.basis_type
+
+        if not basis_type == BasisType.CHEBYSHEV and not basis_type == BasisType.REGULAR:
+            raise ValueError(f"Unsupported Basis-Type. Expected Chebyshev or Regular Basis but got {basis_type}")
+
+        if basis_type == BasisType.CHEBYSHEV:
+            return self._build_poly_basis(grid, b_idx)
 
         if grid is None:
             grid = self.grid.grid
+        if degree is None:
+            raise ValueError(f"Please provide a degree which specifies the max total degree that can occur in the basis")
+        poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
+        return poly.fit_transform(grid)
 
-        ts = self._cheby2n(grid.T, self._m_i(scale + 1))
-        n_polys = len(self._b_idx)
-        npts = grid.shape[0]
-        basis = np.empty((npts, n_polys), order='F')
-        for ind, comb in enumerate(self._b_idx):
-            basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
-        return basis
-
-    def _poly_idx(self, idx: Union[List[List[int]], None] = None) -> List[Tuple[int]]:
+    def _approximate(self, f: Union[Callable, List[Callable]]) -> Callable:
         """
-        Build indices specifying all the Cartesian products of Chebyshev
-        polynomials needed to build Smolyak polynomial
-        Parameters
-        ----------
-        idx : list (list (int)), optional (default=None)
-            The Smolyak indices for parameters dim and scale. Should be computed
-            by calling `smol_idx(dim, scale)`. If None is given, the indices
-            are computed using this function call
-        Returns
-        -------
-        phi_idx : array : (int, ndim=2)
-            A two-dimensional array of integers where each row specifies a
-            new set of indices needed to define a Smolyak basis polynomial
-        Notes
-        -----
-        This function uses smol_idx and phi_chain. The output of this
-        function is used by build_B to construct the B matrix
+        Approximates a (or multiple) function(s) with polynomials by least squares.
+        :param f: function or list of functions that need to be approximated on the same points
+        :return: fitted function(s)
         """
-        scale = self.scale
-        if idx is None:
-            idx = self._smolyak_idx()
-        if not isinstance(scale, int):
-            raise ValueError(f"Scale must have an int type but is {type(scale)}")
-        aphi = self._phi_chain(scale + 1)
-        base_polys = []
-        for el in idx:
-            temp = [aphi[i] for i in el]
-            # Save these indices that we iterate through because
-            # we need them for the Chebyshev polynomial combination
-            # idx.append(el)
-            base_polys.extend(list(product(*temp)))
-        return base_polys
-
-    def _smolyak_idx(self) -> List[List[int]]:
-        """
-        Fidx all the indices that satisfy the requirement that
-        math::
-        d \\leq \\sum_{i=1}^d \\leq d + scale.
-        Returns
-        -------
-        true_idx : array
-            A 1-d Any array containing all d element arrays satisfying the
-            constraint
-        Notes
-        -----
-        This function is used directly by build_grid and poly_idx
-        """
-        scale = self.scale
-        dim = self.dim
-        if not isinstance(scale, int):
-            raise ValueError(f"Scale must have an int type but is {type(scale)}")
-        # Need to capture up to value scale + 1 so in python need scale+2
-        possible_values = range(1, scale + 2)
-        # find all (i1, i2, ... id) such that their sum is in range
-        # we want; this will cut down on later iterations
-        poss_idx = [el for el in combinations_with_replacement(possible_values, dim) if dim < sum(el) <= dim + scale]
-        true_idx = [[el for el in self._permute(list(val))] for val in poss_idx]
-        # Add the d dimension 1 array so that we don't repeat it a bunch
-        # of times
-        true_idx.extend([[[1] * dim]])
-        t_idx = list(chain.from_iterable(true_idx))
-        return t_idx
-
-    @staticmethod
-    def _phi_chain(n):
-        """
-        For each number in 1 to n, compute the Smolyak indices for the
-        corresponding basis functions. This is the :math:`n` in
-        :math:`\\phi_n`
-        Parameters
-        ----------
-        n : int
-            The last Smolyak index :math:`n` for which the basis polynomial
-            indices should be found
-        Returns
-        -------
-        aphi_chain : dict (int -> list)
-            A dictionary whose keys are the Smolyak index :math:`n` and
-            values are lists containing all basis polynomial subscripts for
-            that Smolyak index
-        """
-        aphi_chain = dict()
-        aphi_chain[1] = [1]
-        aphi_chain[2] = [2, 3]
-        curr_val = 4
-        for i in range(3, n + 1):
-            end_val = 2 ** (i - 1) + 1
-            temp = range(curr_val, end_val + 1)
-            aphi_chain[i] = temp
-            curr_val = end_val + 1
-        return aphi_chain
-
-    @staticmethod
-    def _m_i(i: int):
-        r"""
-        Compute one plus the "total degree of the interpolating
-        polynomials" (Kruger & Kubler, 2004). This shows up many times in
-        Smolyak's algorithm. It is defined as:
-        math::
-            m_i = \begin{cases}
-            1 \quad & \text{if } i = 1 \\
-            2^{i-1} + 1 \quad & \text{if } i \geq 2
-            \end{cases}
-        Parameters
-        ----------
-        i : int
-            The integer i which the total degree should be evaluated
-        Returns
-        -------
-        num : int
-            Return the value given by the expression above
-        """
-        if i < 0:
-            raise ValueError('i must be positive')
-        elif i == 0:
-            return 0
-        elif i == 1:
-            return 1
+        grid = self.grid.grid
+        if not self.include_bias:
+            print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
+        if not (isinstance(f, list) or isinstance(f, Callable)):
+            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
+        n_samples = grid.shape[0]
+        if isinstance(f, list):
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(grid)
         else:
-            return 2 ** (i - 1) + 1
-
-    @staticmethod
-    @staticmethod
-    def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
-        """
-        Creates a generator object that yields all permutations of the given array/list. The permutations are unique,
-        if the parameter drop_duplicates is set to True
-        At the beginning, the array/list gets sorted.
-        :param array: Array or List where the permutations should be calculated
-        :param drop_duplicates: If True, a permutation which is the same as another permutation since there were
-        duplicate values in the array is dropped, otherwise it is kept
-        """
-        if isinstance(array, np.ndarray):
-            if array.ndim == 1:
-                array = np.sort(array)
-            else:
-                raise ValueError(
-                    f"Wrong number of dimensions for the parameter 'array'. Expected ndim=1 but got {array.ndim}"
-                )
-        elif isinstance(array, list):
-            array = sorted(array)
+            y = f(grid)
+        if self.self_implemented:
+            return self._self_implementation(y)
         else:
-            raise ValueError(f"Expected 'array' to be a list or a np.ndarray but got {type(array)}")
+            return self._sklearn(y)
 
-        seen = set()
-
-        for perm in permutations(array):
-            if perm not in seen or not drop_duplicates:
-                seen.add(perm)
-                yield list(perm)
-
-    @staticmethod
-    def _cheby2n(x, n):
+    def _self_implementation(self, y: np.ndarray) -> Callable:
         """
-        Computes the first :math:`n+1` Chebyshev polynomials of the first
-        kind evaluated at each point in :math:`x` .
-        Parameters
-        ----------
-        x : float or array(float)
-            A single point (float) or an array of points where each
-            polynomial should be evaluated
-        n : int
-            The integer specifying which Chebyshev polynomial is the last
-            to be computed
-        Returns
-        -------
-        results : array (float, ndim=x.ndim+1)
-            The results of computation. This will be an :math:`(n+1 \\times
-            dim \\dots)` where :math:`(dim \\dots)` is the shape of x. Each
-            slice along the first dimension represents a new Chebyshev
-            polynomial. This dimension has length :math:`n+1` because it
-            includes :math:`\\phi_0` which is equal to 1 :math:`\\forall x`
+        Approximation of a function with a polynomial by least squares (self-implemented).
+        :param y: calculated function values
+        :return: fitted function
         """
-        x = np.asarray(x)
-        dim = x.shape
-        results = np.zeros((n + 1,) + dim)
-        results[0, ...] = np.ones(dim)
-        results[1, ...] = x
-        for i in range(2, n + 1):
-            results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
-        return results
+
+        x_poly = self.basis
+        y_prime = x_poly.T @ y
+        x2 = x_poly.T @ x_poly
+        coeff = np.linalg.solve(x2, y_prime)
+
+        def f_hat(data: np.ndarray) -> np.ndarray:
+            data_pol = self._build_basis(basis_type = None, grid=data, b_idx=self._b_idx)
+            y_hat = data_pol @ coeff
+            if y_hat.ndim>1:
+                return y_hat.T
+            return y_hat
+
+        return f_hat
+
+    def _sklearn(self, y: np.ndarray) -> Callable:
+        """
+        Approximation of a function with a polynomial by least squares (using the sklearn library).
+        :param y: calculated function values
+        :return: fitted function
+        """
+
+        x_poly = self.basis
+        model = LinearRegression()
+        model.fit(x_poly, y)
+
+        def f_hat(data: np.ndarray) -> np.ndarray:
+            data_pol = self._build_basis(basis_type = None, grid=data, b_idx=self._b_idx)
+            return model.predict(data_pol)
+
+        return f_hat
+
+    def _approximate_iterative(self, f: Callable) -> Callable:
+        """
+        Approximation of a function with a polynomial by least squares iterative approach (using the lsmr algorithm).
+        :param f: function that needs to be approximated
+        :return: fitted function
+        """
+
+        y = f(self.grid.grid)
+        x_poly = self.basis
+        res = lsmr(x_poly, y)
+        coeff = res[0]
+
+        def f_hat(data: np.ndarray) -> np.ndarray:
+            data_pol = self._build_basis(basis_type = None, grid = data, b_idx = self._b_idx)
+            return data_pol @ coeff
+
+        return f_hat
