@@ -11,7 +11,7 @@ from tqdm import tqdm
 from genz.genz_functions import GenzFunctionType, get_genz_function
 from grid.grid_provider import GridType, GridProvider
 from interpolate.basis_types import BasisType
-from interpolate.least_squares import
+from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import plot_errors
@@ -129,9 +129,11 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, n_para
 
     n_samples = calculate_num_points(scale, dim)
 
+    multiplier = np.log(n_samples)
+
     gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
 
-    grid = gp.generate(GridType.RANDOM, scale=scale)
+    grid = gp.generate(GridType.RANDOM, scale=scale, multiplier=multiplier)
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
     n_function_types = int(6)
@@ -264,4 +266,4 @@ def run_experiments():
 
 if __name__ == '__main__':
     run_experiments()
-    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5))
+    # plot_errors(10, GenzFunctionType.DISCONTINUOUS, range(1, 5))
