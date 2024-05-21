@@ -31,7 +31,8 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, scale: int = None, remove_duplicates: bool = True) -> Grid:
+    def generate(self, grid_type: GridType, scale: int = None, multiplier: float = 1.0,
+                 remove_duplicates: bool = True) -> Grid:
         """
         Generate a grid of given type.
         :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
@@ -39,6 +40,7 @@ class GridProvider:
         grid and therefore sample the same num_points**dim number of points uniformly. If
         GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
+        :param multiplier: Only used in Random-Grid; Increases the number of samples by the given multiplier
         :param remove_duplicates: Remove duplicate values in the grid up to a small distance. Needed for Smolyak.
         :return: np.ndarray representing the grid
         """
@@ -57,6 +59,7 @@ class GridProvider:
             points = self._generate_equidistant_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
         if grid_type == GridType.RANDOM:
+            n_points = int(n_points * multiplier)
             points = self._generate_random_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
 
