@@ -2,7 +2,7 @@ import unittest
 from utils.utils import calculate_num_points
 
 
-class ChebyshevSparseGridPointTest(unittest.TestCase):
+class TestNumberChebyshevPoints(unittest.TestCase):
     """
     Tests the calculate_num_points method by checking various values.
     Values are based on table of page 5 from https://people.math.sc.edu/Burkardt/presentations/sgmga_counting.pdf
