@@ -25,16 +25,27 @@ class SmolyakInterpolator(Interpolator):
         self.gp = GridProvider(self.dim, seed=seed)
         super().__init__(self.gp.generate(GridType.CHEBYSHEV, self.scale))
 
-    def interpolate(self, f: Callable) -> Callable:
+    def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
         if self.basis is None:
             self.basis = self._build_basis()
             self.l, self.u = lu(self.basis, permute_l=True)[-2:]
-        y = f(self.grid.grid)
+        n_samples = self.grid.grid.shape[0]
+        if isinstance(f, list):
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(self.grid.grid)
+        else:
+            y = f(self.grid.grid)
         coeff = np.linalg.solve(self.u, np.linalg.solve(self.l, y))
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_transformed = self._build_basis(grid=data, b_idx=self._b_idx)
-            return data_transformed @ coeff
+            y_hat = data_transformed @ coeff
+            if y_hat.ndim > 1:
+                return y_hat.T
+            return y_hat
 
         return f_hat
 
