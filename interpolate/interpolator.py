@@ -1,18 +1,9 @@
 from typing import Callable, Union, List, Tuple, Generator
-
 import numpy as np
-
 from grid.grid import Grid
-
 from functools import reduce
-
 from operator import mul
-
-from itertools import chain, combinations_with_replacement, product
-
-from itertools import permutations
-
-import math
+from itertools import chain, combinations_with_replacement, product, permutations
 
 
 class Interpolator:
@@ -23,8 +14,8 @@ class Interpolator:
         self._b_idx = None
         self._idx = None
         self.basis = None
-        self.l = None
-        self.u = None
+        self.L = None
+        self.U = None
 
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
         raise NotImplementedError
@@ -32,14 +23,12 @@ class Interpolator:
     def set_grid(self, grid: Grid):
         self.grid = grid
         self.basis = None
-        self.l = None
-        self.u = None
+        self.L = None
+        self.U = None
 
-    def _build_poly_basis(self, grid: Union[None, np.ndarray], b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
+    def _build_poly_basis(self, grid: Union[None, np.ndarray],
+                          b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
         """Builds smolyak polynomial basis"""
-
-        # TODO: Maybe use Grid as Type instead np.nd
-        # TODO: Maybe already implement here
 
         if b_idx is None:
             self._idx = self._smolyak_idx()
@@ -182,7 +171,6 @@ class Interpolator:
         else:
             return 2 ** (i - 1) + 1
 
-    @staticmethod
     @staticmethod
     def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
         """

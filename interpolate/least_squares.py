@@ -38,8 +38,7 @@ class LeastSquaresInterpolator(Interpolator):
         return self._approximate(f)
 
     def _build_basis(self, basis_type: Union[BasisType, None] = None, grid: Union[None, np.ndarray] = None,
-                     b_idx: Union[List[Tuple[int]], None] = None, degree:Union[int, None]=None):
-        # TODO: Remove degree here
+                     b_idx: Union[List[Tuple[int]], None] = None, degree: Union[int, None] = None):
 
         if basis_type is None:
             basis_type = self.basis_type
@@ -53,7 +52,8 @@ class LeastSquaresInterpolator(Interpolator):
         if grid is None:
             grid = self.grid.grid
         if degree is None:
-            raise ValueError(f"Please provide a degree which specifies the max total degree that can occur in the basis")
+            raise ValueError(
+                f"Please provide a degree which specifies the max total degree that can occur in the basis")
         poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
         return poly.fit_transform(grid)
 
@@ -95,9 +95,9 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(x2, y_prime)
 
         def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = self._build_basis(basis_type = None, grid=data, b_idx=self._b_idx)
+            data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
             y_hat = data_pol @ coeff
-            if y_hat.ndim>1:
+            if y_hat.ndim > 1:
                 return y_hat.T
             return y_hat
 
@@ -115,7 +115,7 @@ class LeastSquaresInterpolator(Interpolator):
         model.fit(x_poly, y)
 
         def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = self._build_basis(basis_type = None, grid=data, b_idx=self._b_idx)
+            data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
             return model.predict(data_pol)
 
         return f_hat
@@ -133,7 +133,7 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = res[0]
 
         def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = self._build_basis(basis_type = None, grid = data, b_idx = self._b_idx)
+            data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
             return data_pol @ coeff
 
         return f_hat

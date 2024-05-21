@@ -18,13 +18,11 @@ from utils.utils import plot_errors
 from utils.utils import calculate_num_points
 
 
-def run_experiments_smolyak(si: Union[SmolyakInterpolator, None], dim: int, w: np.ndarray, c: np.ndarray,
-                            n_parallel: int,
-                            scale: int, test_grid_seed: int,
+def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
+                            n_parallel: int, scale: int, test_grid_seed: int,
                             n_test_samples: int, lb: float, ub: float, path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
-    :param si: Smolyak Interpolator Object in order to save computational time
     :param dim: dimension of the grid/function
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
@@ -51,45 +49,17 @@ def run_experiments_smolyak(si: Union[SmolyakInterpolator, None], dim: int, w: n
     function_names = list()
     y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
 
-    for i, fun_type in enumerate(GenzFunctionType):
+    for i, func_type in enumerate(GenzFunctionType):
         # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
             index = i * n_function_types + j
-            f = get_genz_function(function_type=fun_type, d=dim, c=c[index, :], w=w[index, :])
+            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
             functions.append(f)
             y[index, :] = f(test_grid)
-            function_names.append(fun_type.name)
+            function_names.append(func_type.name)
 
-    if si is None:
-        si = SmolyakInterpolator(dimension=dim, scale=scale)
-
+    si = SmolyakInterpolator(dimension=dim, scale=scale)
     f_hat = si.interpolate(functions)
-
-    # function_names = list()
-    #
-    # ell_2_error_list = list()
-    # max_error_list = list()
-    # needed_time_list = list()
-    #
-    # for i, fun_type in enumerate(GenzFunctionType):
-    #     start_time = time.time()
-    #     f = get_genz_function(function_type=fun_type, d=dim, c=c[i], w=w[i])
-    #     y = f(test_grid)
-    #     function_names.append(fun_type.name)
-    #     f_hat = si.interpolate(f)
-    #     y_hat = f_hat(test_grid)
-    #
-    #     ell_2_error_list.append(l2_error_function_values(y, y_hat))
-    #     max_error_list.append(max_error_function_values(y, y_hat))
-    #
-    #     end_time = time.time()
-    #     needed_time = end_time - start_time
-    #     needed_time_list.append(needed_time)
-    #
-    # cpu = platform.processor()
-    # cur_datetime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    #
-    # results = list()
 
     y_hat = f_hat(test_grid)
 
@@ -141,13 +111,12 @@ def run_experiments_smolyak(si: Union[SmolyakInterpolator, None], dim: int, w: n
     data.to_csv(path, sep=',', index=False)
 
 
-def run_experiments_least_squares(ls: Union[LeastSquaresInterpolator, None], dim: int, w: np.ndarray, c: np.ndarray,
+def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
                                   n_parallel: int, scale: int,
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
                                   path: Union[str, None] = None):
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
-    :param ls: LeastSquaresInterpolator Object in order to speed up computations
     :param dim: dimension of the grid/function
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
@@ -166,32 +135,30 @@ def run_experiments_least_squares(ls: Union[LeastSquaresInterpolator, None], dim
 
     n_samples = calculate_num_points(scale, dim)
 
-    multiplier = np.log(n_samples)
+    multiplier = np.log10(n_samples)
 
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
     n_function_types = int(6)
 
+    gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
+
+    grid = gp.generate(GridType.RANDOM, scale=scale, multiplier=multiplier)
+
     functions = list()
     function_names = list()
     y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
 
-    for i, fun_type in enumerate(GenzFunctionType):
+    for i, func_type in enumerate(GenzFunctionType):
         # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
             index = i * n_function_types + j
-            f = get_genz_function(function_type=fun_type, d=dim, c=c[index, :], w=w[index, :])
+            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
             functions.append(f)
             y[index, :] = f(test_grid)
-            function_names.append(fun_type.name)
+            function_names.append(func_type.name)
 
-    if ls is None:
-        gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
-
-        grid = gp.generate(GridType.RANDOM, scale=scale, multiplier=multiplier)
-
-        ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid)
-
+    ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid)
     f_hat = ls.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -289,26 +256,12 @@ def run_experiments():
                     # w_smol = w[0::n_functions_per_type_parallel, :]
                     # c_smol = c[0::n_functions_per_type_parallel, :]
 
-                    si = SmolyakInterpolator(dimension=dim, scale=scale)
-
-                    run_experiments_smolyak(si=si, dim=dim, w=w, c=c, n_parallel=n_functions_per_type_parallel,
+                    run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_per_type_parallel,
                                             scale=scale, test_grid_seed=test_grid_seed,
                                             n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
                 elif method == 'Least_Squares':
 
-                    np.random.seed(test_grid_seed)
-
-                    n_samples = calculate_num_points(scale, dim)
-
-                    multiplier = np.log(n_samples)
-
-                    gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
-
-                    grid = gp.generate(GridType.RANDOM, scale=scale, multiplier=multiplier)
-
-                    ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid)
-
-                    run_experiments_least_squares(ls=ls, dim=dim, w=w, c=c,
+                    run_experiments_least_squares(dim=dim, w=w, c=c,
                                                   n_parallel=n_functions_per_type_parallel, scale=scale,
                                                   test_grid_seed=test_grid_seed, n_test_samples=n_test_samples, lb=lb,
                                                   ub=ub, path=None)
@@ -321,5 +274,11 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    run_experiments()
-    # plot_errors(11, GenzFunctionType.DISCONTINUOUS, range(1, 5))
+    # run_experiments()
+
+    # visualize one specific instance
+    # plot_errors(10, GenzFunctionType.CORNER_PEAK, range(1, 5), save=False)
+
+    # save all images in results folder
+    for fun_type in GenzFunctionType:
+        plot_errors(10, fun_type, range(1, 5), save=True)

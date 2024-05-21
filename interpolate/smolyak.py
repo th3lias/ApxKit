@@ -49,7 +49,7 @@ class SmolyakInterpolator(Interpolator):
 
         return f_hat
 
-    def _build_basis(self, basis_type: Union[BasisType, None]=None, grid: Union[None, np.ndarray] = None,
+    def _build_basis(self, basis_type: Union[BasisType, None] = None, grid: Union[None, np.ndarray] = None,
                      b_idx: Union[List[Tuple[int]], None] = None):
 
         if basis_type is None:

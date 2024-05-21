@@ -12,6 +12,7 @@ from interpolate.least_squares import LeastSquaresInterpolator
 
 
 def test_configuration_iterative(param_dict, q):
+    raise NotImplementedError("Needs to be changed")  # TODO: Implement
     start_time = time.time()
     w = param_dict.get('w')
     c = param_dict.get('c')

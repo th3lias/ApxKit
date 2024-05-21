@@ -44,6 +44,7 @@ def test_params_novak(fun_type: GenzFunctionType, scale: int, sum_c: float, grid
 
 
 def plots_novak(f: Callable, name: str, grid: Grid, degree_ls: int, scales: range):
+    raise NotImplementedError("Needs to be changed")  # TODO: Implement
     results = dict()
     results['smolyak'] = dict()
     results['least_squares'] = dict()

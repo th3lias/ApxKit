@@ -11,7 +11,9 @@ from utils.utils import sample
 
 
 class LeastSquaresTests(unittest.TestCase):
+
     def __init__(self, *args, **kwargs):
+        raise NotImplementedError("Needs to be changed")  # TODO: Implement
         super(LeastSquaresTests, self).__init__(*args, **kwargs)
         self.degree = 3
         self.dimension = 20
@@ -20,7 +22,7 @@ class LeastSquaresTests(unittest.TestCase):
         self.gp = GridProvider(dimension=self.dimension)
         self.grid = self.gp.generate(grid_type=GridType.RANDOM, scale=self.n_samples)
         self.test_grid = self.gp.generate(grid_type=GridType.RANDOM, scale=self.n_test_samples).grid
-        self.lsq = LeastSquaresInterpolator(self.degree, True, self.grid)
+        self.lsq = LeastSquaresInterpolator(True, self.grid)
 
     def test_parallel_oscillatory(self):
         f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
