@@ -18,11 +18,11 @@ from interpolate.interpolator import Interpolator
 
 
 class SmolyakInterpolator(Interpolator):
-    def __init__(self, dimension: int, scale: int, basis_type: BasisType = BasisType.CHEBYSHEV, seed: int = None):
+    def __init__(self, dimension: int, scale: int, basis_type: BasisType = BasisType.CHEBYSHEV, seed: int = None, lb:float=0.0, ub:float=1.0):
         self.dim = dimension
         self.scale = scale
         self.basis_type = basis_type
-        self.gp = GridProvider(self.dim, seed=seed)
+        self.gp = GridProvider(self.dim, seed=seed, lower_bound=lb, upper_bound=ub)
         super().__init__(self.gp.generate(GridType.CHEBYSHEV, self.scale))
 
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
