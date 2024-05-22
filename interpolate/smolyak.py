@@ -29,7 +29,7 @@ class SmolyakInterpolator(Interpolator):
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
         if self.basis is None:
             self.basis = self._build_basis()
-            self.l, self.u = lu(self.basis, permute_l=True)[-2:]
+            self.L, self.U = lu(self.basis, permute_l=True)[-2:]
         n_samples = self.grid.grid.shape[0]
         if isinstance(f, list):
             y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
