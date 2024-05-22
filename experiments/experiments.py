@@ -53,12 +53,12 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
             index = i * n_function_types + j
-            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
+            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[i, :])
             functions.append(f)
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
 
-    si = SmolyakInterpolator(dimension=dim, scale=scale)
+    si = SmolyakInterpolator(dimension=dim, scale=scale, lb=lb, ub=ub)
     f_hat = si.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -78,7 +78,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry = dict()
         row_entry['dim'] = dim
         row_entry['method'] = 'Smolyak'
-        row_entry['w'] = w[i, :]
+        row_entry['w'] = w[int(i // n_parallel), :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['n_samples'] = n_samples
@@ -153,7 +153,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
         # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
             index = i * n_function_types + j
-            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
+            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[i, :])
             functions.append(f)
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
@@ -178,7 +178,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry = dict()
         row_entry['dim'] = dim
         row_entry['method'] = 'Least_Squares'
-        row_entry['w'] = w[i, :]
+        row_entry['w'] = w[int(i // n_parallel), :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['n_samples'] = int(n_samples * multiplier)
@@ -223,7 +223,7 @@ def run_experiments():
     test_grid_seed = 42
     n_test_samples = 50
 
-    scale_range = range(1, 8)
+    scale_range = range(2, 5)
     dim_range = range(10, 20)
     methods = ['Smolyak', 'Least_Squares']
 
@@ -234,7 +234,7 @@ def run_experiments():
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
     for dim in dim_range:
-        w = np.random.uniform(low=lb, high=ub, size=(n_function_types * n_functions_per_type_parallel, dim))
+        w = np.random.uniform(low=lb, high=ub, size=(n_function_types, dim))
         c = np.random.uniform(low=lb, high=ub, size=(n_function_types * n_functions_per_type_parallel, dim))
 
         for scale in scale_range:
@@ -274,11 +274,12 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    run_experiments()
+    # run_experiments()
 
     # visualize one specific instance
-    # plot_errors(10, GenzFunctionType.CORNER_PEAK, range(1, 5), save=False)
+    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    # for fun_type in GenzFunctionType:
-    #    plot_errors(10, fun_type, range(1, 5), save=True)
+    for dim in range(10,13):
+        for fun_type in GenzFunctionType:
+            plot_errors(dim, fun_type, range(1, 5), save=True)

@@ -251,7 +251,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
 
     if not smolyak_data.empty:
         for name, group in smolyak_data.groupby('c'):
-            w = group['w']
+            w = group['w'].iloc[0]
             if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
                 print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
                       f"due to infinity values in errors.")
@@ -279,7 +279,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                 plt.show()
     else:
         for name, group in least_squares_data.groupby('c'):
-            w = group['w']
+            w = group['w'].iloc[0]
             if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
                 print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
                       f"due to infinity values in errors.")

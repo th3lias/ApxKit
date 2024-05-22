@@ -10,7 +10,7 @@ class Grid:
     """ Wrapper for an Array type used for interpolation. """
 
     def __init__(self, dim: int, scale: int, grid: Union[jnp.ndarray, np.ndarray], grid_type: GridType,
-                 lower_bound: float = -1., upper_bound: float = 1.):
+                 lower_bound: float = 0., upper_bound: float = 1.):
         self.dim = dim
         self.scale = scale
         self.grid = grid

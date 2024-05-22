@@ -105,6 +105,7 @@ class Interpolator:
         possible_values = range(1, scale + 2)
         # find all (i1, i2, ... id) such that their sum is in range
         # we want; this will cut down on later iterations
+        # TODO: This part takes very long, maybe we can optimize it
         poss_idx = [el for el in combinations_with_replacement(possible_values, dim) if dim < sum(el) <= dim + scale]
         true_idx = [[el for el in self._permute(list(val))] for val in poss_idx]
         # Add the d dimension 1 array so that we don't repeat it a bunch

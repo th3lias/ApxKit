@@ -18,7 +18,8 @@ from interpolate.interpolator import Interpolator
 
 
 class SmolyakInterpolator(Interpolator):
-    def __init__(self, dimension: int, scale: int, basis_type: BasisType = BasisType.CHEBYSHEV, seed: int = None, lb:float=0.0, ub:float=1.0):
+    def __init__(self, dimension: int, scale: int, basis_type: BasisType = BasisType.CHEBYSHEV, seed: int = None,
+                 lb: float = 0.0, ub: float = 1.0):
         self.dim = dimension
         self.scale = scale
         self.basis_type = basis_type
