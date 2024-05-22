@@ -269,7 +269,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}, c={name}\n w={w}')
+            fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
                 filename = get_next_filename(save_path)
@@ -295,7 +295,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}, c={name}\n w={w}')
+            fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
                 filename = get_next_filename(save_path)
