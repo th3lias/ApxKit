@@ -8,21 +8,22 @@ from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from interpolate.least_squares import LeastSquaresInterpolator
 from utils.utils import sample
+from interpolate.basis_types import BasisType
 
 
 class LeastSquaresTests(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
-        raise NotImplementedError("Needs to be changed")  # TODO: Implement
         super(LeastSquaresTests, self).__init__(*args, **kwargs)
-        self.degree = 3
-        self.dimension = 20
-        self.n_samples = 10_000
+        self.scale = 3
+        self.dimension = 10
         self.n_test_samples = 100
+        self.lb = 0.0
+        self.ub = 1.0
         self.gp = GridProvider(dimension=self.dimension)
-        self.grid = self.gp.generate(grid_type=GridType.RANDOM, scale=self.n_samples)
-        self.test_grid = self.gp.generate(grid_type=GridType.RANDOM, scale=self.n_test_samples).grid
-        self.lsq = LeastSquaresInterpolator(True, self.grid)
+        self.grid = self.gp.generate(grid_type=GridType.RANDOM, scale=self.scale)
+        self.test_grid = np.random.uniform(low=self.lb, high=self.ub, size=(self.n_test_samples, self.dimension))
+        self.lsq = LeastSquaresInterpolator(True, basis_type=BasisType.CHEBYSHEV, grid=self.grid)
 
     def test_parallel_oscillatory(self):
         f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),

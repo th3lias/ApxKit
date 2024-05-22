@@ -223,7 +223,7 @@ def run_experiments():
     test_grid_seed = 42
     n_test_samples = 50
 
-    scale_range = range(1, 5)
+    scale_range = range(1, 8)
     dim_range = range(10, 20)
     methods = ['Smolyak', 'Least_Squares']
 
@@ -274,11 +274,11 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    # run_experiments()
+    run_experiments()
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.CORNER_PEAK, range(1, 5), save=False)
 
     # save all images in results folder
-    for fun_type in GenzFunctionType:
-        plot_errors(10, fun_type, range(1, 5), save=True)
+    # for fun_type in GenzFunctionType:
+    #    plot_errors(10, fun_type, range(1, 5), save=True)

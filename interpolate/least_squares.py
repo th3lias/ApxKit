@@ -46,11 +46,12 @@ class LeastSquaresInterpolator(Interpolator):
         if not basis_type == BasisType.CHEBYSHEV and not basis_type == BasisType.REGULAR:
             raise ValueError(f"Unsupported Basis-Type. Expected Chebyshev or Regular Basis but got {basis_type}")
 
+        if grid is None:
+            grid = self.grid.grid
+
         if basis_type == BasisType.CHEBYSHEV:
             return self._build_poly_basis(grid, b_idx)
 
-        if grid is None:
-            grid = self.grid.grid
         if degree is None:
             raise ValueError(
                 f"Please provide a degree which specifies the max total degree that can occur in the basis")
