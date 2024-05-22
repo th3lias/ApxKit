@@ -223,8 +223,8 @@ def run_experiments():
     test_grid_seed = 42
     n_test_samples = 50
 
-    scale_range = range(2, 5)
-    dim_range = range(10, 20)
+    scale_range = range(1, 5)
+    dim_range = range(13, 20)
     methods = ['Smolyak', 'Least_Squares']
 
     n_iterations = len(scale_range) * len(dim_range) * len(methods)
@@ -274,12 +274,12 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    # run_experiments()
+    run_experiments()
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    for dim in range(10,13):
-        for fun_type in GenzFunctionType:
-            plot_errors(dim, fun_type, range(1, 5), save=True)
+    # for dim in range(10, 13):
+    #     for fun_type in GenzFunctionType:
+    #         plot_errors(dim, fun_type, range(1, 5), save=True)
