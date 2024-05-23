@@ -50,21 +50,38 @@ class GridProvider:
             raise ValueError("Please provide the fineness parameter of the grid")
 
         if grid_type == GridType.CHEBYSHEV:
+            if multiplier != 1.0:
+                print("Be aware that the chosen multiplier for a Chebyshev Sparse Grid does not affect anything")
             points = self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
             return Grid(self.dim, scale, points, grid_type)
 
         n_points = calculate_num_points(scale, self.dim)
+        n_points = int(n_points * multiplier)
 
         if grid_type == GridType.REGULAR:
             points = self._generate_equidistant_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
-        if grid_type == GridType.RANDOM:
-            n_points = int(n_points * multiplier)
+        if grid_type == GridType.RANDOM_UNIFORM:
             points = self._generate_random_grid(num_points=n_points)
+            return Grid(self.dim, scale, points, grid_type)
+        if grid_type == GridType.RANDOM_CHEBYSHEV:
+            points = self._generate_with_chebyshev_density(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
 
     def _generate_random_grid(self, num_points: int) -> np.ndarray:
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
+
+    # TODO: Verify
+    # TODO: Move to grid package
+    def _generate_with_chebyshev_density(self, num_points: int) -> np.ndarray:
+        # Initialize an empty array for the samples
+        samples = np.empty(shape=(num_points, self.dim))
+
+        # Generate samples for each dimension independently
+        for i in range(self.dim):
+            samples[:, i] = self._sample_chebyshev_univariate(num_points)
+
+        return samples
 
     def _generate_equidistant_grid(self, num_points: int) -> np.ndarray:
         num_points = np.full(shape=self.dim, fill_value=num_points)
@@ -102,6 +119,35 @@ class GridProvider:
 
     def _uni_grid(self, level: int) -> np.ndarray:
         return np.zeros(1) if level == 0 else self._cheby_nodes(2 ** level + 1)
+
+    # TODO: Verify
+    @staticmethod
+    def _sample_chebyshev_univariate(num_points: int) -> np.ndarray:
+
+        # samples = np.empty(num_points)
+        # count = 0
+        #
+        # while count < num_points:
+        #     # Generate candidate samples in batches
+        #     x = np.random.uniform(-1, 1, size=num_points - count)
+        #     y = np.random.uniform(0, 1 / np.pi, size=num_points - count)
+        #
+        #     # Calculate the Chebyshev density
+        #     density = np.polynomial.chebyshev.chebweight(x)
+        #
+        #     # Accept samples where y < density
+        #     accept = y < density
+        #     accepted_samples = x[accept]
+        #
+        #     # Store the accepted samples
+        #     num_accepted = len(accepted_samples)
+        #     samples[count:count + num_accepted] = accepted_samples
+        #     count += num_accepted
+        #
+        # return samples
+
+        points = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=(num_points))
+        return np.sin(points)
 
     @staticmethod
     def _cheby_nodes(n: int) -> np.ndarray:

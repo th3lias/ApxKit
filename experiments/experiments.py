@@ -14,8 +14,7 @@ from interpolate.basis_types import BasisType
 from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
-from utils.utils import plot_errors
-from utils.utils import calculate_num_points
+from utils.utils import calculate_num_points, plot_errors
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
@@ -81,6 +80,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry['w'] = w[int(i // n_parallel), :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
+        row_entry['grid_type'] = si.grid.grid_type.name
         row_entry['n_samples'] = n_samples
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
@@ -143,7 +143,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
 
-    grid = gp.generate(GridType.RANDOM, scale=scale, multiplier=multiplier)
+    grid = gp.generate(GridType.RANDOM_CHEBYSHEV, scale=scale, multiplier=multiplier)
 
     functions = list()
     function_names = list()
@@ -181,6 +181,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry['w'] = w[int(i // n_parallel), :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
+        row_entry['grid_type'] = grid.grid_type.name
         row_entry['n_samples'] = int(n_samples * multiplier)
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
@@ -215,8 +216,8 @@ def run_experiments():
     """
     Runs multiple experiments for least-squares with various parameter combinations
     """
-    n_functions_per_type_parallel = int(25)
-    n_function_types = int(6)
+    n_functions_per_type_parallel = int(50)
+    n_function_types = len(GenzFunctionType)
 
     lb = float(0.0)
     ub = float(1.0)
@@ -224,7 +225,7 @@ def run_experiments():
     n_test_samples = 50
 
     scale_range = range(1, 5)
-    dim_range = range(13, 20)
+    dim_range = range(10, 11)
     methods = ['Smolyak', 'Least_Squares']
 
     n_iterations = len(scale_range) * len(dim_range) * len(methods)
@@ -274,12 +275,12 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    run_experiments()
+    # run_experiments()
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    # for dim in range(10, 13):
-    #     for fun_type in GenzFunctionType:
-    #         plot_errors(dim, fun_type, range(1, 5), save=True)
+    for dim in range(10, 11):
+        for fun_type in GenzFunctionType:
+            plot_errors(dim, fun_type, range(1, 5), save=True)

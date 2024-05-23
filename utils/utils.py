@@ -75,14 +75,39 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> float:
     return max_error_function_values(y=y, y_hat=y_hat)
 
 
-def visualize_point_grid_2d(points: Grid, alpha: float) -> None:
+def visualize_point_grid_1d(points: Union[Grid, np.ndarray], alpha: float) -> None:
+    """
+    Visualizes a set of points in a histogram
+    :param points: array that contains the points.
+    :param alpha: specifies the opacity of the points
+    :return: None
+    """
+
+    if isinstance(points, Grid):
+        points = points.grid
+
+    if len(points.shape) == 1:
+        # 1D points
+        plt.figure(figsize=(10, 6))
+        plt.hist(points, bins=30, color='black', alpha=alpha)
+        plt.xlabel('$x$')
+        plt.ylabel('Frequency')
+        plt.grid(True)
+        plt.show()
+    else:
+        raise ValueError(f"Wrong dimension of the data. Expected dimension 1, got {points.ndim}")
+
+
+def visualize_point_grid_2d(points: Union[Grid, np.ndarray], alpha: float) -> None:
+    # TODO: Write it such that it also handles np arrays
     """
     Visualizes a 2D point grid in a scatter plot
     :param points: array that contains the points. Needs to be of shape (n, 2)
     :param alpha: specifies the opacity of the points
     :return:
     """
-    points = points.grid
+    if isinstance(points, Grid):
+        points = points.grid
     if np.shape(points)[1] != 2:
         raise ValueError("points must be a 2-dimensional array")
 
@@ -98,14 +123,16 @@ def visualize_point_grid_2d(points: Grid, alpha: float) -> None:
     plt.show()
 
 
-def visualize_point_grid_3d(points: Grid, alpha: float) -> None:
+def visualize_point_grid_3d(points: Union[Grid, np.ndarray], alpha: float) -> None:
     """
         Visualizes a 3D point grid in a scatter plot
         :param points: array that contains the points. Needs to be of shape (n, 3)
         :param alpha: specifies the opacity of the points
         :return:
         """
-    points = points.grid
+
+    if isinstance(points, Grid):
+        points = points.grid
     if np.shape(points)[1] != 3:
         raise ValueError("points must be a 3-dimensional array")
 

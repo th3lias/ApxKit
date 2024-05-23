@@ -43,7 +43,7 @@ class Interpolator:
         ts = self._cheby2n(grid.T, self._m_i(scale + 1))
         n_polys = len(self._b_idx)
         npts = grid.shape[0]
-        basis = np.empty((npts, n_polys), order='F')
+        basis = np.empty((npts, n_polys), order='F') # F for Fortran style, C would be the default with C-style
         for ind, comb in enumerate(self._b_idx):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
         return basis

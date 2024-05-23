@@ -19,7 +19,7 @@ from interpolate.interpolator import Interpolator
 
 class SmolyakInterpolator(Interpolator):
     def __init__(self, dimension: int, scale: int, basis_type: BasisType = BasisType.CHEBYSHEV, seed: int = None,
-                 lb: float = 0.0, ub: float = 1.0):
+                 lb: float = -1.0, ub: float = 1.0):
         self.dim = dimension
         self.scale = scale
         self.basis_type = basis_type
@@ -39,7 +39,7 @@ class SmolyakInterpolator(Interpolator):
                 y[:, i] = func(self.grid.grid)
         else:
             y = f(self.grid.grid)
-        coeff = np.linalg.solve(self.u, np.linalg.solve(self.l, y))
+        coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_transformed = self._build_basis(grid=data, b_idx=self._b_idx)
