@@ -75,14 +75,38 @@ def max_abs_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> float:
     return max_error_function_values(y=y, y_hat=y_hat)
 
 
-def visualize_point_grid_2d(points: Grid, alpha: float) -> None:
+def visualize_point_grid_1d(points: Union[Grid, np.ndarray], alpha: float) -> None:
+    """
+    Visualizes a set of points in a histogram
+    :param points: array that contains the points.
+    :param alpha: specifies the opacity of the points
+    :return: None
+    """
+
+    if isinstance(points, Grid):
+        points = points.grid
+
+    if len(points.shape) == 1:
+        # 1D points
+        plt.figure(figsize=(10, 6))
+        plt.hist(points, bins=30, color='black', alpha=alpha)
+        plt.xlabel('$x$')
+        plt.ylabel('Frequency')
+        plt.grid(True)
+        plt.show()
+    else:
+        raise ValueError(f"Wrong dimension of the data. Expected dimension 1, got {points.ndim}")
+
+
+def visualize_point_grid_2d(points: Union[Grid, np.ndarray], alpha: float) -> None:
     """
     Visualizes a 2D point grid in a scatter plot
     :param points: array that contains the points. Needs to be of shape (n, 2)
     :param alpha: specifies the opacity of the points
     :return:
     """
-    points = points.grid
+    if isinstance(points, Grid):
+        points = points.grid
     if np.shape(points)[1] != 2:
         raise ValueError("points must be a 2-dimensional array")
 
@@ -98,14 +122,16 @@ def visualize_point_grid_2d(points: Grid, alpha: float) -> None:
     plt.show()
 
 
-def visualize_point_grid_3d(points: Grid, alpha: float) -> None:
+def visualize_point_grid_3d(points: Union[Grid, np.ndarray], alpha: float) -> None:
     """
         Visualizes a 3D point grid in a scatter plot
         :param points: array that contains the points. Needs to be of shape (n, 3)
         :param alpha: specifies the opacity of the points
         :return:
         """
-    points = points.grid
+
+    if isinstance(points, Grid):
+        points = points.grid
     if np.shape(points)[1] != 3:
         raise ValueError("points must be a 3-dimensional array")
 
@@ -201,7 +227,16 @@ def sample(dim: int | tuple[int], low: float = 0., high: float = 1.):
     return np.random.uniform(low=low, high=high, size=dim)
 
 
-def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path: Union[str, None] = None):
+def get_next_filename(path, extension='png'):
+    """ Function to get the next available filename """
+    files = [f for f in os.listdir(path) if f.endswith('.' + extension)]
+    numbers = [int(os.path.splitext(f)[0]) for f in files if f.split('.')[0].isdigit()]
+    next_number = max(numbers, default=0) + 1
+    return f"{next_number}.{extension}"
+
+
+def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path: Union[str, None] = None,
+                save: bool = False, save_path: Union[str, None] = None, ):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
@@ -210,23 +245,28 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
     :param function_type: Specifies which function should be considered
     :param scales: range of scales, which are considered
     :param path: Path of the results-csv file. If None, a default path will be used.
+    :param save: Specifies whether the images should be saved. If False, the images are shown.
+    :param save_path: Path where the images should be saved. If None, a default path will be used.
+    Only used if save is True
     """
 
     if path is None:
         path = os.path.join("..", "results", "results_numerical_experiments.csv")
 
+    if save_path is None:
+        save_path = os.path.join("..", "results", "figures", function_type.name, f'dim{dimension}')
+
+    os.makedirs(save_path, exist_ok=True)
+
     data = pd.read_csv(path, sep=',', header=0)
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
 
-    filtered_data.drop(['user', 'cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
+    filtered_data.drop(['cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
                        inplace=True)
 
-    degrees = filtered_data['degree'].unique()
-
-    smolyak_data = filtered_data[(filtered_data['degree']) == 0]
-
-    least_squares_data = filtered_data[(filtered_data['degree']) != 0]
+    smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
+    least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
 
     smolyak_data = smolyak_data.sort_values(by='scale')
     least_squares_data = least_squares_data.sort_values(by='scale')
@@ -235,25 +275,19 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
 
     errors = ['max_error', 'l_2_error']
 
-    start = scales[0]
-    end = scales[-1]
-
     if not smolyak_data.empty:
         for name, group in smolyak_data.groupby('c'):
+            w = group['w'].iloc[0]
+            if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
+                print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
+                      f"due to infinity values in errors.")
+                continue
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
-                for degree in degrees:
-                    if degree == 0:
-                        label = 'Smolyak'
-                        axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
-                    else:
-                        label = f'LS degr. {degree}'
-                        ls_filtered = least_squares_data[least_squares_data['c'] == name]
-                        ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
-                        if not ls_filtered.empty:
-                            x = scales
-                            y = ls_filtered[error][start - 1:end]
-                            axs[i].plot(x, y, label=label)
+                label = 'Smolyak'
+                axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+                label = 'Least Squares'
+                axs[i].plot(scales, least_squares_data[least_squares_data['c'] == name][error], label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
@@ -261,21 +295,25 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}, c={name}')
+            fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
             plt.tight_layout()
-            plt.show()
+            if save:
+                filename = get_next_filename(save_path)
+                img_path = os.path.join(save_path, filename)
+                plt.savefig(img_path)
+            else:
+                plt.show()
     else:
         for name, group in least_squares_data.groupby('c'):
+            w = group['w'].iloc[0]
+            if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
+                print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
+                      f"due to infinity values in errors.")
+                continue
             fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
             for i, error in enumerate(errors):
-                for degree in degrees:
-                    label = f'LS degr. {degree}'
-                    ls_filtered = least_squares_data[least_squares_data['c'] == name]
-                    ls_filtered = ls_filtered[least_squares_data['degree'] == degree]
-                    if not ls_filtered.empty:
-                        x = scales
-                        y = ls_filtered[error][start - 1:end]
-                        axs[i].plot(x, y, label=label)
+                label = 'Least Squares'
+                axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
@@ -283,9 +321,14 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}, c={name}')
+            fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
             plt.tight_layout()
-            plt.show()
+            if save:
+                filename = get_next_filename(save_path)
+                img_path = os.path.join(save_path, filename)
+                plt.savefig(img_path)
+            else:
+                plt.show()
 
 
 def _comp_next(n: int, k: int, a: List[int], more, h, t) -> bool:

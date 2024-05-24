@@ -7,7 +7,7 @@ from interpolate.smolyak import SmolyakInterpolator
 
 
 class Smolyak(unittest.TestCase):
-    # TODO: Clean this up a bit
+
     @staticmethod
     def test_smolyak_implementation_oscillatory():
         np.random.seed(42)

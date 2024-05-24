@@ -35,7 +35,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
             elif x.ndim == 2:
                 return np.cos(np.inner(c, x) + 2 * np.pi * w[0]).squeeze()
             else:
-                raise ValueError("Cannot handle an array with more than 2 dimensions")
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
         return f
 
@@ -49,7 +49,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
             elif x.ndim == 2:
                 return np.prod(1 / (1 / (np.square(c)) + np.square(x - w)), axis=1).squeeze()
             else:
-                raise ValueError("Cannot handle an array with more than 2 dimensions")
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
         return f
 
@@ -66,7 +66,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
             elif x.ndim == 2:
                 return 1 / (np.power((1 + np.inner(c, x)), d + 1)).squeeze()
             else:
-                raise ValueError("Cannot handle an array with more than 2 dimensions")
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
         return f
 
@@ -79,7 +79,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
             elif x.ndim == 2:
                 return np.exp(-np.sum(np.square(np.multiply(c, x - w)), axis=1)).squeeze()
             else:
-                raise ValueError("Cannot handle an array with more than 2 dimensions")
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
         return f
 
@@ -92,7 +92,7 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
             elif x.ndim == 2:
                 return np.exp(-np.sum(np.multiply(c, np.abs(x - w)), axis=1)).squeeze()
             else:
-                raise ValueError("Cannot handle an array with more than 2 dimensions")
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
         return f
 

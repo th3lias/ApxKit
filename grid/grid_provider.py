@@ -16,7 +16,7 @@ class GridProvider:
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: int, seed: int = None, lower_bound: float = -1., upper_bound: float = 1.):
+    def __init__(self, dimension: int, seed: int = None, lower_bound: float = 0., upper_bound: float = 1.):
         self.dim = dimension
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
@@ -31,7 +31,8 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, scale: int = None, remove_duplicates: bool = True) -> Grid:
+    def generate(self, grid_type: GridType, scale: int = None, multiplier: float = 1.0,
+                 remove_duplicates: bool = True) -> Grid:
         """
         Generate a grid of given type.
         :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
@@ -39,6 +40,7 @@ class GridProvider:
         grid and therefore sample the same num_points**dim number of points uniformly. If
         GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
+        :param multiplier: Only used in Random-Grid; Increases the number of samples by the given multiplier
         :param remove_duplicates: Remove duplicate values in the grid up to a small distance. Needed for Smolyak.
         :return: np.ndarray representing the grid
         """
@@ -48,20 +50,34 @@ class GridProvider:
             raise ValueError("Please provide the fineness parameter of the grid")
 
         if grid_type == GridType.CHEBYSHEV:
+            if multiplier != 1.0:
+                print("Be aware that the chosen multiplier for a Chebyshev Sparse Grid does not affect anything")
             points = self._full_cheby_grid(level=scale, remove_duplicates=remove_duplicates)
             return Grid(self.dim, scale, points, grid_type)
 
         n_points = calculate_num_points(scale, self.dim)
+        n_points = int(n_points * multiplier)
 
         if grid_type == GridType.REGULAR:
             points = self._generate_equidistant_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
-        if grid_type == GridType.RANDOM:
+        if grid_type == GridType.RANDOM_UNIFORM:
             points = self._generate_random_grid(num_points=n_points)
+            return Grid(self.dim, scale, points, grid_type)
+        if grid_type == GridType.RANDOM_CHEBYSHEV:
+            points = self._generate_with_chebyshev_density(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
 
     def _generate_random_grid(self, num_points: int) -> np.ndarray:
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
+
+    def _generate_with_chebyshev_density(self, num_points: int) -> np.ndarray:
+        samples = np.empty(shape=(num_points, self.dim))
+
+        for i in range(self.dim):
+            samples[:, i] = self._sample_chebyshev_univariate(num_points)
+
+        return samples
 
     def _generate_equidistant_grid(self, num_points: int) -> np.ndarray:
         num_points = np.full(shape=self.dim, fill_value=num_points)
@@ -99,6 +115,12 @@ class GridProvider:
 
     def _uni_grid(self, level: int) -> np.ndarray:
         return np.zeros(1) if level == 0 else self._cheby_nodes(2 ** level + 1)
+
+    @staticmethod
+    def _sample_chebyshev_univariate(num_points: int) -> np.ndarray:
+        """Uses the inverse transform method. CDF is arcsin(x) and the inverse is sin(x)"""
+        points = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=num_points)
+        return np.sin(points)
 
     @staticmethod
     def _cheby_nodes(n: int) -> np.ndarray:
