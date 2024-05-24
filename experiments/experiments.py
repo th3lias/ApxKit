@@ -51,8 +51,8 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     for i, func_type in enumerate(GenzFunctionType):
         # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
-            index = i * n_function_types + j
-            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[i, :])
+            index = i * n_parallel + j
+            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
             functions.append(f)
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
@@ -77,7 +77,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry = dict()
         row_entry['dim'] = dim
         row_entry['method'] = 'Smolyak'
-        row_entry['w'] = w[int(i // n_parallel), :]
+        row_entry['w'] = w[i, :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['grid_type'] = si.grid.grid_type.name
@@ -152,8 +152,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     for i, func_type in enumerate(GenzFunctionType):
         # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
-            index = i * n_function_types + j
-            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[i, :])
+            index = i * n_parallel + j
+            f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
             functions.append(f)
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
@@ -178,7 +178,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry = dict()
         row_entry['dim'] = dim
         row_entry['method'] = 'Least_Squares'
-        row_entry['w'] = w[int(i // n_parallel), :]
+        row_entry['w'] = w[i, :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['grid_type'] = grid.grid_type.name
@@ -212,14 +212,15 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     data.to_csv(path, sep=',', index=False)
 
 
-def run_experiments():
+def run_experiments(n_functions_per_type_parallel: int):
     """
     Runs multiple experiments for least-squares with various parameter combinations
+    :param n_functions_per_type_parallel: number of parallel functions per type that should be tested
     """
-    n_functions_per_type_parallel = int(50)
+
     n_function_types = len(GenzFunctionType)
 
-    lb = float(0.0)
+    lb = float(-1.0)
     ub = float(1.0)
     test_grid_seed = 42
     n_test_samples = 50
@@ -235,8 +236,8 @@ def run_experiments():
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
     for dim in dim_range:
-        w = np.random.uniform(low=lb, high=ub, size=(n_function_types, dim))
-        c = np.random.uniform(low=lb, high=ub, size=(n_function_types * n_functions_per_type_parallel, dim))
+        w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
+        c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
 
         for scale in scale_range:
 
@@ -275,7 +276,7 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    run_experiments()
+    run_experiments(1)
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
