@@ -146,7 +146,7 @@ class GridProvider:
         #
         # return samples
 
-        points = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=(num_points))
+        points = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=num_points)
         return np.sin(points)
 
     @staticmethod
