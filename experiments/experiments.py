@@ -275,12 +275,12 @@ def run_experiments():
 
 
 if __name__ == '__main__':
-    # run_experiments()
+    run_experiments()
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    for dim in range(10, 11):
-        for fun_type in GenzFunctionType:
-            plot_errors(dim, fun_type, range(1, 5), save=True)
+    # for dim in range(10, 11):
+    #     for fun_type in GenzFunctionType:
+    #         plot_errors(dim, fun_type, range(1, 5), save=True)
