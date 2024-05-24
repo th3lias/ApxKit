@@ -99,7 +99,6 @@ def visualize_point_grid_1d(points: Union[Grid, np.ndarray], alpha: float) -> No
 
 
 def visualize_point_grid_2d(points: Union[Grid, np.ndarray], alpha: float) -> None:
-    # TODO: Write it such that it also handles np arrays
     """
     Visualizes a 2D point grid in a scatter plot
     :param points: array that contains the points. Needs to be of shape (n, 2)

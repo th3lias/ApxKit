@@ -71,13 +71,9 @@ class GridProvider:
     def _generate_random_grid(self, num_points: int) -> np.ndarray:
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
 
-    # TODO: Verify
-    # TODO: Move to grid package
     def _generate_with_chebyshev_density(self, num_points: int) -> np.ndarray:
-        # Initialize an empty array for the samples
         samples = np.empty(shape=(num_points, self.dim))
 
-        # Generate samples for each dimension independently
         for i in range(self.dim):
             samples[:, i] = self._sample_chebyshev_univariate(num_points)
 
@@ -120,32 +116,9 @@ class GridProvider:
     def _uni_grid(self, level: int) -> np.ndarray:
         return np.zeros(1) if level == 0 else self._cheby_nodes(2 ** level + 1)
 
-    # TODO: Verify
     @staticmethod
     def _sample_chebyshev_univariate(num_points: int) -> np.ndarray:
-
-        # samples = np.empty(num_points)
-        # count = 0
-        #
-        # while count < num_points:
-        #     # Generate candidate samples in batches
-        #     x = np.random.uniform(-1, 1, size=num_points - count)
-        #     y = np.random.uniform(0, 1 / np.pi, size=num_points - count)
-        #
-        #     # Calculate the Chebyshev density
-        #     density = np.polynomial.chebyshev.chebweight(x)
-        #
-        #     # Accept samples where y < density
-        #     accept = y < density
-        #     accepted_samples = x[accept]
-        #
-        #     # Store the accepted samples
-        #     num_accepted = len(accepted_samples)
-        #     samples[count:count + num_accepted] = accepted_samples
-        #     count += num_accepted
-        #
-        # return samples
-
+        """Uses the inverse transform method. CDF is arcsin(x) and the inverse is sin(x)"""
         points = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=num_points)
         return np.sin(points)
 

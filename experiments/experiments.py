@@ -225,7 +225,7 @@ def run_experiments():
     n_test_samples = 50
 
     scale_range = range(1, 5)
-    dim_range = range(10, 11)
+    dim_range = range(1, 2)
     methods = ['Smolyak', 'Least_Squares']
 
     n_iterations = len(scale_range) * len(dim_range) * len(methods)
