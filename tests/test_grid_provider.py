@@ -101,5 +101,61 @@ class VisualTests(unittest.TestCase):
         utils.visualize_point_grid_3d(grid, alpha=1.)
 
 
+class TestNumberGridPoints(unittest.TestCase):
+
+    def test_2d_scale_6(self):
+        dim = 2
+        scale = 6
+        provider = GridProvider(dim)
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
+        n_points = utils.calculate_num_points(scale, dim)
+
+        self.assertEqual(grid.get_num_points(), n_points)
+
+    def test_4d_scale_1(self):
+        dim = 4
+        scale = 1
+        provider = GridProvider(dim)
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
+        n_points = utils.calculate_num_points(scale, dim)
+
+        self.assertEqual(grid.get_num_points(), n_points)
+
+    def test_12d_scale_4(self):
+        dim = 12
+        scale = 4
+        provider = GridProvider(dim)
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
+        n_points = utils.calculate_num_points(scale, dim)
+
+        self.assertEqual(grid.get_num_points(), n_points)
+
+    def test_3d_scale_5(self):
+        dim = 3
+        scale = 5
+        provider = GridProvider(dim)
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
+        n_points = utils.calculate_num_points(scale, dim)
+
+        self.assertEqual(grid.get_num_points(), n_points)
+
+    def test_8d_scale_4(self):
+        dim = 8
+        scale = 4
+        provider = GridProvider(dim)
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
+        n_points = utils.calculate_num_points(scale, dim)
+
+        self.assertEqual(grid.get_num_points(), n_points)
+
+    def test_7d_scale_1(self):
+        dim = 7
+        scale = 1
+        provider = GridProvider(dim)
+        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
+        n_points = utils.calculate_num_points(scale, dim)
+
+        self.assertEqual(grid.get_num_points(), n_points)
+
 if __name__ == '__main__':
     unittest.main()
