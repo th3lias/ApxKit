@@ -2,10 +2,10 @@
 Provides sparse grids and random grids.
 """
 import numpy as np
+from deprecated import deprecated
 
 from grid.grid import Grid
 from grid.grid_type import GridType
-
 from utils.utils import calculate_num_points
 
 
@@ -35,10 +35,7 @@ class GridProvider:
                  remove_duplicates: bool = True) -> Grid:
         """
         Generate a grid of given type.
-        :param scale:  Number of points (per dimension!) when generating the grid equidistantly or randomly.
-        If GridType == RANDOM we aim to have the same number of points as in the regular
-        grid and therefore sample the same num_points**dim number of points uniformly. If
-        GridType == CHEBYSHEV we use the scale parameter to determine the fineness of the sparse grid.
+        :param scale: Determines the number of points to be used in positive correlation.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
         :param multiplier: Only used in Random-Grid; Increases the number of samples by the given multiplier
         :param remove_duplicates: Remove duplicate values in the grid up to a small distance. Needed for Smolyak.
@@ -59,8 +56,10 @@ class GridProvider:
         n_points = int(n_points * multiplier)
 
         if grid_type == GridType.REGULAR:
-            points = self._generate_equidistant_grid(num_points=n_points)
-            return Grid(self.dim, scale, points, grid_type)
+            raise DeprecationWarning("The regular grid is deprecated and is most likely not working correctly.")
+            # We leave this for a possible fix in the future
+            # points = self._generate_equidistant_grid(num_points=n_points)
+            # return Grid(self.dim, scale, points, grid_type)
         if grid_type == GridType.RANDOM_UNIFORM:
             points = self._generate_random_grid(num_points=n_points)
             return Grid(self.dim, scale, points, grid_type)
@@ -79,6 +78,7 @@ class GridProvider:
 
         return samples
 
+    @deprecated
     def _generate_equidistant_grid(self, num_points: int) -> np.ndarray:
         num_points = np.full(shape=self.dim, fill_value=num_points)
         axes = [np.linspace(self.lower_bound, self.upper_bound, num_points[i]) for i in range(self.dim)]
