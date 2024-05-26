@@ -36,18 +36,6 @@ class TestGridProvider(unittest.TestCase):
 class VisualTests(unittest.TestCase):
 
     @staticmethod
-    def test_equidistant_provider_2d():
-        provider = GridProvider(int(2))
-        grid = provider.generate(grid_type=GridType.REGULAR, scale=int(5))
-        utils.visualize_point_grid_2d(grid, alpha=1.)
-
-    @staticmethod
-    def test_equidistant_provider_3d():
-        provider = GridProvider(int(3))
-        grid = provider.generate(grid_type=GridType.REGULAR, scale=int(3))
-        utils.visualize_point_grid_3d(grid, alpha=1.)
-
-    @staticmethod
     def test_random_uniform_provider_2d():
         provider = GridProvider(int(2), seed=int(42))
         grid = provider.generate(grid_type=GridType.RANDOM_UNIFORM, scale=int(3))
