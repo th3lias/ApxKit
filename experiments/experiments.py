@@ -1,5 +1,4 @@
 import datetime
-import math
 import os
 import platform
 import time
@@ -17,9 +16,6 @@ from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import calculate_num_points, plot_errors
-from utils.utils import visualize_point_grid_2d
-
-from utils.utils import find_degree
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
@@ -242,10 +238,10 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     return grid
 
 
-def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: range):
+def run_experiments(n_functions_parallel: int, scales: range, dims: range):
     """
     Runs multiple experiments for least-squares with various parameter combinations
-    :param n_functions_per_type_parallel: number of parallel functions per type that should be tested
+    :param n_functions_parallel: number of parallel functions per type that should be tested
     :param scales: Specifies which scale range should be used for the experiments
     :param dims: Specifies which dimension range should be used for the experiments
     """
@@ -270,8 +266,8 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
     least_squares_uniform_grid = None
 
     for dim in dims:
-        w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
-        c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
+        w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
+        c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
 
         for scale in scales:
 
@@ -282,21 +278,21 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
                 pbar.set_postfix({"Dimension": dim, "Method": method, "Scale": scale, "n_samples": n_samples})
 
                 for i in range(n_function_types):
-                    cur_slice = c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :]
+                    cur_slice = c[n_functions_parallel * i:n_functions_parallel * (i + 1), :]
                     cur_sum = cur_slice.sum(axis=1, keepdims=True)
                     factor = sum_c[i] / cur_sum
-                    c[n_functions_per_type_parallel * i:n_functions_per_type_parallel * (i + 1), :] *= factor
+                    c[n_functions_parallel * i:n_functions_parallel * (i + 1), :] *= factor
 
                 if method == 'Smolyak':
 
-                    smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_per_type_parallel,
+                    smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_parallel,
                                                            scale=scale, grid=smolyak_grid,
                                                            test_grid_seed=test_grid_seed,
                                                            n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
                 elif method == 'Least_Squares_Uniform':
 
                     least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                               n_parallel=n_functions_per_type_parallel,
+                                                                               n_parallel=n_functions_parallel,
                                                                                scale=scale,
                                                                                grid=least_squares_uniform_grid,
                                                                                test_grid_seed=test_grid_seed,
@@ -308,7 +304,7 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
                 elif method == 'Least_Squares_Chebyshev_Weight':
 
                     least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                                 n_parallel=n_functions_per_type_parallel,
+                                                                                 n_parallel=n_functions_parallel,
                                                                                  scale=scale,
                                                                                  grid=least_squares_chebyshev_grid,
                                                                                  test_grid_seed=test_grid_seed,
@@ -326,8 +322,8 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
 
 
 if __name__ == '__main__':
-    dim_range = range(2,3)
-    scale_range = range(1, 11)
+    dim_range = range(10, 20)
+    scale_range = range(1, 8)
     n_fun_parallel = 10
 
     run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range)

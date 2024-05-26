@@ -1,4 +1,3 @@
-import math
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
@@ -9,7 +8,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from grid.grid import Grid
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
-from utils.utils import calculate_num_points, find_degree
+from utils.utils import find_degree
 
 
 class LeastSquaresInterpolator(Interpolator):
