@@ -18,7 +18,7 @@ class LeastSquaresTests(unittest.TestCase):
         self.scale = 3
         self.dimension = 10
         self.n_test_samples = 100
-        self.lb = -1.0
+        self.lb = 0.0
         self.ub = 1.0
         self.gp = GridProvider(dimension=self.dimension)
         self.grid = self.gp.generate(grid_type=GridType.RANDOM_CHEBYSHEV, scale=self.scale)

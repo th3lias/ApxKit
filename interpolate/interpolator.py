@@ -3,7 +3,9 @@ import numpy as np
 from grid.grid import Grid
 from functools import reduce
 from operator import mul
-from itertools import chain, combinations_with_replacement, product, permutations
+from itertools import product, permutations
+from interpolate.partition import Partition
+from deprecated import deprecated
 
 
 class Interpolator:
@@ -97,22 +99,18 @@ class Interpolator:
         -----
         This function is used directly by build_grid and poly_idx
         """
+
         scale = self.scale
         dim = self.dim
         if not isinstance(scale, int):
             raise ValueError(f"Scale must have an int type but is {type(scale)}")
-        # Need to capture up to value scale + 1 so in python need scale+2
-        possible_values = range(1, scale + 2)
-        # find all (i1, i2, ... id) such that their sum is in range
-        # we want; this will cut down on later iterations
-        # TODO: This part takes very long, maybe we can optimize it
-        poss_idx = [el for el in combinations_with_replacement(possible_values, dim) if dim < sum(el) <= dim + scale]
-        true_idx = [[el for el in self._permute(list(val))] for val in poss_idx]
-        # Add the d dimension 1 array so that we don't repeat it a bunch
-        # of times
-        true_idx.extend([[[1] * dim]])
-        t_idx = list(chain.from_iterable(true_idx))
-        return t_idx
+
+        idx_list = list()
+        for q in range(dim, scale + dim + 1):
+            p = Partition(dim, q, limit=1)
+            idx_list.extend(p.get_all_partitions())
+
+        return idx_list
 
     @staticmethod
     def _phi_chain(n):
@@ -165,15 +163,15 @@ class Interpolator:
         """
         if i < 0:
             raise ValueError('i must be positive')
-        elif i == 0:
-            return 0
-        elif i == 1:
-            return 1
+        elif i < 2:
+            return i
         else:
             return 2 ** (i - 1) + 1
 
     @staticmethod
+    @deprecated
     def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
+        # TODO: Can probably be replaced with Partition class
         """
         Creates a generator object that yields all permutations of the given array/list. The permutations are unique,
         if the parameter drop_duplicates is set to True

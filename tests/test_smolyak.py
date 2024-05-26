@@ -3,6 +3,8 @@ import unittest
 import numpy as np
 
 from genz.genz_functions import get_genz_function, GenzFunctionType
+from grid.grid_provider import GridProvider
+from grid.grid_type import GridType
 from interpolate.smolyak import SmolyakInterpolator
 
 
@@ -24,7 +26,10 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolator(dim, scale)
+        gp = GridProvider(dimension=dim, upper_bound=1.0, lower_bound=0.0)
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+
+        sy = SmolyakInterpolator(grid)
 
         f_hat_smolyak = sy.interpolate(f)
 
@@ -57,7 +62,10 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolator(dim, scale)
+        gp = GridProvider(dimension=dim, upper_bound=1.0, lower_bound=0.0)
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+
+        sy = SmolyakInterpolator(grid)
 
         f_hat_smolyak = sy.interpolate(f)
 
@@ -90,7 +98,10 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolator(dim, scale)
+        gp = GridProvider(dimension=dim, upper_bound=1.0, lower_bound=0.0)
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+
+        sy = SmolyakInterpolator(grid)
 
         f_hat_smolyak = sy.interpolate(f)
 
@@ -123,7 +134,10 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolator(dim, scale)
+        gp = GridProvider(dimension=dim, upper_bound=1.0, lower_bound=0.0)
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+
+        sy = SmolyakInterpolator(grid)
 
         f_hat_smolyak = sy.interpolate(f)
 
@@ -156,7 +170,10 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolator(dim, scale)
+        gp = GridProvider(dimension=dim, upper_bound=1.0, lower_bound=0.0)
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+
+        sy = SmolyakInterpolator(grid)
 
         f_hat_smolyak = sy.interpolate(f)
 
@@ -189,7 +206,10 @@ class Smolyak(unittest.TestCase):
 
         y_true = f(test_grid)
 
-        sy = SmolyakInterpolator(dim, scale)
+        gp = GridProvider(dimension=dim, upper_bound=1.0, lower_bound=0.0)
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+
+        sy = SmolyakInterpolator(grid)
 
         f_hat_smolyak = sy.interpolate(f)
 

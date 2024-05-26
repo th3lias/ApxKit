@@ -11,7 +11,7 @@ from interpolate.interpolator import Interpolator
 
 
 class LeastSquaresInterpolator(Interpolator):
-    def __init__(self, include_bias: bool, basis_type: BasisType, grid: Grid = None,
+    def __init__(self, include_bias: bool, basis_type: BasisType, grid: Union[Grid, None] = None,
                  self_implemented: bool = True,
                  iterative: bool = False):
         super().__init__(grid)
@@ -117,7 +117,7 @@ class LeastSquaresInterpolator(Interpolator):
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
-            return model.predict(data_pol)
+            return model.predict(data_pol).T
 
         return f_hat
 
@@ -128,13 +128,29 @@ class LeastSquaresInterpolator(Interpolator):
         :return: fitted function
         """
 
-        y = f(self.grid.grid)
+        grid = self.grid.grid
+        if not self.include_bias:
+            print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
+        if not (isinstance(f, list) or isinstance(f, Callable)):
+            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
+        n_samples = grid.shape[0]
+        if isinstance(f, list):
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(grid)
+        else:
+            y = f(grid)
+
         x_poly = self.basis
-        res = lsmr(x_poly, y)
-        coeff = res[0]
+        coeffs = np.empty((self.basis.shape[1], y.shape[1]))
+        for i in range(y.shape[1]):
+            res = lsmr(x_poly, y[:, i])
+            coeffs[:, i] = res[0]
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
-            return data_pol @ coeff
+            return (data_pol @ coeffs).T
 
         return f_hat
