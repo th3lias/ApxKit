@@ -11,7 +11,7 @@ from interpolate.interpolator import Interpolator
 
 
 class LeastSquaresInterpolator(Interpolator):
-    def __init__(self, include_bias: bool, basis_type: BasisType, grid: Grid = None,
+    def __init__(self, include_bias: bool, basis_type: BasisType, grid: Union[Grid,None] = None,
                  self_implemented: bool = True,
                  iterative: bool = False):
         super().__init__(grid)

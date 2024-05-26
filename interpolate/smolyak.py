@@ -3,6 +3,7 @@ from typing import Callable, Union, List, Tuple
 import numpy as np
 from scipy.linalg import lu
 
+from grid.grid import Grid
 from grid.grid_provider import GridProvider, GridType
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
@@ -18,13 +19,12 @@ from interpolate.interpolator import Interpolator
 
 
 class SmolyakInterpolator(Interpolator):
-    def __init__(self, dimension: int, scale: int, basis_type: BasisType = BasisType.CHEBYSHEV, seed: int = None,
-                 lb: float = -1.0, ub: float = 1.0):
-        self.dim = dimension
-        self.scale = scale
+    def __init__(self, grid: Grid, basis_type: BasisType = BasisType.CHEBYSHEV):
+        if grid is None:
+            raise ValueError("Grid must not be None, but of type Grid!")
+
+        super().__init__(grid)
         self.basis_type = basis_type
-        self.gp = GridProvider(self.dim, seed=seed, lower_bound=lb, upper_bound=ub)
-        super().__init__(self.gp.generate(GridType.CHEBYSHEV, self.scale))
 
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
         if self.basis is None:

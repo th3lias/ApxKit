@@ -8,24 +8,6 @@ from utils import utils
 
 class TestGridProvider(unittest.TestCase):
 
-    def test_duplicate_removal(self):
-        provider = GridProvider(4)
-        grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=4, remove_duplicates=False)
-        print(f"{grid.grid.shape}")
-
-        print("Naive Python implementation.")
-        new_grid = utils.test_function_time(test_utils._remove_almost_identical_rows, 10, grid.grid)
-        print(f"{new_grid.shape}")
-        print("Numpy implementation - n^2 memory")
-        new_grid = utils.test_function_time(test_utils._remove_duplicates_squared_memory, 10, grid.grid)
-        print(f"{new_grid.shape}")
-        print("Numpy implementation - linear memory")
-        new_grid = utils.test_function_time(test_utils._remove_duplicates_linear_memory_naive, 10, grid.grid)
-        print(f"{new_grid.shape}")
-        print("Numpy implementation - optimised linear memory")
-        new_grid = utils.test_function_time(provider._remove_duplicates, 10, grid.grid)
-        print(f"{new_grid.shape}")
-
     # noinspection PyTypeChecker
     def test_provider_type_error(self):
         provider = GridProvider(int(4))

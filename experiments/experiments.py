@@ -9,6 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from genz.genz_functions import GenzFunctionType, get_genz_function
+from grid.grid import Grid
 from grid.grid_provider import GridType, GridProvider
 from interpolate.basis_types import BasisType
 from interpolate.least_squares import LeastSquaresInterpolator
@@ -18,8 +19,8 @@ from utils.utils import calculate_num_points, plot_errors
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
-                            n_parallel: int, scale: int, test_grid_seed: int,
-                            n_test_samples: int, lb: float, ub: float, path: Union[str, None] = None):
+                            n_parallel: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
+                            n_test_samples: int, lb: float, ub: float, path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
@@ -27,11 +28,14 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the smolyak model
+    :param grid: grid on which the Smolyak Algorithm should operate. If None, a new grid will be created
     :param test_grid_seed: seed used to generate test grid
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
     :param path: path of the results file. If None, the default path is used
+
+    :return: The created grid, such that it can be used again for an increased scale
     """
 
     start_time = time.time()
@@ -44,12 +48,18 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
 
     n_samples = calculate_num_points(scale, dim)
 
+    gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
+
+    if grid is None or not grid.dim == dim:
+        grid = gp.generate(GridType.CHEBYSHEV, scale=scale)
+    else:
+        grid = gp.increase_scale(grid)
+
     functions = list()
     function_names = list()
     y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
 
     for i, func_type in enumerate(GenzFunctionType):
-        # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
             index = i * n_parallel + j
             f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
@@ -57,7 +67,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
 
-    si = SmolyakInterpolator(dimension=dim, scale=scale, lb=lb, ub=ub)
+    si = SmolyakInterpolator(grid)
     f_hat = si.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -110,11 +120,14 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
 
     data.to_csv(path, sep=',', index=False)
 
+    return grid
+
 
 def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
-                                  n_parallel: int, scale: int,
+                                  n_parallel: int, scale: int, grid: Union[Grid, None],
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
-                                  path: Union[str, None] = None):
+                                  sample_new: bool = True,
+                                  path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
@@ -122,11 +135,15 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the least-squares model
+    :param grid: Grid on which least-squares should be fitted. If None, a new grid is created
     :param test_grid_seed: seed used to generate test grid
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
+    :param sample_new: Specifies, whether the current points in the grid should be kept or newly sampled
     :param path: path of the results file. If None, the default path is used
+
+    :return: The created grid, such that it can be used again for an increased scale
     """
 
     start_time = time.time()
@@ -139,18 +156,20 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
-    n_function_types = int(6)
+    n_function_types = int(len(GenzFunctionType))
 
     gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
 
-    grid = gp.generate(GridType.RANDOM_CHEBYSHEV, scale=scale, multiplier=multiplier)
+    if grid is None or not grid.dim == dim:
+        grid = gp.generate(GridType.RANDOM_UNIFORM, scale=scale, multiplier=multiplier)
+    else:
+        grid = gp.increase_scale(grid, sample_new)
 
     functions = list()
     function_names = list()
     y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
 
     for i, func_type in enumerate(GenzFunctionType):
-        # TODO: [Jakob] Maybe possible to vectorize
         for j in range(n_parallel):
             index = i * n_parallel + j
             f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
@@ -211,6 +230,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     data.to_csv(path, sep=',', index=False)
 
+    return grid
+
 
 def run_experiments(n_functions_per_type_parallel: int):
     """
@@ -226,7 +247,7 @@ def run_experiments(n_functions_per_type_parallel: int):
     n_test_samples = 50
 
     scale_range = range(1, 5)
-    dim_range = range(1, 2)
+    dim_range = range(10, 20)
     methods = ['Smolyak', 'Least_Squares']
 
     n_iterations = len(scale_range) * len(dim_range) * len(methods)
@@ -234,6 +255,9 @@ def run_experiments(n_functions_per_type_parallel: int):
     sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
 
     pbar = tqdm(total=n_iterations, desc="Running experiments")
+
+    smolyak_grid = None
+    least_squares_grid = None
 
     for dim in dim_range:
         w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
@@ -255,18 +279,18 @@ def run_experiments(n_functions_per_type_parallel: int):
 
                 if method == 'Smolyak':
 
-                    # w_smol = w[0::n_functions_per_type_parallel, :]
-                    # c_smol = c[0::n_functions_per_type_parallel, :]
-
-                    run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_per_type_parallel,
-                                            scale=scale, test_grid_seed=test_grid_seed,
-                                            n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
+                    smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_per_type_parallel,
+                                                           scale=scale, grid=smolyak_grid,
+                                                           test_grid_seed=test_grid_seed,
+                                                           n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
                 elif method == 'Least_Squares':
 
-                    run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                  n_parallel=n_functions_per_type_parallel, scale=scale,
-                                                  test_grid_seed=test_grid_seed, n_test_samples=n_test_samples, lb=lb,
-                                                  ub=ub, path=None)
+                    least_squares_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                       n_parallel=n_functions_per_type_parallel,
+                                                                       scale=scale, grid=least_squares_grid,
+                                                                       test_grid_seed=test_grid_seed,
+                                                                       n_test_samples=n_test_samples, lb=lb,
+                                                                       ub=ub, sample_new=False, path=None)
 
                 else:
                     raise ValueError(f"The method {method} is not supported. Please use 'Smolyak' or 'Least_Squares!")
@@ -276,12 +300,12 @@ def run_experiments(n_functions_per_type_parallel: int):
 
 
 if __name__ == '__main__':
-    run_experiments(1)
+    run_experiments(25)
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    # for dim in range(10, 11):
+    # for dim in range(10, 14):
     #     for fun_type in GenzFunctionType:
     #         plot_errors(dim, fun_type, range(1, 5), save=True)

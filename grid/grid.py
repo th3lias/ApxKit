@@ -6,9 +6,10 @@ from grid.grid_type import GridType
 
 
 class Grid:
+    # TODO: Allow jax again or make it variable
     """ Wrapper for an Array type used for interpolation. """
 
-    def __init__(self, dim: int, scale: int, grid: Union[np.ndarray], grid_type: GridType, # jnp.ndarrary,
+    def __init__(self, dim: int, scale: int, grid: Union[np.ndarray], grid_type: GridType,  # jnp.ndarrary,
                  lower_bound: float = -1., upper_bound: float = 1.):
         self.dim = dim
         self.scale = scale
