@@ -1,4 +1,5 @@
 import datetime
+import math
 import os
 import platform
 import time
@@ -16,6 +17,9 @@ from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import calculate_num_points, plot_errors
+from utils.utils import visualize_point_grid_2d
+
+from utils.utils import find_degree
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
@@ -91,6 +95,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['grid_type'] = si.grid.grid_type.name
+        row_entry['basis_type'] = si.basis_type.name
         row_entry['n_samples'] = n_samples
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
@@ -126,7 +131,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
 def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
                                   n_parallel: int, scale: int, grid: Union[Grid, None],
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
-                                  grid_type: GridType, sample_new: bool = True,
+                                  grid_type: GridType, basis_type: BasisType, sample_new: bool = True,
                                   path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
@@ -141,6 +146,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
     :param grid_type: Specifies which grid should be used. Usually sampled from uniform or chebyshev weight
+    :param basis_type: Specifies the type of the polynomial basis. If Chebyshev, then the exact same basis is used like
+    in the Smolyak algorithm, otherwise a comparable standard basis
     :param sample_new: Specifies, whether the current points in the grid should be kept or newly sampled
     :param path: path of the results file. If None, the default path is used
 
@@ -151,9 +158,9 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     np.random.seed(test_grid_seed)
 
-    n_samples = calculate_num_points(scale, dim)
+    n_samples = calculate_num_points(scale, dim)  # TODO: Maybe use different calculation if standard basis is used
 
-    multiplier = np.log10(n_samples)  # TODO: log_10 vs. log_e
+    multiplier = np.log10(n_samples)
 
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
@@ -178,7 +185,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
 
-    ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid, self_implemented=True)
+    ls = LeastSquaresInterpolator(include_bias=True, basis_type=basis_type, grid=grid, self_implemented=True)
     f_hat = ls.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -202,6 +209,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['grid_type'] = grid.grid_type.name
+        row_entry['basis_type'] = ls.basis_type.name
         row_entry['n_samples'] = int(n_samples * multiplier)
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
@@ -294,6 +302,7 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
                                                                                test_grid_seed=test_grid_seed,
                                                                                n_test_samples=n_test_samples, lb=lb,
                                                                                ub=ub, grid_type=GridType.RANDOM_UNIFORM,
+                                                                               basis_type=BasisType.CHEBYSHEV,
                                                                                sample_new=False, path=None)
 
                 elif method == 'Least_Squares_Chebyshev_Weight':
@@ -306,6 +315,7 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
                                                                                  n_test_samples=n_test_samples, lb=lb,
                                                                                  ub=ub,
                                                                                  grid_type=GridType.RANDOM_CHEBYSHEV,
+                                                                                 basis_type=BasisType.CHEBYSHEV,
                                                                                  sample_new=False, path=None)
 
                 else:
@@ -316,9 +326,9 @@ def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: ran
 
 
 if __name__ == '__main__':
-    dim_range = range(10, 11)
-    scale_range = range(1, 5)
-    n_fun_parallel = 1
+    dim_range = range(2,3)
+    scale_range = range(1, 11)
+    n_fun_parallel = 10
 
     run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range)
 
@@ -326,8 +336,7 @@ if __name__ == '__main__':
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-
-    total_iterations = len(dim_range) * len(scale_range)
+    total_iterations = len(dim_range) * len(GenzFunctionType)
     with tqdm(total=total_iterations, desc="Processing") as pbar:
         for dim in dim_range:
             for fun_type in GenzFunctionType:

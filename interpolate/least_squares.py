@@ -1,3 +1,4 @@
+import math
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
@@ -8,6 +9,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from grid.grid import Grid
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
+from utils.utils import calculate_num_points, find_degree
 
 
 class LeastSquaresInterpolator(Interpolator):
@@ -38,7 +40,7 @@ class LeastSquaresInterpolator(Interpolator):
         return self._approximate(f)
 
     def _build_basis(self, basis_type: Union[BasisType, None] = None, grid: Union[None, np.ndarray] = None,
-                     b_idx: Union[List[Tuple[int]], None] = None, degree: Union[int, None] = None):
+                     b_idx: Union[List[Tuple[int]], None] = None):
 
         if basis_type is None:
             basis_type = self.basis_type
@@ -52,11 +54,12 @@ class LeastSquaresInterpolator(Interpolator):
         if basis_type == BasisType.CHEBYSHEV:
             return self._build_poly_basis(grid, b_idx)
 
-        if degree is None:
-            raise ValueError(
-                f"Please provide a degree which specifies the max total degree that can occur in the basis")
-        poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
-        return poly.fit_transform(grid)
+        elif basis_type == BasisType.REGULAR:
+
+            degree = find_degree(self.scale, self.dim)
+
+            poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
+            return poly.fit_transform(grid)
 
     def _approximate(self, f: Union[Callable, List[Callable]]) -> Callable:
         """
