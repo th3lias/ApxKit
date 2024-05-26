@@ -1,6 +1,5 @@
 import unittest
 
-import utils.test_utils as test_utils
 from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from utils import utils
@@ -126,6 +125,7 @@ class TestNumberGridPoints(unittest.TestCase):
         n_points = utils.calculate_num_points(scale, dim)
 
         self.assertEqual(grid.get_num_points(), n_points)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -20,7 +20,7 @@ class GridProvider:
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: int, seed: int = None, lower_bound: float = -1.0, upper_bound: float = 1.0):
+    def __init__(self, dimension: int, seed: int = None, lower_bound: float = 0.0, upper_bound: float = 1.0):
         self.dim = dimension
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
@@ -42,7 +42,7 @@ class GridProvider:
         :param scale: Determines the number of points to be used in positive correlation.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
         :param multiplier: Only used in Random-Grid; Increases the number of samples by the given multiplier
-        :return: np.ndarray representing the grid
+        :return: grid object containing the points
         """
         # TODO: Adapt docstring
         self.multiplier = multiplier
@@ -121,6 +121,9 @@ class GridProvider:
 
             additional_points = np.unique(np.vstack(points), axis=0)
 
+            additional_points = self._rescale(additional_points, lower_bound=self.lower_bound,
+                                              upper_bound=self.upper_bound)
+
             combined_grid = np.unique(np.vstack([current_grid, additional_points]), axis=0)
 
             return Grid(dim, scale + delta, combined_grid, grid_type, self.lower_bound, self.upper_bound)
@@ -193,7 +196,7 @@ class GridProvider:
             grid_points.append(np.stack(np.meshgrid(*mesh, indexing='ij')).reshape(self.dim, -1).T)
         grid = np.unique(np.concatenate(grid_points, axis=0), axis=0)
 
-        return self._rescale(grid)
+        return self._rescale(grid, lower_bound=self.lower_bound, upper_bound=self.upper_bound)
 
     def _valid_combinations(self, d: int, level: int, memo: dict = None):
         if (d, level) in memo:
@@ -211,11 +214,14 @@ class GridProvider:
     def _uni_grid(self, level: int) -> np.ndarray:
         return np.zeros(1) if level == 0 else self._cheby_nodes(2 ** level + 1)
 
-    def _rescale(self, grid: np.ndarray) -> np.ndarray:
-        if self.lower_bound == -1. and self.upper_bound == 1.:
+    @staticmethod
+    def _rescale(grid: np.ndarray, lower_bound: float, upper_bound: float) -> np.ndarray:
+
+        # TODO: Maybe adapt in a way such that the density is correct for example chebyshev weight function
+        if lower_bound == -1. and upper_bound == 1.:
             return grid
         grid = (grid + 1) / 2
-        return grid * (self.upper_bound - self.lower_bound) + self.lower_bound
+        return grid * (upper_bound - lower_bound) + lower_bound
 
     @staticmethod
     def _cartesian_product(array_list: list, dtype: np.dtype = np.float64):
@@ -226,10 +232,10 @@ class GridProvider:
         return arr.reshape(-1, la)
 
     @staticmethod
-    def _sample_chebyshev_univariate(num_points: int) -> np.ndarray:
+    def _sample_chebyshev_univariate(num_points: int, lower_bound: float = 0.0, upper_bound: float = 1.0) -> np.ndarray:
         """Uses the inverse transform method. CDF is arcsin(x) and the inverse is sin(x)"""
         points = np.random.uniform(low=-np.pi / 2, high=np.pi / 2, size=num_points)
-        return np.sin(points)
+        return GridProvider._rescale(grid=np.sin(points), lower_bound=lower_bound, upper_bound=upper_bound)
 
     @staticmethod
     def _cheby_nodes(n: int, n_decimals: int = 13) -> np.ndarray:

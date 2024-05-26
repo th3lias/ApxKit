@@ -267,9 +267,12 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
 
     smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
     least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
+    least_squares_data_chebyshev_weight = least_squares_data[(filtered_data['grid_type']) == 'RANDOM_CHEBYSHEV']
+    least_squares_data_uniform = filtered_data[(filtered_data['grid_type']) == 'RANDOM_UNIFORM']
 
     smolyak_data = smolyak_data.sort_values(by='scale')
-    least_squares_data = least_squares_data.sort_values(by='scale')
+    least_squares_data_chebyshev_weight = least_squares_data_chebyshev_weight.sort_values(by='scale')
+    least_squares_data_uniform = least_squares_data_uniform.sort_values(by='scale')
 
     titles = ['Max (Abs) Error', 'L2 Error']
 
@@ -286,8 +289,13 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
             for i, error in enumerate(errors):
                 label = 'Smolyak'
                 axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
-                label = 'Least Squares'
-                axs[i].plot(scales, least_squares_data[least_squares_data['c'] == name][error], label=label)
+                label = 'Least Squares Uniform'
+                axs[i].plot(scales, least_squares_data_uniform[least_squares_data_uniform['c'] == name][error],
+                            label=label)
+                label = 'Least Squares Chebyshev Weight'
+                axs[i].plot(scales,
+                            least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
+                                error], label=label)
                 axs[i].set_xticks(scales)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
@@ -304,31 +312,32 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
             else:
                 plt.show()
     else:
-        for name, group in least_squares_data.groupby('c'):
-            w = group['w'].iloc[0]
-            if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
-                print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
-                      f"due to infinity values in errors.")
-                continue
-            fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
-            for i, error in enumerate(errors):
-                label = 'Least Squares'
-                axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
-                axs[i].set_xticks(scales)
-                axs[i].set_title(titles[i])
-                axs[i].set_xlabel('Scale/no points')
-                axs[i].set_ylabel('Error')
-                axs[i].set_yscale('log')
-                axs[i].legend()
-
-            fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
-            plt.tight_layout()
-            if save:
-                filename = get_next_filename(save_path)
-                img_path = os.path.join(save_path, filename)
-                plt.savefig(img_path)
-            else:
-                plt.show()
+        print("Chebyshev data is empty, this is deprecated")
+    #     for name, group in least_squares_data.groupby('c'):
+    #         w = group['w'].iloc[0]
+    #         if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
+    #             print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
+    #                   f"due to infinity values in errors.")
+    #             continue
+    #         fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+    #         for i, error in enumerate(errors):
+    #             label = 'Least Squares'
+    #             axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+    #             axs[i].set_xticks(scales)
+    #             axs[i].set_title(titles[i])
+    #             axs[i].set_xlabel('Scale/no points')
+    #             axs[i].set_ylabel('Error')
+    #             axs[i].set_yscale('log')
+    #             axs[i].legend()
+    #
+    #         fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
+    #         plt.tight_layout()
+    #         if save:
+    #             filename = get_next_filename(save_path)
+    #             img_path = os.path.join(save_path, filename)
+    #             plt.savefig(img_path)
+    #         else:
+    #             plt.show()
 
 
 def _comp_next(n: int, k: int, a: List[int], more, h, t) -> bool:

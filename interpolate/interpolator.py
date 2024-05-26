@@ -5,7 +5,7 @@ from functools import reduce
 from operator import mul
 from itertools import product, permutations
 from interpolate.partition import Partition
-import deprecated
+from deprecated import deprecated
 
 
 class Interpolator:
@@ -168,6 +168,7 @@ class Interpolator:
         else:
             return 2 ** (i - 1) + 1
 
+    @staticmethod
     @deprecated
     def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
         # TODO: Can probably be replaced with Partition class

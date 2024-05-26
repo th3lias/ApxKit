@@ -126,7 +126,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
 def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
                                   n_parallel: int, scale: int, grid: Union[Grid, None],
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
-                                  sample_new: bool = True,
+                                  grid_type: GridType, sample_new: bool = True,
                                   path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
@@ -140,6 +140,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
+    :param grid_type: Specifies which grid should be used. Usually sampled from uniform or chebyshev weight
     :param sample_new: Specifies, whether the current points in the grid should be kept or newly sampled
     :param path: path of the results file. If None, the default path is used
 
@@ -152,7 +153,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     n_samples = calculate_num_points(scale, dim)
 
-    multiplier = np.log10(n_samples)
+    multiplier = np.log10(n_samples)  # TODO: log_10 vs. log_e
 
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
@@ -161,7 +162,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
 
     if grid is None or not grid.dim == dim:
-        grid = gp.generate(GridType.RANDOM_UNIFORM, scale=scale, multiplier=multiplier)
+        grid = gp.generate(grid_type, scale=scale, multiplier=multiplier)
     else:
         grid = gp.increase_scale(grid, sample_new)
 
@@ -177,7 +178,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
 
-    ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid)
+    ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=grid, self_implemented=True)
     f_hat = ls.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -233,22 +234,22 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     return grid
 
 
-def run_experiments(n_functions_per_type_parallel: int):
+def run_experiments(n_functions_per_type_parallel: int, scales: range, dims: range):
     """
     Runs multiple experiments for least-squares with various parameter combinations
     :param n_functions_per_type_parallel: number of parallel functions per type that should be tested
+    :param scales: Specifies which scale range should be used for the experiments
+    :param dims: Specifies which dimension range should be used for the experiments
     """
 
     n_function_types = len(GenzFunctionType)
 
-    lb = float(-1.0)
+    lb = float(0.0)
     ub = float(1.0)
     test_grid_seed = 42
     n_test_samples = 50
 
-    scale_range = range(1, 5)
-    dim_range = range(10, 20)
-    methods = ['Smolyak', 'Least_Squares']
+    methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
 
     n_iterations = len(scale_range) * len(dim_range) * len(methods)
 
@@ -257,13 +258,14 @@ def run_experiments(n_functions_per_type_parallel: int):
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
     smolyak_grid = None
-    least_squares_grid = None
+    least_squares_chebyshev_grid = None
+    least_squares_uniform_grid = None
 
-    for dim in dim_range:
+    for dim in dims:
         w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
         c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_per_type_parallel, dim))
 
-        for scale in scale_range:
+        for scale in scales:
 
             n_samples = calculate_num_points(scale, dim)
 
@@ -283,14 +285,28 @@ def run_experiments(n_functions_per_type_parallel: int):
                                                            scale=scale, grid=smolyak_grid,
                                                            test_grid_seed=test_grid_seed,
                                                            n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
-                elif method == 'Least_Squares':
+                elif method == 'Least_Squares_Uniform':
 
-                    least_squares_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                       n_parallel=n_functions_per_type_parallel,
-                                                                       scale=scale, grid=least_squares_grid,
-                                                                       test_grid_seed=test_grid_seed,
-                                                                       n_test_samples=n_test_samples, lb=lb,
-                                                                       ub=ub, sample_new=False, path=None)
+                    least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                               n_parallel=n_functions_per_type_parallel,
+                                                                               scale=scale,
+                                                                               grid=least_squares_uniform_grid,
+                                                                               test_grid_seed=test_grid_seed,
+                                                                               n_test_samples=n_test_samples, lb=lb,
+                                                                               ub=ub, grid_type=GridType.RANDOM_UNIFORM,
+                                                                               sample_new=False, path=None)
+
+                elif method == 'Least_Squares_Chebyshev_Weight':
+
+                    least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                                 n_parallel=n_functions_per_type_parallel,
+                                                                                 scale=scale,
+                                                                                 grid=least_squares_chebyshev_grid,
+                                                                                 test_grid_seed=test_grid_seed,
+                                                                                 n_test_samples=n_test_samples, lb=lb,
+                                                                                 ub=ub,
+                                                                                 grid_type=GridType.RANDOM_CHEBYSHEV,
+                                                                                 sample_new=False, path=None)
 
                 else:
                     raise ValueError(f"The method {method} is not supported. Please use 'Smolyak' or 'Least_Squares!")
@@ -300,12 +316,20 @@ def run_experiments(n_functions_per_type_parallel: int):
 
 
 if __name__ == '__main__':
-    run_experiments(25)
+    dim_range = range(10, 11)
+    scale_range = range(1, 5)
+    n_fun_parallel = 1
+
+    run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range)
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    # for dim in range(10, 14):
-    #     for fun_type in GenzFunctionType:
-    #         plot_errors(dim, fun_type, range(1, 5), save=True)
+
+    total_iterations = len(dim_range) * len(scale_range)
+    with tqdm(total=total_iterations, desc="Processing") as pbar:
+        for dim in dim_range:
+            for fun_type in GenzFunctionType:
+                plot_errors(dim, fun_type, scale_range, save=True)
+                pbar.update(1)

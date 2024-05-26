@@ -4,7 +4,6 @@ import numpy as np
 from scipy.linalg import lu
 
 from grid.grid import Grid
-from grid.grid_provider import GridProvider, GridType
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
 
