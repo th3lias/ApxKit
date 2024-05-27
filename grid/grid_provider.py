@@ -58,7 +58,7 @@ class GridProvider:
             points = self._full_cheby_grid(level=scale)
             return Grid(self.dim, scale, points, grid_type)
 
-        n_points = calculate_num_points(scale, self.dim)
+        n_points = calculate_num_points(scale, self.dim)  # TODO: Maybe not right
         n_points = int(n_points * multiplier)
 
         if grid_type == GridType.REGULAR:

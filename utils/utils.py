@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import os
 import time
 from typing import Callable, Union, List
@@ -420,3 +421,16 @@ def calculate_num_points(scale: int, dimension: int) -> int:
                 break
 
     return no_points
+
+
+def find_degree(scale: int, dimension: int):
+    cheby_basis_size = calculate_num_points(scale, dimension)
+    degree = 1
+
+    normal_basis_size = math.comb(dimension + degree, dimension)
+
+    while normal_basis_size < cheby_basis_size:
+        degree += 1
+        normal_basis_size = math.comb(dimension + degree, dimension)
+
+    return degree

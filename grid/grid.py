@@ -4,12 +4,13 @@ import numpy as np
 
 from grid.grid_type import GridType
 import jax.numpy as jnp
+# import numpy as jnp
 
 
 class Grid:
     """ Wrapper for an Array type used for interpolation. """
 
-    def __init__(self, dim: int, scale: int, grid: Union[jnp.ndarrary, np.ndarray], grid_type: GridType,  # ,
+    def __init__(self, dim: int, scale: int, grid: Union[jnp.ndarray, np.ndarray], grid_type: GridType,  # ,
                  lower_bound: float = 0., upper_bound: float = 1.):
         self.dim = dim
         self.scale = scale
