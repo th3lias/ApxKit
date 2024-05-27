@@ -14,8 +14,6 @@ if __name__ == '__main__':
 
     run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range)
 
-
-
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
