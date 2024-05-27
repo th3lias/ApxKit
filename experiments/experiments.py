@@ -255,7 +255,7 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
 
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
 
-    n_iterations = len(scale_range) * len(dim_range) * len(methods)
+    n_iterations = len(scales) * len(dims) * len(methods)
 
     sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
 
@@ -321,20 +321,4 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
     pbar.close()
 
 
-if __name__ == '__main__':
-    dim_range = range(10, 20)
-    scale_range = range(1, 8)
-    n_fun_parallel = 10
 
-    run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range)
-
-    # visualize one specific instance
-    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
-
-    # save all images in results folder
-    total_iterations = len(dim_range) * len(GenzFunctionType)
-    with tqdm(total=total_iterations, desc="Processing") as pbar:
-        for dim in dim_range:
-            for fun_type in GenzFunctionType:
-                plot_errors(dim, fun_type, scale_range, save=True)
-                pbar.update(1)
