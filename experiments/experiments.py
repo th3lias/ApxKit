@@ -248,7 +248,9 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
     :param dims: Specifies which dimension range should be used for the experiments
     """
 
-    print(f"Starting experiments with cpu {platform.processor()} and {psutil.virtual_memory().total/1024/1024/1024} GB")
+    print(
+        f"Starting experiments with cpu {platform.processor()} and "
+        f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM")
 
     n_function_types = len(GenzFunctionType)
 
@@ -323,6 +325,3 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
                 pbar.update(1)
 
     pbar.close()
-
-
-
