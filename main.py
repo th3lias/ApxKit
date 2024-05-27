@@ -10,6 +10,8 @@ if __name__ == '__main__':
     scale_range = range(1, 8)
     n_fun_parallel = 10
 
+    print(f"Started program at {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")
+
     run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range)
 
 
