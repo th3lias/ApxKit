@@ -107,7 +107,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         results.append(row_entry)
 
     if path is None:
-        os.path.join("results", "results_numerical_experiments.csv")
+        path = os.path.join("results", "results_numerical_experiments.csv")
 
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
