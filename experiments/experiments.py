@@ -17,6 +17,8 @@ from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import calculate_num_points, plot_errors
 
+import psutil
+
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
                             n_parallel: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
@@ -245,6 +247,8 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
     :param scales: Specifies which scale range should be used for the experiments
     :param dims: Specifies which dimension range should be used for the experiments
     """
+
+    print(f"Starting experiments with cpu {platform.processor()} and {psutil.virtual_memory().total/1024/1024/1024} GB")
 
     n_function_types = len(GenzFunctionType)
 
