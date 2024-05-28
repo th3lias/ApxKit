@@ -252,10 +252,10 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
     """
 
     if path is None:
-        path = os.path.join("..", "results", "results_numerical_experiments.csv")
+        path = os.path.join("results", "results_numerical_experiments.csv")
 
     if save_path is None:
-        save_path = os.path.join("..", "results", "figures", function_type.name, f'dim{dimension}')
+        save_path = os.path.join("results", "figures", function_type.name, f'dim{dimension}')
 
     os.makedirs(save_path, exist_ok=True)
 
