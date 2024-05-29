@@ -44,7 +44,10 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
 
     np.random.seed(test_grid_seed)
 
-    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
+    test_gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub, seed=test_grid_seed)
+    # test_grid = test_gp.generate(GridType.RANDOM_CHEBYSHEV, scale=3)  # scale 3 for dim 3 means 69 points
+    # test_grid = test_grid.grid
+    test_grid = np.random.uniform(low=lb, high=ub, size=(69, dim))
 
     n_function_types = int(len(GenzFunctionType))
 
@@ -158,9 +161,11 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     n_samples = calculate_num_points(scale, dim)  # TODO: Maybe use different calculation if standard basis is used
 
-    multiplier = np.log10(n_samples)
+    multiplier = np.log10(n_samples) * 10
 
-    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
+    test_gp = GridProvider(dim, lower_bound=lb, upper_bound=ub, seed=test_grid_seed)
+    test_grid = test_gp.generate(GridType.RANDOM_CHEBYSHEV, scale=3)  # scale 3 for dim 3 means 69 points
+    test_grid = test_grid.grid
 
     n_function_types = int(len(GenzFunctionType))
 
@@ -257,13 +262,13 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
     lb = float(0.0)
     ub = float(1.0)
     test_grid_seed = 42
-    n_test_samples = 50
+    n_test_samples = 69
 
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
 
     n_iterations = len(scales) * len(dims) * len(methods)
 
-    sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
+    # sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
 
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
@@ -286,7 +291,8 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
                 for i in range(n_function_types):
                     cur_slice = c[n_functions_parallel * i:n_functions_parallel * (i + 1), :]
                     cur_sum = cur_slice.sum(axis=1, keepdims=True)
-                    factor = sum_c[i] / cur_sum
+                    # factor = sum_c[i] / cur_sum
+                    factor = dim / cur_sum
                     c[n_functions_parallel * i:n_functions_parallel * (i + 1), :] *= factor
 
                 if method == 'Smolyak':
