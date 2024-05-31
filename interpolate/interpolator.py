@@ -227,5 +227,6 @@ class Interpolator:
         results[0, ...] = np.ones(dim)
         results[1, ...] = x
         for i in range(2, n + 1):
-            results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
+            # results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
+            results[i, ...] = np.cos(i * np.arccos(x))
         return results
