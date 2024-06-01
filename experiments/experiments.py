@@ -15,7 +15,7 @@ from interpolate.basis_types import BasisType
 from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
-from utils.utils import calculate_num_points, plot_errors
+from utils.utils import calculate_num_points
 
 import psutil
 
@@ -43,11 +43,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     start_time = time.time()
 
     np.random.seed(test_grid_seed)
-
-    test_gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub, seed=test_grid_seed)
-    # test_grid = test_gp.generate(GridType.RANDOM_CHEBYSHEV, scale=3)  # scale 3 for dim 3 means 69 points
-    # test_grid = test_grid.grid
-    test_grid = np.random.uniform(low=lb, high=ub, size=(69, dim))
+    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
     n_function_types = int(len(GenzFunctionType))
 
@@ -130,7 +126,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
 
 
 def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
-                                  n_parallel: int, scale: int, grid: Union[Grid, None],
+                                  n_parallel: int, scale: int, additional_multiplier: float, grid: Union[Grid, None],
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
                                   grid_type: GridType, basis_type: BasisType, sample_new: bool = True,
                                   path: Union[str, None] = None) -> Grid:
@@ -141,6 +137,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the least-squares model
+    :param additional_multiplier: Multiplies the number of samples of least squares by this factor
     :param grid: Grid on which least-squares should be fitted. If None, a new grid is created
     :param test_grid_seed: seed used to generate test grid
     :param n_test_samples: number of samples used to assess the quality of the fit
@@ -157,15 +154,12 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     start_time = time.time()
 
+    n_samples = calculate_num_points(scale, dim)
+
+    multiplier = np.log(n_samples) * additional_multiplier
+
     np.random.seed(test_grid_seed)
-
-    n_samples = calculate_num_points(scale, dim)  # TODO: Maybe use different calculation if standard basis is used
-
-    multiplier = np.log10(n_samples) * 10
-
-    test_gp = GridProvider(dim, lower_bound=lb, upper_bound=ub, seed=test_grid_seed)
-    test_grid = test_gp.generate(GridType.RANDOM_CHEBYSHEV, scale=3)  # scale 3 for dim 3 means 69 points
-    test_grid = test_grid.grid
+    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
     n_function_types = int(len(GenzFunctionType))
 
@@ -245,12 +239,14 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     return grid
 
 
-def run_experiments(n_functions_parallel: int, scales: range, dims: range):
+def run_experiments(n_functions_parallel: int, scales: range, dims: range, methods: list, add_mul: float):
     """
     Runs multiple experiments for least-squares with various parameter combinations
     :param n_functions_parallel: number of parallel functions per type that should be tested
     :param scales: Specifies which scale range should be used for the experiments
     :param dims: Specifies which dimension range should be used for the experiments
+    :param methods: Specifies which methods should be used for the experiments
+    :param add_mul: Multiplies the number of samples for the least squares experiments
     """
 
     print(
@@ -263,8 +259,6 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
     ub = float(1.0)
     test_grid_seed = 42
     n_test_samples = 69
-
-    methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
 
     n_iterations = len(scales) * len(dims) * len(methods)
 
@@ -306,6 +300,7 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
                     least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
                                                                                n_parallel=n_functions_parallel,
                                                                                scale=scale,
+                                                                               additional_multiplier=add_mul,
                                                                                grid=least_squares_uniform_grid,
                                                                                test_grid_seed=test_grid_seed,
                                                                                n_test_samples=n_test_samples, lb=lb,
@@ -318,6 +313,7 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
                     least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
                                                                                  n_parallel=n_functions_parallel,
                                                                                  scale=scale,
+                                                                                 additional_multiplier=add_mul,
                                                                                  grid=least_squares_chebyshev_grid,
                                                                                  test_grid_seed=test_grid_seed,
                                                                                  n_test_samples=n_test_samples, lb=lb,
@@ -327,7 +323,9 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range):
                                                                                  sample_new=False, path=None)
 
                 else:
-                    raise ValueError(f"The method {method} is not supported. Please use 'Smolyak' or 'Least_Squares!")
+                    raise ValueError(
+                        f"The method {method} is not supported. Please use 'Smolyak', 'Least_Squares_Chebyshev_Weight' "
+                        f"or 'Least_Squares_Uniform'!")
                 pbar.update(1)
 
     pbar.close()

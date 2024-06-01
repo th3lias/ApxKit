@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
 from grid.grid import Grid
+from grid.grid_type import GridType
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
 from utils.utils import find_degree
@@ -54,7 +55,7 @@ class LeastSquaresInterpolator(Interpolator):
             return self._build_poly_basis(grid, b_idx)
 
         elif basis_type == BasisType.REGULAR:
-
+            print(DeprecationWarning("This will not be supported in the near future"))
             degree = find_degree(self.scale, self.dim)
 
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
@@ -66,7 +67,7 @@ class LeastSquaresInterpolator(Interpolator):
         :param f: function or list of functions that need to be approximated on the same points
         :return: fitted function(s)
         """
-        grid = self.grid.grid
+        grid = self.grid.get_grid()
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
         if not (isinstance(f, list) or isinstance(f, Callable)):
@@ -92,8 +93,18 @@ class LeastSquaresInterpolator(Interpolator):
         :return: fitted function
         """
 
-        x_poly = self.basis
-        y_prime = x_poly.T @ y
+        if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
+            weight = np.empty(shape=(self.grid.get_num_points()))
+            for i, row in enumerate(self.grid.get_grid()):
+                assert row.shape[0] == self.dim
+                weight[i] = np.prod(np.polynomial.chebyshev.chebweight(row))
+
+            weight = np.sqrt(np.diag(weight))
+        else:
+            weight = np.eye(N=self.grid.get_num_points())
+
+        x_poly = weight @ self.basis
+        y_prime = x_poly.T @ weight @ y
         x2 = x_poly.T @ x_poly
         coeff = np.linalg.solve(x2, y_prime)
 

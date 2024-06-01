@@ -236,8 +236,9 @@ def get_next_filename(path, extension='png'):
     return f"{next_number}.{extension}"
 
 
-def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path: Union[str, None] = None,
-                save: bool = False, save_path: Union[str, None] = None, ):
+def plot_errors(dimension, function_type: GenzFunctionType, scales: range, additional_multiplier: float,
+                path: Union[str, None] = None,
+                save: bool = False, save_path: Union[str, None] = None):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
@@ -245,6 +246,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
     :param dimension: dimension which should be considered from the results file
     :param function_type: Specifies which function should be considered
     :param scales: range of scales, which are considered
+    :param additional_multiplier: specifies which multiplier was used to increase the number of samples in least squares
     :param path: Path of the results-csv file. If None, a default path will be used.
     :param save: Specifies whether the images should be saved. If False, the images are shown.
     :param save_path: Path where the images should be saved. If None, a default path will be used.
@@ -288,6 +290,9 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                 continue
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
+                n_points = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
+                    'n_samples']
+                xticklabels = [f"{scale}\n{n_points.iloc[j]}" for j, scale in enumerate(scales)]
                 label = 'Smolyak'
                 axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
                 label = 'Least Squares Uniform'
@@ -298,47 +303,52 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, path:
                             least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
                                 error], label=label)
                 axs[i].set_xticks(scales)
+                axs[i].set_xticklabels(xticklabels)
                 axs[i].set_title(titles[i])
                 axs[i].set_xlabel('Scale/no points')
                 axs[i].set_ylabel('Error')
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
+            fig.suptitle(f'{function_type.name};multiplier={additional_multiplier}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
                 filename = get_next_filename(save_path)
                 img_path = os.path.join(save_path, filename)
                 plt.savefig(img_path)
+                plt.close()
             else:
                 plt.show()
+                plt.close()
     else:
         print("Chebyshev data is empty, this is deprecated")
-    #     for name, group in least_squares_data.groupby('c'):
-    #         w = group['w'].iloc[0]
-    #         if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
-    #             print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
-    #                   f"due to infinity values in errors.")
-    #             continue
-    #         fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
-    #         for i, error in enumerate(errors):
-    #             label = 'Least Squares'
-    #             axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
-    #             axs[i].set_xticks(scales)
-    #             axs[i].set_title(titles[i])
-    #             axs[i].set_xlabel('Scale/no points')
-    #             axs[i].set_ylabel('Error')
-    #             axs[i].set_yscale('log')
-    #             axs[i].legend()
-    #
-    #         fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
-    #         plt.tight_layout()
-    #         if save:
-    #             filename = get_next_filename(save_path)
-    #             img_path = os.path.join(save_path, filename)
-    #             plt.savefig(img_path)
-    #         else:
-    #             plt.show()
+
+
+#     for name, group in least_squares_data.groupby('c'):
+#         w = group['w'].iloc[0]
+#         if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
+#             print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
+#                   f"due to infinity values in errors.")
+#             continue
+#         fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 6))
+#         for i, error in enumerate(errors):
+#             label = 'Least Squares'
+#             axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+#             axs[i].set_xticks(scales)
+#             axs[i].set_title(titles[i])
+#             axs[i].set_xlabel('Scale/no points')
+#             axs[i].set_ylabel('Error')
+#             axs[i].set_yscale('log')
+#             axs[i].legend()
+#
+#         fig.suptitle(f'{function_type.name}\nc={name}\nw={w}')
+#         plt.tight_layout()
+#         if save:
+#             filename = get_next_filename(save_path)
+#             img_path = os.path.join(save_path, filename)
+#             plt.savefig(img_path)
+#         else:
+#             plt.show()
 
 
 def _comp_next(n: int, k: int, a: List[int], more, h, t) -> bool:
