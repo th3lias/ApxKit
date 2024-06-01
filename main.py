@@ -6,8 +6,8 @@ from genz.genz_function_types import GenzFunctionType
 from utils.utils import plot_errors
 
 if __name__ == '__main__':
-    dim_range = range(3, 5)
-    scale_range = range(1, 7)
+    dim_range = range(10, 11)
+    scale_range = range(1, 8)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     additional_multiplier = 10
     n_fun_parallel = 25

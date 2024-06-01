@@ -182,7 +182,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
 
-    ls = LeastSquaresInterpolator(include_bias=True, basis_type=basis_type, grid=grid, self_implemented=True)
+    ls = LeastSquaresInterpolator(include_bias=True, basis_type=basis_type, grid=grid, self_implemented=False,
+                                  iterative=True)
     f_hat = ls.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -258,7 +259,7 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range, metho
     lb = float(0.0)
     ub = float(1.0)
     test_grid_seed = 42
-    n_test_samples = 69
+    n_test_samples = 50
 
     n_iterations = len(scales) * len(dims) * len(methods)
 
