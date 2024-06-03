@@ -3,19 +3,21 @@ import datetime
 from experiments.experiments import run_experiments
 from tqdm import tqdm
 from genz.genz_function_types import GenzFunctionType
+from interpolate.least_squares_method import LeastSquaresMethod
 from utils.utils import plot_errors
 
 if __name__ == '__main__':
     dim_range = range(10, 11)
     scale_range = range(1, 8)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
+    method_type = LeastSquaresMethod.EXACT
     additional_multiplier = 10
     n_fun_parallel = 25
 
     print(f"Started program at {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")
 
     run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range, methods=methods,
-                    add_mul=additional_multiplier)
+                    add_mul=additional_multiplier, ls_method=method_type)
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
