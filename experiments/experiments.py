@@ -244,7 +244,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     return grid
 
 
-def run_experiments(n_functions_parallel: int, scales: range, dims: range, methods: list, add_mul: float, ls_method:LeastSquaresMethod):
+def run_experiments(n_functions_parallel: int, scales: range, dims: range, methods: list, add_mul: float,
+                    ls_method: LeastSquaresMethod):
     """
     Runs multiple experiments for least-squares with various parameter combinations
     :param n_functions_parallel: number of parallel functions per type that should be tested

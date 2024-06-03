@@ -242,10 +242,10 @@ class LeastSquaresTests(unittest.TestCase):
         self.lsq.set_method(LeastSquaresMethod.SKLEARN)
         f_hat_sklearn = self.lsq.interpolate(f)
         self.lsq.set_method(LeastSquaresMethod.ITERATIVE_LSMR)
-        f_hat_iterative_lsmr = self.lsq.interpolate(f)
+        f_hat_lsmr = self.lsq.interpolate(f)
         self.lsq.set_method(LeastSquaresMethod.PYTORCH)
         f_hat_pytorch = self.lsq.interpolate(f)
-        return f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch
+        return f_hat_self, f_hat_sklearn, f_hat_lsmr, f_hat_pytorch
 
 
 if __name__ == '__main__':

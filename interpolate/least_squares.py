@@ -15,7 +15,7 @@ from utils.utils import find_degree
 
 
 class LeastSquaresInterpolator(Interpolator):
-    def __init__(self, include_bias: bool, basis_type: BasisType, method: LeastSquaresMethod,
+    def __init__(self, include_bias: bool, basis_type: BasisType, method: LeastSquaresMethod = LeastSquaresMethod.EXACT,
                  grid: Union[Grid, None] = None):
         super().__init__(grid)
         self.include_bias = include_bias
@@ -161,10 +161,14 @@ class LeastSquaresInterpolator(Interpolator):
             y = f(grid)
 
         x_poly = self.basis
-        coeffs = np.empty((self.basis.shape[1], y.shape[1]))
-        for i in range(y.shape[1]):
-            res = lsmr(x_poly, y[:, i])
-            coeffs[:, i] = res[0]
+        if y.ndim == 1:
+            res = lsmr(x_poly, y)
+            coeffs = res[0]
+        else:
+            for i in range(y.shape[1]):
+                coeffs = np.empty((self.basis.shape[0], y.shape[1]))
+                res = lsmr(x_poly, y[:, i])
+                coeffs[:, i] = res[0]
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)

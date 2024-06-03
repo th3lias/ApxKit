@@ -3,8 +3,8 @@ from typing import Union
 import numpy as np
 
 from grid.grid_type import GridType
-import jax.numpy as jnp
-# import numpy as jnp
+# import jax.numpy as jnp
+import numpy as jnp
 
 
 class Grid:
