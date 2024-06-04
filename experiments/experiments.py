@@ -94,7 +94,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['grid_type'] = si.grid.grid_type.name
         row_entry['basis_type'] = si.basis_type.name
-        row_entry['method'] = 'STANDARD'  # TODO: Later change to Lagrange interpolation if implemented
+        row_entry['method_type'] = 'STANDARD'  # TODO: Later change to Lagrange interpolation if implemented
         row_entry['n_samples'] = n_samples
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
@@ -211,7 +211,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
         row_entry['sum_c'] = row_entry['c'].sum()
         row_entry['grid_type'] = grid.grid_type.name
         row_entry['basis_type'] = ls.basis_type.name
-        row_entry['method'] = method_type.name
+        row_entry['method_type'] = method_type.name
         row_entry['n_samples'] = int(n_samples * multiplier)
         row_entry['scale'] = scale
         row_entry['test_grid_seed'] = test_grid_seed
