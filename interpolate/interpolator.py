@@ -1,3 +1,5 @@
+import os
+import time
 from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
 from grid.grid import Grid
@@ -13,11 +15,12 @@ class Interpolator:
         self.grid = grid
         self.scale = grid.scale
         self.dim = grid.dim
-        self._b_idx = None
         self._idx = None
+        self._b_idx = self.load_basis_indices_if_existent(self.dim, self.scale)
         self.basis = None
         self.L = None
         self.U = None
+        self.coeff = None # TODO: Maybe add this in every approximation method
 
     def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
         raise NotImplementedError
@@ -32,11 +35,13 @@ class Interpolator:
                           b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
         """Builds smolyak polynomial basis"""
 
-        if b_idx is None:
+        if self._b_idx is None and b_idx is None:
             self._idx = self._smolyak_idx()
             self._b_idx = self._poly_idx(self._idx)
-        else:
+            self.save_basis_indices(self._b_idx, self.dim, self.scale)
+        elif b_idx is not None:
             self._b_idx = b_idx
+
         scale = self.scale
 
         if grid is None:
@@ -46,8 +51,10 @@ class Interpolator:
         n_polys = len(self._b_idx)
         npts = grid.shape[0]
         basis = np.empty(shape=(npts, n_polys))
+
         for ind, comb in enumerate(self._b_idx):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
+
         return basis
 
     def _poly_idx(self, idx: Union[List[List[int]], None] = None) -> List[Tuple[int]]:
@@ -229,3 +236,28 @@ class Interpolator:
         for i in range(2, n + 1):
             results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
         return results
+
+    @staticmethod
+    def load_basis_indices_if_existent(dim: int, scale: int, path=None):
+        if path is None:
+            path = os.path.join('indices')
+
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
+
+        try:
+            return np.load(path, allow_pickle=True)
+        except FileNotFoundError:
+            return None
+
+    @staticmethod
+    def save_basis_indices(_b_idx, dim:int, scale:int, path=None):
+        if path is None:
+            path = os.path.join('indices')
+
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
+
+        # only save if not existent already
+        if not os.path.exists(path):
+            np.save(path, _b_idx, allow_pickle=True)

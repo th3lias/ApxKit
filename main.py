@@ -7,12 +7,12 @@ from interpolate.least_squares_method import LeastSquaresMethod
 from utils.utils import plot_errors
 
 if __name__ == '__main__':
-    dim_range = range(5, 6)
-    scale_range = range(5, 6)
+    dim_range = range(10, 11)
+    scale_range = range(1, 6)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     method_type = LeastSquaresMethod.EXACT
     additional_multiplier = 1
-    n_fun_parallel = 1
+    n_fun_parallel = 25
 
     print(f"Started program at {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")
 
@@ -23,11 +23,11 @@ if __name__ == '__main__':
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
 
     # save all images in results folder
-    total_iterations = len(dim_range) * len(GenzFunctionType)
-    with tqdm(total=total_iterations, desc="Processing") as pbar:
-        for dim in dim_range:
-            for fun_type in GenzFunctionType:
-                plot_errors(dim, fun_type, scale_range, additional_multiplier, save=True)
-                pbar.update(1)
+    # total_iterations = len(dim_range) * len(GenzFunctionType)
+    # with tqdm(total=total_iterations, desc="Processing") as pbar:
+    #     for dim in dim_range:
+    #         for fun_type in GenzFunctionType:
+    #             plot_errors(dim, fun_type, scale_range, additional_multiplier, save=True)
+    #             pbar.update(1)
 
     print(f"Done at {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")

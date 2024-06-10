@@ -102,14 +102,17 @@ class LeastSquaresInterpolator(Interpolator):
             for i, row in enumerate(self.grid.get_grid()):
                 weight[i] = np.prod(np.polynomial.chebyshev.chebweight(row))
 
-            weight = np.sqrt(np.diag(weight))
+            weight_matrix = np.sqrt(np.diag(weight))
+        elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
+            weight_matrix = np.eye(N=self.grid.get_num_points())
         else:
-            weight = np.eye(N=self.grid.get_num_points())
+            raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
 
-        x_poly = weight @ self.basis
-        y_prime = x_poly.T @ weight @ y
+        x_poly = weight_matrix @ self.basis
+        y_prime = x_poly.T @ weight_matrix @ y
         x2 = x_poly.T @ x_poly
         coeff = np.linalg.solve(x2, y_prime)
+        self.coeff = coeff # TODO: Remove or make general
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
