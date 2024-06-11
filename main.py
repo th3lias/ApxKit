@@ -7,11 +7,11 @@ from interpolate.least_squares_method import LeastSquaresMethod
 from utils.utils import plot_errors
 
 if __name__ == '__main__':
-    dim_range = range(10, 11)
-    scale_range = range(1, 6)
+    dim_range = range(4, 5)
+    scale_range = range(1, 5)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     method_type = LeastSquaresMethod.EXACT
-    additional_multiplier = 1
+    additional_multiplier = 10
     n_fun_parallel = 25
 
     print(f"Started program at {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}")

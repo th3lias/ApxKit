@@ -11,9 +11,9 @@ from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from interpolate.basis_types import BasisType
 from interpolate.least_squares import LeastSquaresInterpolator
-from nn.dataloader_torch import LS_Dataset
+from nn.dataset_torch import LS_Dataset
 from nn.nn_torch import LS_NN
-from utils.utils import calculate_num_points
+from utils.utils import calculate_num_points, l2_error_function_values
 
 
 def train(model, criterion, optimizer, scheduler, dataloader, num_epochs, device, writer):
@@ -22,12 +22,14 @@ def train(model, criterion, optimizer, scheduler, dataloader, num_epochs, device
         epoch_loss = 0.0
         for i, data in enumerate(dataloader):
             inputs, labels = data
-            inputs, labels = inputs.float().to(device), labels.float().to(device)
+            inputs, labels = inputs.double().to(device), labels.double().to(device)
 
             optimizer.zero_grad()
 
             outputs = model(inputs)
             loss = criterion(outputs, labels)
+            if i==0 and epoch == 0:
+                print(f"First loss = {loss}")
             loss.backward()
             optimizer.step()
 
@@ -55,37 +57,38 @@ if __name__ == '__main__':
 
     dim = 4
     scale = 4
-    batch_size = 64
+    batch_size = 1024
     n_epochs = 1000
+    lr_start = 1e-10
 
     n_samples = calculate_num_points(dimension=dim, scale=scale)
 
-    c = np.random.uniform(low=0.0, high=1.0, size=dim)
+    c = np.random.uniform(low=0.0, high=1.0, size=dim).astype(np.float64)
     c = c / np.sum(c) * dim
-    w = np.random.uniform(low=0.0, high=1.0, size=dim)
+    w = np.random.uniform(low=0.0, high=1.0, size=dim).astype(np.float64)
 
-    f = get_genz_function(c=c, w=w, d=dim, function_type=GenzFunctionType.CORNER_PEAK)
+    f = get_genz_function(c=c, w=w, d=dim, function_type=GenzFunctionType.OSCILLATORY)
 
     gp = GridProvider(dimension=dim, lower_bound=0.0, upper_bound=1.0)
-    multiplier = np.log(n_samples)
+    multiplier = np.log(n_samples).astype(np.float64)
     data = gp.generate(scale=scale, grid_type=GridType.RANDOM_CHEBYSHEV, multiplier=multiplier)
 
-    y = f(data.grid)
+    y = f(data.grid.astype(np.float64))
 
     ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=data)
-    ls.basis = ls._build_basis()
+    ls.basis = ls._build_basis().astype(np.float64)
     basis = ls.basis
 
-
     f_hat_exact = ls.interpolate(f)
-    coeff = ls.coeff
+    coeff = ls.coeff.astype(np.float64)
 
-    dataset = LS_Dataset(basis, y)
+    # dataset = LS_Dataset(data, y, dim=dim, scale=scale)
+    dataset = LS_Dataset(basis, y, dim=dim, scale=scale)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    model = LS_NN(input_dim=basis.shape[1], output_dim=1, weights = coeff)
+    model = LS_NN(input_dim=basis.shape[1], output_dim=1, weights=coeff)
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=1e-1)
+    optimizer = torch.optim.SGD(model.parameters(), lr=lr_start)
 
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.995)
 
@@ -99,23 +102,37 @@ if __name__ == '__main__':
     # Close the writer
     writer.close()
 
-    test_grid = np.random.uniform(low=0.0, high=1.0, size=(50, dim))
+    test_grid = np.random.uniform(low=0.0, high=1.0, size=(50, dim)).astype(np.float64)
+
+    y_hat = f(test_grid)
 
     y_hat_exact = f_hat_exact(test_grid)
 
-    test_grid = ls._build_basis(basis_type=BasisType.CHEBYSHEV, grid=test_grid)
+    test_grid = ls._build_basis(basis_type=BasisType.CHEBYSHEV, grid=test_grid).astype(np.float64)
 
-    test_grid = torch.tensor(test_grid, dtype=torch.float32).to(device)
+    test_grid = torch.tensor(test_grid, dtype=torch.float64).to(device)
 
     with torch.no_grad():
         y_hat_nn = model(test_grid).cpu().numpy()
 
-    print(f'Exact: {y_hat_exact} vs NN: {y_hat_nn}')
+    # ell 2 error
+    l2_exact = l2_error_function_values(y_hat_exact, y_hat)
+    l2_nn = l2_error_function_values(y_hat_nn, y_hat)
+
+    print(f'L2 error estimate: Exact: {l2_exact} vs NN: {l2_nn}')
 
     print('_'*100)
 
     # get model weights and compare it with the coefficients from the exact solution
     weights = model.state_dict()
     weights = np.sort(weights['linear.weight'].cpu().numpy().flatten())
-    print(f'Weights: {weights}')
-    print(f'Coefficients: {np.sort(ls.coeff)}')
+    # print(f'Weights: {weights}')
+    # print(f'Coefficients: {np.sort(ls.coeff)}')
+
+    # print normed difference between weights and coefficients
+    print(f'Normed difference: {np.linalg.norm(weights - ls.coeff)}')
+    print(f'Max difference: {np.max(np.abs(weights - ls.coeff))}')
+    print(f'Min difference: {np.min(np.abs(weights - ls.coeff))}')
+
+    # get position of max difference
+    print(f'Position of max difference: {np.argmax(np.abs(weights - ls.coeff))}')
