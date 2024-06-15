@@ -9,8 +9,8 @@ from interpolate.interpolation_methods import SmolyakMethod
 from interpolate.interpolator import Interpolator
 
 
-# most of the content is adapted from https://github.com/EconForge/Smolyak, which implemented the Smolyak algorithm
-# based on the paper:
+# most of the content (non-lagrange method) is adapted from https://github.com/EconForge/Smolyak,
+# which implemented the Smolyak algorithm based on the paper:
 
 # Smolyak method for solving dynamic economic models:
 # Lagrange interpolation, anisotropic grid and adaptive domain
@@ -30,7 +30,7 @@ class SmolyakInterpolator(Interpolator):
     def set_method(self, method: SmolyakMethod):
         self.method = method
 
-    def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
+    def fit(self, f: Union[Callable, List[Callable]]):
 
         if self.method == SmolyakMethod.STANDARD:
             if self.basis is None:
@@ -47,17 +47,26 @@ class SmolyakInterpolator(Interpolator):
                 y = f(self.grid.grid)
             coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))
 
-            def f_hat(data: np.ndarray) -> np.ndarray:
-                data_transformed = self._build_basis(grid=data, b_idx=self._b_idx)
-                y_hat = data_transformed @ coeff
-                if y_hat.ndim > 1:
-                    return y_hat.T
-                return y_hat
+            self.coeff = coeff
 
-            return f_hat
         elif self.method == SmolyakMethod.LAGRANGE:
             raise NotImplementedError("Not yet implemented")
 
+        else:
+            raise ValueError(f"Method {self.method} is not supported!")
+
+    def interpolate(self, grid: Union[Grid, np.ndarray]) -> np.ndarray:
+        if isinstance(grid, Grid):
+            grid = grid.grid
+
+        if self.method == SmolyakMethod.STANDARD:
+            data_transformed = self._build_basis(grid=grid, b_idx=self._b_idx)
+            y_hat = data_transformed @ self.coeff
+            if y_hat.ndim > 1:
+                return y_hat.T
+            return y_hat
+        elif self.method == SmolyakMethod.LAGRANGE:
+            raise NotImplementedError("The method is not implemented yet")
         else:
             raise ValueError(f"Method {self.method} is not supported!")
 

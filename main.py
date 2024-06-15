@@ -10,15 +10,17 @@ if __name__ == '__main__':
     dim_range = range(3, 5)
     scale_range = range(1, 5)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
-    ls_method_type = LeastSquaresMethod.ITERATIVE_LSMR
+    function_types = [GenzFunctionType.OSCILLATORY, GenzFunctionType.PRODUCT_PEAK, GenzFunctionType.CORNER_PEAK,
+                      GenzFunctionType.GAUSSIAN, GenzFunctionType.CONTINUOUS, GenzFunctionType.DISCONTINUOUS]
+    ls_method_type = LeastSquaresMethod.EXACT
     smolyak_method_type = SmolyakMethod.STANDARD
     additional_multiplier = 10 * 50
     n_fun_parallel = 25
 
     print(f"Started program at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-    run_experiments(n_fun_parallel, dims=dim_range, scales=scale_range, methods=methods,
-                    add_mul=additional_multiplier, ls_method=ls_method_type, smolyak_method = smolyak_method_type)
+    run_experiments(function_types, n_fun_parallel, dims=dim_range, scales=scale_range, methods=methods,
+                    add_mul=additional_multiplier, ls_method=ls_method_type, smolyak_method=smolyak_method_type)
 
     # visualize one specific instance
     # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)

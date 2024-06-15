@@ -1,3 +1,4 @@
+import os
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
@@ -5,12 +6,17 @@ import torch
 from scipy.sparse.linalg import lsmr
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 
 from grid.grid import Grid
 from grid.grid_type import GridType
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
 from interpolate.interpolation_methods import LeastSquaresMethod
+from nn.dataset_torch import LSDataset
+from nn.nn_torch import LSNN
+from nn.nn_train import train
 from utils.utils import find_degree
 import padasip as pa
 
@@ -26,7 +32,8 @@ class LeastSquaresInterpolator(Interpolator):
     def set_method(self, method: LeastSquaresMethod):
         self.method = method
 
-    def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
+    def fit(self, f: Union[Callable, List[Callable]]):
+
         assert self.grid is not None, "Grid needs to be set before interpolation"
 
         if self.basis is None:
@@ -34,17 +41,38 @@ class LeastSquaresInterpolator(Interpolator):
             # TODO: Also LU-decomposition here?
 
         if self.method == LeastSquaresMethod.ITERATIVE_LSMR:
-            return self._approximate_lsmr(f)
-        elif self.method == LeastSquaresMethod.EXACT or self.method == LeastSquaresMethod.SKLEARN:
-            return self._approximate_exact_sklearn(f)
+            self._approximate_lsmr(f)
+        elif self.method == LeastSquaresMethod.EXACT:
+            self._approximate_exact(f)
+        elif self.method == LeastSquaresMethod.SKLEARN:
+            self._approximate_sklearn(f)
         elif self.method == LeastSquaresMethod.PYTORCH:
-            return self._approximate_pt(f)
+            self._approximate_pt(f)
+        elif self.method == LeastSquaresMethod.PYTORCH_NEURAL_NET:
+            self._approximate_nn(f)
+        elif self.method == LeastSquaresMethod.JAX_NEURAL_NET:
+            raise NotImplementedError
         elif self.method == LeastSquaresMethod.RLS:
-            return self._approximate_rls(f)
+            self._approximate_rls(f)
         elif self.method == LeastSquaresMethod.ITERATIVE_RLS:
-            return self._approximate_iterative_rls(f)
+            self._approximate_iterative_rls(f)
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
+
+    def interpolate(self, grid: Union[Grid, np.ndarray]):
+        """
+        Applies the fitted function on the given data and returns the calculates values
+        :param grid: Grid on which the fitted function should be tested
+        """
+
+        if isinstance(grid, Grid):
+            grid = grid.grid
+
+        data_pol = self._build_basis(basis_type=None, grid=grid, b_idx=self._b_idx)
+        y_hat = data_pol @ self.coeff
+        if y_hat.ndim > 1:
+            return y_hat.T
+        return y_hat
 
     def _build_basis(self, basis_type: Union[BasisType, None] = None, grid: Union[None, np.ndarray] = None,
                      b_idx: Union[List[Tuple[int]], None] = None):
@@ -68,7 +96,7 @@ class LeastSquaresInterpolator(Interpolator):
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
             return poly.fit_transform(grid)
 
-    def _approximate_exact_sklearn(self, f: Union[Callable, List[Callable]]) -> Callable:
+    def _approximate_exact(self, f: Union[Callable, List[Callable]]):
         """
         Approximates a (or multiple) function(s) with polynomials by least squares.
         :param f: function or list of functions that need to be approximated on the same points
@@ -88,21 +116,58 @@ class LeastSquaresInterpolator(Interpolator):
                 y[:, i] = func(grid)
         else:
             y = f(grid)
-        if self.method == LeastSquaresMethod.EXACT:
-            return self._self_implementation(y)
-        elif self.method == LeastSquaresMethod.SKLEARN:
-            return self._sklearn(y)
-        elif self.method == LeastSquaresMethod.RLS:
-            return self._rls(y)
-        else:
-            raise ValueError(f"The method {self.method.name} is not supported")
 
-    def _self_implementation(self, y: np.ndarray) -> Callable:
+        self._self_implementation(y)
+
+    def _approximate_sklearn(self, f: Union[Callable, List[Callable]]):
         """
-        Approximation of a function with a polynomial by least squares (self-implemented).
-        :param y: calculated function values
-        :return: fitted function
+        Approximates a (or multiple) function(s) with polynomials by least squares.
+        :param f: function or list of functions that need to be approximated on the same points
+        :return: fitted function(s)
         """
+        grid = self.grid.grid
+        if not self.include_bias:
+            print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
+        if not (isinstance(f, list) or isinstance(f, Callable)):
+            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
+        n_samples = grid.shape[0]
+        if isinstance(f, list):
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(grid)
+        else:
+            y = f(grid)
+
+        self._sklearn(y)
+
+    def _approximate_nn(self, f: Callable):
+        if isinstance(f, list):
+            raise ValueError(f"f needs to be a single function but is of type {type(f)}")
+
+        y = f(self.grid.grid)
+
+        dataset = LSDataset(self.basis, y, dim=self.grid.dim, scale=self.grid.scale)
+        dataloader = DataLoader(dataset, batch_size=1024, shuffle=True)
+
+        model = LSNN(input_dim=self.basis.shape[1], output_dim=1, weights=self.coeff)
+
+        optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.995)
+        criterion = torch.nn.MSELoss()
+
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        writer = SummaryWriter(log_dir=os.path.join('logs', 'tensorboard'))
+
+        train(model, criterion, optimizer, scheduler, dataloader, num_epochs=1000, device=device, writer=writer)
+
+        coeff = model.state_dict()['linear.weight'].cpu().numpy().squeeze()
+
+        self.coeff = coeff
+
+    def _self_implementation(self, y: np.ndarray):
 
         if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
@@ -119,52 +184,33 @@ class LeastSquaresInterpolator(Interpolator):
         y_prime = x_poly.T @ weight_matrix @ y
         x2 = x_poly.T @ x_poly
         coeff = np.linalg.solve(x2, y_prime)
-        self.coeff = coeff  # TODO: Remove or make general
+        self.coeff = coeff
 
-        def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
-            y_hat = data_pol @ coeff
-            if y_hat.ndim > 1:
-                return y_hat.T
-            return y_hat
-
-        return f_hat
-
-    def _sklearn(self, y: np.ndarray) -> Callable:
-        """
-        Approximation of a function with a polynomial by least squares (using the sklearn library).
-        :param y: calculated function values
-        :return: fitted function
-        """
-
+    def _sklearn(self, y: np.ndarray):
         x_poly = self.basis
         model = LinearRegression()
         model.fit(x_poly, y)
 
-        def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
-            return model.predict(data_pol).T
+        self.coeff = model.coef_.T
 
-        return f_hat
-
-    def _rls(self, y: np.ndarray) -> Callable:
+    def _rls(self, y: np.ndarray):
         x_poly = self.basis
 
         n = x_poly.shape[1]
 
-        f = pa.filters.FilterRLS(n=n, mu=0.15, eps=0.5, w='random')
-        y_hat, e, w = f.run(y, x_poly)
+        f = pa.filters.FilterRLS(n=n, mu=0.95, w='random')  # TODO: Initialize better if possible
+        f.run(y, x_poly)
 
-        return y
+        self.coeff = f.w
 
-    def _iterative_rls(self, y: np.ndarray) -> Callable:
+    def _iterative_rls(self, y: np.ndarray):
         x_poly = self.basis
 
         n = x_poly.shape[1]
 
         n_samples = x_poly.shape[0]
 
-        f = pa.filters.FilterRLS(n, mu=0.15, eps=0.5, w='random')
+        f = pa.filters.FilterRLS(n, mu=0.95, w='random')  # TODO: Initialize better if possible
 
         for k in range(n_samples):
             sample = x_poly[k, :]
@@ -172,16 +218,9 @@ class LeastSquaresInterpolator(Interpolator):
             y_sample = y[k]
             f.adapt(y_sample, sample)
 
+        self.coeff = f.w
 
-        return y
-
-    def _approximate_lsmr(self, f: Callable) -> Callable:
-        """
-        Approximation of a function with a polynomial by least squares iterative approach (using the lsmr algorithm).
-        :param f: function that needs to be approximated
-        :return: fitted function
-        """
-
+    def _approximate_lsmr(self, f: Callable):
         grid = self.grid.grid
         if not self.include_bias:  # TODO: Maybe remove this statement (everywhere)
             print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
@@ -189,6 +228,9 @@ class LeastSquaresInterpolator(Interpolator):
             raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
         n_samples = grid.shape[0]
         if isinstance(f, list):
+            print(
+                "Warning: LSMR does not support multiple functions in parallel. "
+                "So the program will run for each method from scratch again")
             y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
             for i, func in enumerate(f):
                 if not isinstance(func, Callable):
@@ -206,26 +248,13 @@ class LeastSquaresInterpolator(Interpolator):
             for i in range(y.shape[1]):
                 res = lsmr(x_poly, y[:, i])
                 coeffs[:, i] = res[0]
+        self.coeff = coeffs
 
-        def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
-            return (data_pol @ coeffs).T
-
-        return f_hat
-
-    def _approximate_pt(self, f: Callable, driver="gelss"):
-        """
-        Approximation of a function with a polynomial by least squares (using the implementation from pytorch)
-        :param f: function that needs to be approximated
-        :param driver: method of approximation
-        :return: fitted function
-        """
+    def _approximate_pt(self, f: Union[Callable, list[Callable]], driver="gelss"):
 
         grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercept (bias)")
-        if not (isinstance(f, list) or isinstance(f, Callable)):
-            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
         n_samples = grid.shape[0]
         if isinstance(f, list):
             y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
@@ -241,22 +270,35 @@ class LeastSquaresInterpolator(Interpolator):
         sol = torch.linalg.lstsq(x_poly, y, rcond=None, driver=driver)
         coeff = sol[0]
 
-        def f_hat(data: np.ndarray) -> np.ndarray:
-            data_pol = torch.tensor(self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx))
-            y_hat = data_pol @ coeff
-            if y_hat.ndim > 1:
-                return y_hat.T.numpy()
-            return y_hat.numpy()
-
-        return f_hat
+        self.coeff = coeff.cpu().numpy()
 
     def _approximate_rls(self, f: Callable):
-        # TODO: Just uses the first function -> obviously wrong
-        if isinstance(f, list):
-            f = f[0]
-        return self._rls(f(self.grid.grid))
 
-    def _approximate_iterative_rls(self, f:Callable):
+        grid = self.grid.grid
+        if not (isinstance(f, list) or isinstance(f, Callable)):
+            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
+        n_samples = grid.shape[0]
         if isinstance(f, list):
-            f = f[4]
-        return self._iterative_rls(f(self.grid.grid))
+            print(
+                "Warning: (Iterative) RLS does not support multiple functions in parallel. "
+                "So the program will run for each method from scratch again")
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(grid)
+        else:
+            y = f(grid)
+
+        x_poly = self.basis
+        if y.ndim == 1:
+            self._rls(y)
+        else:
+            coeffs = np.empty((x_poly.shape[1], y.shape[1]))
+            for i in range(y.shape[1]):
+                self._rls(y[:, i])
+                coeffs[:, i] = self.coeff
+            self.coeff = coeffs
+
+    def _approximate_iterative_rls(self, f: Callable):
+        self._approximate_rls(f)

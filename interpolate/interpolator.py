@@ -1,19 +1,14 @@
-import os
-import time
 from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
 
-import utils.utils
 from grid.grid import Grid
 from functools import reduce
 from operator import mul
 from itertools import product, permutations
 
-from grid.grid_type import GridType
 from interpolate.partition import Partition
 from deprecated import deprecated
 from utils.utils import load_basis_indices_if_existent, save_basis_indices
-from numba import njit
 
 
 class Interpolator:
@@ -26,9 +21,13 @@ class Interpolator:
         self.basis = None
         self.L = None
         self.U = None
-        self.coeff = None  # TODO: Maybe add this in every approximation method
+        self.coeff = None
 
-    def interpolate(self, f: Union[Callable, List[Callable]]) -> Callable:
+    def interpolate(self, grid: Union[Grid, np.ndarray]):
+        # TODO: Maybe change to JNP aswell in the type-hints @th3lias
+        raise NotImplementedError
+
+    def fit(self, f: Union[Callable, List[Callable]]) -> None:
         raise NotImplementedError
 
     def set_grid(self, grid: Grid):
@@ -38,7 +37,7 @@ class Interpolator:
         self.U = None
 
     def _build_poly_basis(self, grid: Union[None, np.ndarray],
-                              b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
+                          b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
         """Builds smolyak polynomial basis"""
 
         # start_time = time.time()

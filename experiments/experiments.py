@@ -21,7 +21,7 @@ from utils.utils import calculate_num_points
 import psutil
 
 
-def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
+def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[GenzFunctionType],
                             n_parallel: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
                             n_test_samples: int, lb: float, ub: float, method_type: SmolyakMethod,
                             path: Union[str, None] = None) -> Grid:
@@ -30,6 +30,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     :param dim: dimension of the grid/function
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
+    :param f_types: List of function types that should be tested
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the smolyak model
     :param grid: grid on which the Smolyak Algorithm should operate. If None, a new grid will be created
@@ -48,7 +49,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     np.random.seed(test_grid_seed)
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
-    n_function_types = int(len(GenzFunctionType))
+    n_function_types = int(len(f_types))
 
     n_samples = calculate_num_points(scale, dim)
 
@@ -63,7 +64,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     function_names = list()
     y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
 
-    for i, func_type in enumerate(GenzFunctionType):
+    for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
             index = i * n_parallel + j
             f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
@@ -72,9 +73,9 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
             function_names.append(func_type.name)
 
     si = SmolyakInterpolator(grid, method=method_type)
-    f_hat = si.interpolate(functions)
+    si.fit(functions)
 
-    y_hat = f_hat(test_grid)
+    y_hat = si.interpolate(test_grid)
 
     l_2_error = l2_error_function_values(y, y_hat)
     max_error = max_error_function_values(y, y_hat)
@@ -129,7 +130,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     return grid
 
 
-def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
+def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[GenzFunctionType],
                                   n_parallel: int, scale: int, additional_multiplier: float, grid: Union[Grid, None],
                                   test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
                                   grid_type: GridType, basis_type: BasisType, method_type: LeastSquaresMethod,
@@ -139,6 +140,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     :param dim: dimension of the grid/function
     :param w: shift-parameter for the genz-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the genz-functions, can be multidimensional if multiple functions are used
+    :param f_types: List of function types that should be tested
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the least-squares model
     :param additional_multiplier: Multiplies the number of samples of least squares by this factor
@@ -167,7 +169,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
     test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
 
-    n_function_types = int(len(GenzFunctionType))
+    n_function_types = int(len(f_types))
 
     gp = GridProvider(dimension=dim, lower_bound=lb, upper_bound=ub)
 
@@ -180,7 +182,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     function_names = list()
     y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
 
-    for i, func_type in enumerate(GenzFunctionType):
+    for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
             index = i * n_parallel + j
             f = get_genz_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
@@ -189,9 +191,9 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
             function_names.append(func_type.name)
 
     ls = LeastSquaresInterpolator(include_bias=True, basis_type=basis_type, grid=grid, method=method_type)
-    f_hat = ls.interpolate(functions)
+    ls.fit(functions)
 
-    y_hat = f_hat(test_grid)
+    y_hat = ls.interpolate(test_grid)
 
     l_2_error = l2_error_function_values(y, y_hat)
     max_error = max_error_function_values(y, y_hat)
@@ -246,24 +248,26 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
     return grid
 
 
-def run_experiments(n_functions_parallel: int, scales: range, dims: range, methods: list, add_mul: float,
+def run_experiments(function_types: list[GenzFunctionType], n_functions_parallel: int, scales: range, dims: range,
+                    methods: list, add_mul: float,
                     ls_method: LeastSquaresMethod, smolyak_method: SmolyakMethod):
     """
     Runs multiple experiments for least-squares with various parameter combinations
+    :param function_types: Specifies the functions that should be tested
     :param n_functions_parallel: number of parallel functions per type that should be tested
     :param scales: Specifies which scale range should be used for the experiments
     :param dims: Specifies which dimension range should be used for the experiments
     :param methods: Specifies which methods should be used for the experiments
     :param add_mul: Multiplies the number of samples for the least squares experiments
     :param ls_method: Specifies which method should be used to solve the Least Squares Problem
-    :param smolyak_grid: Specifies which method should be used to solve the Smolyak Problem
+    :param smolyak_method: Specifies which method should be used to solve the Smolyak Problem
     """
 
     print(
         f"Starting experiments with cpu {platform.processor()} and "
         f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM")
 
-    n_function_types = len(GenzFunctionType)
+    n_function_types = len(function_types)
 
     lb = float(0.0)
     ub = float(1.0)
@@ -301,7 +305,8 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range, metho
 
                 if method == 'Smolyak':
 
-                    smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_parallel,
+                    smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, f_types=function_types,
+                                                           n_parallel=n_functions_parallel,
                                                            scale=scale, grid=smolyak_grid,
                                                            test_grid_seed=test_grid_seed,
                                                            n_test_samples=n_test_samples, lb=lb, ub=ub,
@@ -309,6 +314,7 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range, metho
                 elif method == 'Least_Squares_Uniform':
 
                     least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                               f_types=function_types,
                                                                                n_parallel=n_functions_parallel,
                                                                                scale=scale,
                                                                                additional_multiplier=add_mul,
@@ -323,6 +329,7 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range, metho
                 elif method == 'Least_Squares_Chebyshev_Weight':
 
                     least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                                 f_types=function_types,
                                                                                  n_parallel=n_functions_parallel,
                                                                                  scale=scale,
                                                                                  additional_multiplier=add_mul,

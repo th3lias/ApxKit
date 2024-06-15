@@ -7,7 +7,6 @@ import numpy as np
 from torch.utils.data import Dataset
 
 from interpolate.partition import Partition
-from utils.utils import load_basis_indices_if_existent, save_basis_indices
 
 
 # write Dataset that takes grid from GridProvider
@@ -23,10 +22,8 @@ class LSDataset(Dataset):
 
     def __len__(self):
         return self.grid.shape[0]
-        return self.grid.get_num_points() # TODO: Adjust
 
     def __getitem__(self, idx):
-        # x = self._make_basis(self.grid.get_grid()[idx]) # TODO: grid.get_grid is deprecated/non-existing
         x = self.grid[idx]
         y = self.y[idx]
         return x, y
@@ -36,7 +33,7 @@ class LSDataset(Dataset):
         if self._b_idx is None:
             self._idx = self._smolyak_idx()
             self._b_idx = self._poly_idx(self._idx)
-            save_basis_indices(self._b_idx, self.dim, self.scale)
+            # save_basis_indices(self._b_idx, self.dim, self.scale)
 
         scale = self.scale
 
