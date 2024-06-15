@@ -3,8 +3,8 @@ from typing import Union
 import numpy as np
 
 from grid.grid_type import GridType
-import jax.numpy as jnp
-# import numpy as jnp
+# import jax.numpy as jnp
+import numpy as jnp
 
 
 class Grid:
@@ -28,9 +28,6 @@ class Grid:
     def numpy(self):
         assert isinstance(self.grid, jnp.ndarray), "Grid is already a numpy array"
         self.grid = np.asarray(self.grid)
-
-    def get_grid(self) -> Union[jnp.ndarray, np.ndarray]:
-        return self.grid
 
     def __eq__(self, other):
         return (self.dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound) == (

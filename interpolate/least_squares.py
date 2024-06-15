@@ -10,8 +10,9 @@ from grid.grid import Grid
 from grid.grid_type import GridType
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
-from interpolate.least_squares_method import LeastSquaresMethod
+from interpolate.interpolation_methods import LeastSquaresMethod
 from utils.utils import find_degree
+import padasip as pa
 
 
 class LeastSquaresInterpolator(Interpolator):
@@ -35,9 +36,13 @@ class LeastSquaresInterpolator(Interpolator):
         if self.method == LeastSquaresMethod.ITERATIVE_LSMR:
             return self._approximate_lsmr(f)
         elif self.method == LeastSquaresMethod.EXACT or self.method == LeastSquaresMethod.SKLEARN:
-            return self._approximate(f)
+            return self._approximate_exact_sklearn(f)
         elif self.method == LeastSquaresMethod.PYTORCH:
             return self._approximate_pt(f)
+        elif self.method == LeastSquaresMethod.RLS:
+            return self._approximate_rls(f)
+        elif self.method == LeastSquaresMethod.ITERATIVE_RLS:
+            return self._approximate_iterative_rls(f)
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
 
@@ -63,13 +68,13 @@ class LeastSquaresInterpolator(Interpolator):
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
             return poly.fit_transform(grid)
 
-    def _approximate(self, f: Union[Callable, List[Callable]]) -> Callable:
+    def _approximate_exact_sklearn(self, f: Union[Callable, List[Callable]]) -> Callable:
         """
         Approximates a (or multiple) function(s) with polynomials by least squares.
         :param f: function or list of functions that need to be approximated on the same points
         :return: fitted function(s)
         """
-        grid = self.grid.get_grid()
+        grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
         if not (isinstance(f, list) or isinstance(f, Callable)):
@@ -87,6 +92,8 @@ class LeastSquaresInterpolator(Interpolator):
             return self._self_implementation(y)
         elif self.method == LeastSquaresMethod.SKLEARN:
             return self._sklearn(y)
+        elif self.method == LeastSquaresMethod.RLS:
+            return self._rls(y)
         else:
             raise ValueError(f"The method {self.method.name} is not supported")
 
@@ -99,7 +106,7 @@ class LeastSquaresInterpolator(Interpolator):
 
         if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.get_grid()):
+            for i, row in enumerate(self.grid.grid):
                 weight[i] = np.prod(np.polynomial.chebyshev.chebweight(row))
 
             weight_matrix = np.sqrt(np.diag(weight))
@@ -112,7 +119,7 @@ class LeastSquaresInterpolator(Interpolator):
         y_prime = x_poly.T @ weight_matrix @ y
         x2 = x_poly.T @ x_poly
         coeff = np.linalg.solve(x2, y_prime)
-        self.coeff = coeff # TODO: Remove or make general
+        self.coeff = coeff  # TODO: Remove or make general
 
         def f_hat(data: np.ndarray) -> np.ndarray:
             data_pol = self._build_basis(basis_type=None, grid=data, b_idx=self._b_idx)
@@ -139,6 +146,34 @@ class LeastSquaresInterpolator(Interpolator):
             return model.predict(data_pol).T
 
         return f_hat
+
+    def _rls(self, y: np.ndarray) -> Callable:
+        x_poly = self.basis
+
+        n = x_poly.shape[1]
+
+        f = pa.filters.FilterRLS(n=n, mu=0.15, eps=0.5, w='random')
+        y_hat, e, w = f.run(y, x_poly)
+
+        return y
+
+    def _iterative_rls(self, y: np.ndarray) -> Callable:
+        x_poly = self.basis
+
+        n = x_poly.shape[1]
+
+        n_samples = x_poly.shape[0]
+
+        f = pa.filters.FilterRLS(n, mu=0.15, eps=0.5, w='random')
+
+        for k in range(n_samples):
+            sample = x_poly[k, :]
+            # y_hat_sample = f.predict(sample)
+            y_sample = y[k]
+            f.adapt(y_sample, sample)
+
+
+        return y
 
     def _approximate_lsmr(self, f: Callable) -> Callable:
         """
@@ -167,8 +202,8 @@ class LeastSquaresInterpolator(Interpolator):
             res = lsmr(x_poly, y)
             coeffs = res[0]
         else:
+            coeffs = np.empty((x_poly.shape[1], y.shape[1]))
             for i in range(y.shape[1]):
-                coeffs = np.empty((self.basis.shape[0], y.shape[1]))
                 res = lsmr(x_poly, y[:, i])
                 coeffs[:, i] = res[0]
 
@@ -214,3 +249,14 @@ class LeastSquaresInterpolator(Interpolator):
             return y_hat.numpy()
 
         return f_hat
+
+    def _approximate_rls(self, f: Callable):
+        # TODO: Just uses the first function -> obviously wrong
+        if isinstance(f, list):
+            f = f[0]
+        return self._rls(f(self.grid.grid))
+
+    def _approximate_iterative_rls(self, f:Callable):
+        if isinstance(f, list):
+            f = f[4]
+        return self._iterative_rls(f(self.grid.grid))

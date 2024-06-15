@@ -2,13 +2,18 @@ import os
 import time
 from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
+
+import utils.utils
 from grid.grid import Grid
 from functools import reduce
 from operator import mul
 from itertools import product, permutations
+
+from grid.grid_type import GridType
 from interpolate.partition import Partition
 from deprecated import deprecated
 from utils.utils import load_basis_indices_if_existent, save_basis_indices
+from numba import njit
 
 
 class Interpolator:
@@ -33,8 +38,10 @@ class Interpolator:
         self.U = None
 
     def _build_poly_basis(self, grid: Union[None, np.ndarray],
-                          b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
+                              b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
         """Builds smolyak polynomial basis"""
+
+        # start_time = time.time()
 
         if self._b_idx is None and b_idx is None:
             self._idx = self._smolyak_idx()
@@ -53,16 +60,27 @@ class Interpolator:
         npts = grid.shape[0]
         basis = np.empty(shape=(npts, n_polys))
 
+        # Convert self._b_idx to a NumPy array for efficient indexing
+        # b_idx_np = np.array(self._b_idx) - 1
+
+        # Select the required Chebyshev polynomials using advanced indexing
+        # selected_ts = ts[b_idx_np, np.arange(self.dim), :]
+
+        # Compute the product along the dimension axis
+        # basis = np.prod(selected_ts, axis=1).T
+
         # for ind, comb in enumerate(self._b_idx):
+        #     res = np.ones(npts)
         #     for i in range(self.dim):
-        #         i1 = comb[i] - 1
-        #         i2 = i
-        #         dat = ts[i1, i2, :]
-        #         res = reduce(mul, dat)
-        #         basis[:, ind] = res
+        #         cheby_polynomial_idx = comb[i] - 1
+        #         dimension = i
+        #         res *= ts[cheby_polynomial_idx, dimension, :]
+        #     basis[:, ind] = res
 
         for ind, comb in enumerate(self._b_idx):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
+
+        # print(f'Building basis took {time.time() - start_time} seconds')
 
         return basis
 

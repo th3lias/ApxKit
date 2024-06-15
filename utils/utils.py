@@ -461,7 +461,7 @@ def load_basis_indices_if_existent(dim: int, scale: int, path=None):
         return None
 
 
-def save_basis_indices(_b_idx, dim:int, scale:int, path=None):
+def save_basis_indices(_b_idx, dim: int, scale: int, path=None):
     if path is None:
         path = os.path.join('indices')
 

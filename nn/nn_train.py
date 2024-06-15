@@ -11,8 +11,8 @@ from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from interpolate.basis_types import BasisType
 from interpolate.least_squares import LeastSquaresInterpolator
-from nn.dataset_torch import LS_Dataset
-from nn.nn_torch import LS_NN
+from nn.dataset_torch import LSDataset
+from nn.nn_torch import LSNN
 from utils.utils import calculate_num_points, l2_error_function_values
 
 
@@ -28,7 +28,7 @@ def train(model, criterion, optimizer, scheduler, dataloader, num_epochs, device
 
             outputs = model(inputs)
             loss = criterion(outputs, labels)
-            if i==0 and epoch == 0:
+            if i == 0 and epoch == 0:
                 print(f"First loss = {loss}")
             loss.backward()
             optimizer.step()
@@ -83,10 +83,10 @@ if __name__ == '__main__':
     coeff = ls.coeff.astype(np.float64)
 
     # dataset = LS_Dataset(data, y, dim=dim, scale=scale)
-    dataset = LS_Dataset(basis, y, dim=dim, scale=scale)
+    dataset = LSDataset(basis, y, dim=dim, scale=scale)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    model = LS_NN(input_dim=basis.shape[1], output_dim=1, weights=coeff)
+    model = LSNN(input_dim=basis.shape[1], output_dim=1, weights=coeff)
 
     optimizer = torch.optim.SGD(model.parameters(), lr=lr_start)
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     print(f'L2 error estimate: Exact: {l2_exact} vs NN: {l2_nn}')
 
-    print('_'*100)
+    print('_' * 100)
 
     # get model weights and compare it with the coefficients from the exact solution
     weights = model.state_dict()

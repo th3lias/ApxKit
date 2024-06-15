@@ -1,9 +1,10 @@
 import torch
 import numpy as np
 
-class LS_NN(torch.nn.Module):
+
+class LSNN(torch.nn.Module):
     def __init__(self, input_dim, output_dim, weights=None):
-        super(LS_NN, self).__init__()
+        super(LSNN, self).__init__()
         self.linear = torch.nn.Linear(input_dim, output_dim, bias=False, dtype=torch.float64)
 
         if weights is not None:

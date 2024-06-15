@@ -12,7 +12,7 @@ from utils.utils import load_basis_indices_if_existent, save_basis_indices
 
 # write Dataset that takes grid from GridProvider
 
-class LS_Dataset(Dataset):
+class LSDataset(Dataset):
     def __init__(self, grid, y, dim: int, scale: int):
         self.grid = grid
         self.y = y
@@ -23,13 +23,13 @@ class LS_Dataset(Dataset):
 
     def __len__(self):
         return self.grid.shape[0]
-        return self.grid.get_num_points()
+        return self.grid.get_num_points() # TODO: Adjust
 
     def __getitem__(self, idx):
-        # x = self._make_basis(self.grid.get_grid()[idx])
+        # x = self._make_basis(self.grid.get_grid()[idx]) # TODO: grid.get_grid is deprecated/non-existing
         x = self.grid[idx]
         y = self.y[idx]
-        return (x, y)
+        return x, y
 
     def _make_basis(self, x):
 

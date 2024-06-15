@@ -13,7 +13,7 @@ from grid.grid import Grid
 from grid.grid_provider import GridType, GridProvider
 from interpolate.basis_types import BasisType
 from interpolate.least_squares import LeastSquaresInterpolator
-from interpolate.least_squares_method import LeastSquaresMethod
+from interpolate.interpolation_methods import LeastSquaresMethod, SmolyakMethod
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import max_error_function_values, l2_error_function_values
 from utils.utils import calculate_num_points
@@ -23,7 +23,8 @@ import psutil
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
                             n_parallel: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
-                            n_test_samples: int, lb: float, ub: float, path: Union[str, None] = None) -> Grid:
+                            n_test_samples: int, lb: float, ub: float, method_type: SmolyakMethod,
+                            path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
     :param dim: dimension of the grid/function
@@ -36,6 +37,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
     :param n_test_samples: number of samples used to assess the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
+    :param method_type: Specifies which type of solving algorithm should be used
     :param path: path of the results file. If None, the default path is used
 
     :return: The created grid, such that it can be used again for an increased scale
@@ -69,7 +71,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray,
             y[index, :] = f(test_grid)
             function_names.append(func_type.name)
 
-    si = SmolyakInterpolator(grid)
+    si = SmolyakInterpolator(grid, method=method_type)
     f_hat = si.interpolate(functions)
 
     y_hat = f_hat(test_grid)
@@ -245,7 +247,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray,
 
 
 def run_experiments(n_functions_parallel: int, scales: range, dims: range, methods: list, add_mul: float,
-                    ls_method: LeastSquaresMethod):
+                    ls_method: LeastSquaresMethod, smolyak_method: SmolyakMethod):
     """
     Runs multiple experiments for least-squares with various parameter combinations
     :param n_functions_parallel: number of parallel functions per type that should be tested
@@ -253,7 +255,8 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range, metho
     :param dims: Specifies which dimension range should be used for the experiments
     :param methods: Specifies which methods should be used for the experiments
     :param add_mul: Multiplies the number of samples for the least squares experiments
-    :param ls_method: Specifies which method should be used to solve Least Squares Problem
+    :param ls_method: Specifies which method should be used to solve the Least Squares Problem
+    :param smolyak_grid: Specifies which method should be used to solve the Smolyak Problem
     """
 
     print(
@@ -301,7 +304,8 @@ def run_experiments(n_functions_parallel: int, scales: range, dims: range, metho
                     smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, n_parallel=n_functions_parallel,
                                                            scale=scale, grid=smolyak_grid,
                                                            test_grid_seed=test_grid_seed,
-                                                           n_test_samples=n_test_samples, lb=lb, ub=ub, path=None)
+                                                           n_test_samples=n_test_samples, lb=lb, ub=ub,
+                                                           method_type=smolyak_method, path=None)
                 elif method == 'Least_Squares_Uniform':
 
                     least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,

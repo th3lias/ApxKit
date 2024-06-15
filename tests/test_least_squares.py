@@ -7,7 +7,7 @@ from genz.genz_functions import get_genz_function, GenzFunctionType
 from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from interpolate.least_squares import LeastSquaresInterpolator
-from interpolate.least_squares_method import LeastSquaresMethod
+from interpolate.interpolation_methods import LeastSquaresMethod
 from utils.utils import sample
 from interpolate.basis_types import BasisType
 
