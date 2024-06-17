@@ -1,87 +1,67 @@
-from typing import Callable, Union, List, Tuple, Generator
-import numpy as np
-
-from grid.grid import Grid
 from functools import reduce
+from itertools import product
+from typing import Union, List, Tuple
 from operator import mul
-from itertools import product, permutations
+
+import numpy as np
+from torch.utils.data import Dataset
 
 from interpolate.partition import Partition
-from deprecated import deprecated
-from utils.utils import load_basis_indices_if_existent, save_basis_indices
 
 
-class Interpolator:
-    def __init__(self, grid: Grid):
+# write Dataset that takes grid from GridProvider
+
+class LSDataset(Dataset):
+    def __init__(self, grid, y, dim: int, scale: int):
         self.grid = grid
-        self.scale = grid.scale
-        self.dim = grid.dim
-        self._idx = None
-        self._b_idx = load_basis_indices_if_existent(self.dim, self.scale)
-        self.basis = None
-        self.L = None
-        self.U = None
-        self.coeff = None
+        self.y = y
+        self.dim = dim
+        self.scale = scale
+        self._b_idx = None
+        # self._b_idx = load_basis_indices_if_existent(self.dim, self.scale)
 
-    def interpolate(self, grid: Union[Grid, np.ndarray]):
-        # TODO: Maybe change to JNP aswell in the type-hints @th3lias
-        raise NotImplementedError
+    def __len__(self):
+        return self.grid.shape[0]
 
-    def fit(self, f: Union[Callable, List[Callable]]) -> None:
-        raise NotImplementedError
+    def __getitem__(self, idx):
+        x = self.grid[idx]
+        y = self.y[idx]
+        return x, y
 
-    def set_grid(self, grid: Grid):
-        self.grid = grid
-        self.basis = None
-        self.L = None
-        self.U = None
+    def _make_basis(self, x):
 
-    def _build_poly_basis(self, grid: Union[None, np.ndarray],
-                          b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
-        """Builds smolyak polynomial basis"""
-
-        # start_time = time.time()
-
-        if self._b_idx is None and b_idx is None:
+        if self._b_idx is None:
             self._idx = self._smolyak_idx()
             self._b_idx = self._poly_idx(self._idx)
-            save_basis_indices(self._b_idx, self.dim, self.scale)
-        elif b_idx is not None:
-            self._b_idx = b_idx
+            # save_basis_indices(self._b_idx, self.dim, self.scale)
 
         scale = self.scale
 
-        if grid is None:
-            grid = self.grid.grid
+        grid = self.grid.grid
 
-        ts = self._cheby2n(grid.T, self._m_i(scale + 1))
+        ts = self._cheby2n(x.T, self._m_i(scale + 1)).reshape(-1, self.dim, 1)
         n_polys = len(self._b_idx)
         npts = grid.shape[0]
         basis = np.empty(shape=(npts, n_polys))
 
-        # Convert self._b_idx to a NumPy array for efficient indexing
-        # b_idx_np = np.array(self._b_idx) - 1
-
-        # Select the required Chebyshev polynomials using advanced indexing
-        # selected_ts = ts[b_idx_np, np.arange(self.dim), :]
-
-        # Compute the product along the dimension axis
-        # basis = np.prod(selected_ts, axis=1).T
-
-        # for ind, comb in enumerate(self._b_idx):
-        #     res = np.ones(npts)
-        #     for i in range(self.dim):
-        #         cheby_polynomial_idx = comb[i] - 1
-        #         dimension = i
-        #         res *= ts[cheby_polynomial_idx, dimension, :]
-        #     basis[:, ind] = res
-
         for ind, comb in enumerate(self._b_idx):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
 
-        # print(f'Building basis took {time.time() - start_time} seconds')
-
         return basis
+
+    # TODO: Same method like in interpolator.py
+    def _smolyak_idx(self):
+        scale = self.scale
+        dim = self.dim
+        if not isinstance(scale, int):
+            raise ValueError(f"Scale must have an int type but is {type(scale)}")
+
+        idx_list = list()
+        for q in range(dim, scale + dim + 1):
+            p = Partition(dim, q, limit=1)
+            idx_list.extend(p.get_all_partitions())
+
+        return idx_list
 
     def _poly_idx(self, idx: Union[List[List[int]], None] = None) -> List[Tuple[int]]:
         """
@@ -117,33 +97,6 @@ class Interpolator:
             # idx.append(el)
             base_polys.extend(list(product(*temp)))
         return base_polys
-
-    def _smolyak_idx(self) -> List[List[int]]:
-        """
-        Fidx all the indices that satisfy the requirement that
-        math::
-        d \\leq \\sum_{i=1}^d \\leq d + scale.
-        Returns
-        -------
-        true_idx : array
-            A 1-d Any array containing all d element arrays satisfying the
-            constraint
-        Notes
-        -----
-        This function is used directly by build_grid and poly_idx
-        """
-
-        scale = self.scale
-        dim = self.dim
-        if not isinstance(scale, int):
-            raise ValueError(f"Scale must have an int type but is {type(scale)}")
-
-        idx_list = list()
-        for q in range(dim, scale + dim + 1):
-            p = Partition(dim, q, limit=1)
-            idx_list.extend(p.get_all_partitions())
-
-        return idx_list
 
     @staticmethod
     def _phi_chain(n):
@@ -200,37 +153,6 @@ class Interpolator:
             return i
         else:
             return 2 ** (i - 1) + 1
-
-    @staticmethod
-    @deprecated
-    def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
-        # TODO: Can probably be replaced with Partition class
-        """
-        Creates a generator object that yields all permutations of the given array/list. The permutations are unique,
-        if the parameter drop_duplicates is set to True
-        At the beginning, the array/list gets sorted.
-        :param array: Array or List where the permutations should be calculated
-        :param drop_duplicates: If True, a permutation which is the same as another permutation since there were
-        duplicate values in the array is dropped, otherwise it is kept
-        """
-        if isinstance(array, np.ndarray):
-            if array.ndim == 1:
-                array = np.sort(array)
-            else:
-                raise ValueError(
-                    f"Wrong number of dimensions for the parameter 'array'. Expected ndim=1 but got {array.ndim}"
-                )
-        elif isinstance(array, list):
-            array = sorted(array)
-        else:
-            raise ValueError(f"Expected 'array' to be a list or a np.ndarray but got {type(array)}")
-
-        seen = set()
-
-        for perm in permutations(array):
-            if perm not in seen or not drop_duplicates:
-                seen.add(perm)
-                yield list(perm)
 
     @staticmethod
     def _cheby2n(x, n):

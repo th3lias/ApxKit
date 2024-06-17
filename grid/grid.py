@@ -29,9 +29,6 @@ class Grid:
         assert isinstance(self.grid, jnp.ndarray), "Grid is already a numpy array"
         self.grid = np.asarray(self.grid)
 
-    def get_grid(self) -> Union[jnp.ndarray, np.ndarray]:
-        return self.grid
-
     def __eq__(self, other):
         return (self.dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound) == (
             other.dim, other.scale, other.grid_type, other.lower_bound, other.upper_bound)

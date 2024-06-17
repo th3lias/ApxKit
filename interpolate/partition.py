@@ -1,13 +1,13 @@
 class Partition:
-    def __init__(self, dim, sum, limit=1):
+    def __init__(self, dim, exact_sum, limit=1):
 
-        if sum < dim * limit:
+        if exact_sum < dim * limit:
             raise ValueError("Error: sum lower than limits in partition")
 
         self.limit = limit
         self.dim = dim
 
-        self.p_sum = sum - dim * limit
+        self.p_sum = exact_sum - dim * limit
         self.p = [0] * dim
         self.p[-1] = self.p_sum
 

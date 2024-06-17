@@ -290,9 +290,11 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
                 continue
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
-                n_points = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
+                n_points_sy = smolyak_data[smolyak_data['c'] == name]['n_samples']
+                n_points_ls = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
                     'n_samples']
-                xticklabels = [f"{scale}\n{n_points.iloc[j]}" for j, scale in enumerate(scales)]
+                xticklabels = [f"{scale}\n{n_points_sy.iloc[j]} / {n_points_ls.iloc[j]}" for j, scale in
+                               enumerate(scales)]
                 label = 'Smolyak'
                 axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
                 label = 'Least Squares Uniform'
@@ -305,7 +307,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
                 axs[i].set_xticks(scales)
                 axs[i].set_xticklabels(xticklabels)
                 axs[i].set_title(titles[i])
-                axs[i].set_xlabel('Scale/no points')
+                axs[i].set_xlabel('Scale\npoints (Smolyak / Least Squares)')
                 axs[i].set_ylabel('Error')
                 axs[i].set_yscale('log')
                 axs[i].legend()
@@ -444,3 +446,28 @@ def find_degree(scale: int, dimension: int):
         normal_basis_size = math.comb(dimension + degree, dimension)
 
     return degree
+
+
+def load_basis_indices_if_existent(dim: int, scale: int, path=None):
+    if path is None:
+        path = os.path.join('indices')
+
+    os.makedirs(path, exist_ok=True)
+    path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
+
+    try:
+        return np.load(path, allow_pickle=True)
+    except FileNotFoundError:
+        return None
+
+
+def save_basis_indices(_b_idx, dim: int, scale: int, path=None):
+    if path is None:
+        path = os.path.join('indices')
+
+    os.makedirs(path, exist_ok=True)
+    path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
+
+    # only save if not existent already
+    if not os.path.exists(path):
+        np.save(path, _b_idx, allow_pickle=True)

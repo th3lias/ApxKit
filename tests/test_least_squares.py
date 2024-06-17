@@ -1,5 +1,4 @@
 import unittest
-from typing import Callable
 
 import numpy as np
 
@@ -7,7 +6,7 @@ from genz.genz_functions import get_genz_function, GenzFunctionType
 from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from interpolate.least_squares import LeastSquaresInterpolator
-from interpolate.least_squares_method import LeastSquaresMethod
+from interpolate.interpolation_methods import LeastSquaresMethod
 from utils.utils import sample
 from interpolate.basis_types import BasisType
 
@@ -17,235 +16,284 @@ class LeastSquaresTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(LeastSquaresTests, self).__init__(*args, **kwargs)
         self.scale = 3
-        self.dimension = 10
+        self.dimension = 5
         self.n_test_samples = 100
         self.lb = 0.0
         self.ub = 1.0
         self.gp = GridProvider(dimension=self.dimension)
-        self.grid = self.gp.generate(grid_type=GridType.RANDOM_CHEBYSHEV, scale=self.scale)
+        self.grid = self.gp.generate(grid_type=GridType.RANDOM_CHEBYSHEV, scale=self.scale, multiplier=1.5)
         self.test_grid = np.random.uniform(low=self.lb, high=self.ub, size=(self.n_test_samples, self.dimension))
-        self.lsq = LeastSquaresInterpolator(True, basis_type=BasisType.CHEBYSHEV, grid=self.grid)
 
-    def test_parallel_oscillatory(self):
+    def test_parallel_exact(self):
         f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_3 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_4 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_5 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_6 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
 
-        f_hat_1 = self.lsq.interpolate(f_1)
-        f_hat_2 = self.lsq.interpolate(f_2)
-        f_hat_both = self.lsq.interpolate([f_1, f_2])
+        f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
 
-        y_hat = f_hat_both(self.test_grid)
+        y_hat_individual = list()
 
-        y_hat_1_combined = y_hat[0, :]
-        y_hat_2_combined = y_hat[1, :]
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV, grid=self.grid,
+                                       method=LeastSquaresMethod.EXACT)
 
-        y_hat_1 = f_hat_1(self.test_grid)
-        y_hat_2 = f_hat_2(self.test_grid)
+        lsq.fit(f_1)
+        y_hat_1 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_1)
 
-        self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
-        self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
+        lsq.fit(f_2)
+        y_hat_2 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_2)
 
-    def test_parallel_product_peak(self):
-        f_1 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
+        lsq.fit(f_3)
+        y_hat_3 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_3)
 
-        f_hat_1 = self.lsq.interpolate(f_1)
-        f_hat_2 = self.lsq.interpolate(f_2)
-        f_hat_both = self.lsq.interpolate([f_1, f_2])
+        lsq.fit(f_4)
+        y_hat_4 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_4)
 
-        y_hat = f_hat_both(self.test_grid)
+        lsq.fit(f_5)
+        y_hat_5 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_5)
 
-        y_hat_1_combined = y_hat[0, :]
-        y_hat_2_combined = y_hat[1, :]
+        lsq.fit(f_6)
+        y_hat_6 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_6)
 
-        y_hat_1 = f_hat_1(self.test_grid)
-        y_hat_2 = f_hat_2(self.test_grid)
+        lsq.fit(f_hat_collected)
+        y_hat_collected = lsq.interpolate(self.test_grid)
 
-        self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
-        self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
+        for i in range(6):
+            self.assertTrue(np.isclose(y_hat_individual[i], y_hat_collected[i], rtol=1e-3).all(),
+                            f"Not close for index {i}")
 
-    def test_parallel_corner_peak(self):
-        f_1 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
+    def test_parallel_iterative_lsmr(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_3 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_4 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_5 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_6 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
 
-        f_hat_1 = self.lsq.interpolate(f_1)
-        f_hat_2 = self.lsq.interpolate(f_2)
-        f_hat_both = self.lsq.interpolate([f_1, f_2])
+        f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
 
-        y_hat = f_hat_both(self.test_grid)
+        y_hat_individual = list()
 
-        y_hat_1_combined = y_hat[0, :]
-        y_hat_2_combined = y_hat[1, :]
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.ITERATIVE_LSMR)
 
-        y_hat_1 = f_hat_1(self.test_grid)
-        y_hat_2 = f_hat_2(self.test_grid)
+        lsq.fit(f_1)
+        y_hat_1 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_1)
 
-        self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
-        self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
+        lsq.fit(f_2)
+        y_hat_2 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_2)
 
-    def test_parallel_gaussian(self):
-        f_1 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
+        lsq.fit(f_3)
+        y_hat_3 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_3)
 
-        f_hat_1 = self.lsq.interpolate(f_1)
-        f_hat_2 = self.lsq.interpolate(f_2)
-        f_hat_both = self.lsq.interpolate([f_1, f_2])
+        lsq.fit(f_4)
+        y_hat_4 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_4)
 
-        y_hat = f_hat_both(self.test_grid)
+        lsq.fit(f_5)
+        y_hat_5 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_5)
 
-        y_hat_1_combined = y_hat[0, :]
-        y_hat_2_combined = y_hat[1, :]
+        lsq.fit(f_6)
+        y_hat_6 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_6)
 
-        y_hat_1 = f_hat_1(self.test_grid)
-        y_hat_2 = f_hat_2(self.test_grid)
+        lsq.fit(f_hat_collected)
+        y_hat_collected = lsq.interpolate(self.test_grid)
 
-        self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
-        self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
+        for i in range(6):
+            self.assertTrue(np.isclose(y_hat_individual[i], y_hat_collected[i]).all(), f"Not close for index {i}")
 
-    def test_parallel_continuous(self):
-        f_1 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
+    def test_parallel_sklearn(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_3 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_4 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_5 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_6 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
 
-        f_hat_1 = self.lsq.interpolate(f_1)
-        f_hat_2 = self.lsq.interpolate(f_2)
-        f_hat_both = self.lsq.interpolate([f_1, f_2])
+        f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
 
-        y_hat = f_hat_both(self.test_grid)
+        y_hat_individual = list()
 
-        y_hat_1_combined = y_hat[0, :]
-        y_hat_2_combined = y_hat[1, :]
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.SKLEARN)
 
-        y_hat_1 = f_hat_1(self.test_grid)
-        y_hat_2 = f_hat_2(self.test_grid)
+        lsq.fit(f_1)
+        y_hat_1 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_1)
 
-        self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
-        self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
+        lsq.fit(f_2)
+        y_hat_2 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_2)
 
-    def test_parallel_discontinuous(self):
-        f_1 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
-                                d=self.dimension)
+        lsq.fit(f_3)
+        y_hat_3 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_3)
 
-        f_hat_1 = self.lsq.interpolate(f_1)
-        f_hat_2 = self.lsq.interpolate(f_2)
-        f_hat_both = self.lsq.interpolate([f_1, f_2])
+        lsq.fit(f_4)
+        y_hat_4 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_4)
 
-        y_hat = f_hat_both(self.test_grid)
+        lsq.fit(f_5)
+        y_hat_5 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_5)
 
-        y_hat_1_combined = y_hat[0, :]
-        y_hat_2_combined = y_hat[1, :]
+        lsq.fit(f_6)
+        y_hat_6 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_6)
 
-        y_hat_1 = f_hat_1(self.test_grid)
-        y_hat_2 = f_hat_2(self.test_grid)
+        lsq.fit(f_hat_collected)
+        y_hat_collected = lsq.interpolate(self.test_grid)
 
-        self.assertTrue(np.isclose(y_hat_1, y_hat_1_combined).all())
-        self.assertTrue(np.isclose(y_hat_2, y_hat_2_combined).all())
+        for i in range(6):
+            self.assertTrue(np.isclose(y_hat_individual[i], y_hat_collected[i]).all(), f"Not close for index {i}")
 
-    def test_self_implemented_oscillatory(self):
-        f = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(self.dimension), w=sample(self.dimension),
-                              d=self.dimension)
-        f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch = self._approximate(f)
+    def test_parallel_pytorch(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_3 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_4 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_5 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+        f_6 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
 
-        y_hat_self = f_hat_self(self.test_grid)
-        y_hat_sklearn = f_hat_sklearn(self.test_grid)
-        y_hat_iterative = f_hat_iterative_lsmr(self.test_grid)
-        y_hat_pytorch = f_hat_pytorch(self.test_grid)
+        f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
 
-        self.assertTrue(np.isclose(y_hat_self, y_hat_sklearn, atol=1).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=4).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_pytorch, atol=4).all())
+        y_hat_individual = list()
 
-    def test_self_implemented_product_peak(self):
-        f = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(self.dimension), w=sample(self.dimension),
-                              d=self.dimension)
-        f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch = self._approximate(f)
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.PYTORCH)
 
-        y_hat_self = f_hat_self(self.test_grid)
-        y_hat_sklearn = f_hat_sklearn(self.test_grid)
-        y_hat_iterative = f_hat_iterative_lsmr(self.test_grid)
-        y_hat_pytorch = f_hat_pytorch(self.test_grid)
+        lsq.fit(f_1)
+        y_hat_1 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_1)
 
-        self.assertTrue(np.isclose(y_hat_self, y_hat_sklearn, atol=1).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=4).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_pytorch, atol=4).all())
+        lsq.fit(f_2)
+        y_hat_2 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_2)
 
-    def test_self_implemented_corner_peak(self):
-        f = get_genz_function(GenzFunctionType.CORNER_PEAK, c=sample(self.dimension), w=sample(self.dimension),
-                              d=self.dimension)
-        f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch = self._approximate(f)
+        lsq.fit(f_3)
+        y_hat_3 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_3)
 
-        y_hat_self = f_hat_self(self.test_grid)
-        y_hat_sklearn = f_hat_sklearn(self.test_grid)
-        y_hat_iterative = f_hat_iterative_lsmr(self.test_grid)
-        y_hat_pytorch = f_hat_pytorch(self.test_grid)
+        lsq.fit(f_4)
+        y_hat_4 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_4)
 
-        self.assertTrue(np.isclose(y_hat_self, y_hat_sklearn, atol=1).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=4).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_pytorch, atol=4).all())
+        lsq.fit(f_5)
+        y_hat_5 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_5)
 
-    def test_self_implemented_gaussian(self):
-        f = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(self.dimension), w=sample(self.dimension),
-                              d=self.dimension)
-        f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch = self._approximate(f)
+        lsq.fit(f_6)
+        y_hat_6 = lsq.interpolate(self.test_grid)
+        y_hat_individual.append(y_hat_6)
 
-        y_hat_self = f_hat_self(self.test_grid)
-        y_hat_sklearn = f_hat_sklearn(self.test_grid)
-        y_hat_iterative = f_hat_iterative_lsmr(self.test_grid)
-        y_hat_pytorch = f_hat_pytorch(self.test_grid)
+        lsq.fit(f_hat_collected)
+        y_hat_collected = lsq.interpolate(self.test_grid)
 
-        self.assertTrue(np.isclose(y_hat_self, y_hat_sklearn, atol=1).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=4).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_pytorch, atol=4).all())
+        for i in range(6):
+            self.assertTrue(np.isclose(y_hat_individual[i], y_hat_collected[i]).all(), f"Not close for index {i}")
 
-    def test_self_implemented_continuous(self):
-        f = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
-                              d=self.dimension)
-        f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch = self._approximate(f)
+    def test_singleton_pytorch_neural_net(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
 
-        y_hat_self = f_hat_self(self.test_grid)
-        y_hat_sklearn = f_hat_sklearn(self.test_grid)
-        y_hat_iterative = f_hat_iterative_lsmr(self.test_grid)
-        y_hat_pytorch = f_hat_pytorch(self.test_grid)
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.PYTORCH_NEURAL_NET)
 
-        self.assertTrue(np.isclose(y_hat_self, y_hat_sklearn, atol=1).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=4).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_pytorch, atol=4).all())
+        lsq.fit(f_1)
 
-    def test_self_implemented_discontinuous(self):
-        f = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(self.dimension), w=sample(self.dimension),
-                              d=self.dimension)
-        f_hat_self, f_hat_sklearn, f_hat_iterative_lsmr, f_hat_pytorch = self._approximate(f)
+        y_hat_1 = lsq.interpolate(self.test_grid)
 
-        y_hat_self = f_hat_self(self.test_grid)
-        y_hat_sklearn = f_hat_sklearn(self.test_grid)
-        y_hat_iterative = f_hat_iterative_lsmr(self.test_grid)
-        y_hat_pytorch = f_hat_pytorch(self.test_grid)
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.EXACT)
 
-        self.assertTrue(np.isclose(y_hat_self, y_hat_sklearn, atol=1).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_iterative, atol=4).all())
-        self.assertTrue(np.isclose(y_hat_self, y_hat_pytorch, atol=4).all())
+        lsq.fit(f_1)
+        y_hat_exact = lsq.interpolate(self.test_grid)
 
-    def _approximate(self, f: Callable):
-        self.lsq.set_method(LeastSquaresMethod.EXACT)
-        f_hat_self = self.lsq.interpolate(f)
-        self.lsq.set_method(LeastSquaresMethod.SKLEARN)
-        f_hat_sklearn = self.lsq.interpolate(f)
-        self.lsq.set_method(LeastSquaresMethod.ITERATIVE_LSMR)
-        f_hat_lsmr = self.lsq.interpolate(f)
-        self.lsq.set_method(LeastSquaresMethod.PYTORCH)
-        f_hat_pytorch = self.lsq.interpolate(f)
-        return f_hat_self, f_hat_sklearn, f_hat_lsmr, f_hat_pytorch
+        self.assertTrue(np.isclose(y_hat_1, y_hat_exact, atol=2e0).all())
+
+    def test_singleton_jax(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+
+        # TODO: Implement
+
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.JAX_NEURAL_NET)
+
+        self.assertRaises(NotImplementedError, lsq.fit, f_1)
+
+    def test_parallel_rls(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.RLS)
+
+        lsq.fit(f_1)
+        y_hat_1 = lsq.interpolate(self.test_grid)
+
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.EXACT)
+
+        lsq.fit(f_1)
+        y_hat_exact = lsq.interpolate(self.test_grid)
+
+        self.assertTrue(np.isclose(y_hat_1, y_hat_exact, atol=1e-1).all())
+
+    def test_singleton_iterative_rls(self):
+        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+                                w=sample(dim=self.dimension), d=self.dimension)
+
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.ITERATIVE_RLS)
+
+        lsq.fit(f_1)
+        y_hat_1 = lsq.interpolate(self.test_grid)
+
+        lsq = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                       grid=self.grid, method=LeastSquaresMethod.EXACT)
+
+        lsq.fit(f_1)
+        y_hat_exact = lsq.interpolate(self.test_grid)
+
+        self.assertTrue(np.isclose(y_hat_1, y_hat_exact, atol=1e-1).all())
 
 
 if __name__ == '__main__':

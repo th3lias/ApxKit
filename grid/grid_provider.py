@@ -44,7 +44,6 @@ class GridProvider:
         :param multiplier: Only used in Random-Grid; Increases the number of samples by the given multiplier
         :return: grid object containing the points
         """
-        # TODO: Adapt docstring
         self.multiplier = multiplier
 
         if not isinstance(grid_type, GridType):
