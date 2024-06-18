@@ -312,7 +312,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
-            fig.suptitle(f'{function_type.name};multiplier={additional_multiplier}\nc={name}\nw={w}')
+            fig.suptitle(f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
                 filename = get_next_filename(save_path)
