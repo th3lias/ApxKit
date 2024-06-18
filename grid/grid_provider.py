@@ -165,8 +165,9 @@ class GridProvider:
         else:
             raise ValueError(f"Wrong argument. Expected GridTypes")
 
-    def _generate_random_grid(self, num_points: int) -> np.ndarray:
-        return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
+    def _generate_random_grid(self, num_points: int, precision: int = 8) -> np.ndarray:
+        grid = self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
+        return np.round(grid, decimals=precision)
 
     def _generate_with_chebyshev_density(self, num_points: int) -> np.ndarray:
         samples = np.empty(shape=(num_points, self.dim))
