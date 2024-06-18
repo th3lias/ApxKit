@@ -293,7 +293,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
                 n_points_sy = smolyak_data[smolyak_data['c'] == name]['n_samples']
                 n_points_ls = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
                     'n_samples']
-                xticklabels = [f"{scale}\n{n_points_sy.iloc[j]} / {n_points_ls.iloc[j]}" for j, scale in
+                xticklabels = [f"{scale}\n{n_points_sy.iloc[j]}\n{n_points_ls.iloc[j]}" for j, scale in
                                enumerate(scales)]
                 label = 'Smolyak'
                 axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
@@ -307,7 +307,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
                 axs[i].set_xticks(scales)
                 axs[i].set_xticklabels(xticklabels)
                 axs[i].set_title(titles[i])
-                axs[i].set_xlabel('Scale\npoints (Smolyak / Least Squares)')
+                axs[i].set_xlabel('Scale\npoints Smolyak\npoints Least Squares')
                 axs[i].set_ylabel('Error')
                 axs[i].set_yscale('log')
                 axs[i].legend()
