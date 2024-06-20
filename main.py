@@ -7,8 +7,8 @@ from interpolate.interpolation_methods import LeastSquaresMethod, SmolyakMethod
 from utils.utils import plot_errors
 
 if __name__ == '__main__':
-    dim_range = range(3, 5)
-    scale_range = range(1, 5)
+    dim_range = range(2, 4)
+    scale_range = range(1, 8)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [GenzFunctionType.OSCILLATORY, GenzFunctionType.PRODUCT_PEAK, GenzFunctionType.CORNER_PEAK,
                       GenzFunctionType.GAUSSIAN, GenzFunctionType.CONTINUOUS, GenzFunctionType.DISCONTINUOUS]
