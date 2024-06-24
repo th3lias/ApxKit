@@ -113,3 +113,18 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
         else:
             raise ValueError("Wrong dimension!")
         return f
+
+    # if function_type == GenzFunctionType.T_ULLRICH_1:
+    #
+    #     def f(x):
+    #         if not isinstance(x, np.ndarray):
+    #             raise ValueError("Cannot work with non-numpy arrays")
+    #         if x.ndim == 1:
+    #             return np.sqrt(1.5) * np.sqrt(np.sqrt(1-np.abs(2*(np.remainder(x, 1))-1)))
+    #         elif x.ndim == 2:
+    #             return (np.power(1.5, d/2.0)* np.prod(np.sqrt(np.sqrt(1-np.abs(2*(np.remainder(x, 1))-1))))).squeeze()
+    #         else:
+    #             raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+    #
+    #     return f
+

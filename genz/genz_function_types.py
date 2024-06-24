@@ -7,4 +7,5 @@ class GenzFunctionType(Enum):
     CORNER_PEAK = 3,
     GAUSSIAN = 4,
     CONTINUOUS = 5,
-    DISCONTINUOUS = 6
+    DISCONTINUOUS = 6,
+

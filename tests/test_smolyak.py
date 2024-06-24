@@ -19,7 +19,7 @@ class SmolyakTests(unittest.TestCase):
         self.n_test_samples = 100
         self.lb = 0.0
         self.ub = 1.0
-        self.gp = GridProvider(dimension=self.dimension)
+        self.gp = GridProvider(dimension=self.dimension, multiplier=1.0)
         self.grid = self.gp.generate(grid_type=GridType.CHEBYSHEV, scale=self.scale)
         self.test_grid = np.random.uniform(low=self.lb, high=self.ub, size=(self.n_test_samples, self.dimension))
 

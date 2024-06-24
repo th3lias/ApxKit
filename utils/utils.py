@@ -237,8 +237,8 @@ def get_next_filename(path, extension='png'):
 
 
 def plot_errors(dimension, function_type: GenzFunctionType, scales: range, additional_multiplier: float,
-                path: Union[str, None] = None,
-                save: bool = False, save_path: Union[str, None] = None):
+                folder_name: str, path: Union[str, None] = None, save: bool = False,
+                save_path: Union[str, None] = None):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
@@ -247,6 +247,7 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
     :param function_type: Specifies which function should be considered
     :param scales: range of scales, which are considered
     :param additional_multiplier: specifies which multiplier was used to increase the number of samples in least squares
+    :param folder_name: name of the folder where the results are stored
     :param path: Path of the results-csv file. If None, a default path will be used.
     :param save: Specifies whether the images should be saved. If False, the images are shown.
     :param save_path: Path where the images should be saved. If None, a default path will be used.
@@ -254,10 +255,10 @@ def plot_errors(dimension, function_type: GenzFunctionType, scales: range, addit
     """
 
     if path is None:
-        path = os.path.join("results", "results_numerical_experiments.csv")
+        path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
 
     if save_path is None:
-        save_path = os.path.join("results", "figures", function_type.name, f'dim{dimension}')
+        save_path = os.path.join("results", folder_name, "figures", function_type.name, f'dim{dimension}')
 
     os.makedirs(save_path, exist_ok=True)
 

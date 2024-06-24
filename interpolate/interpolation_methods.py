@@ -12,7 +12,8 @@ class LeastSquaresMethod(Enum):
     PYTORCH_NEURAL_NET = 5,
     JAX_NEURAL_NET = 6,
     RLS = 7,
-    ITERATIVE_RLS = 8
+    ITERATIVE_RLS = 8,
+    NUMPY_LSTSQ = 9
 
 
 class SmolyakMethod(Enum):

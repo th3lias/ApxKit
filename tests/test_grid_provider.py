@@ -9,7 +9,7 @@ class TestGridProvider(unittest.TestCase):
 
     # noinspection PyTypeChecker
     def test_provider_type_error(self):
-        provider = GridProvider(int(4))
+        provider = GridProvider(int(4), multiplier=1.0)
         with self.assertRaises(ValueError):
             provider.generate(grid_type='1')
 
@@ -18,54 +18,54 @@ class VisualTests(unittest.TestCase):
 
     @staticmethod
     def test_random_uniform_provider_2d():
-        provider = GridProvider(int(2), seed=int(42))
+        provider = GridProvider(int(2), seed=int(42), multiplier=1.0)
         grid = provider.generate(grid_type=GridType.RANDOM_UNIFORM, scale=int(3))
         utils.visualize_point_grid_2d(grid, alpha=1.)
 
     @staticmethod
     def test_random_uniform_provider_3d():
-        provider = GridProvider(int(3), seed=int(42))
+        provider = GridProvider(int(3), seed=int(42), multiplier=1.0)
         grid = provider.generate(grid_type=GridType.RANDOM_UNIFORM, scale=int(5))
         utils.visualize_point_grid_3d(grid, alpha=1.)
 
     @staticmethod
     def test_random_chebyshev_density_provider_1d():
-        points = GridProvider(dimension=1, seed=int(42))._sample_chebyshev_univariate(num_points=1000)
+        points = GridProvider(dimension=1, seed=int(42), multiplier=1.0)._sample_chebyshev_univariate(num_points=1000)
         utils.visualize_point_grid_1d(points, alpha=1.)
 
     @staticmethod
     def test_random_chebyshev_density_provider_2d():
-        provider = GridProvider(int(2), seed=int(42))
+        provider = GridProvider(int(2), seed=int(42), multiplier=1.0)
         grid = provider.generate(grid_type=GridType.RANDOM_CHEBYSHEV, scale=int(8))
         utils.visualize_point_grid_2d(grid, alpha=1.)
 
     @staticmethod
     def test_random_chebyshev_density_provider_3d():
-        provider = GridProvider(int(3), seed=int(42))
+        provider = GridProvider(int(3), seed=int(42), multiplier=1.0)
         grid = provider.generate(grid_type=GridType.RANDOM_CHEBYSHEV, scale=int(7))
         utils.visualize_point_grid_3d(grid, alpha=1.)
 
     @staticmethod
     def test_chebyshev_2d():
-        provider = GridProvider(int(2), seed=int(42))
+        provider = GridProvider(int(2), seed=int(42), multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=int(5))
         utils.visualize_point_grid_2d(grid, alpha=1.)
 
     @staticmethod
     def test_chebyshev_2d_custom_range():
-        provider = GridProvider(int(2), seed=int(42), lower_bound=1., upper_bound=4.)
+        provider = GridProvider(int(2), seed=int(42), lower_bound=1., upper_bound=4., multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=int(5))
         utils.visualize_point_grid_2d(grid, alpha=1.)
 
     @staticmethod
     def test_chebyshev_3d():
-        provider = GridProvider(int(3), seed=int(42))
+        provider = GridProvider(int(3), seed=int(42), multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=int(5))
         utils.visualize_point_grid_3d(grid, alpha=1.)
 
     @staticmethod
     def test_chebyshev_3d_custom_range():
-        provider = GridProvider(int(3), seed=int(42), lower_bound=1., upper_bound=4.)
+        provider = GridProvider(int(3), seed=int(42), lower_bound=1., upper_bound=4., multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=int(5))
         utils.visualize_point_grid_3d(grid, alpha=1.)
 
@@ -75,7 +75,7 @@ class TestNumberGridPoints(unittest.TestCase):
     def test_2d_scale_6(self):
         dim = 2
         scale = 6
-        provider = GridProvider(dim)
+        provider = GridProvider(dim, multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
         n_points = utils.calculate_num_points(scale, dim)
 
@@ -84,7 +84,7 @@ class TestNumberGridPoints(unittest.TestCase):
     def test_4d_scale_1(self):
         dim = 4
         scale = 1
-        provider = GridProvider(dim)
+        provider = GridProvider(dim, multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
         n_points = utils.calculate_num_points(scale, dim)
 
@@ -93,7 +93,7 @@ class TestNumberGridPoints(unittest.TestCase):
     def test_12d_scale_4(self):
         dim = 12
         scale = 4
-        provider = GridProvider(dim)
+        provider = GridProvider(dim, multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
         n_points = utils.calculate_num_points(scale, dim)
 
@@ -102,7 +102,7 @@ class TestNumberGridPoints(unittest.TestCase):
     def test_3d_scale_5(self):
         dim = 3
         scale = 5
-        provider = GridProvider(dim)
+        provider = GridProvider(dim, multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
         n_points = utils.calculate_num_points(scale, dim)
 
@@ -111,7 +111,7 @@ class TestNumberGridPoints(unittest.TestCase):
     def test_8d_scale_4(self):
         dim = 8
         scale = 4
-        provider = GridProvider(dim)
+        provider = GridProvider(dim, multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
         n_points = utils.calculate_num_points(scale, dim)
 
@@ -120,7 +120,7 @@ class TestNumberGridPoints(unittest.TestCase):
     def test_7d_scale_1(self):
         dim = 7
         scale = 1
-        provider = GridProvider(dim)
+        provider = GridProvider(dim, multiplier=1.0)
         grid = provider.generate(grid_type=GridType.CHEBYSHEV, scale=scale)
         n_points = utils.calculate_num_points(scale, dim)
 

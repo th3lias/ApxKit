@@ -2,6 +2,7 @@ import os
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
+import scipy.linalg
 import torch
 from scipy.sparse.linalg import lsmr
 from sklearn.linear_model import LinearRegression
@@ -19,6 +20,8 @@ from nn.nn_torch import LSNN
 from nn.nn_train import train
 from utils.utils import find_degree
 import padasip as pa
+
+from scipy.linalg import lu
 
 
 class LeastSquaresInterpolator(Interpolator):
@@ -38,7 +41,6 @@ class LeastSquaresInterpolator(Interpolator):
 
         if self.basis is None:
             self.basis = self._build_basis()
-            # TODO: Also LU-decomposition here?
 
         if self.method == LeastSquaresMethod.ITERATIVE_LSMR:
             self._approximate_lsmr(f)
@@ -56,6 +58,8 @@ class LeastSquaresInterpolator(Interpolator):
             self._approximate_rls(f)
         elif self.method == LeastSquaresMethod.ITERATIVE_RLS:
             self._approximate_iterative_rls(f)
+        elif self.method == LeastSquaresMethod.NUMPY_LSTSQ:
+            self._approximate_numpy_lstsq(f)
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
 
@@ -144,7 +148,10 @@ class LeastSquaresInterpolator(Interpolator):
 
     def _approximate_nn(self, f: Callable):
         if isinstance(f, list):
-            raise ValueError(f"f needs to be a single function but is of type {type(f)}")
+            if len(f) == 1:
+                f = f[0]
+            else:
+                raise ValueError(f"f needs to be a single function but is of type {type(f)}")
 
         y = f(self.grid.grid)
 
@@ -172,18 +179,23 @@ class LeastSquaresInterpolator(Interpolator):
         if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
-                weight[i] = np.prod(np.polynomial.chebyshev.chebweight(row))
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
 
-            weight_matrix = np.sqrt(np.diag(weight))
+
         elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
-            weight_matrix = np.eye(N=self.grid.get_num_points())
+            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
             raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
 
-        x_poly = weight_matrix @ self.basis
-        y_prime = x_poly.T @ weight_matrix @ y
+        print("Warning: The following is very unstable, since we calculate A.T@A")
+
+        x_poly = (weight * self.basis.T).T
+        self.basis = None
+        y_prime = x_poly.T @ (weight * y.T).T
         x2 = x_poly.T @ x_poly
-        coeff = np.linalg.solve(x2, y_prime)
+        del x_poly
+        self.L, self.U = lu(x2, permute_l=True)[-2:]
+        coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
     def _sklearn(self, y: np.ndarray):
@@ -271,6 +283,42 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = sol[0]
 
         self.coeff = coeff.cpu().numpy()
+
+    def _approximate_numpy_lstsq(self, f: Union[Callable, list[Callable]]):
+
+        grid = self.grid.grid
+        if not self.include_bias:
+            print("Please be aware that the result may become significantly worse when using no intercept (bias)")
+        n_samples = grid.shape[0]
+        if isinstance(f, list):
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(grid)
+        else:
+            y = f(grid)
+
+        # weighted least squares
+        if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
+            weight = np.empty(shape=(self.grid.get_num_points()))
+            for i, row in enumerate(self.grid.grid):
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
+
+
+        elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
+            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
+        else:
+            raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
+
+        x_poly = (weight * self.basis.T).T
+        del self.basis
+        y_prime = (weight * y.T).T
+
+        sol = np.linalg.lstsq(x_poly, y_prime, rcond=None)
+        coeff = sol[0]
+
+        self.coeff = coeff
 
     def _approximate_rls(self, f: Callable):
 
