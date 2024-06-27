@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from genz.genz_function_types import GenzFunctionType
+from test_functions.function_types import FunctionType
 from grid.grid import Grid
 
 
@@ -236,7 +236,7 @@ def get_next_filename(path, extension='png'):
     return f"{next_number}.{extension}"
 
 
-def plot_errors(dimension, function_type: GenzFunctionType, scales: range, additional_multiplier: float,
+def plot_errors(dimension, function_type: FunctionType, scales: range, additional_multiplier: float,
                 folder_name: str, path: Union[str, None] = None, save: bool = False,
                 save_path: Union[str, None] = None):
     """

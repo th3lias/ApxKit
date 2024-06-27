@@ -1,26 +1,37 @@
-from typing import Callable
+from typing import Callable, Union
 
 import numpy as np
 
-from genz.genz_function_types import GenzFunctionType
+from test_functions.function_types import FunctionType
 
 
-def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array, d: int) -> Callable:
+def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, None] = None,
+                      w: Union[np.array, None] = None) -> Callable:
     """
-    Creates a callable function from the Genz family and given hyperparameters c and w.
-    Note that in the original definition, the functions are only defined for [0,1]^d
-    For the Genz functions, see https://link.springer.com/chapter/10.1007/978-94-009-3889-2_33
+    Creates a callable function from the various kind of function (families).
+    They're defined in the interval [0,1]^d.
+    The first 6 functions are so-called Genz functions.
+    The other 6 are other common functions to benchmark integration problems. For a reference, see
+    https://www.sfu.ca/~ssurjano/integration.html
+    Note, that only the Genz-Functions depend on the parameter c and w.
     :param function_type: Specifies which function we want to create.
-    :param c: The higher this parameter, the more difficult the function gets
-    :param w: Operates as a shift parameter
     :param d: dimension of the function
+    :param c: The higher this parameter, the more difficult the function gets, only relevant for Genz functions
+    :param w: Operates as a shift parameter, only relevant for Genz functions
     :return: A callable function
     """
 
-    if not isinstance(function_type, GenzFunctionType):
-        raise ValueError("Wrong input type for function_type. Use a GenzFunctionType")
+    if not isinstance(function_type, FunctionType):
+        raise ValueError("Wrong input type for function_type. Use a FunctionType")
 
-    if function_type == GenzFunctionType.OSCILLATORY:
+    if not isinstance(d, int):
+        raise ValueError("Dimension must be an integer")
+
+    if function_type == FunctionType.OSCILLATORY:
+
+        if c is None or w is None:
+            raise ValueError("c and w must be specified for the Oscillatory function")
+
         def f(x):
 
             if not isinstance(x, np.ndarray):
@@ -39,7 +50,10 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
         return f
 
-    if function_type == GenzFunctionType.PRODUCT_PEAK:
+    if function_type == FunctionType.PRODUCT_PEAK:
+
+        if c is None or w is None:
+            raise ValueError("c and w must be specified for the Product Peak function")
 
         def f(x):
             if not isinstance(x, np.ndarray):
@@ -53,7 +67,10 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
         return f
 
-    if function_type == GenzFunctionType.CORNER_PEAK:
+    if function_type == FunctionType.CORNER_PEAK:
+
+        if c is None or w is None:
+            raise ValueError("c and w must be specified for the Corner Peak function")
 
         def f(x):
             if not isinstance(x, np.ndarray):
@@ -70,7 +87,11 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
         return f
 
-    if function_type == GenzFunctionType.GAUSSIAN:
+    if function_type == FunctionType.GAUSSIAN:
+
+        if c is None or w is None:
+            raise ValueError("c and w must be specified for the Gaussian function")
+
         def f(x):
             if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
@@ -83,7 +104,11 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
         return f
 
-    if function_type == GenzFunctionType.CONTINUOUS:
+    if function_type == FunctionType.CONTINUOUS:
+
+        if c is None or w is None:
+            raise ValueError("c and w must be specified for the Continuous function")
+
         def f(x):
             if not isinstance(x, np.ndarray):
                 raise ValueError("Cannot work with non-numpy arrays")
@@ -96,7 +121,11 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
 
         return f
 
-    if function_type == GenzFunctionType.DISCONTINUOUS:
+    if function_type == FunctionType.DISCONTINUOUS:
+
+        if c is None or w is None:
+            raise ValueError("c and w must be specified for the Discontinuous function")
+
         if d == 1:
             def f(x):
                 if not isinstance(x, np.ndarray):
@@ -114,17 +143,41 @@ def get_genz_function(function_type: GenzFunctionType, c: np.array, w: np.array,
             raise ValueError("Wrong dimension!")
         return f
 
-    # if function_type == GenzFunctionType.T_ULLRICH_1:
-    #
-    #     def f(x):
-    #         if not isinstance(x, np.ndarray):
-    #             raise ValueError("Cannot work with non-numpy arrays")
-    #         if x.ndim == 1:
-    #             return np.sqrt(1.5) * np.sqrt(np.sqrt(1-np.abs(2*(np.remainder(x, 1))-1)))
-    #         elif x.ndim == 2:
-    #             return (np.power(1.5, d/2.0)* np.prod(np.sqrt(np.sqrt(1-np.abs(2*(np.remainder(x, 1))-1))))).squeeze()
-    #         else:
-    #             raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
-    #
-    #     return f
+    if function_type == FunctionType.G_FUNCTION:
 
+        def f(x):
+
+            if not isinstance(x, np.ndarray):
+                raise ValueError("Cannot work with non-numpy arrays")
+
+            x = x.squeeze()
+            if x.ndim == 1:
+                if d != 1:
+                    a = np.arange(1, d + 1, dtype=np.float64) - 2
+                    a = a / 2
+                    return np.prod(np.divide((np.abs(4*x-2)+a), 1+a), axis=1).squeeze()
+                else:
+                    return np.array([2*np.abs(4*i-2)-1 for i in x])
+            elif x.ndim == 2:
+                a = np.arange(1, d + 1, dtype=np.float64) - 2
+                a = a / 2
+                return np.prod(np.divide((np.abs(4*x-2)+a), 1+a), axis=1).squeeze()
+            else:
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
+        return f
+
+    if function_type == FunctionType.MOROKOFF_CALFISCH_1:
+        pass
+
+    if function_type == FunctionType.MOROKOFF_CALFISCH_2:
+        pass
+
+    if function_type == FunctionType.ROOS_ARNOLD:
+        pass
+
+    if function_type == FunctionType.BRATLEY:
+        pass
+
+    if function_type == FunctionType.ZHOU:
+        pass

@@ -2,7 +2,7 @@ import datetime
 
 from experiments.experiments import run_experiments
 from tqdm import tqdm
-from genz.genz_function_types import GenzFunctionType
+from test_functions.function_types import FunctionType
 from interpolate.interpolation_methods import LeastSquaresMethod, SmolyakMethod
 from utils.utils import plot_errors
 
@@ -10,13 +10,13 @@ if __name__ == '__main__':
     dim_range = range(3, 4)
     scale_range = range(1, 8)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
-    function_types = [GenzFunctionType.OSCILLATORY, GenzFunctionType.PRODUCT_PEAK, GenzFunctionType.CORNER_PEAK,
-                      GenzFunctionType.GAUSSIAN, GenzFunctionType.CONTINUOUS, GenzFunctionType.DISCONTINUOUS]
+    function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
+                      FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS, FunctionType.G_FUNCTION]
 
     ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
 
     if ls_method_type == LeastSquaresMethod.PYTORCH_NEURAL_NET:
-        function_types = [GenzFunctionType.OSCILLATORY]
+        function_types = [FunctionType.OSCILLATORY]
 
     smolyak_method_type = SmolyakMethod.STANDARD
     additional_multiplier = 1
@@ -31,11 +31,7 @@ if __name__ == '__main__':
                     add_mul=additional_multiplier, ls_method=ls_method_type, smolyak_method=smolyak_method_type,
                     folder_name=folder_name)
 
-    # visualize one specific instance
-    # plot_errors(10, GenzFunctionType.OSCILLATORY, range(1, 5), save=True)
-
     # save all images in results folder
-
     total_iterations = len(dim_range) * len(function_types)
     with tqdm(total=total_iterations, desc="Processing") as pbar:
         for dim in dim_range:
