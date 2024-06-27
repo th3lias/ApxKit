@@ -418,6 +418,7 @@ class FunctionTests(unittest.TestCase):
 
         self.assertTrue(np.isclose(y_hat, y).all())
 
+    # test x.dim ={1, !=1}, d = {1, !=1}
 
 if __name__ == '__main__':
     unittest.main()

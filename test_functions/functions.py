@@ -168,7 +168,26 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
         return f
 
     if function_type == FunctionType.MOROKOFF_CALFISCH_1:
-        pass
+        def f(x):
+
+            if not isinstance(x, np.ndarray):
+                raise ValueError("Cannot work with non-numpy arrays")
+
+            x = x.squeeze()
+            if x.ndim == 1:
+                if d != 1:
+                    # 1 datapoint with d dimensions
+                    return np.prod(np.divide((np.abs(4 * x - 2) + a), 1 + a), axis=1).squeeze()
+                else:
+                    return np.array([2 * np.abs(4 * i - 2) - 1 for i in x])
+            elif x.ndim == 2:
+                a = np.arange(1, d + 1, dtype=np.float64) - 2
+                a = a / 2
+                return np.prod(np.divide((np.abs(4 * x - 2) + a), 1 + a), axis=1).squeeze()
+            else:
+                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
+        return f
 
     if function_type == FunctionType.MOROKOFF_CALFISCH_2:
         pass
