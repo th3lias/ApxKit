@@ -295,8 +295,8 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
         for seed_id, seed in enumerate(seed_realizations):
 
             smolyak_grid = None
-            least_squares_chebyshev_grid = None
-            least_squares_uniform_grid = None
+            ls_chebyshev_grid = None
+            ls_uniform_grid = None
 
             for scale in scales:
 
@@ -334,37 +334,37 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                             pass
                     elif method == 'Least_Squares_Uniform':
 
-                        least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                                   f_types=function_types,
-                                                                                   n_parallel=n_functions_parallel,
-                                                                                   scale=scale, seed=seed,
-                                                                                   additional_multiplier=add_mul,
-                                                                                   grid=least_squares_uniform_grid,
-                                                                                   test_grid_seed=test_grid_seed,
-                                                                                   test_grid=test_grid, lb=lb,
-                                                                                   ub=ub,
-                                                                                   grid_type=GridType.RANDOM_UNIFORM,
-                                                                                   basis_type=BasisType.CHEBYSHEV,
-                                                                                   method_type=ls_method,
-                                                                                   folder_name=folder_name,
-                                                                                   sample_new=False, path=None)
+                        ls_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                        f_types=function_types,
+                                                                        n_parallel=n_functions_parallel,
+                                                                        scale=scale, seed=seed,
+                                                                        additional_multiplier=add_mul,
+                                                                        grid=ls_uniform_grid,
+                                                                        test_grid_seed=test_grid_seed,
+                                                                        test_grid=test_grid, lb=lb,
+                                                                        ub=ub,
+                                                                        grid_type=GridType.RANDOM_UNIFORM,
+                                                                        basis_type=BasisType.CHEBYSHEV,
+                                                                        method_type=ls_method,
+                                                                        folder_name=folder_name,
+                                                                        sample_new=False, path=None)
 
                     elif method == 'Least_Squares_Chebyshev_Weight':
 
-                        least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                                     f_types=function_types,
-                                                                                     n_parallel=n_functions_parallel,
-                                                                                     scale=scale, seed=seed,
-                                                                                     additional_multiplier=add_mul,
-                                                                                     grid=least_squares_chebyshev_grid,
-                                                                                     test_grid_seed=test_grid_seed,
-                                                                                     test_grid=test_grid, lb=lb,
-                                                                                     ub=ub,
-                                                                                     grid_type=GridType.RANDOM_CHEBYSHEV,
-                                                                                     basis_type=BasisType.CHEBYSHEV,
-                                                                                     method_type=ls_method,
-                                                                                     folder_name=folder_name,
-                                                                                     sample_new=False, path=None)
+                        ls_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                          f_types=function_types,
+                                                                          n_parallel=n_functions_parallel,
+                                                                          scale=scale, seed=seed,
+                                                                          additional_multiplier=add_mul,
+                                                                          grid=ls_chebyshev_grid,
+                                                                          test_grid_seed=test_grid_seed,
+                                                                          test_grid=test_grid, lb=lb,
+                                                                          ub=ub,
+                                                                          grid_type=GridType.RANDOM_CHEBYSHEV,
+                                                                          basis_type=BasisType.CHEBYSHEV,
+                                                                          method_type=ls_method,
+                                                                          folder_name=folder_name,
+                                                                          sample_new=False, path=None)
 
                     else:
                         raise ValueError(

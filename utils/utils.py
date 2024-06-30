@@ -275,10 +275,10 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
     smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
     least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
     boolean_series = (filtered_data['grid_type'] == 'RANDOM_CHEBYSHEV').reindex(least_squares_data.index,
-                                                                                     fill_value=False)
+                                                                                fill_value=False)
     least_squares_data_chebyshev_weight = least_squares_data[boolean_series]
     boolean_series = (filtered_data['grid_type'] == 'RANDOM_UNIFORM').reindex(least_squares_data.index,
-                                                                                fill_value=False)
+                                                                              fill_value=False)
     least_squares_data_uniform = least_squares_data[boolean_series]
 
     smolyak_data = smolyak_data.sort_values(by='scale')
@@ -302,9 +302,9 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
                 data_temp = smolyak_data[smolyak_data['c'] == name]
-                n_points_sy = data_temp.loc[smolyak_data['seed'] == seed,'n_samples']
+                n_points_sy = data_temp.loc[smolyak_data['seed'] == seed, 'n_samples']
                 data_temp = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name]
-                n_points_ls = data_temp.loc[least_squares_data_chebyshev_weight['seed'] == seed,'n_samples']
+                n_points_ls = data_temp.loc[least_squares_data_chebyshev_weight['seed'] == seed, 'n_samples']
                 xticklabels = [f"{scale}\n{n_points_sy.iloc[j]}\n{n_points_ls.iloc[j]}" for j, scale in
                                enumerate(scales)]
 
@@ -314,7 +314,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
                 axs[i].plot(scales, smolyak_plot_data[error], label=label)
 
                 label = 'Least Squares Uniform'
-                least_squares_data_uniform_filtered = least_squares_data_uniform[least_squares_data_uniform['c'] == name]
+                least_squares_data_uniform_filtered = least_squares_data_uniform[
+                    least_squares_data_uniform['c'] == name]
                 least_squares_plot_data_uniform = least_squares_data_uniform_filtered[
                     least_squares_data_uniform_filtered['seed'] == seed]
                 axs[i].plot(scales, least_squares_plot_data_uniform[error], label=label)

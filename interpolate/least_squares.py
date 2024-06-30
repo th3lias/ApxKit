@@ -2,7 +2,6 @@ import os
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
-import scipy.linalg
 import torch
 from scipy.sparse.linalg import lsmr
 from sklearn.linear_model import LinearRegression
