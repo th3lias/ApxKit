@@ -21,9 +21,9 @@ from utils.utils import calculate_num_points
 import psutil
 
 
-def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType],
+def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType], seed_list: list[int],
                             n_parallel: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
-                            n_test_samples: int, lb: float, ub: float, method_type: SmolyakMethod,
+                            test_grid: Union[np.ndarray, Grid], lb: float, ub: float, method_type: SmolyakMethod,
                             folder_name: str, path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
@@ -31,11 +31,12 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
     :param w: shift-parameter for the test_functions-functions, can be multidimensional if multiple functions are used
     :param c: parameter for the test_functions-functions, can be multidimensional if multiple functions are used
     :param f_types: List of function types that should be tested
+    :param seed_list: list of seeds that should be used for the experiments
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the smolyak model
     :param grid: grid on which the Smolyak Algorithm should operate. If None, a new grid will be created
     :param test_grid_seed: seed used to generate test grid
-    :param n_test_samples: number of samples used to assess the quality of the fit
+    :param test_grid: grid which is used to test the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
     :param method_type: Specifies which type of solving algorithm should be used
@@ -45,10 +46,12 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
     :return: The created grid, such that it can be used again for an increased scale
     """
 
+    # TODO: Delete seed list. It is currently only used to ensure that we have a right plotting
+
     start_time = time.time()
 
-    np.random.seed(test_grid_seed)
-    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
+    if isinstance(test_grid, Grid):
+        test_grid = test_grid.grid
 
     n_function_types = int(len(f_types))
 
@@ -63,7 +66,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     functions = list()
     function_names = list()
-    y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
+    y = np.empty(shape=(n_parallel * n_function_types, test_grid.shape[0]), dtype=np.float64)
 
     for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
@@ -89,29 +92,28 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     results = list()
 
-
-
     for i in range(n_parallel * n_function_types):
-        row_entry = dict()
-        row_entry['dim'] = dim
-        row_entry['method'] = 'Smolyak'
-        row_entry['w'] = w[i, :]
-        row_entry['c'] = c[i, :]
-        row_entry['sum_c'] = row_entry['c'].sum()
-        row_entry['grid_type'] = si.grid.grid_type.name
-        row_entry['basis_type'] = si.basis_type.name
-        row_entry['method_type'] = method_type.name
-        row_entry['n_samples'] = n_samples
-        row_entry['scale'] = scale
-        row_entry['test_grid_seed'] = test_grid_seed
-        row_entry['n_test_samples'] = n_test_samples
-        row_entry['f_name'] = function_names[i]
-        row_entry['l_2_error'] = l_2_error[i]
-        row_entry['max_error'] = max_error[i]
-        row_entry['cpu'] = cpu
-        row_entry['datetime'] = cur_datetime
-        row_entry['needed_time'] = needed_time
-        results.append(row_entry)
+        for seed in seed_list:
+            row_entry = dict()
+            row_entry['dim'] = dim
+            row_entry['method'] = 'Smolyak'
+            row_entry['w'] = w[i, :]
+            row_entry['c'] = c[i, :]
+            row_entry['sum_c'] = row_entry['c'].sum()
+            row_entry['grid_type'] = si.grid.grid_type.name
+            row_entry['basis_type'] = si.basis_type.name
+            row_entry['method_type'] = method_type.name
+            row_entry['n_samples'] = n_samples
+            row_entry['scale'] = scale
+            row_entry['seed'] = seed
+            row_entry['test_grid_seed'] = test_grid_seed
+            row_entry['f_name'] = function_names[i]
+            row_entry['l_2_error'] = l_2_error[i]
+            row_entry['max_error'] = max_error[i]
+            row_entry['cpu'] = cpu
+            row_entry['datetime'] = cur_datetime
+            row_entry['needed_time'] = needed_time
+            results.append(row_entry)
 
     if path is None:
         path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
@@ -134,8 +136,9 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
 
 def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType],
-                                  n_parallel: int, scale: int, additional_multiplier: float, grid: Union[Grid, None],
-                                  test_grid_seed: int, n_test_samples: int, lb: float, ub: float,
+                                  n_parallel: int, scale: int, seed: int, additional_multiplier: float,
+                                  grid: Union[Grid, None],
+                                  test_grid_seed: int, test_grid: Union[np.ndarray, Grid], lb: float, ub: float,
                                   grid_type: GridType, basis_type: BasisType, method_type: LeastSquaresMethod,
                                   folder_name: str, sample_new: bool = True, path: Union[str, None] = None) -> Grid:
     """
@@ -146,10 +149,11 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
     :param f_types: List of function types that should be tested
     :param n_parallel: number of parallel functions per type
     :param scale: related to the number of samples used to fit the least-squares model
+    :param seed: seed used to generate the training data
     :param additional_multiplier: Multiplies the number of samples of least squares by this factor
     :param grid: Grid on which least-squares should be fitted. If None, a new grid is created
     :param test_grid_seed: seed used to generate test grid
-    :param n_test_samples: number of samples used to assess the quality of the fit
+    :param test_grid: grid which is used to test the quality of the fit
     :param lb: lower bound of the interval
     :param ub: upper bound of the interval
     :param grid_type: Specifies which grid should be used. Usually sampled from uniform or chebyshev weight
@@ -165,17 +169,16 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
 
     start_time = time.time()
 
-    np.random.seed(test_grid_seed)
+    if isinstance(test_grid, Grid):
+        test_grid = test_grid.grid
 
     n_samples = calculate_num_points(scale, dim)
 
     multiplier = np.log(n_samples) * additional_multiplier
 
-    test_grid = np.random.uniform(low=lb, high=ub, size=(n_test_samples, dim))
-
     n_function_types = int(len(f_types))
 
-    gp = GridProvider(dimension=dim, multiplier=additional_multiplier, lower_bound=lb, upper_bound=ub)
+    gp = GridProvider(dimension=dim, multiplier=additional_multiplier, lower_bound=lb, upper_bound=ub, seed=seed)
 
     if grid is None or not grid.dim == dim:
         grid = gp.generate(grid_type, scale=scale)
@@ -184,7 +187,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
 
     functions = list()
     function_names = list()
-    y = np.empty(shape=(n_parallel * n_function_types, n_test_samples), dtype=np.float64)
+    y = np.empty(shape=(n_parallel * n_function_types, test_grid.shape[0]), dtype=np.float64)
 
     for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
@@ -222,8 +225,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
         row_entry['method_type'] = method_type.name
         row_entry['n_samples'] = int(n_samples * multiplier)
         row_entry['scale'] = scale
+        row_entry['seed'] = seed
         row_entry['test_grid_seed'] = test_grid_seed
-        row_entry['n_test_samples'] = n_test_samples
         row_entry['f_name'] = function_names[i]
         row_entry['l_2_error'] = l_2_error[i]
         row_entry['max_error'] = max_error[i]
@@ -252,13 +255,15 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
     return grid
 
 
-def run_experiments(function_types: list[FunctionType], n_functions_parallel: int, scales: range, dims: range,
+def run_experiments(function_types: list[FunctionType], n_functions_parallel: int, seed_realizations: list[int],
+                    scales: range, dims: range,
                     methods: list, add_mul: float,
                     ls_method: LeastSquaresMethod, smolyak_method: SmolyakMethod, folder_name: str):
     """
     Runs multiple experiments for least-squares with various parameter combinations
     :param function_types: Specifies the functions that should be tested
     :param n_functions_parallel: number of parallel functions per type that should be tested
+    :param seed_realizations: Specifies the seeds that should be used for the experiments for sampling the training data
     :param scales: Specifies which scale range should be used for the experiments
     :param dims: Specifies which dimension range should be used for the experiments
     :param methods: Specifies which methods should be used for the experiments
@@ -276,84 +281,95 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
 
     lb = float(0.0)
     ub = float(1.0)
-    test_grid_seed = 42
-    n_test_samples = 50
 
-    n_iterations = len(scales) * len(dims) * len(methods)
+    n_iterations = len(scales) * len(dims) * len(methods) * len(seed_realizations)
 
     # sum_c = [float(9.0), float(7.25), float(1.85), float(7.03), float(20.4), float(4.3)]
 
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
-    smolyak_grid = None
-    least_squares_chebyshev_grid = None
-    least_squares_uniform_grid = None
-
     for dim in dims:
         w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
         c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
 
-        for scale in scales:
+        for seed_id, seed in enumerate(seed_realizations):
 
-            n_samples = calculate_num_points(scale, dim)
+            smolyak_grid = None
+            least_squares_chebyshev_grid = None
+            least_squares_uniform_grid = None
 
-            for method in methods:
+            for scale in scales:
 
-                pbar.set_postfix({"Dimension": dim, "Method": method, "Scale": scale, "n_samples": n_samples})
+                n_samples = calculate_num_points(scale, dim)
 
-                for i in range(n_function_types):
-                    cur_slice = c[n_functions_parallel * i:n_functions_parallel * (i + 1), :]
-                    cur_sum = cur_slice.sum(axis=1, keepdims=True)
-                    # factor = sum_c[i] / cur_sum
-                    factor = dim / cur_sum
-                    c[n_functions_parallel * i:n_functions_parallel * (i + 1), :] *= factor
+                test_grid_seed = 42
+                np.random.seed(test_grid_seed)
+                gp = GridProvider(dimension=dim, multiplier=add_mul * np.log(n_samples), lower_bound=lb, upper_bound=ub)
+                test_grid = gp.generate(GridType.RANDOM_UNIFORM, scale)
 
-                if method == 'Smolyak':
+                for method in methods:
 
-                    smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, f_types=function_types,
-                                                           n_parallel=n_functions_parallel,
-                                                           scale=scale, grid=smolyak_grid,
-                                                           test_grid_seed=test_grid_seed,
-                                                           n_test_samples=n_test_samples, lb=lb, ub=ub,
-                                                           method_type=smolyak_method, folder_name=folder_name,
-                                                           path=None)
-                elif method == 'Least_Squares_Uniform':
+                    pbar.set_postfix(
+                        {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id})
 
-                    least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                               f_types=function_types,
-                                                                               n_parallel=n_functions_parallel,
-                                                                               scale=scale,
-                                                                               additional_multiplier=add_mul,
-                                                                               grid=least_squares_uniform_grid,
-                                                                               test_grid_seed=test_grid_seed,
-                                                                               n_test_samples=n_test_samples, lb=lb,
-                                                                               ub=ub, grid_type=GridType.RANDOM_UNIFORM,
-                                                                               basis_type=BasisType.CHEBYSHEV,
-                                                                               method_type=ls_method,
-                                                                               folder_name=folder_name,
-                                                                               sample_new=False, path=None)
+                    for i in range(n_function_types):
+                        cur_slice = c[n_functions_parallel * i:n_functions_parallel * (i + 1), :]
+                        cur_sum = cur_slice.sum(axis=1, keepdims=True)
+                        factor = dim / cur_sum
+                        c[n_functions_parallel * i:n_functions_parallel * (i + 1), :] *= factor
 
-                elif method == 'Least_Squares_Chebyshev_Weight':
+                    if method == 'Smolyak':
+                        if seed_id == 0:
+                            smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, f_types=function_types,
+                                                                   seed_list=seed_realizations,
+                                                                   n_parallel=n_functions_parallel,
+                                                                   scale=scale, grid=smolyak_grid,
+                                                                   test_grid_seed=test_grid_seed,
+                                                                   test_grid=test_grid, lb=lb, ub=ub,
+                                                                   method_type=smolyak_method, folder_name=folder_name,
+                                                                   path=None)
 
-                    least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                                 f_types=function_types,
-                                                                                 n_parallel=n_functions_parallel,
-                                                                                 scale=scale,
-                                                                                 additional_multiplier=add_mul,
-                                                                                 grid=least_squares_chebyshev_grid,
-                                                                                 test_grid_seed=test_grid_seed,
-                                                                                 n_test_samples=n_test_samples, lb=lb,
-                                                                                 ub=ub,
-                                                                                 grid_type=GridType.RANDOM_CHEBYSHEV,
-                                                                                 basis_type=BasisType.CHEBYSHEV,
-                                                                                 method_type=ls_method,
-                                                                                 folder_name=folder_name,
-                                                                                 sample_new=False, path=None)
+                        else:
+                            # reuse the results from the previous seed
+                            pass
+                    elif method == 'Least_Squares_Uniform':
 
-                else:
-                    raise ValueError(
-                        f"The method {method} is not supported. Please use 'Smolyak', 'Least_Squares_Chebyshev_Weight' "
-                        f"or 'Least_Squares_Uniform'!")
-                pbar.update(1)
+                        least_squares_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                                   f_types=function_types,
+                                                                                   n_parallel=n_functions_parallel,
+                                                                                   scale=scale, seed=seed,
+                                                                                   additional_multiplier=add_mul,
+                                                                                   grid=least_squares_uniform_grid,
+                                                                                   test_grid_seed=test_grid_seed,
+                                                                                   test_grid=test_grid, lb=lb,
+                                                                                   ub=ub,
+                                                                                   grid_type=GridType.RANDOM_UNIFORM,
+                                                                                   basis_type=BasisType.CHEBYSHEV,
+                                                                                   method_type=ls_method,
+                                                                                   folder_name=folder_name,
+                                                                                   sample_new=False, path=None)
+
+                    elif method == 'Least_Squares_Chebyshev_Weight':
+
+                        least_squares_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
+                                                                                     f_types=function_types,
+                                                                                     n_parallel=n_functions_parallel,
+                                                                                     scale=scale, seed=seed,
+                                                                                     additional_multiplier=add_mul,
+                                                                                     grid=least_squares_chebyshev_grid,
+                                                                                     test_grid_seed=test_grid_seed,
+                                                                                     test_grid=test_grid, lb=lb,
+                                                                                     ub=ub,
+                                                                                     grid_type=GridType.RANDOM_CHEBYSHEV,
+                                                                                     basis_type=BasisType.CHEBYSHEV,
+                                                                                     method_type=ls_method,
+                                                                                     folder_name=folder_name,
+                                                                                     sample_new=False, path=None)
+
+                    else:
+                        raise ValueError(
+                            f"The method {method} is not supported. Please use 'Smolyak', 'Least_Squares_Chebyshev_Weight' "
+                            f"or 'Least_Squares_Uniform'!")
+                    pbar.update(1)
 
     pbar.close()

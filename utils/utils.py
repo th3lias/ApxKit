@@ -236,14 +236,15 @@ def get_next_filename(path, extension='png'):
     return f"{next_number}.{extension}"
 
 
-def plot_errors(dimension, function_type: FunctionType, scales: range, additional_multiplier: float,
+def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range, additional_multiplier: float,
                 folder_name: str, path: Union[str, None] = None, save: bool = False,
-                save_path: Union[str, None] = None):
+                save_path: Union[str, None] = None, same_axis_both_plots: bool = True):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
 
     :param dimension: dimension which should be considered from the results file
+    :param seed: Representing the realization of the algorithm.
     :param function_type: Specifies which function should be considered
     :param scales: range of scales, which are considered
     :param additional_multiplier: specifies which multiplier was used to increase the number of samples in least squares
@@ -251,6 +252,7 @@ def plot_errors(dimension, function_type: FunctionType, scales: range, additiona
     :param path: Path of the results-csv file. If None, a default path will be used.
     :param save: Specifies whether the images should be saved. If False, the images are shown.
     :param save_path: Path where the images should be saved. If None, a default path will be used.
+    :param same_axis_both_plots: Determines whether the same y-axis should be used for both error-plots
     Only used if save is True
     """
 
@@ -258,21 +260,26 @@ def plot_errors(dimension, function_type: FunctionType, scales: range, additiona
         path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
 
     if save_path is None:
-        save_path = os.path.join("results", folder_name, "figures", function_type.name, f'dim{dimension}')
+        save_path = os.path.join("results", folder_name, "figures", function_type.name, f'dim{dimension}',
+                                 f'seed{seed}')
 
     os.makedirs(save_path, exist_ok=True)
 
     data = pd.read_csv(path, sep=',', header=0)
 
-    filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)]
+    filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)].copy()
 
     filtered_data.drop(['cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
                        inplace=True)
 
     smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
     least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
-    least_squares_data_chebyshev_weight = least_squares_data[(filtered_data['grid_type']) == 'RANDOM_CHEBYSHEV']
-    least_squares_data_uniform = filtered_data[(filtered_data['grid_type']) == 'RANDOM_UNIFORM']
+    boolean_series = (filtered_data['grid_type'] == 'RANDOM_CHEBYSHEV').reindex(least_squares_data.index,
+                                                                                     fill_value=False)
+    least_squares_data_chebyshev_weight = least_squares_data[boolean_series]
+    boolean_series = (filtered_data['grid_type'] == 'RANDOM_UNIFORM').reindex(least_squares_data.index,
+                                                                                fill_value=False)
+    least_squares_data_uniform = least_squares_data[boolean_series]
 
     smolyak_data = smolyak_data.sort_values(by='scale')
     least_squares_data_chebyshev_weight = least_squares_data_chebyshev_weight.sort_values(by='scale')
@@ -281,6 +288,9 @@ def plot_errors(dimension, function_type: FunctionType, scales: range, additiona
     titles = ['Max (Abs) Error', 'L2 Error']
 
     errors = ['max_error', 'l_2_error']
+
+    global_min_uniform, global_max_uniform = None, None
+    global_min_l2, global_max_l2 = None, None
 
     if not smolyak_data.empty:
         for name, group in smolyak_data.groupby('c'):
@@ -291,20 +301,31 @@ def plot_errors(dimension, function_type: FunctionType, scales: range, additiona
                 continue
             fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
             for i, error in enumerate(errors):
-                n_points_sy = smolyak_data[smolyak_data['c'] == name]['n_samples']
-                n_points_ls = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
-                    'n_samples']
+                data_temp = smolyak_data[smolyak_data['c'] == name]
+                n_points_sy = data_temp.loc[smolyak_data['seed'] == seed,'n_samples']
+                data_temp = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name]
+                n_points_ls = data_temp.loc[least_squares_data_chebyshev_weight['seed'] == seed,'n_samples']
                 xticklabels = [f"{scale}\n{n_points_sy.iloc[j]}\n{n_points_ls.iloc[j]}" for j, scale in
                                enumerate(scales)]
+
                 label = 'Smolyak'
-                axs[i].plot(scales, smolyak_data[smolyak_data['c'] == name][error], label=label)
+                smolyak_data_filtered = smolyak_data[smolyak_data['c'] == name]
+                smolyak_plot_data = smolyak_data_filtered[smolyak_data_filtered['seed'] == seed]
+                axs[i].plot(scales, smolyak_plot_data[error], label=label)
+
                 label = 'Least Squares Uniform'
-                axs[i].plot(scales, least_squares_data_uniform[least_squares_data_uniform['c'] == name][error],
-                            label=label)
+                least_squares_data_uniform_filtered = least_squares_data_uniform[least_squares_data_uniform['c'] == name]
+                least_squares_plot_data_uniform = least_squares_data_uniform_filtered[
+                    least_squares_data_uniform_filtered['seed'] == seed]
+                axs[i].plot(scales, least_squares_plot_data_uniform[error], label=label)
+
                 label = 'Least Squares Chebyshev Weight'
-                axs[i].plot(scales,
-                            least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name][
-                                error], label=label)
+                least_squares_data_chebyshev_weight_filtered = least_squares_data_chebyshev_weight[
+                    least_squares_data_chebyshev_weight['c'] == name]
+                least_squares_plot_data_chebyshev_weight = least_squares_data_chebyshev_weight_filtered[
+                    least_squares_data_chebyshev_weight_filtered['seed'] == seed]
+                axs[i].plot(scales, least_squares_plot_data_chebyshev_weight[error], label=label)
+
                 axs[i].set_xticks(scales)
                 axs[i].set_xticklabels(xticklabels)
                 axs[i].set_title(titles[i])
@@ -312,8 +333,31 @@ def plot_errors(dimension, function_type: FunctionType, scales: range, additiona
                 axs[i].set_ylabel('Error')
                 axs[i].set_yscale('log')
                 axs[i].legend()
+                if error == 'max_error':
+                    current_min_uniform, current_max_uniform = axs[i].get_ylim()
+                    if global_min_uniform is None or current_min_uniform < global_min_uniform:
+                        global_min_uniform = current_min_uniform
+                    if global_max_uniform is None or current_max_uniform > global_max_uniform:
+                        global_max_uniform = current_max_uniform
+                elif error == 'l_2_error':
+                    current_min_l2, current_max_l2 = axs[i].get_ylim()
+                    if global_min_l2 is None or current_min_l2 < global_min_l2:
+                        global_min_l2 = current_min_l2
+                    if global_max_l2 is None or current_max_l2 > global_max_l2:
+                        global_max_l2 = current_max_l2
 
-            fig.suptitle(f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}\nc={name}\nw={w}')
+            if same_axis_both_plots:
+                minimum = min(global_min_uniform, global_min_l2)
+                maximum = max(global_max_uniform, global_max_l2)
+
+                global_min_uniform, global_max_uniform = minimum, maximum
+                global_min_l2, global_max_l2 = minimum, maximum
+
+            axs[0].set_ylim(global_min_uniform, global_max_uniform)
+            axs[1].set_ylim(global_min_l2, global_max_l2)
+
+            fig.suptitle(
+                f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
                 filename = get_next_filename(save_path)

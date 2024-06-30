@@ -408,9 +408,9 @@ class FunctionTests(unittest.TestCase):
         f_hat = get_test_function(FunctionType.G_FUNCTION, d)
 
         def f(x):
-            a = (2*np.abs(4*x[:,0]-2)-1)
-            b = (np.abs(4*x[:,1]-2))
-            return np.multiply(a,b)
+            a = (2 * np.abs(4 * x[:, 0] - 2) - 1)
+            b = (np.abs(4 * x[:, 1] - 2))
+            return np.multiply(a, b)
 
         data = self.get_2d_test_points()
         y_hat = f_hat(data)
@@ -418,7 +418,170 @@ class FunctionTests(unittest.TestCase):
 
         self.assertTrue(np.isclose(y_hat, y).all())
 
-    # test x.dim ={1, !=1}, d = {1, !=1}
+    def test_morokoff_calfisch_1_function_1d(self):
+        d = 1
+
+        f_hat = get_test_function(FunctionType.MOROKOFF_CALFISCH_1, d)
+        f = lambda t: (2 * t).squeeze()
+
+        data_1 = self.get_1d_test_points()
+        data_2 = self.get_1d_test_points_2()
+        y_hat_1 = f_hat(data_1)
+        y_1 = f(data_1)
+        y_hat_2 = f_hat(data_2)
+        y_2 = f(data_2)
+
+        self.assertTrue(np.isclose(y_hat_1, y_1).all())
+        self.assertTrue(np.isclose(y_hat_2, y_2).all())
+
+    def test_morokoff_calfisch_1_function_2d(self):
+        d = 2
+
+        f_hat = get_test_function(FunctionType.MOROKOFF_CALFISCH_1, d)
+
+        def f(x):
+            val = 2.25 * np.sqrt(x[:, 0]) * np.sqrt(x[:, 1])
+            return val
+
+        data = self.get_2d_test_points()
+        y_hat = f_hat(data)
+        y = f(data)
+
+        self.assertTrue(np.isclose(y_hat, y, equal_nan=True).all())
+
+    def test_morokoff_calfisch_2_function_1d(self):
+        d = 1
+
+        f_hat = get_test_function(FunctionType.MOROKOFF_CALFISCH_2, d)
+        f = lambda t: (2 * (1 - t)).squeeze()
+
+        data_1 = self.get_1d_test_points()
+        data_2 = self.get_1d_test_points_2()
+        y_hat_1 = f_hat(data_1)
+        y_1 = f(data_1)
+        y_hat_2 = f_hat(data_2)
+        y_2 = f(data_2)
+
+        self.assertTrue(np.isclose(y_hat_1, y_1).all())
+        self.assertTrue(np.isclose(y_hat_2, y_2).all())
+
+    def test_morokoff_calfisch_2_function_2d(self):
+        d = 2
+
+        f_hat = get_test_function(FunctionType.MOROKOFF_CALFISCH_2, d)
+
+        def f(x):
+            val = 1.5 ** (-2) * (2 - x[:, 0]) * (2 - x[:, 1])
+            return val
+
+        data = self.get_2d_test_points()
+        y_hat = f_hat(data)
+        y = f(data)
+
+        self.assertTrue(np.isclose(y_hat, y).all())
+
+    def test_roos_arnold_function_1d(self):
+        d = 1
+
+        f_hat = get_test_function(FunctionType.ROOS_ARNOLD, d)
+        f = lambda t: np.abs(4 * t - 2).squeeze()
+
+        data_1 = self.get_1d_test_points()
+        data_2 = self.get_1d_test_points_2()
+        y_hat_1 = f_hat(data_1)
+        y_1 = f(data_1)
+        y_hat_2 = f_hat(data_2)
+        y_2 = f(data_2)
+
+        self.assertTrue(np.isclose(y_hat_1, y_1).all())
+        self.assertTrue(np.isclose(y_hat_2, y_2).all())
+
+    def test_roos_arnold_function_2d(self):
+        d = 2
+
+        f_hat = get_test_function(FunctionType.ROOS_ARNOLD, d)
+
+        def f(x):
+            val = np.abs(4 * x[:, 0] - 2) * np.abs(4 * x[:, 1] - 2)
+            return val
+
+        data = self.get_2d_test_points()
+        y_hat = f_hat(data)
+        y = f(data)
+
+        self.assertTrue(np.isclose(y_hat, y).all())
+
+    def test_bratley_function_1d(self):
+        d = 1
+
+        f_hat = get_test_function(FunctionType.BRATLEY, d)
+        f = lambda t: (-t).squeeze()
+
+        data_1 = self.get_1d_test_points()
+        data_2 = self.get_1d_test_points_2()
+        y_hat_1 = f_hat(data_1)
+        y_1 = f(data_1)
+        y_hat_2 = f_hat(data_2)
+        y_2 = f(data_2)
+
+        self.assertTrue(np.isclose(y_hat_1, y_1).all())
+        self.assertTrue(np.isclose(y_hat_2, y_2).all())
+
+    def test_bratley_function_2d(self):
+        d = 2
+
+        f_hat = get_test_function(FunctionType.BRATLEY, d)
+
+        def f(x):
+            val = -x[:, 0] + x[:, 0] * x[:, 1]
+            return val
+
+        data = self.get_2d_test_points()
+        y_hat = f_hat(data)
+        y = f(data)
+
+        self.assertTrue(np.isclose(y_hat, y).all())
+
+    def test_zhou_function_1d(self):
+        d = 1
+
+        f_hat = get_test_function(FunctionType.ZHOU, d)
+
+        def f(x):
+            phi_1 = 1 / ((2 * np.pi) ** (1 / 2)) * np.exp(-0.5 * np.square(10 * x - 10 / 3))
+            phi_2 = 1 / ((2 * np.pi) ** (1 / 2)) * np.exp(-0.5 * np.square(10 * x - 20 / 3))
+
+            val = (5 * (phi_1 + phi_2)).squeeze()
+            return val
+
+        data_1 = self.get_1d_test_points()
+        data_2 = self.get_1d_test_points_2()
+        y_hat_1 = f_hat(data_1)
+        y_1 = f(data_1)
+        y_hat_2 = f_hat(data_2)
+        y_2 = f(data_2)
+
+        self.assertTrue(np.isclose(y_hat_1, y_1).all())
+        self.assertTrue(np.isclose(y_hat_2, y_2).all())
+
+    def test_zhou_function_2d(self):
+        d = 2
+
+        f_hat = get_test_function(FunctionType.ZHOU, d)
+
+        def f(x):
+            phi_1 = 1 / (2 * np.pi) * np.exp(-0.5 * np.sum(np.square(10 * x - 10 / 3), axis=1))
+            phi_2 = 1 / (2 * np.pi) * np.exp(-0.5 * np.sum(np.square(10 * x - 20 / 3), axis=1))
+
+            val = (50 * (phi_1 + phi_2)).squeeze()
+            return val
+
+        data = self.get_2d_test_points()
+        y_hat = f_hat(data)
+        y = f(data)
+
+        self.assertTrue(np.isclose(y_hat, y).all())
+
 
 if __name__ == '__main__':
     unittest.main()
