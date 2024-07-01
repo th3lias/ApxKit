@@ -20,11 +20,14 @@ class GridProvider:
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: int, seed: int = None, lower_bound: float = 0.0, upper_bound: float = 1.0):
+    def __init__(self, dimension: int, multiplier: float, seed: int = None, lower_bound: float = 0.0,
+                 upper_bound: float = 1.0):
         self.dim = dimension
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
-        self.multiplier = 1.0
+        self.multiplier = multiplier
+        if multiplier is None:
+            raise ValueError()
 
         if isinstance(seed, int):
             self.seed = seed
@@ -36,15 +39,13 @@ class GridProvider:
         self.seed = seed
         self.rng = np.random.default_rng(seed=seed)
 
-    def generate(self, grid_type: GridType, scale: int = None, multiplier: float = 1.0) -> Grid:
+    def generate(self, grid_type: GridType, scale: int = None) -> Grid:
         """
         Generate a grid of given type.
         :param scale: Determines the number of points to be used in positive correlation.
         :param grid_type: GridType specification, e.g. Chebyshev, Random or Equidistant.
-        :param multiplier: Only used in Random-Grid; Increases the number of samples by the given multiplier
         :return: grid object containing the points
         """
-        self.multiplier = multiplier
 
         if not isinstance(grid_type, GridType):
             raise ValueError("grid type not supported: " + str(grid_type))
@@ -52,13 +53,13 @@ class GridProvider:
             raise ValueError("Please provide the fineness parameter of the grid")
 
         if grid_type == GridType.CHEBYSHEV:
-            if multiplier != 1.0:
+            if self.multiplier != 1.0:
                 print("Be aware that the chosen multiplier for a Chebyshev Sparse Grid does not affect anything")
             points = self._full_cheby_grid(level=scale)
             return Grid(self.dim, scale, points, grid_type)
 
         n_points = calculate_num_points(scale, self.dim)  # TODO: Maybe not right
-        n_points = int(n_points * multiplier)
+        n_points = int(n_points * self.multiplier)
 
         if grid_type == GridType.REGULAR:
             raise DeprecationWarning("The regular grid is deprecated and is most likely not working correctly.")
@@ -130,7 +131,7 @@ class GridProvider:
         elif grid_type == GridType.RANDOM_UNIFORM:
             target_no_points = int(calculate_num_points(scale=scale + delta, dimension=dim) * self.multiplier)
             if sample_new:
-                points = self._generate_random_grid(target_no_points)
+                points = self._generate_random_grid(num_points=target_no_points)
                 return Grid(dim, scale + delta, points, grid_type, self.lower_bound, self.upper_bound)
             else:
                 while n_points < target_no_points:
@@ -165,8 +166,11 @@ class GridProvider:
         else:
             raise ValueError(f"Wrong argument. Expected GridTypes")
 
-    def _generate_random_grid(self, num_points: int) -> np.ndarray:
-        return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
+    def _generate_random_grid(self, num_points: int, precision: Union[int, None] = None) -> np.ndarray:
+        grid = self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.dim))
+        if isinstance(precision, int):
+            grid = np.round(grid, decimals=precision)
+        return grid
 
     def _generate_with_chebyshev_density(self, num_points: int) -> np.ndarray:
         samples = np.empty(shape=(num_points, self.dim))

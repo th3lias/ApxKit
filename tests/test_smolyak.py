@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from genz.genz_functions import get_genz_function, GenzFunctionType
+from test_functions.functions import get_test_function, FunctionType
 from grid.grid_provider import GridProvider
 from grid.grid_type import GridType
 from interpolate.interpolation_methods import SmolyakMethod
@@ -19,22 +19,22 @@ class SmolyakTests(unittest.TestCase):
         self.n_test_samples = 100
         self.lb = 0.0
         self.ub = 1.0
-        self.gp = GridProvider(dimension=self.dimension)
+        self.gp = GridProvider(dimension=self.dimension, multiplier=1.0)
         self.grid = self.gp.generate(grid_type=GridType.CHEBYSHEV, scale=self.scale)
         self.test_grid = np.random.uniform(low=self.lb, high=self.ub, size=(self.n_test_samples, self.dimension))
 
     def test_parallel_standard(self):
-        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+        f_1 = get_test_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
+        f_2 = get_test_function(FunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_3 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+        f_3 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_4 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(dim=self.dimension),
+        f_4 = get_test_function(FunctionType.GAUSSIAN, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_5 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+        f_5 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_6 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
+        f_6 = get_test_function(FunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
 
         f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
@@ -80,17 +80,17 @@ class SmolyakTests(unittest.TestCase):
     def test_parallel_largrange(self):
         # Only makes sense if it works with multiple functions in parallel (probably not)
 
-        f_1 = get_genz_function(GenzFunctionType.OSCILLATORY, c=sample(dim=self.dimension),
+        f_1 = get_test_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_2 = get_genz_function(GenzFunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
+        f_2 = get_test_function(FunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_3 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+        f_3 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_4 = get_genz_function(GenzFunctionType.GAUSSIAN, c=sample(dim=self.dimension),
+        f_4 = get_test_function(FunctionType.GAUSSIAN, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_5 = get_genz_function(GenzFunctionType.CONTINUOUS, c=sample(dim=self.dimension),
+        f_5 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
-        f_6 = get_genz_function(GenzFunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
+        f_6 = get_test_function(FunctionType.DISCONTINUOUS, c=sample(dim=self.dimension),
                                 w=sample(dim=self.dimension), d=self.dimension)
 
         f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
