@@ -148,6 +148,9 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
         if c is None:
             c = (np.arange(1, d + 1, dtype=np.float64) - 2) / 2
 
+        if w is None:
+            w = np.zeros(d)
+
         def f(x):
 
             if not isinstance(x, np.ndarray):
@@ -156,11 +159,11 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             x = x.squeeze()
             if x.ndim == 1:
                 if d != 1:
-                    return np.prod(np.divide((np.abs(4 * x - 2) + c), 1 + c), axis=1).squeeze()
+                    return np.prod(np.divide((np.abs(4 * x - 2 - w) + c), 1 + c), axis=1).squeeze()
                 else:
-                    return np.array([2 * np.abs(4 * i - 2) - 1 for i in x])
+                    return np.array([np.divide(np.abs(4 * i - 2 - w[0]) + c[0], (1 + c[0])) for i in x])
             elif x.ndim == 2:
-                return np.prod(np.divide((np.abs(4 * x - 2) + c), 1 + c), axis=1).squeeze()
+                return np.prod(np.divide((np.abs(4 * x - 2 - w) + c), 1 + c), axis=1).squeeze()
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
@@ -169,7 +172,10 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
     if function_type == FunctionType.MOROKOFF_CALFISCH_1:
 
         if c is None:
-            c = np.zeros(d)
+            c = np.ones(d)
+
+        if w is None:
+            w = np.zeros(d)
 
         def f(x):
 
@@ -179,11 +185,11 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             x = x.squeeze()
             if x.ndim == 1:
                 if d != 1:
-                    return (1 + 1 / d) ** d * np.power(np.prod(x - c, axis=1), 1 / d).squeeze()
+                    return (1 + 1 / d) ** d * np.power(np.prod(np.multiply(x, c) - w, axis=1), 1 / d).squeeze()
                 else:
-                    return np.array([2 * (i - c[0]) for i in x])
+                    return np.array([2 * (i * c[0] - w[0]) for i in x])
             elif x.ndim == 2:
-                return (1 + 1 / d) ** d * np.power(np.prod(x - c, axis=1), 1 / d).squeeze()
+                return (1 + 1 / d) ** d * np.power(np.prod(np.multiply(x, c) - w, axis=1), 1 / d).squeeze()
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
@@ -191,7 +197,10 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
 
     if function_type == FunctionType.MOROKOFF_CALFISCH_2:
         if c is None:
-            c = np.zeros(d)
+            c = np.ones(d)
+
+        if w is None:
+            w = np.zeros(d)
 
         def f(x):
 
@@ -201,11 +210,11 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             x = x.squeeze()
             if x.ndim == 1:
                 if d != 1:
-                    return ((d - 1 / 2) ** (-d) * np.prod(d - x - c, axis=1)).squeeze()
+                    return ((d - 1 / 2) ** (-d) * np.prod(d - np.multiply(c, x) - w, axis=1)).squeeze()
                 else:
-                    return np.array([2 * (1 - i - c[0]) for i in x])
+                    return np.array([2 * (1 - c[0] * i - w[0]) for i in x])
             elif x.ndim == 2:
-                return ((d - 1 / 2) ** (-d) * np.prod(d - x - c, axis=1)).squeeze()
+                return ((d - 1 / 2) ** (-d) * np.prod(d - np.multiply(c, x) - w, axis=1)).squeeze()
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
@@ -215,6 +224,9 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
         if c is None:
             c = np.ones(d)
 
+        if w is None:
+            w = np.zeros(d)
+
         def f(x):
 
             if not isinstance(x, np.ndarray):
@@ -223,11 +235,11 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             x = x.squeeze()
             if x.ndim == 1:
                 if d != 1:
-                    return np.prod(np.abs(4 * np.inner(x, c) - 2), axis=1).squeeze()
+                    return np.prod(np.abs(4 * np.multiply(c, x) - 2 - w), axis=1).squeeze()
                 else:
-                    return np.array([np.abs(4 * (i * c[0]) - 2) for i in x])
+                    return np.array([np.abs(4 * (i * c[0]) - 2 - w[0]) for i in x])
             elif x.ndim == 2:
-                return np.prod(np.abs(4 * np.inner(x, c) - 2), axis=1).squeeze()
+                return np.prod(np.abs(4 * np.multiply(c, x) - 2 - w), axis=1).squeeze()
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
@@ -235,7 +247,10 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
 
     if function_type == FunctionType.BRATLEY:
         if c is None:
-            c = np.zeros(d)
+            c = np.ones(d)
+
+        if w is None:
+            w = np.zeros(d)
 
         def f(x):
 
@@ -249,19 +264,19 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
                     for i in range(1, d + 1):
                         prod = 1
                         for j in range(1, i + 1):
-                            prod *= (x[j] - c)
+                            prod *= (c[j]*x[j] - w)
 
                         val += (-1) ** i * prod
                     return np.array(val).squeeze()
                 else:
-                    return np.array([-i + c[0] for i in x])
+                    return np.array([-i*c[0] + w[0] for i in x])
             elif x.ndim == 2:
                 if d != 1:
                     val = np.zeros(x.shape[0])
                     for i in range(1, d + 1):
                         prod = np.ones_like(val)
                         for j in range(1, i + 1):
-                            prod *= (x[:, j - 1] - c)
+                            prod *= (c[j-1]*x[:, j - 1] - w[j - 1])
 
                         val += (-1) ** i * prod
                     return np.array(val).squeeze()
@@ -272,6 +287,11 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
 
     if function_type == FunctionType.ZHOU:
 
+        if c is None:
+            c = 10 * np.ones(d)
+
+        if w is None:
+            w = 1 / 3 * np.ones(d)
 
         def f(x):
 
@@ -281,17 +301,18 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             x = x.squeeze()
             if x.ndim == 1:
                 if d != 1:
-                    phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(10 * (x - 1 / 3))) / 2)
-                    phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(10 * (x - 2 / 3))) / 2)
+                    phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
+                    phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(
+                        -np.sum(np.square(np.multiply(c, (x - 1 + w))), axis=1) / 2)
 
                     return (10 ** d * 0.5 * (phi_1 + phi_2)).squeeze()
                 else:
-                    phi_1 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(10 * (i - 1 / 3))) / 2) for i in x]
-                    phi_2 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(10 * (i - 2 / 3))) / 2) for i in x]
+                    phi_1 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i - w[0]))) / 2) for i in x]
+                    phi_2 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i - 1 + w[0]))) / 2) for i in x]
                     return np.array([5 * (phi_1[i] + phi_2[i]) for i in range(len(x))])
             elif x.ndim == 2:
-                phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(10 * (x - 1 / 3)), axis=1) / 2)
-                phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(10 * (x - 2 / 3)), axis=1) / 2)
+                phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
+                phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - 1 + w))), axis=1) / 2)
 
                 return (10 ** d * 0.5 * (phi_1 + phi_2)).squeeze()
             else:
