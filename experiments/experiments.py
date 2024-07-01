@@ -368,7 +368,8 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
 
                     else:
                         raise ValueError(
-                            f"The method {method} is not supported. Please use 'Smolyak', 'Least_Squares_Chebyshev_Weight' "
+                            f"The method {method} is not supported. "
+                            f"Please use 'Smolyak', 'Least_Squares_Chebyshev_Weight' "
                             f"or 'Least_Squares_Uniform'!")
                     pbar.update(1)
 
