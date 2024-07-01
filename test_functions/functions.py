@@ -185,11 +185,11 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             x = x.squeeze()
             if x.ndim == 1:
                 if d != 1:
-                    return (1 + 1 / d) ** d * np.power(np.prod(np.multiply(x, c) - w, axis=1), 1 / d).squeeze()
+                    return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
                 else:
-                    return np.array([2 * (i * c[0] - w[0]) for i in x])
+                    return np.array([2 * (i * c[0] + w[0]) for i in x])
             elif x.ndim == 2:
-                return (1 + 1 / d) ** d * np.power(np.prod(np.multiply(x, c) - w, axis=1), 1 / d).squeeze()
+                return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
@@ -264,19 +264,19 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
                     for i in range(1, d + 1):
                         prod = 1
                         for j in range(1, i + 1):
-                            prod *= (c[j]*x[j] - w)
+                            prod *= (c[j] * x[j] - w)
 
                         val += (-1) ** i * prod
                     return np.array(val).squeeze()
                 else:
-                    return np.array([-i*c[0] + w[0] for i in x])
+                    return np.array([-i * c[0] + w[0] for i in x])
             elif x.ndim == 2:
                 if d != 1:
                     val = np.zeros(x.shape[0])
                     for i in range(1, d + 1):
                         prod = np.ones_like(val)
                         for j in range(1, i + 1):
-                            prod *= (c[j-1]*x[:, j - 1] - w[j - 1])
+                            prod *= (c[j - 1] * x[:, j - 1] - w[j - 1])
 
                         val += (-1) ** i * prod
                     return np.array(val).squeeze()

@@ -15,15 +15,14 @@ if __name__ == '__main__':
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
     realization_seeds = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    smolyak_method_type = SmolyakMethod.STANDARD
+    additional_multiplier = 10
+    n_fun_parallel = 10
 
     ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
 
     if ls_method_type == LeastSquaresMethod.PYTORCH_NEURAL_NET:
         function_types = [FunctionType.OSCILLATORY]
-
-    smolyak_method_type = SmolyakMethod.STANDARD
-    additional_multiplier = 10
-    n_fun_parallel = 100
 
     print(f"Started program at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
@@ -37,7 +36,7 @@ if __name__ == '__main__':
 
     # save all images in results folder
     total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
-    with tqdm(total=total_iterations, desc="Processing") as pbar:
+    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
         for dim in dim_range:
             for fun_type in function_types:
                 for seed in realization_seeds:
