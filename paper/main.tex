@@ -77,9 +77,9 @@ Smolyak's Algorithm is determinstic and can be used in various settings. These i
 \subsection*{Interpolation in one dimension}
 In the onedimensional setting it is well known that for any collection of points \(\ZZ \defn \set{z_n}_{n=0}^N \subseteq \R\) and known function values \(f(z_n): n \in {[N]}_0\) for \(f: \R \to \R\) there is always a unique interpolating polynomial \(i\), i.e. \(i \in \pols[N]{\R, \R}: i(z_j) = f(z_j)\) s.t.\ \(j \in {[N]}_0\). To find the polynomial \(i\), one can, among other available methods, choose to perform Lagrange Interpolation which yields an explicit construction of the form
 \begin{equation}\label{eq:lagrangeInterpolation}
-    i(x) \defn \mathcal{I}\left(\FF\right)(x) = \sum_{n=0}^N f(z_n) \ell_n(x)\quad \text{ s.t. }\quad \ell_n(x) \defn \prod_{\substack{j = 0bin \neq j}}^N \frac{x-z_j}{z_n-z_j}
+    \mathcal{I}\left(\FF\right)(x) = \sum_{n=0}^N f(z_n) \ell_n(x)\quad \text{ s.t. }\quad \ell_n(x) \defn \prod_{\substack{j = 0bin \neq j}}^N \frac{x-z_j}{z_n-z_j}
 \end{equation}
-where \(\FF \defn \set{\left[z_n, f\left(z_n\right)\right]}_{n=1}^{N}\). Note that \(\cI\) is a mapping from data, which may be seen as arranged in a \(2 \times N\) matrix, to an \(N\)-degree polynomial. Thus \(\cI: \R^{2 \times N} \to \pols[N]{\R,\R}\). since each basis function \(\ell_n(x)\) is a polynomial of degree \(N\). Thus, if \(f \in \pols[N]{\R, \R}\), one obtains \(i = f\). Moreover, \(i\) is interpolating since \(\ell_n(z_j) = \delta_{n}(j)\). Even though (\ref{eq:lagrangeInterpolation}) has nice theoretical properties, it is suboptimal for practical settings due to the following facts. (1) If a node \(z_n\) is close to a node \(z_j\) such that \(n \neq j\), computing the product \(\ell_n(x)\) becomes numerically unstable. (2) The addition of new data \(\left(z, f(z)\right)\) requires to recalculate all basis functions anew in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires computational complexity of \(\cO(N^2)\). This does not mean that one has to abandon Lagrange Interpolation at once. We may write \cref{eq:lagrangeInterpolation} in a much more stable way as
+where \(\FF \defn \set{\left[z_n, f\left(z_n\right)\right]}_{n=1}^{N}\). We set \(i \defn \cI(\FF)\). Note that \(\cI\) is a mapping from data, which may be seen as arranged in a \(2 \times N\) matrix, to an \(N\)-degree polynomial. Thus \(\cI: \R^{2 \times N} \to \pols[N]{\R,\R}\). since each basis function \(\ell_n(x)\) is a polynomial of degree \(N\). Thus, if \(f \in \pols[N]{\R, \R}\), one obtains \(i = f\). Moreover, \(i\) is interpolating since \(\ell_n(z_j) = \delta_{n}(j)\). Even though (\ref{eq:lagrangeInterpolation}) has nice theoretical properties, it is suboptimal for practical settings due to the following facts. (1) If a node \(z_n\) is close to a node \(z_j\) such that \(n \neq j\), computing the product \(\ell_n(x)\) becomes numerically unstable. (2) The addition of new data \(\left(z, f(z)\right)\) requires to recalculate all basis functions anew in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires computational complexity of \(\cO(N^2)\). This does not mean that one has to abandon Lagrange Interpolation at once. We may write \cref{eq:lagrangeInterpolation} in a much more stable way as
 \begin{equation}\label{eq:barycentricLagrange}
     i(x) \defn \cI(\FF)(x) = \frac{\sum_{n=0}^N \frac{w_n}{x-z_n} f(z_n)}{\sum_{n=0}^N \frac{w_n}{x-z_n}}
 \end{equation}
@@ -142,19 +142,27 @@ where
 \end{equation}
 If a rule yielding admissible point sets, like\ Chebyshev's rules (\ref{eq:chebyPts1} or\ \ref{eq:chebyPts2}), is available, the only thing left to do is to specify how many nodes \(N_j\) (or \(m(N_j)\)) to pick in each direction. If this number is large simultaneously for all dimensions,\ \cref{eq:tensorProdInterp} becomes intractable very quickly. Smolyak's algorithm defines a resolution-like number \(q \in \N\) to specify how close-meshed points should be picked. It proceeds by taking all multi-indices \(N\) with \(1\)-norm less than or equal to \(q\) and specifies to interpolate with the algorithm
 \begin{equation}\label{eq:smolyak}
-    \cA(q, d)\left(\XX\right) \defn \sum_{\norm[1]{N} \leq q} \left(\cI^{(N_1)} \otimes \cdots \otimes \cI^{(N_d)}\right)(\XX).
+    \cA(q, d)\left(\XX\right) \defn \sum_{\norm[1]{N} \leq q} \left(\cI^{(N_1)} \otimes \cdots \otimes \cI^{(N_d)}\right)(\XX(N)).
 \end{equation}
-Note that, with this construction \(q \geq d\) is necessary. In this case, we call
+Note that, with this construction \(q \geq d\) is necessary. The set \(\XX\) in this case is
+\begin{equation}\label{eq:indexGrid}
+    \XX(N) \defn \bigcup_{n \in [d]} \FF(N_n)
+\end{equation}
+All points used by this algorithm are then
 \begin{equation}\label{eq:sparseGrid}
-    \XX \defn \XX^{\leq}(q) \defn \bigcup_{\norm[1]{N} \leq q} \bigcup_{n \in [d]} \FF(N_n)
+    \XX \defn \XX^\leq(q) \defn \bigcup_{\norm[1]{N} \leq q} \XX(N).
 \end{equation}
-a \emph{sparse grid}. We use \(\XX^=(q)\) for denoting that \(\XX\) takes all vectors \(N\) with \(\norm[1]{N}=q\). In case the point set is nice, for example for Chebyshev points, one obtains a \emph{nesting} of sparse grids for increasing fineness scales: \(\XX^\leq(q) \subset \XX^\leq(q+1)\). This construction has the advantage that the practicioner does not need to save the whole grid \(\XX\) at once. It is enough to use the refinements of each level-increase \(q \mapsto q+1\) and interpolate at each such level separately, each time discarding the old values. We may thus define the difference operator
+We call \(\XX\) a \emph{sparse grid}. We use \(\XX^=(q)\) for denoting that \(\XX\) takes all vectors \(N\) with \(\norm[1]{N}=q\). In case the point set is nice, for example for Chebyshev points, one obtains a \emph{nesting} of sparse grids for increasing fineness scales: \(\XX^\leq(q) \subset \XX^\leq(q+1)\). This construction has the advantage that the practicioner does not need to save the whole grid \(\XX\) at once. It is enough to use the refinements of each level-increase \(q \mapsto q+1\) and interpolate at each such level separately, each time discarding the old values. We may thus define the difference operator
 \begin{equation}\label{eq:differenceOp}
     \Delta^{(N)} \defn \left(\cI^{N_1} \otimes \cdots \otimes \cI^{N_d}\right) - \left(\cI^{N_1-1} \otimes \cdots \otimes \cI^{N_d-1}\right).
 \end{equation}
 Now, Smolyak's algorithm can be written as
-\begin{equation}\label{eq:SmolyakWithDifferences}
-    \cA(q, d) = \sum_{\norm[1]{N} \leq q} \Delta^{(N)}(\XX^=(q)) = \cA(q-1, d) + \sum_{\norm[1]{N}=q} \Delta^{(N)}\left(\XX^=(q)\right)
+\begin{equation}\label{eq:SmolyakWithDifferences1}
+    \cA(q, d) = \sum_{k=d}^q \Delta^{(N)}(\XX^=(k))
+\end{equation}
+or equivalently
+\begin{equation}\label{eq:SmolyakWithDifferences2}
+    \cA(q, d) = \cA(q-1, d) + \sum_{\norm[1]{N}=q} \Delta^{(N)}\left(\XX(N)\right)
 \end{equation}
 with \(\cI^{(0)} = 0\).
 

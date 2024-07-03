@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1719999911.43743 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1719999911.89112 0
-  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1719999911.35514 12367 50378f2e88f3cc3e3bfc3cd6741c13e6 ""
+["pdflatex"] 1720003742.72271 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1720003743.1608 0
+  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1720003742.63095 12614 af85fb622c3447e196f86e8d96d33f8b ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -64,9 +64,9 @@
   "/usr/local/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1715254787 8221444 88893416224014bb89a5a5a06925a661 ""
   "/usr/local/texlive/2024/texmf.cnf" 1710266656 577 e590dabc9e28c5b61546e15f63eebcdf ""
   "macros.tex" 1719996609.52543 2201 c86b91113a1f5a547c846301ebfed531 ""
-  "main.aux" 1719999911.84353 3208 32bf2b8e5c908d6e00b5430dbf7052b9 "pdflatex"
-  "main.tex" 1719999911.35514 12367 50378f2e88f3cc3e3bfc3cd6741c13e6 ""
-  "main.toc" 1719999911.84424 637 3bcb7311e8149775e6637b8d0dcf071c "pdflatex"
+  "main.aux" 1720003743.11584 3450 a7f5540148e1d9033952fca8b4c96abe "pdflatex"
+  "main.tex" 1720003742.63095 12614 af85fb622c3447e196f86e8d96d33f8b ""
+  "main.toc" 1720003743.11654 637 3bcb7311e8149775e6637b8d0dcf071c "pdflatex"
   (generated)
   "main.aux"
   "main.log"
