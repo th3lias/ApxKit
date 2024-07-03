@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1719967729.90534 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1719967730.35417 0
-  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1719967729.8175 9106 cc214d8edb6bc43d1910dcbf17a74e07 ""
+["pdflatex"] 1719999911.43743 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1719999911.89112 0
+  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1719999911.35514 12367 50378f2e88f3cc3e3bfc3cd6741c13e6 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2024/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -46,6 +46,7 @@
   "/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1248133631 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb" 1248133631 36118 fad905eba93cff5bce1e185fe980a177 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb" 1248133631 31099 c85edf1dd5b9e826d67c9c7293b6786c ""
+  "/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb" 1248133631 30273 87a352d78b6810ae5cfdc68d2fb827b2 ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/amscls/amsart.cls" 1591045760 61881 a7369c346c2922a758ae6283cc1ed014 ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/amsfonts.sty" 1359763108 5949 3f3fd50a8cc94c3d4cbf4fc66cd3df1c ""
   "/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/amssymb.sty" 1359763108 13829 94730e64147574077f8ecfea9bb69af4 ""
@@ -62,10 +63,10 @@
   "/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1715254806.92173 5467645 128b85b7cde5f5edc5cb7f1dd7ff8736 ""
   "/usr/local/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1715254787 8221444 88893416224014bb89a5a5a06925a661 ""
   "/usr/local/texlive/2024/texmf.cnf" 1710266656 577 e590dabc9e28c5b61546e15f63eebcdf ""
-  "macros.tex" 1719966645.35109 2129 4432aa4de145d2853b0fa61d68a5a236 ""
-  "main.aux" 1719967730.30908 2379 c5cb01ec10ab035304d68c1667ad1425 "pdflatex"
-  "main.tex" 1719967729.8175 9106 cc214d8edb6bc43d1910dcbf17a74e07 ""
-  "main.toc" 1719967730.30972 637 e44eb20a435cb6ad972dce003d7f76b9 "pdflatex"
+  "macros.tex" 1719996609.52543 2201 c86b91113a1f5a547c846301ebfed531 ""
+  "main.aux" 1719999911.84353 3208 32bf2b8e5c908d6e00b5430dbf7052b9 "pdflatex"
+  "main.tex" 1719999911.35514 12367 50378f2e88f3cc3e3bfc3cd6741c13e6 ""
+  "main.toc" 1719999911.84424 637 3bcb7311e8149775e6637b8d0dcf071c "pdflatex"
   (generated)
   "main.aux"
   "main.log"
