@@ -1,0 +1,9 @@
+\contentsline {section}{\tocsection {}{1}{Introduction}}{2}{}%
+\contentsline {section}{\tocsection {}{2}{Notation}}{2}{}%
+\contentsline {section}{\tocsection {}{3}{Smolyak's Algorithm}}{2}{}%
+\contentsline {subsection}{\tocsubsection {}{}{Interpolation in one dimension}}{2}{}%
+\contentsline {subsection}{\tocsubsection {}{}{Interpolation in \(d\) dimensions}}{4}{}%
+\contentsline {section}{\tocsection {}{4}{Least Squares}}{4}{}%
+\contentsline {section}{\tocsection {}{5}{Theoretical Guarantees}}{4}{}%
+\contentsline {section}{\tocsection {}{6}{Experimental Findings}}{4}{}%
+\contentsline {section}{\tocsection {}{7}{Conclusion}}{4}{}%

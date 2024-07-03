@@ -1,0 +1,158 @@
+\documentclass[12pt, oneside]{amsart}
+
+\usepackage{amssymb}
+\usepackage{cleveref}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{cor}[thm]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[thm]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[thm]{Remark}
+
+\numberwithin{equation}{section}
+
+\include{macros}
+
+\begin{document}
+\title{Least Squares and Smolyak's Algorithm}
+
+
+\author{Jakob Eggl\(^\star\)}
+\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
+\email{jakob.eggl@jku.at}
+
+\author{Elias Mindlberger\(^\star\)}
+\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
+\email{elias.mindlberger@jku.at}
+
+\author{Mario Ullrich}
+\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
+\email{mario.ullrich@jku.at}
+\thanks{\(\star\) Equal Contribution.}
+
+
+\begin{abstract}
+We present novel, large-scale experiments for polynomial interpolation in high dimensional settings using some of the most popular algorithms available. We compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using random data. We empirically confirm that interpolation using LSQ performs equally as good on smooth and better on non-smooth functions if SA is given \(n\) and LSQ is given \(\cO(n \log n)\) points.
+\end{abstract}
+
+
+\maketitle
+\thispagestyle{empty}
+
+
+\tableofcontents
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical interest for a long time.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Notation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+We use \({[N]}_0 \defn \set{0, 1, \dots, N}\) and \([N]\) for the set \(\set{1, \dots, N}\). For the set of polynomials \(p: V \to W\) of maximal degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation \(p \in \pols[N]{V, W}\). We use \(f \propto g\) for functions \(f, g\) to denote \(f = c g\) for a constant \(c \in \R\).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Smolyak's Algorithm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Smolyak's Algorithm is determinstic and can be used in various settings. These include but are not limited to
+\begin{enumerate}
+    \item function interpolation,
+    \item numerical integration,
+    \item solving ODEs and PDEs,
+    \item \(\cdots\)
+\end{enumerate}
+\subsection*{Interpolation in one dimension}
+In the onedimensional setting it is well known that for any collection of points \(\ZZ \defn \set{z_n}_{n=0}^N \subseteq \R\) and known function values \(f(z_n): n \in {[N]}_0\) for \(f: \R \to \R\) there is always a unique interpolating polynomial \(i\), i.e. \(i \in \pols[N]{\R, \R}: i(z_j) = f(z_j) \mid j \in {[N]}_0\). To find the polynomial \(i\), one can, among other available methods, choose to perform Lagrange Interpolation which yields an explicit construction of the form
+\begin{equation}\label{eq:lagrangeInterpolation}
+    i(x) = \sum_{n=0}^N f(z_n) \ell_n(x)\quad \text{ s.t. }\quad \ell_n(x) \defn \prod_{\substack{j = 0\\n \neq j}}^N \frac{x-z_j}{z_n-z_j}.
+\end{equation}
+It is clear that each basis function \(\ell_n(x)\) is a polynomial of degree \(N\). Thus, if \(f \in \pols[N]{\R, \R}\), one obtains \(i = f\). Moreover, \(i\) is interpolating since \(\ell_n(z_j) = \delta_{n}(j)\). Even though (\ref{eq:lagrangeInterpolation}) has nice theoretical properties, it is suboptimal for practical settings due to the following facts. (1) If a node \(z_n\) is close to a node \(z_j\) such that \(n \neq j\), computing the product \(\ell_n(x)\) becomes numerically unstable. (2) The addition of new data \(\left(z, f(z)\right)\) requires to recalculate all basis functions anew in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires computational complexity of \(\cO(N^2)\). This does not mean that one has to abandon Lagrange Interpolation at once. We may write \cref{eq:lagrangeInterpolation} in a much more stable way as
+\begin{equation}\label{eq:barycentricLagrange}
+    i(x) = \frac{\sum_{n=0}^N \frac{w_n}{x-z_n} f(z_n)}{\sum_{n=0}^N \frac{w_n}{x-z_n}}
+\end{equation}
+for \(w_n \in \R : n \in {[N]}_0\). If the weights \(w_n\) are known, computing \(i(x)\) in this form admits a complexity of \(\cO(N)\). Luckily, the weights have closed-form, analytic solutions for many deterministic point sets used in practice and are hence considered to be computable in \(\cO(1)\) time. Thus, adding a new data pair \((z, f(z))\) requires total complexity of \(\cO(N)\) for the recomputation of said weights. The general identity \[
+    w_n = \frac{1}{\prod_{\substack{j=0\\j \neq n}}^N x_n - x_j} = \frac{1}{\ell'(x_n)}
+\]
+always holds. To specify the above, consider the set of \emph{equidistant} nodes \(\set{z_n \defn 2/n} \subset [-1, 1]\). Then \begin{equation}\label{eq:weightsEquidistant}
+    w_n = {\left(-1\right)}^n {N \choose n}.
+\end{equation}
+For large \(N\), \cref{eq:weightsEquidistant} is problematic since weights \(w_j, w_n: n \neq j\) now may vary by factors as large as \(\cO\left(2^N\right)\). This means that interpolation in equispaced points is susceptible to the \emph{Runge phenomenon}. For this interpolation problem to be well posed one should use point sets with asymptotic density \(\rho(x) \propto 1/\sqrt{1-x^2}\). Many point sets admit this asymptotic density, for example the Chebyshev points of the first kind are given as
+\begin{equation}\label{eq:Clenshaw}
+    \ZZ_C^{(1)}(N) \defn \set{z^{(1)}_n \defn \cos \frac{\left(2n+1\right) \pi}{2n+2} \mid n \in {[N]}_0},
+\end{equation}
+similarly, the Chebyshev points of the second kind are
+\begin{equation}
+    \ZZ_C^{(2)}(N) \defn \set{z^{(2)}_n \defn \cos \frac{n\pi}{N} \mid n \in {[N]}_0}.
+\end{equation}
+In either of these cases, the weights \(w_n\) have admit nice closed forms as \(w_n^{(k)}: k \in \set{1,2}\) dependent on which point set is in use as
+\begin{equation}\label{eq:weightsChebyshev}
+    w_n^{(1)} = {\left(-1\right)}^n \sin \frac{\left(2n+1\right) \pi}{2n+2}, \quad w_n^{(2)} = {\left(-1\right)}^n \cdot \begin{cases}
+        1/2 &n \in \set{0, N}\\
+        1 &\text{else.}
+    \end{cases}
+\end{equation}
+
+\subsection*{Interpolation in \(d\) dimensions} In principle, one may just \emph{extend} one dimensional interpolation rules to \(d\) dimensions by forming the tensor product of all interpolation rules. To specify, take the one dimensional algorithm
+\begin{equation}\label{eq:general1dInterpolation}
+    \cI^{(N)}(\FF)(x) = \sum_{n = 1}^{m(N)} b_{n}(x) f(z_n)
+\end{equation}
+such that \(\cI^{(N)}(\FF)\) is interpolating on the data \(\FF(N) \defn \set{\left[z_n, f\left(z_n\right)\right]}_{n=1}^{m(N)}\) with basis functions \(b_n \in C[0, 1]\) such that \(b_n(z_j) = \delta_n(j)\). Using the tensor product formula, one obtains the very general expression
+\begin{equation}\label{eq:tensorProdInterp}
+    {\left( \cI^{(N_1)} \otimes \cdots \otimes \cI^{(N_d)} \right)}(\FF)
+    = \sum_{n_1 = 1}^{m(N_1)} \cdots \sum_{n_d = 1}^{m(N_d)} \left( b_{n_1} \otimes \cdots \otimes b_{n_d} \right) f(z_{n})
+\end{equation}
+where \(\FF = \bigcup_{j=1}^d \FF(N_j)\). If the basis functions \(b_n\) are scalar-valued, their tensor product is just
+\begin{equation}\label{eq:tensorProdFunc}
+    \left( \bigotimes_{n=1}^d b_n \right)(x_1, \dots, x_d) \defn \prod_{n \in [d]} b_n(x_n).
+\end{equation}
+In Smolyak's Algorithm, the function \(m: \N \to \N\) is used as a growth rule specifying how many points are to be used by the interpolant. Specifically, we will use a doubling rule such that \[
+    m(n) \defn \begin{cases}
+        2^{n-1}+1 &n > 1\\
+        1 &\text{else}.
+    \end{cases}
+\]
+Clearly, the usual representation of the Lagrange polynomial (\ref{eq:lagrangeInterpolation}) fits this framework. For the barycentric form, one obtains the \(d\)-variate interpolation algorithm
+\begin{equation}\label{eq:multivarBarycentric}
+    \cI(\FF)(x) \defn \frac{\sum_{n_1=1}^{m(N_1)} b^{(1)}_{n_1}(x_1) \cdots \sum_{n_d=1}^{m(N_d)}b^{(d)}_{n_d}(x_d) f(z_{n_1}, \dots, z_{n_d})}{\sum_{n_1=1}^{m(N_1)} b^{(1)}_{n_1}(x_1) \cdots \sum_{n_d=1}^{m(N_d)}b^{(d)}_{n_d}(x_d)}
+\end{equation}
+where
+\begin{equation}\label{eq:barycentricBasis}
+    b^{(k)}_{n_k}(x) \defn \frac{w_{n_k}}{x-z_{n_k}} \mid k \in [d].
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Least Squares}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Theoretical Guarantees}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experimental Findings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newpage
+\end{document}
