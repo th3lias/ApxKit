@@ -10,12 +10,12 @@ import argparse
 
 def main_method(folder_name: Union[str, None] = None):
     dim_range = range(5, 9)
-    scale_range = range(1,11)
+    scale_range = range(1, 11)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
-    FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
-    FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
-    FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
+                      FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
+                      FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
+                      FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
     realization_seeds = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
     average_c = [1, 10, 100]
