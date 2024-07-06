@@ -1,14 +1,16 @@
 import datetime
-
 from experiments.experiments import run_experiments
 from tqdm import tqdm
 from test_functions.function_types import FunctionType
 from interpolate.interpolation_methods import LeastSquaresMethod, SmolyakMethod
 from utils.utils import plot_errors
+from typing import Union
+import argparse
 
-if __name__ == '__main__':
+
+def main_method(folder_name: Union[str, None] = None):
     dim_range = range(2, 3)
-    scale_range = range(1, 5)
+    scale_range = range(1, 3)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -27,7 +29,8 @@ if __name__ == '__main__':
     print(f"Started program at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
     # current folder name should be equal to the date and current time
-    folder_name = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
+    if folder_name is None:
+        folder_name = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
 
     run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
                     scales=scale_range, methods=methods,
@@ -45,3 +48,11 @@ if __name__ == '__main__':
                     pbar.update(1)
     #
     print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')
+    parser.add_argument('folder_name', type=str, help='The name of the folder where the results will be stored')
+    args = parser.parse_args()
+
+    main_method(folder_name=args.folder_name)

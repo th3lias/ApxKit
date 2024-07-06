@@ -308,9 +308,10 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                 test_grid = gp.generate(GridType.RANDOM_UNIFORM, scale)
 
                 for method in methods:
-
+                    cur_datetime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     pbar.set_postfix(
-                        {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id})
+                        {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id,
+                         "datetime": cur_datetime})
 
                     for i in range(n_function_types):
                         cur_slice = c[n_functions_parallel * i:n_functions_parallel * (i + 1), :]
