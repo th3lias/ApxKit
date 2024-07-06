@@ -2,7 +2,7 @@ import datetime
 import os
 import platform
 import time
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ import psutil
 
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType], seed_list: list[int],
-                            n_parallel: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
+                            n_parallel: int, n_avg_c: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
                             test_grid: Union[np.ndarray, Grid], lb: float, ub: float, method_type: SmolyakMethod,
                             folder_name: str, path: Union[str, None] = None) -> Grid:
     """
@@ -33,6 +33,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
     :param f_types: List of function types that should be tested
     :param seed_list: list of seeds that should be used for the experiments
     :param n_parallel: number of parallel functions per type
+    :param n_avg_c: number of average c values that are used
     :param scale: related to the number of samples used to fit the smolyak model
     :param grid: grid on which the Smolyak Algorithm should operate. If None, a new grid will be created
     :param test_grid_seed: seed used to generate test grid
@@ -66,23 +67,24 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     functions = list()
     function_names = list()
-    y = np.empty(shape=(n_parallel * n_function_types, test_grid.shape[0]), dtype=np.float64)
+    y = np.empty(shape=(n_parallel * n_function_types * n_avg_c, test_grid.shape[0]), dtype=np.float64)
 
     for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
-            index = i * n_parallel + j
-            f = get_test_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
-            functions.append(f)
-            y[index, :] = f(test_grid)
-            function_names.append(func_type.name)
+            for k in range(n_avg_c):
+                index = i * n_parallel + j * n_avg_c + k
+                f = get_test_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
+                functions.append(f)
+                y[index, :] = f(test_grid)
+                function_names.append(func_type.name)
 
     si = SmolyakInterpolator(grid, method=method_type)
     si.fit(functions)
 
     y_hat = si.interpolate(test_grid)
 
-    l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types)
-    max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types)
+    l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
+    max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
 
     end_time = time.time()
     needed_time = end_time - start_time
@@ -92,7 +94,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     results = list()
 
-    for i in range(n_parallel * n_function_types):
+    for i in range(n_parallel * n_function_types * n_avg_c):
         for seed in seed_list:
             row_entry = dict()
             row_entry['dim'] = dim
@@ -136,7 +138,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
 
 def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType],
-                                  n_parallel: int, scale: int, seed: int, additional_multiplier: float,
+                                  n_parallel: int, n_avg_c: int, scale: int, seed: int, additional_multiplier: float,
                                   grid: Union[Grid, None],
                                   test_grid_seed: int, test_grid: Union[np.ndarray, Grid], lb: float, ub: float,
                                   grid_type: GridType, basis_type: BasisType, method_type: LeastSquaresMethod,
@@ -148,6 +150,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
     :param c: parameter for the test_functions-functions, can be multidimensional if multiple functions are used
     :param f_types: List of function types that should be tested
     :param n_parallel: number of parallel functions per type
+    :param n_avg_c: number of average c values that are used
     :param scale: related to the number of samples used to fit the least-squares model
     :param seed: seed used to generate the training data
     :param additional_multiplier: Multiplies the number of samples of least squares by this factor
@@ -187,23 +190,24 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
 
     functions = list()
     function_names = list()
-    y = np.empty(shape=(n_parallel * n_function_types, test_grid.shape[0]), dtype=np.float64)
+    y = np.empty(shape=(n_parallel * n_function_types * n_avg_c, test_grid.shape[0]), dtype=np.float64)
 
     for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
-            index = i * n_parallel + j
-            f = get_test_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
-            functions.append(f)
-            y[index, :] = f(test_grid)
-            function_names.append(func_type.name)
+            for k in range(n_avg_c):
+                index = i * n_parallel + j * n_avg_c + k
+                f = get_test_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
+                functions.append(f)
+                y[index, :] = f(test_grid)
+                function_names.append(func_type.name)
 
     ls = LeastSquaresInterpolator(include_bias=True, basis_type=basis_type, grid=grid, method=method_type)
     ls.fit(functions)
 
     y_hat = ls.interpolate(test_grid)
 
-    l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types)
-    max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types)
+    l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
+    max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
 
     end_time = time.time()
     needed_time = end_time - start_time
@@ -213,7 +217,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
 
     results = list()
 
-    for i in range(n_parallel * n_function_types):
+    for i in range(n_parallel * n_function_types * n_avg_c):
         row_entry = dict()
         row_entry['dim'] = dim
         row_entry['method'] = 'Least_Squares'
@@ -257,7 +261,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
 
 def run_experiments(function_types: list[FunctionType], n_functions_parallel: int, seed_realizations: list[int],
                     scales: range, dims: range,
-                    methods: list, add_mul: float,
+                    methods: list, add_mul: float, average_c: List[float],
                     ls_method: LeastSquaresMethod, smolyak_method: SmolyakMethod, folder_name: str):
     """
     Runs multiple experiments for least-squares with various parameter combinations
@@ -267,6 +271,7 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
     :param scales: Specifies which scale range should be used for the experiments
     :param dims: Specifies which dimension range should be used for the experiments
     :param methods: Specifies which methods should be used for the experiments
+    :param average_c: Specifies the average c value for the test functions
     :param add_mul: Multiplies the number of samples for the least squares experiments
     :param ls_method: Specifies which method should be used to solve the Least Squares Problem
     :param smolyak_method: Specifies which method should be used to solve the Smolyak Problem
@@ -278,6 +283,7 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
         f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM")
 
     n_function_types = len(function_types)
+    n_avg_c = len(average_c)
 
     lb = float(0.0)
     ub = float(1.0)
@@ -290,7 +296,8 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
 
     for dim in dims:
         w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
-        c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
+        w = np.vstack([w] * n_avg_c)
+        c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel * n_avg_c, dim))
 
         for seed_id, seed in enumerate(seed_realizations):
 
@@ -313,17 +320,22 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                         {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id,
                          "datetime": cur_datetime})
 
-                    for i in range(n_function_types):
-                        cur_slice = c[n_functions_parallel * i:n_functions_parallel * (i + 1), :]
-                        cur_sum = cur_slice.sum(axis=1, keepdims=True)
-                        factor = dim / cur_sum
-                        c[n_functions_parallel * i:n_functions_parallel * (i + 1), :] *= factor
+                    for avg_c_idx, avg_c in enumerate(average_c):
+                        for i, function_type in enumerate(function_types):
+                            for j in range(n_functions_parallel):
+                                index = (avg_c_idx * n_function_types * n_functions_parallel) + (
+                                        i * n_functions_parallel) + j
+                                c_vector = c[index, :]
+                                current_average = np.mean(c_vector)
+                                scaling_factor = avg_c / current_average
+                                c_scaled = c_vector * scaling_factor
+                                c[index, :] = c_scaled
 
                     if method == 'Smolyak':
                         if seed_id == 0:
                             smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, f_types=function_types,
                                                                    seed_list=seed_realizations,
-                                                                   n_parallel=n_functions_parallel,
+                                                                   n_parallel=n_functions_parallel, n_avg_c=n_avg_c,
                                                                    scale=scale, grid=smolyak_grid,
                                                                    test_grid_seed=test_grid_seed,
                                                                    test_grid=test_grid, lb=lb, ub=ub,
@@ -338,6 +350,7 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                         ls_uniform_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
                                                                         f_types=function_types,
                                                                         n_parallel=n_functions_parallel,
+                                                                        n_avg_c=n_avg_c,
                                                                         scale=scale, seed=seed,
                                                                         additional_multiplier=add_mul,
                                                                         grid=ls_uniform_grid,
@@ -355,6 +368,7 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                         ls_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
                                                                           f_types=function_types,
                                                                           n_parallel=n_functions_parallel,
+                                                                          n_avg_c=n_avg_c,
                                                                           scale=scale, seed=seed,
                                                                           additional_multiplier=add_mul,
                                                                           grid=ls_chebyshev_grid,

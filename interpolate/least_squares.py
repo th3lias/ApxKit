@@ -301,7 +301,7 @@ class LeastSquaresInterpolator(Interpolator):
         if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
 
         elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
