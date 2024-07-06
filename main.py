@@ -40,14 +40,14 @@ def main_method(folder_name: Union[str, None] = None):
                     folder_name=folder_name)
 
     # save all images in results folder
-    total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
-    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-        for dim in dim_range:
-            for fun_type in function_types:
-                for seed in realization_seeds:
-                    plot_errors(dim, seed, fun_type, scale_range, additional_multiplier, save=True,
-                                folder_name=folder_name, same_axis_both_plots=True)
-                    pbar.update(1)
+    # total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
+    # with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+    #     for dim in dim_range:
+    #         for fun_type in function_types:
+    #             for seed in realization_seeds:
+    #                 plot_errors(dim, seed, fun_type, scale_range, additional_multiplier, save=True,
+    #                             folder_name=folder_name, same_axis_both_plots=True)
+    #                 pbar.update(1)
     #
     print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 

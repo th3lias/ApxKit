@@ -11,4 +11,4 @@ if __name__ == '__main__':
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    os.system(f"nohup {sys.executable} main.py {cur_datetime} > {filename} 2>&1 &")
+    os.system(f"nohup {sys.executable} main.py --folder_name {cur_datetime} > {filename} 2>&1 &")
