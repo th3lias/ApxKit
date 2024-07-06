@@ -246,3 +246,6 @@ logs/
 
 # results folder
 results/
+
+# run configurations
+.run/
