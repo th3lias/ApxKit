@@ -16,7 +16,7 @@ def main_method(folder_name: Union[str, None] = None):
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
-    realization_seeds = [2]  # = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    realization_seeds = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
     smolyak_method_type = SmolyakMethod.STANDARD
     additional_multiplier = 10
     n_fun_parallel = 10
