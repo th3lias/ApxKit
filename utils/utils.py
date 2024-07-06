@@ -293,7 +293,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
     global_min_l2, global_max_l2 = None, None
 
     if not smolyak_data.empty:
-        for name, group in smolyak_data.groupby('c'):
+        grouped = smolyak_data.groupby('c')
+        for name, group in grouped:
             w = group['w'].iloc[0]
             if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
                 print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
@@ -356,13 +357,17 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
 
             axs[0].set_ylim(global_min_uniform, global_max_uniform)
             axs[1].set_ylim(global_min_l2, global_max_l2)
-
+            avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=' '))
+            avg_c_str = str(int(np.round(avg_c, 0)))
             fig.suptitle(
-                f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}\nc={name}\nw={w}')
+                f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}'
+                f'; avg_c={avg_c}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
-                filename = get_next_filename(save_path)
-                img_path = os.path.join(save_path, filename)
+                c_folder = os.path.join(save_path, avg_c_str)
+                os.makedirs(c_folder, exist_ok=True)
+                filename = get_next_filename(c_folder)
+                img_path = os.path.join(c_folder, filename)
                 plt.savefig(img_path)
                 plt.close()
             else:

@@ -12,11 +12,13 @@ def main_method(folder_name: Union[str, None] = None):
     dim_range = range(2, 3)
     scale_range = range(1, 3)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
-    function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
-                      FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
-                      FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
-                      FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
-    realization_seeds = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    function_types = [FunctionType.OSCILLATORY]
+    # [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
+    # FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
+    # FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
+    # FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
+    realization_seeds = [2]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    average_c = [1, 10, 100]
     smolyak_method_type = SmolyakMethod.STANDARD
     additional_multiplier = 10
     n_fun_parallel = 10
@@ -33,7 +35,7 @@ def main_method(folder_name: Union[str, None] = None):
         folder_name = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
 
     run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
-                    scales=scale_range, methods=methods,
+                    scales=scale_range, methods=methods, average_c=average_c,
                     add_mul=additional_multiplier, ls_method=ls_method_type, smolyak_method=smolyak_method_type,
                     folder_name=folder_name)
 
@@ -52,7 +54,8 @@ def main_method(folder_name: Union[str, None] = None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')
-    parser.add_argument('folder_name', type=str, help='The name of the folder where the results will be stored')
+    parser.add_argument('-f', '--folder_name', default=None, type=str, required=False,
+                        help='The name of the folder where the results will be stored')
     args = parser.parse_args()
 
     main_method(folder_name=args.folder_name)
