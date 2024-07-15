@@ -9,19 +9,19 @@ import argparse
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_range = range(5, 9)
-    scale_range = range(1, 11)
+    dim_range = range(7,8)
+    scale_range = range(1, 8)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
-    realization_seeds = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
-    average_c = [1, 10, 100]
+    realization_seeds = [42]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+    average_c = [1]
     smolyak_method_type = SmolyakMethod.STANDARD
     additional_multiplier = 10
-    n_fun_parallel = 100
+    n_fun_parallel = 10
 
     ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
 
@@ -40,14 +40,14 @@ def main_method(folder_name: Union[str, None] = None):
                     folder_name=folder_name)
 
     # save all images in results folder
-    # total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
-    # with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-    #     for dim in dim_range:
-    #         for fun_type in function_types:
-    #             for seed in realization_seeds:
-    #                 plot_errors(dim, seed, fun_type, scale_range, additional_multiplier, save=True,
-    #                             folder_name=folder_name, same_axis_both_plots=True)
-    #                 pbar.update(1)
+    total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
+    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+        for dim in dim_range:
+            for fun_type in function_types:
+                for seed in realization_seeds:
+                    plot_errors(dim, seed, fun_type, scale_range, additional_multiplier, save=True,
+                                folder_name=folder_name, same_axis_both_plots=True)
+                    pbar.update(1)
     #
     print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 

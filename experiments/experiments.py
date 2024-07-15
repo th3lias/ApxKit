@@ -177,7 +177,8 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
 
     n_samples = calculate_num_points(scale, dim)
 
-    multiplier = np.log(n_samples) * additional_multiplier
+    multiplier = additional_multiplier
+    multiplier *= np.log(n_samples)
 
     n_function_types = int(len(f_types))
 
@@ -295,9 +296,18 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
     pbar = tqdm(total=n_iterations, desc="Running experiments")
 
     for dim in dims:
-        w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel, dim))
-        w = np.vstack([w] * n_avg_c)
+        w = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel * n_avg_c, dim))
         c = np.random.uniform(low=0.0, high=1.0, size=(n_function_types * n_functions_parallel * n_avg_c, dim))
+
+        c_row_sum = np.sum(c, axis=1)
+        c = c / c_row_sum[:, np.newaxis] * dim
+
+        avg_c_repeated = np.array(
+            [average_c[i % len(average_c)] for i in range(n_function_types * n_functions_parallel * n_avg_c)])
+
+        avg_c_repeated = avg_c_repeated[:, np.newaxis]
+
+        c *= avg_c_repeated
 
         for seed_id, seed in enumerate(seed_realizations):
 
@@ -319,17 +329,6 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                     pbar.set_postfix(
                         {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id,
                          "datetime": cur_datetime})
-
-                    for avg_c_idx, avg_c in enumerate(average_c):
-                        for i, function_type in enumerate(function_types):
-                            for j in range(n_functions_parallel):
-                                index = (avg_c_idx * n_function_types * n_functions_parallel) + (
-                                        i * n_functions_parallel) + j
-                                c_vector = c[index, :]
-                                current_average = np.mean(c_vector)
-                                scaling_factor = avg_c / current_average
-                                c_scaled = c_vector * scaling_factor
-                                c[index, :] = c_scaled
 
                     if method == 'Smolyak':
                         if seed_id == 0:
