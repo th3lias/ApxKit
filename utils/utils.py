@@ -236,7 +236,7 @@ def get_next_filename(path, extension='png'):
     return f"{next_number}.{extension}"
 
 
-def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range, additional_multiplier: float,
+def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range, multiplier_fun: Callable,
                 folder_name: str, path: Union[str, None] = None, save: bool = False,
                 save_path: Union[str, None] = None, same_axis_both_plots: bool = True):
     """
@@ -247,7 +247,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
     :param seed: Representing the realization of the algorithm.
     :param function_type: Specifies which function should be considered
     :param scales: range of scales, which are considered
-    :param additional_multiplier: specifies which multiplier was used to increase the number of samples in least squares
+    :param multiplier_fun: specifies which multiplier was used to increase the number of samples in least squares
     :param folder_name: name of the folder where the results are stored
     :param path: Path of the results-csv file. If None, a default path will be used.
     :param save: Specifies whether the images should be saved. If False, the images are shown.
@@ -360,7 +360,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
             avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=' '))
             avg_c_str = str(int(np.round(avg_c, 0)))
             fig.suptitle(
-                f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}'
+                f'{function_type.name}; multiplier={multiplier_fun(1.0)}; dim={dimension}'
                 f'; avg_c={avg_c}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
