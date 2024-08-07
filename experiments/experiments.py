@@ -326,10 +326,15 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                 for method in methods:
                     cur_datetime = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                     pbar.set_postfix(
-                        {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id,
+                        {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": multiplier_fun(n_samples), "seed_id": seed_id,
                          "datetime": cur_datetime})
 
                     if method == 'Smolyak':
+
+                        pbar.set_postfix(
+                            {"Dim": dim, "Meth.": method, "Scale": scale, "n_samples": n_samples, "seed_id": seed_id,
+                             "datetime": cur_datetime})
+
                         if seed_id == 0:
                             smolyak_grid = run_experiments_smolyak(dim=dim, w=w, c=c, f_types=function_types,
                                                                    seed_list=seed_realizations,
