@@ -12,6 +12,7 @@ from grid.rule.rule import GridRule
 class Grid:
     """ Wrapper for an Array type used for interpolation. """
 
+    # Perhaps there is a need to include this as a Wrapper for TasmanianSparseGrids as well.
     def __init__(self, input_dim: int, output_dim: int, scale: int, grid: Union[jnp.ndarray, np.ndarray],
                  grid_type: GridRule, lower_bound: float = 0., upper_bound: float = 1.):
         self.input_dim = input_dim

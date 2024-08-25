@@ -1,6 +1,4 @@
 #  Created 2024. (Elias Mindlberger)
-
-#  Created 2024. (Elias Mindlberger)
 import numpy as np
 
 from grid.grid import Grid
