@@ -13,7 +13,7 @@ from utils.utils import load_basis_indices_if_existent, save_basis_indices
 
 
 class Interpolator:
-    def __init__(self, grid: Grid):
+    def __init__(self, grid: Grid | TasmanianSparseGrid):
         self.grid = grid
         self.scale = grid.scale
         self.dim = grid.input_dim

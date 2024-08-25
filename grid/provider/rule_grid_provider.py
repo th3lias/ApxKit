@@ -1,21 +1,24 @@
+#  Created 2024. (Elias Mindlberger)
+
+#  Created 2024. (Elias Mindlberger)
 from TasmanianSG import TasmanianSparseGrid
 
+from grid.grid import Grid
 from grid.provider.grid_provider import GridProvider
-from grid.provider.selection_strategy import SelectionStrategy
 from grid.rule.rule_grid_rule import RuleGridRule
-from grid.grid.grid import Grid
-from grid.grid.rule_grid import RuleGrid
+from grid.rule.rule import GridRule
+from grid.provider.selection_strategy import SelectionStrategy
 
 
 class RuleGridProvider(GridProvider):
     """
     A grid provider that generates a grid based on a given 1-dimensional grid rule.
-    Allowed grid rules can be found in the GridRule enum and it's descendants.
+    Allowed grid rules can be found in the GridRule enum.
     """
 
-    def __init__(self, input_dim: int, output_dim: int = 1, lower_bound: float = 0., upper_bound: float = 1.,
-                 strategy: SelectionStrategy = SelectionStrategy.LEVEL,
-                 rule: RuleGridRule = RuleGridRule.CLENSHAW_CURTIS):
+    def __init__(self, input_dim: int, output_dim: int = 1, lower_bound: float = 0.,
+                 upper_bound: float = 1., strategy: SelectionStrategy = SelectionStrategy.LEVEL,
+                 rule: GridRule = RuleGridRule.CLENSHAW_CURTIS):
         """
         Takes the same parameters as the GridProvider class and additionally a grid rule.
         :param strategy: The selection strategy
@@ -25,13 +28,13 @@ class RuleGridProvider(GridProvider):
         self.strategy = strategy
         self.rule = rule
 
-    def generate(self, scale: int) -> RuleGrid:
+    def generate(self, scale: int) -> TasmanianSparseGrid:
         grid = TasmanianSparseGrid()
         grid.makeGlobalGrid(iDimension=self.input_dim, iOutputs=self.output_dim, iDepth=scale,
                             sType=self.strategy.value, sRule=self.rule.value)
-        return RuleGrid(self.input_dim, self.output_dim, scale, grid, self.rule, self.lower_bound, self.upper_bound)
+        return grid
 
-    def increase_scale(self, current_grid: Grid, delta: int) -> RuleGrid:
+    def increase_scale(self, current_grid: Grid, delta: int) -> TasmanianSparseGrid:
         """
         Naive implementation of increasing the scale of a grid. Perhaps there is a direct way to do this in Tasmanian.
         """

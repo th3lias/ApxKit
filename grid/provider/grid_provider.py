@@ -1,8 +1,9 @@
-from __future__ import annotations
+#  Created 2024. (Elias Mindlberger)
 
+#  Created 2024. (Elias Mindlberger)
 from TasmanianSG import TasmanianSparseGrid
 
-from grid.grid.grid import Grid
+from grid.grid import Grid
 
 
 class GridProvider:
