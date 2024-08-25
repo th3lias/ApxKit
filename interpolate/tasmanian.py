@@ -1,6 +1,5 @@
 from typing import Union, Callable, List
 
-import Tasmanian
 import numpy as np
 
 from interpolate.interpolator import Interpolator
