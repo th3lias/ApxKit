@@ -4,8 +4,8 @@ from TasmanianSG import TasmanianSparseGrid
 from grid.provider.grid_provider import GridProvider
 from grid.provider.selection_strategy import SelectionStrategy
 from grid.rule.rule_grid_rule import RuleGridRule
-from grid.src.grid import Grid
-from grid.src.rule_grid import RuleGrid
+from grid.grid.grid import Grid
+from grid.grid.rule_grid import RuleGrid
 
 
 class RuleGridProvider(GridProvider):

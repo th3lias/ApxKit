@@ -3,8 +3,8 @@ import numpy as np
 
 from grid.provider.grid_provider import GridProvider
 from grid.rule.random_grid_rule import RandomGridRule
-from grid.src.grid import Grid
-from grid.src.random_grid import RandomGrid
+from grid.grid.grid import Grid
+from grid.grid.random_grid import RandomGrid
 from grid.utils import sample_chebyshev_univariate
 from utils.utils import calculate_num_points
 
