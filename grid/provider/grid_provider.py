@@ -1,7 +1,7 @@
 #  Created 2024. (Elias Mindlberger)
 from TasmanianSG import TasmanianSparseGrid
 
-from grid.grid import Grid
+from grid.src.grid import Grid
 
 
 class GridProvider:
