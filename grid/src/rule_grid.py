@@ -12,7 +12,16 @@ class RuleGrid(Grid):
         super().__init__(input_dim, output_dim, scale, grid, rule, lower_bound, upper_bound)
 
     def get_num_points(self):
+        """Wrapper function for the getNumPoints method of the TasmanianSparseGrid object."""
         return self.grid.getNumPoints()
+
+    def get_needed_points(self) -> np.ndarray:
+        """Wrapper function for the getNeededPoints method of the TasmanianSparseGrid object."""
+        return self.grid.getNeededPoints()
+
+    def load_needed_values(self, llf_vals: np.ndarray) -> None:
+        """Wrapper function for the loadNeededValues method of the TasmanianSparseGrid object."""
+        self.grid.loadNeededValues(llf_vals)
 
     def __eq__(self, other):
         """
