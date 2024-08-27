@@ -9,7 +9,7 @@ import argparse
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_range = range(7, 8)
+    dim_range = range(9, 10)
     scale_range = range(1, 8)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
@@ -20,22 +20,24 @@ def main_method(folder_name: Union[str, None] = None):
     realization_seeds = [42]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
     average_c = [1]
     smolyak_method_type = SmolyakMethod.STANDARD
-    additional_multiplier = 3
+    additional_multiplier = 2
 
     multiplier_fun = lambda x: additional_multiplier * x
 
-    n_fun_parallel = 10
+    n_fun_parallel = 5
 
     ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
 
     if ls_method_type == LeastSquaresMethod.PYTORCH_NEURAL_NET:
         function_types = [FunctionType.OSCILLATORY]
 
-    print(f"Started program at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    current_datetime = datetime.datetime.now()
+
+    print(f"Started program at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')}")
 
     # current folder name should be equal to the date and current time
     if folder_name is None:
-        folder_name = datetime.datetime.now().strftime('%d_%m_%Y_%H_%M')
+        folder_name = current_datetime.strftime('%d_%m_%Y_%H_%M')
 
     run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
                     scales=scale_range, methods=methods, average_c=average_c,
