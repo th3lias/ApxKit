@@ -2,6 +2,7 @@
 from typing import Callable
 
 from function.model.model import Model
+from function.model import Model
 from grid.grid.grid import Grid
 
 

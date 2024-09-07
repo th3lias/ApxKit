@@ -1,4 +1,3 @@
-#  Created 2024. (Elias Mindlberger)
 from TasmanianSG import TasmanianSparseGrid
 
 from grid.provider.grid_provider import GridProvider

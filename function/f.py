@@ -16,6 +16,7 @@ class Function(Callable):
         self.dim = dim
         self.upper = upper
         self.lower = lower
+
     def __call__(self, x: np.ndarray):
         """
             Wrapper function for some numeric Callable.

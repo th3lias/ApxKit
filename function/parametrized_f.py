@@ -14,6 +14,3 @@ class ParametrizedFunction(Function):
         super().__init__(f, dim, upper, lower)
         self.w = w
         self.c = c
-
-    def __call__(self, *args, **kwargs):
-        super.__call__(*args, **kwargs)

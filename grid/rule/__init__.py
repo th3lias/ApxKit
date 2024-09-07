@@ -1,1 +1,2 @@
-#  Created 2024. (Elias Mindlberger)
+from random_grid_rule import RandomGridRule
+from rule_grid_rule import RuleGridRule
