@@ -2,6 +2,7 @@ from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 
+from function.utils import get_smolyak_ranges
 from grid.grid.grid import Grid
 from functools import reduce
 from operator import mul
@@ -111,7 +112,7 @@ class Interpolator:
             idx = self._smolyak_idx()
         if not isinstance(scale, int):
             raise ValueError(f"Scale must have an int type but is {type(scale)}")
-        aphi = self._phi_chain(scale + 1)
+        aphi = get_smolyak_ranges(scale + 1)
         base_polys = []
         for el in idx:
             temp = [aphi[i] for i in el]
