@@ -5,6 +5,9 @@ import numpy as np
 
 
 class Function(Callable):
+    """
+        This is a wrapper for callables which represents functions from R^m to R^n.
+    """
     def __init__(self, f: Callable, dim: int, upper: float, lower: float):
         """
             This is a wrapper for callables which represents functions from R^m to R^n.
