@@ -2,7 +2,6 @@ from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 
-from function.utils import get_smolyak_ranges
 from grid.grid.grid import Grid
 from functools import reduce
 from operator import mul
@@ -14,7 +13,7 @@ from utils.utils import load_basis_indices_if_existent, save_basis_indices
 
 
 class Interpolator:
-    def __init__(self, grid: Grid | TasmanianSparseGrid):
+    def __init__(self, grid: Grid):
         self.grid = grid
         self.scale = grid.scale
         self.dim = grid.input_dim
@@ -26,6 +25,7 @@ class Interpolator:
         self.coeff = None
 
     def interpolate(self, grid: Union[Grid, np.ndarray]):
+        # TODO: Maybe change to JNP aswell in the type-hints @th3lias
         raise NotImplementedError
 
     def fit(self, f: Union[Callable, List[Callable]]) -> None:
@@ -112,7 +112,7 @@ class Interpolator:
             idx = self._smolyak_idx()
         if not isinstance(scale, int):
             raise ValueError(f"Scale must have an int type but is {type(scale)}")
-        aphi = get_smolyak_ranges(scale + 1)
+        aphi = self._phi_chain(scale + 1)
         base_polys = []
         for el in idx:
             temp = [aphi[i] for i in el]
