@@ -8,7 +8,7 @@ from grid.grid import Grid
 from grid.grid_type import GridType
 from utils.utils import calculate_num_points
 
-from typing import Union
+from typing import Union, Callable
 from interpolate.partition import Partition
 from interpolate.interpolator import Interpolator
 
@@ -20,13 +20,13 @@ class GridProvider:
     :param seed: random seed to be used when option RANDOM is used
     """
 
-    def __init__(self, dimension: int, multiplier: float, seed: int = None, lower_bound: float = 0.0,
+    def __init__(self, dimension: int, multiplier_fun: Callable, seed: int = None, lower_bound: float = 0.0,
                  upper_bound: float = 1.0):
         self.dim = dimension
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
-        self.multiplier = multiplier
-        if multiplier is None:
+        self.multiplier_fun = multiplier_fun
+        if multiplier_fun is None:
             raise ValueError()
 
         if isinstance(seed, int):
@@ -53,13 +53,11 @@ class GridProvider:
             raise ValueError("Please provide the fineness parameter of the grid")
 
         if grid_type == GridType.CHEBYSHEV:
-            if self.multiplier != 1.0:
-                print("Be aware that the chosen multiplier for a Chebyshev Sparse Grid does not affect anything")
             points = self._full_cheby_grid(level=scale)
             return Grid(self.dim, scale, points, grid_type)
 
-        n_points = calculate_num_points(scale, self.dim)  # TODO: Maybe not right
-        n_points = int(n_points * self.multiplier)
+        n_points = calculate_num_points(scale, self.dim)
+        n_points = int(self.multiplier_fun(n_points))
 
         if grid_type == GridType.REGULAR:
             raise DeprecationWarning("The regular grid is deprecated and is most likely not working correctly.")
@@ -129,7 +127,7 @@ class GridProvider:
             return Grid(dim, scale + delta, combined_grid, grid_type, self.lower_bound, self.upper_bound)
 
         elif grid_type == GridType.RANDOM_UNIFORM:
-            target_no_points = int(calculate_num_points(scale=scale + delta, dimension=dim) * self.multiplier)
+            target_no_points = int(self.multiplier_fun(calculate_num_points(scale=scale + delta, dimension=dim)))
             if sample_new:
                 points = self._generate_random_grid(num_points=target_no_points)
                 return Grid(dim, scale + delta, points, grid_type, self.lower_bound, self.upper_bound)
@@ -145,7 +143,7 @@ class GridProvider:
                 return Grid(dim, scale + delta, current_grid, grid_type, self.lower_bound, self.upper_bound)
 
         elif grid_type == GridType.RANDOM_CHEBYSHEV:
-            target_no_points = int(calculate_num_points(scale=scale + delta, dimension=dim) * self.multiplier)
+            target_no_points = int(self.multiplier_fun(calculate_num_points(scale=scale + delta, dimension=dim)))
             if sample_new:
                 points = self._generate_with_chebyshev_density(target_no_points)
                 return Grid(dim, scale + delta, points, grid_type, self.lower_bound, self.upper_bound)
