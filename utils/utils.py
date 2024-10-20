@@ -497,28 +497,3 @@ def find_degree(scale: int, dimension: int):
         normal_basis_size = math.comb(dimension + degree, dimension)
 
     return degree
-
-
-def load_basis_indices_if_existent(dim: int, scale: int, path=None):
-    if path is None:
-        path = os.path.join('indices')
-
-    os.makedirs(path, exist_ok=True)
-    path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
-
-    try:
-        return np.load(path, allow_pickle=True)
-    except FileNotFoundError:
-        return None
-
-
-def save_basis_indices(_b_idx, dim: int, scale: int, path=None):
-    if path is None:
-        path = os.path.join('indices')
-
-    os.makedirs(path, exist_ok=True)
-    path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
-
-    # only save if not existent already
-    if not os.path.exists(path):
-        np.save(path, _b_idx, allow_pickle=True)

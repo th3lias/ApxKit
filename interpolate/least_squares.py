@@ -31,7 +31,7 @@ class LeastSquaresInterpolator(Interpolator):
         if self.basis is None:
             self.basis = self._build_basis()
 
-        elif self.method == LeastSquaresMethod.EXACT:
+        if self.method == LeastSquaresMethod.EXACT:
             self._approximate_exact(f)
         elif self.method == LeastSquaresMethod.NUMPY_LSTSQ:
             self._approximate_numpy_lstsq(f)

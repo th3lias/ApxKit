@@ -7,10 +7,13 @@ from utils.utils import plot_errors
 from typing import Union
 import argparse
 
+import numpy as np
+
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_range = range(9, 10)
-    scale_range = range(1, 8)
+
+    dim_range = range(3, 4)
+    scale_range = range(1, 9)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -24,7 +27,7 @@ def main_method(folder_name: Union[str, None] = None):
 
     multiplier_fun = lambda x: additional_multiplier * x
 
-    n_fun_parallel = 5
+    n_fun_parallel = 20
 
     ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
 
@@ -36,21 +39,32 @@ def main_method(folder_name: Union[str, None] = None):
     if folder_name is None:
         folder_name = current_datetime.strftime('%d_%m_%Y_%H_%M')
 
-    run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
-                    scales=scale_range, methods=methods, average_c=average_c,
-                    multiplier_fun=multiplier_fun, ls_method=ls_method_type, smolyak_method=smolyak_method_type,
-                    folder_name=folder_name)
+    error = False
 
-    # save all images in results folder
-    total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
-    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-        for dim in dim_range:
-            for fun_type in function_types:
-                for seed in realization_seeds:
-                    plot_errors(dim, seed, fun_type, scale_range, multiplier_fun, save=True,
-                                folder_name=folder_name, same_axis_both_plots=True)
-                    pbar.update(1)
-    #
+    try:
+        run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
+                        scales=scale_range, methods=methods, average_c=average_c,
+                        multiplier_fun=multiplier_fun, ls_method=ls_method_type, smolyak_method=smolyak_method_type,
+                        folder_name=folder_name)
+    except MemoryError as e:
+        error = True
+        print(f"Memory error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
+
+    except Exception as e:
+        error = True
+        print(f"Unknown error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
+
+    if not error:
+        # save all images in results folder
+        total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
+        with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+            for dim in dim_range:
+                for fun_type in function_types:
+                    for seed in realization_seeds:
+                        plot_errors(dim, seed, fun_type, scale_range, multiplier_fun, save=True,
+                                    folder_name=folder_name, same_axis_both_plots=True)
+                        pbar.update(1)
+
     print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
 
