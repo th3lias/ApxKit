@@ -28,9 +28,6 @@ def main_method(folder_name: Union[str, None] = None):
 
     ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
 
-    if ls_method_type == LeastSquaresMethod.PYTORCH_NEURAL_NET:
-        function_types = [FunctionType.OSCILLATORY]
-
     current_datetime = datetime.datetime.now()
 
     print(f"Started program at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')}")
