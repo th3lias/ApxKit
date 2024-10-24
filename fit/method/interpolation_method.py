@@ -1,8 +1,3 @@
-#  Created 2024. (Elias Mindlberger)
-
-#  Created 2024. (Elias Mindlberger)
-
-#  Created 2024. (Elias Mindlberger)
 from fit.method.fit_method import FitMethod
 
 

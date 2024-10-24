@@ -1,4 +1,3 @@
-#  Created 2024. (Elias Mindlberger)
 import numpy as np
 
 

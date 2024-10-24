@@ -1,4 +1,3 @@
-#  Created 2024. (Elias Mindlberger)
 import numpy as np
 
 from grid.rule.random_grid_rule import RandomGridRule
@@ -6,7 +5,7 @@ from grid.grid.grid import Grid
 
 
 class RandomGrid(Grid):
-    def __init__(self, input_dim: int, output_dim: int, scale: int, grid: np.ndarray | jnp.ndarray,
+    def __init__(self, input_dim: int, output_dim: int, scale: int, grid: np.ndarray,
                  rule: RandomGridRule, lower_bound: float = 0., upper_bound: float = 1., seed=None):
         super().__init__(input_dim, output_dim, scale, grid, rule, lower_bound, upper_bound)
         self.seed = seed if seed else None

@@ -1,8 +1,6 @@
-#  Created 2024. (Elias Mindlberger)
 from typing import Callable
 
 from fit.fitter import Fitter
-from function.smolyak_model import SmolyakModel
 from function.model.smolyak_model import SmolyakModel
 from grid.grid.rule_grid import RuleGrid
 

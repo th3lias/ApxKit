@@ -1,11 +1,8 @@
-#  Created 2024. (Elias Mindlberger)
 import time
 
 import numpy as np
 
 from function.f import Function
-from function.parametrized_f import ParametrizedFunction
-from function.parametrized import ParametrizedFunction
 from function.parametrized_f import ParametrizedFunction
 from grid.provider.rule_grid_provider import RuleGridProvider
 from test_functions.function_types import FunctionType

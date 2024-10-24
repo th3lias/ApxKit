@@ -1,4 +1,3 @@
-#  Created 2024. (Elias Mindlberger)
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 
@@ -7,10 +6,8 @@ from grid.rule.rule import GridRule
 
 class Grid:
     """ Wrapper for an Array type used for interpolation. """
-
-    # Perhaps there is a need to include this as a Wrapper for TasmanianSparseGrids as well.
     def __init__(self, input_dim: int, output_dim: int, scale: int,
-                 grid: jnp.ndarray | np.ndarray | TasmanianSparseGrid, rule: GridRule, lower_bound: float = 0.,
+                 grid: np.ndarray | TasmanianSparseGrid, rule: GridRule, lower_bound: float = 0.,
                  upper_bound: float = 1.):
         self.input_dim = input_dim
         self.output_dim = output_dim
@@ -32,7 +29,7 @@ class Grid:
 
     def vstack(self, other):
         """
-        This method may be implemented when grid is of type np.ndarray or jnp.ndarray.
+        This method may be implemented when grid is of type np.ndarray.
         """
         raise NotImplementedError("Method not implemented for this grid type.")
 

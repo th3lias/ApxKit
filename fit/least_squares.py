@@ -1,8 +1,6 @@
-#  Created 2024. (Elias Mindlberger)
 from typing import Callable
 
 from fit.fitter import Fitter
-from function.model.least_squares_model import LeastSquaresModel
 from grid.grid.grid import Grid
 
 
