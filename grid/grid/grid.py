@@ -20,13 +20,6 @@ class Grid:
     def get_num_points(self):
         raise NotImplementedError("Method not implemented for this grid type.")
 
-    def numpy(self):
-        """
-        This method has different implementations depending on the type of the grid.
-        The implementation is thus delegated.
-        """
-        raise NotImplementedError("Method not implemented for this grid type.")
-
     def vstack(self, other):
         """
         This method may be implemented when grid is of type np.ndarray.

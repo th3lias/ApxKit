@@ -42,7 +42,7 @@ def main_method(folder_name: Union[str, None] = None):
     try:
         run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
                         scales=scale_range, methods=methods, average_c=average_c,
-                        multiplier_fun=multiplier_fun, ls_method=ls_method_type, smolyak_method=smolyak_method_type,
+                        ls_method=ls_method_type, smolyak_method=smolyak_method_type,
                         folder_name=folder_name)
     except MemoryError as e:
         error = True
