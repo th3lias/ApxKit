@@ -25,7 +25,6 @@ class Interpolator:
         self.coeff = None
 
     def interpolate(self, grid: Union[Grid, np.ndarray]):
-        # TODO: Maybe change to JNP aswell in the type-hints @th3lias
         raise NotImplementedError
 
     def fit(self, f: Union[Callable, List[Callable]]) -> None:

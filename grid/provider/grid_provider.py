@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from TasmanianSG import TasmanianSparseGrid
 
 from grid.grid.grid import Grid
