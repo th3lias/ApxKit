@@ -241,6 +241,9 @@ fabric.properties
 # indices
 indices/
 
+# grids
+grids/
+
 # logs for tensorboard
 logs/
 

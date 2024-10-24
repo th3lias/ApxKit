@@ -2,6 +2,7 @@
 Provides sparse grids and random grids.
 """
 import numpy as np
+import os
 from deprecated import deprecated
 
 from grid.grid import Grid
@@ -53,7 +54,13 @@ class GridProvider:
             raise ValueError("Please provide the fineness parameter of the grid")
 
         if grid_type == GridType.CHEBYSHEV:
-            points = self._full_cheby_grid(level=scale)
+            points = GridProvider._load_sparse_grid_if_existent(self.dim, scale=scale, low=self.lower_bound,
+                                                                high=self.upper_bound)
+            if not points:
+                points = self._full_cheby_grid(level=scale)
+                GridProvider._save_sparse_grid(points, self.dim, scale=scale, low=self.lower_bound,
+                                               high=self.upper_bound)
+
             return Grid(self.dim, scale, points, grid_type)
 
         n_points = calculate_num_points(scale, self.dim)
@@ -106,6 +113,12 @@ class GridProvider:
             n_points = current_grid.shape[0]
 
         if grid_type == GridType.CHEBYSHEV:
+
+            points = GridProvider._load_sparse_grid_if_existent(self.dim, scale=scale + delta, low=self.lower_bound,
+                                                                high=self.upper_bound)
+            if points:
+                return Grid(dim, scale + delta, points, grid_type, self.lower_bound, self.upper_bound)
+
             partitions = Partition(dim, dim + scale + delta).get_all_partitions()
             points = list()
             for parti in partitions:
@@ -124,6 +137,8 @@ class GridProvider:
 
             combined_grid = np.unique(np.vstack([current_grid, additional_points]), axis=0)
 
+            GridProvider._save_sparse_grid(combined_grid, self.dim, scale=scale + delta, low=self.lower_bound,
+                                           high=self.upper_bound)
             return Grid(dim, scale + delta, combined_grid, grid_type, self.lower_bound, self.upper_bound)
 
         elif grid_type == GridType.RANDOM_UNIFORM:
@@ -246,3 +261,28 @@ class GridProvider:
         arr = np.arange(1, n + 1)
         nodes = np.around((-1) * np.cos(np.pi * (arr - 1) / (n - 1)), decimals=n_decimals)
         return nodes
+
+    @staticmethod
+    def _load_sparse_grid_if_existent(dim: int, scale: int, low: float, high: float, path=None) -> np.array:
+        if path is None:
+            path = os.path.join('grids')
+
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, f'dim{dim}_scale{scale}_low{low}_high{high}.npy')
+
+        try:
+            return np.load(path, allow_pickle=True)
+        except FileNotFoundError:
+            return None
+
+    @staticmethod
+    def _save_sparse_grid(grid: np.array, dim: int, scale: int, low: float, high: float, path=None) -> None:
+        if path is None:
+            path = os.path.join('grids')
+
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, f'dim{dim}_scale{scale}_low{low}_high{high}.npy')
+
+        # only save if not existent already
+        if not os.path.exists(path):
+            np.save(path, grid, allow_pickle=True)

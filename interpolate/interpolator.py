@@ -1,3 +1,4 @@
+import os
 from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
 
@@ -8,7 +9,6 @@ from itertools import product, permutations
 
 from interpolate.partition import Partition
 from deprecated import deprecated
-from utils.utils import load_basis_indices_if_existent, save_basis_indices
 
 
 class Interpolator:
@@ -17,7 +17,7 @@ class Interpolator:
         self.scale = grid.scale
         self.dim = grid.dim
         self._idx = None
-        self._b_idx = load_basis_indices_if_existent(self.dim, self.scale)
+        self._b_idx = Interpolator._load_basis_indices_if_existent(self.dim, self.scale)
         self.basis = None
         self.L = None
         self.U = None
@@ -45,7 +45,7 @@ class Interpolator:
         if self._b_idx is None and b_idx is None:
             self._idx = self._smolyak_idx()
             self._b_idx = self._poly_idx(self._idx)
-            save_basis_indices(self._b_idx, self.dim, self.scale)
+            Interpolator._save_basis_indices(self._b_idx, self.dim, self.scale)
         elif b_idx is not None:
             self._b_idx = b_idx
 
@@ -262,3 +262,28 @@ class Interpolator:
         for i in range(2, n + 1):
             results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
         return results
+
+    @staticmethod
+    def _load_basis_indices_if_existent(dim: int, scale: int, path=None):
+        if path is None:
+            path = os.path.join('indices')
+
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
+
+        try:
+            return np.load(path, allow_pickle=True)
+        except FileNotFoundError:
+            return None
+
+    @staticmethod
+    def _save_basis_indices(_b_idx, dim: int, scale: int, path=None):
+        if path is None:
+            path = os.path.join('indices')
+
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
+
+        # only save if not existent already
+        if not os.path.exists(path):
+            np.save(path, _b_idx, allow_pickle=True)
