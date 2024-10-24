@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from test_functions.function_types import FunctionType
-from grid.grid.grid import Grid
+from grid.grid import Grid
 
 
 def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[float, np.ndarray]:
@@ -85,7 +85,7 @@ def visualize_point_grid_1d(points: Union[Grid, np.ndarray], alpha: float) -> No
     """
 
     if isinstance(points, Grid):
-        points = points.grid.ravel()
+        points = points.grid
 
     if len(points.shape) == 1:
         # 1D points
@@ -236,7 +236,7 @@ def get_next_filename(path, extension='png'):
     return f"{next_number}.{extension}"
 
 
-def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range, additional_multiplier: float,
+def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range, multiplier_fun: Callable,
                 folder_name: str, path: Union[str, None] = None, save: bool = False,
                 save_path: Union[str, None] = None, same_axis_both_plots: bool = True):
     """
@@ -247,7 +247,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
     :param seed: Representing the realization of the algorithm.
     :param function_type: Specifies which function should be considered
     :param scales: range of scales, which are considered
-    :param additional_multiplier: specifies which multiplier was used to increase the number of samples in least squares
+    :param multiplier_fun: specifies which multiplier was used to increase the number of samples in least squares
     :param folder_name: name of the folder where the results are stored
     :param path: Path of the results-csv file. If None, a default path will be used.
     :param save: Specifies whether the images should be saved. If False, the images are shown.
@@ -360,7 +360,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
             avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=' '))
             avg_c_str = str(int(np.round(avg_c, 0)))
             fig.suptitle(
-                f'{function_type.name}; multiplier={additional_multiplier}; dim={dimension}'
+                f'{function_type.name}; multiplier={multiplier_fun(1.0)}; dim={dimension}'
                 f'; avg_c={avg_c}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
@@ -497,25 +497,3 @@ def find_degree(scale: int, dimension: int):
         normal_basis_size = math.comb(dimension + degree, dimension)
 
     return degree
-
-
-def load_basis_indices_if_existent(dim: int, scale: int, path: str = None):
-    if path is None:
-        path = str(os.path.join('indices'))
-    os.makedirs(path, exist_ok=True)
-    path = os.path.join(path, f"dim{dim}_scale{scale}.npy")
-    try:
-        return np.load(path, allow_pickle=True)
-    except FileNotFoundError:
-        return None
-
-
-def save_basis_indices(_b_idx, dim: int, scale: int, path: str = None):
-    if path is None:
-        path = str(os.path.join('indices'))
-    os.makedirs(path, exist_ok=True)
-    path = os.path.join(path, f'dim{dim}_scale{scale}.npy')
-
-    # only save if not existent already
-    if not os.path.exists(path):
-        np.save(path, _b_idx, allow_pickle=True)
