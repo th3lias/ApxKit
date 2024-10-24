@@ -6,7 +6,7 @@ from test_functions.function_types import FunctionType
 
 
 def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, None] = None,
-                      w: Union[np.array, None] = None) -> Callable:
+                      w: Union[np.array, None] = None) -> tuple[Callable, np.ndarray, np.ndarray]:
     """
     Creates a callable function from the various kind of function (families).
     They're defined in the interval [0,1]^d.
@@ -48,7 +48,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.PRODUCT_PEAK:
 
@@ -63,9 +63,9 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             elif x.ndim == 2:
                 return np.prod(1 / (1 / (np.square(c)) + np.square(x - w)), axis=1).squeeze()
             else:
-                raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+                raise ValueError(f"Cannot handle an array with number ofa dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.CORNER_PEAK:
 
@@ -85,7 +85,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.GAUSSIAN:
 
@@ -102,7 +102,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.CONTINUOUS:
 
@@ -119,7 +119,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.DISCONTINUOUS:
 
@@ -141,7 +141,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
                 return np.array([0 if i[0] > w[0] or i[1] > w[1] else np.exp(np.inner(i, c)) for i in x])
         else:
             raise ValueError("Wrong dimension!")
-        return f
+        return f, c, w
 
     if function_type == FunctionType.G_FUNCTION:
 
@@ -167,7 +167,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.MOROKOFF_CALFISCH_1:
 
@@ -193,7 +193,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.MOROKOFF_CALFISCH_2:
         if c is None:
@@ -218,7 +218,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.ROOS_ARNOLD:
         if c is None:
@@ -243,7 +243,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.BRATLEY:
         if c is None:
@@ -283,7 +283,7 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w
 
     if function_type == FunctionType.ZHOU:
 
@@ -318,4 +318,4 @@ def get_test_function(function_type: FunctionType, d: int, c: Union[np.array, No
             else:
                 raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
-        return f
+        return f, c, w

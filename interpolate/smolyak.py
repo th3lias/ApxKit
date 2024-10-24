@@ -1,11 +1,12 @@
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
+from TasmanianSG import TasmanianSparseGrid
 from scipy.linalg import lu
 
-from grid.grid import Grid
+from grid.grid.grid import Grid
 from interpolate.basis_types import BasisType
-from interpolate.interpolation_methods import SmolyakMethod
+from fit.method.interpolation_method import InterpolationMethod
 from interpolate.interpolator import Interpolator
 
 
@@ -19,7 +20,7 @@ from interpolate.interpolator import Interpolator
 
 
 class SmolyakInterpolator(Interpolator):
-    def __init__(self, grid: Grid, method: SmolyakMethod, basis_type: BasisType = BasisType.CHEBYSHEV):
+    def __init__(self, grid: Grid, method: InterpolationMethod, basis_type: BasisType = BasisType.CHEBYSHEV):
         if grid is None:
             raise ValueError("Grid must not be None, but of type Grid!")
 
@@ -27,16 +28,17 @@ class SmolyakInterpolator(Interpolator):
         self.method = method
         self.basis_type = basis_type
 
-    def set_method(self, method: SmolyakMethod):
+    def set_method(self, method: InterpolationMethod):
         self.method = method
 
     def fit(self, f: Union[Callable, List[Callable]]):
 
-        if self.method == SmolyakMethod.STANDARD:
+        if self.method == InterpolationMethod.STANDARD:
             if self.basis is None:
                 self.basis = self._build_basis()
                 self.L, self.U = lu(self.basis, permute_l=True)[-2:]
-            n_samples = self.grid.grid.shape[0]
+            n_samples = self.grid.get_num_points() if isinstance(self.grid.grid, TasmanianSparseGrid) else \
+            self.grid.grid.shape[0]
             if isinstance(f, list):
                 y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
                 for i, func in enumerate(f):
@@ -49,7 +51,7 @@ class SmolyakInterpolator(Interpolator):
 
             self.coeff = coeff
 
-        elif self.method == SmolyakMethod.LAGRANGE:
+        elif self.method == InterpolationMethod.LAGRANGE:
             raise NotImplementedError("Not yet implemented")
 
         else:
@@ -59,13 +61,13 @@ class SmolyakInterpolator(Interpolator):
         if isinstance(grid, Grid):
             grid = grid.grid
 
-        if self.method == SmolyakMethod.STANDARD:
+        if self.method == InterpolationMethod.STANDARD:
             data_transformed = self._build_basis(grid=grid, b_idx=self._b_idx)
             y_hat = data_transformed @ self.coeff
             if y_hat.ndim > 1:
                 return y_hat.T
             return y_hat
-        elif self.method == SmolyakMethod.LAGRANGE:
+        elif self.method == InterpolationMethod.LAGRANGE:
             raise NotImplementedError("The method is not implemented yet")
         else:
             raise ValueError(f"Method {self.method} is not supported!")
