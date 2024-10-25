@@ -1,7 +1,7 @@
 # A small study of interpolation and approximation methods
 
 This library aims to make the exploration of various state-of-the-art interpolation and approximation methods easily
-accessible to mathematicians, computer scientists, machine learning practitioners, and others.
+accessible to mathematicians, computer scientists, machine learning practitioners and others.
 
 We have implemented and tested basic interpolation and approximation methods, such as Least Squares on random grid
 points and Sparse Grids using Smolyak's Algorithm. For our tests, we used well-known (in numerical analysis at least)
