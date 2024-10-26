@@ -1,4 +1,6 @@
 import numpy as np
+from typing import Union
+
 
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
@@ -8,11 +10,10 @@ from function.utils import oscillatory, product_peak, corner_peak, gaussian, con
 
 class ParametrizedFunctionProvider:
     @staticmethod
-    def get_function(function_type: FunctionType, d, c, w) -> ParametrizedFunction:
+    def get_function(function_type: FunctionType, d: int, c: Union[np.array, None] = None,
+                      w: Union[np.array, None] = None) -> ParametrizedFunction:
         if not isinstance(function_type, FunctionType):
             raise ValueError("function_type must be of type FunctionType.")
-        if c is None or w is None:
-            raise ValueError("c and w must be provided.")
         match function_type:
             case FunctionType.OSCILLATORY:
                 exe = lambda x: oscillatory(x, d, c, w)

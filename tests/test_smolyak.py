@@ -5,7 +5,9 @@ import numpy as np
 from grid.provider.rule_grid_provider import RuleGridProvider
 from fit.method.interpolation_method import InterpolationMethod
 from interpolate.smolyak import SmolyakInterpolator
-from test_functions.functions import get_test_function, FunctionType
+from function.provider import ParametrizedFunctionProvider
+from function.type import FunctionType
+
 from utils.utils import sample
 
 
@@ -26,17 +28,17 @@ class SmolyakTests(unittest.TestCase):
         self.test_grid = np.random.uniform(low=self.lb, high=self.ub, size=(self.n_test_samples, self.dimension))
 
     def test_parallel_standard(self):
-        f_1 = get_test_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_1 = ParametrizedFunctionProvider.get_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_2 = get_test_function(FunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_2 = ParametrizedFunctionProvider.get_function(FunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_3 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_3 = ParametrizedFunctionProvider.get_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_4 = get_test_function(FunctionType.GAUSSIAN, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_4 = ParametrizedFunctionProvider.get_function(FunctionType.GAUSSIAN, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_5 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_5 = ParametrizedFunctionProvider.get_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_6 = get_test_function(FunctionType.DISCONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_6 = ParametrizedFunctionProvider.get_function(FunctionType.DISCONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
 
         f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]
@@ -75,20 +77,20 @@ class SmolyakTests(unittest.TestCase):
         for i in range(6):
             self.assertTrue(np.isclose(y_hat_individual[i], y_hat_collected[i]).all(), f"Not close for index {i}")
 
-    def test_parallel_largrange(self):
+    def test_parallel_lagrange(self):
         # Only makes sense if it works with multiple functions in parallel (probably not)
 
-        f_1 = get_test_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_1 = ParametrizedFunctionProvider.get_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_2 = get_test_function(FunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_2 = ParametrizedFunctionProvider.get_function(FunctionType.PRODUCT_PEAK, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_3 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_3 = ParametrizedFunctionProvider.get_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_4 = get_test_function(FunctionType.GAUSSIAN, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_4 = ParametrizedFunctionProvider.get_function(FunctionType.GAUSSIAN, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_5 = get_test_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_5 = ParametrizedFunctionProvider.get_function(FunctionType.CONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
-        f_6 = get_test_function(FunctionType.DISCONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
+        f_6 = ParametrizedFunctionProvider.get_function(FunctionType.DISCONTINUOUS, c=sample(dim=self.dimension), w=sample(dim=self.dimension),
                                 d=self.dimension)
 
         f_hat_collected = [f_1, f_2, f_3, f_4, f_5, f_6]

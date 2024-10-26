@@ -38,3 +38,4 @@ class RuleGridProvider(GridProvider):
         old_scale = current_grid.scale
         del current_grid
         return self.generate(old_scale + delta)
+        # TODO[Jakob] Check whether we can increase the scale without generating a new one

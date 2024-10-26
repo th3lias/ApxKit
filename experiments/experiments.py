@@ -18,7 +18,8 @@ from fit.method.least_squares_method import LeastSquaresMethod
 from fit.method.interpolation_method import InterpolationMethod
 from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
-from test_functions.functions import FunctionType, get_test_function
+from function.type import FunctionType
+from function.provider import ParametrizedFunctionProvider
 from utils.utils import calculate_num_points
 from utils.utils import max_error_function_values, l2_error_function_values
 
@@ -75,7 +76,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
         for j in range(n_parallel):
             for k in range(n_avg_c):
                 index = i * n_parallel + j * n_avg_c + k
-                f = get_test_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
+                f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
                 functions.append(f)
                 y[index, :] = f(test_grid)
                 function_names.append(func_type.name)
@@ -199,7 +200,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
         for j in range(n_parallel):
             for k in range(n_avg_c):
                 index = i * n_parallel + j * n_avg_c + k
-                f = get_test_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
+                f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
                 functions.append(f)
                 y[index, :] = f(test_grid)
                 function_names.append(func_type.name)

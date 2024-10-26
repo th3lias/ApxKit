@@ -3,11 +3,11 @@ from typing import Callable, Union, List, Tuple
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 
-from grid.grid import Grid
-from grid.grid_type import GridType
+from grid.grid.grid import Grid
+from grid.rule.random_grid_rule import RandomGridRule
 from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
-from interpolate.interpolation_methods import LeastSquaresMethod
+from fit.method.least_squares_method import LeastSquaresMethod
 from utils.utils import find_degree
 
 from scipy.linalg import lu
@@ -100,12 +100,12 @@ class LeastSquaresInterpolator(Interpolator):
 
     def _self_implementation(self, y: np.ndarray):
 
-        if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
+        if self.grid.grid_type == RandomGridRule.CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
                 weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
 
-        elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
+        elif self.grid.grid_type == RandomGridRule.UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
             raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
@@ -137,12 +137,12 @@ class LeastSquaresInterpolator(Interpolator):
             y = f(grid)
 
         # weighted least squares
-        if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
+        if self.grid.grid_type == RandomGridRule.CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
                 weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
 
-        elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
+        elif self.grid.grid_type == RandomGridRule.UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
             raise ValueError(f"Unsupported grid type {self.grid.grid_type}")

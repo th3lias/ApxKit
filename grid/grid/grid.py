@@ -6,6 +6,7 @@ from grid.rule.rule import GridRule
 
 class Grid:
     """ Wrapper for an Array type used for interpolation. """
+
     def __init__(self, input_dim: int, output_dim: int, scale: int,
                  grid: np.ndarray | TasmanianSparseGrid, rule: GridRule, lower_bound: float = 0.,
                  upper_bound: float = 1.):
@@ -32,3 +33,6 @@ class Grid:
 
     def __hash__(self):
         return hash((self.input_dim, self.output_dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound))
+
+    # TODO [Jakob] check if it is possible to include the "_save_sparse_grid" method like in the other branch
+    #  (as well as the correpsonding load method)

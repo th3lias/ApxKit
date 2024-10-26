@@ -1,5 +1,3 @@
-from typing import Callable
-
 from fit.fitter import Fitter
 from grid.grid.grid import Grid
 

@@ -1,15 +1,16 @@
 import datetime
 from experiments.experiments import run_experiments
 from tqdm import tqdm
-from test_functions.function_types import FunctionType
-from interpolate.interpolation_methods import LeastSquaresMethod, SmolyakMethod
+from function.type import FunctionType
+from fit.method.least_squares_method import LeastSquaresMethod
+from fit.method.interpolation_method import InterpolationMethod
 from utils.utils import plot_errors
 from typing import Union
 import argparse
 
+# TODO [Jakob] Check if load and save indices and grids is implemented if possible
 
 def main_method(folder_name: Union[str, None] = None):
-
     dim_range = range(3, 4)
     scale_range = range(1, 9)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
@@ -20,10 +21,10 @@ def main_method(folder_name: Union[str, None] = None):
 
     realization_seeds = [42]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
     average_c = [1]
-    smolyak_method_type = SmolyakMethod.STANDARD
+    smolyak_method_type = InterpolationMethod.STANDARD
     additional_multiplier = 2
 
-    multiplier_fun = lambda x: additional_multiplier * x
+    multiplier_fun = lambda x: additional_multiplier * x # TODO: New method (from Elias) might not adapt this behavior
 
     n_fun_parallel = 20
 

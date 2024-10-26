@@ -16,6 +16,7 @@ def oscillatory(x, d, c, w):
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
+
 def product_peak(x, d, c, w):
     """
         Product peak function.
@@ -28,6 +29,7 @@ def product_peak(x, d, c, w):
         return np.prod(1 / (1 / (np.square(c)) + np.square(x - w)), axis=1).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
 
 def corner_peak(x, d, c, w):
     """
@@ -45,6 +47,7 @@ def corner_peak(x, d, c, w):
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
+
 def gaussian(x, d, c, w):
     """
         Gaussian function.
@@ -57,6 +60,7 @@ def gaussian(x, d, c, w):
         return np.exp(-np.sum(np.square(np.multiply(c, x - w)), axis=1)).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
 
 def continuous(x, d, c, w):
     """
@@ -71,13 +75,16 @@ def continuous(x, d, c, w):
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
+
 def discountinuous_1d(x, d, c, w):
     x = x.squeeze()
     return np.array([0 if i > w[0] else np.exp(c[0] * i) for i in x])
 
+
 def discountinuous_nd(x, d, c, w):
     x = x.squeeze()
     return np.array([0 if i[0] > w[0] or i[1] > w[1] else np.exp(np.inner(i, c)) for i in x])
+
 
 def g_function(x, d, c, w):
     """
@@ -94,6 +101,7 @@ def g_function(x, d, c, w):
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
+
 def morokoff_calfisch_1(x, d, c, w):
     """
         Morokoff Calfisch function.
@@ -108,6 +116,7 @@ def morokoff_calfisch_1(x, d, c, w):
         return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
 
 def morokoff_calfisch_2(x, d, c, w):
     """
@@ -124,6 +133,7 @@ def morokoff_calfisch_2(x, d, c, w):
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
 
+
 def roos_arnold(x, d, c, w):
     """
         Roos Arnold Function.
@@ -138,6 +148,7 @@ def roos_arnold(x, d, c, w):
         return np.prod(np.abs(4 * np.multiply(c, x) - 2 - w), axis=1).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
 
 def bratley(x, d, c, w):
     """
@@ -168,6 +179,7 @@ def bratley(x, d, c, w):
             return np.array(val).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
 
 def zhou(x, d, c, w):
     """

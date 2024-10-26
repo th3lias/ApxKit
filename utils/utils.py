@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from test_functions.function_types import FunctionType
-from grid.grid import Grid
+from function.type import FunctionType
+from grid.grid.grid import Grid
 
 
 def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[float, np.ndarray]:

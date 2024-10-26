@@ -75,7 +75,7 @@ class TestNumberGridPoints(unittest.TestCase):
         provider = RuleGridProvider(dim)
         grid = provider.generate(scale=scale)
         n_points = calculate_num_points(scale, dim)
-        self.assertEqual(grid.getNumPoints(), n_points)
+        self.assertEqual(grid.get_num_points(), n_points)
 
     def test_4d_scale_1(self):
         dim = 4
@@ -83,7 +83,7 @@ class TestNumberGridPoints(unittest.TestCase):
         provider = RuleGridProvider(dim)
         grid = provider.generate(scale=scale)
         n_points = calculate_num_points(scale, dim)
-        self.assertEqual(grid.getNumPoints(), n_points)
+        self.assertEqual(grid.get_num_points(), n_points)
 
     def test_12d_scale_4(self):
         dim = 12
@@ -91,7 +91,7 @@ class TestNumberGridPoints(unittest.TestCase):
         provider = RuleGridProvider(dim)
         grid = provider.generate(scale=scale)
         n_points = calculate_num_points(scale, dim)
-        self.assertEqual(grid.getNumPoints(), n_points)
+        self.assertEqual(grid.get_num_points(), n_points)
 
     def test_3d_scale_5(self):
         dim = 3
@@ -99,7 +99,7 @@ class TestNumberGridPoints(unittest.TestCase):
         provider = RuleGridProvider(dim)
         grid = provider.generate(scale=scale)
         n_points = calculate_num_points(scale, dim)
-        self.assertEqual(grid.getNumPoints(), n_points)
+        self.assertEqual(grid.get_num_points(), n_points)
 
     def test_8d_scale_4(self):
         dim = 8
@@ -107,7 +107,7 @@ class TestNumberGridPoints(unittest.TestCase):
         provider = RuleGridProvider(dim)
         grid = provider.generate(scale=scale)
         n_points = calculate_num_points(scale, dim)
-        self.assertEqual(grid.getNumPoints(), n_points)
+        self.assertEqual(grid.get_num_points(), n_points)
 
     def test_7d_scale_1(self):
         dim = 7
@@ -115,7 +115,7 @@ class TestNumberGridPoints(unittest.TestCase):
         provider = RuleGridProvider(dim)
         grid = provider.generate(scale=scale)
         n_points = calculate_num_points(scale, dim)
-        self.assertEqual(grid.getNumPoints(), n_points)
+        self.assertEqual(grid.get_num_points(), n_points)
 
 
 if __name__ == '__main__':
