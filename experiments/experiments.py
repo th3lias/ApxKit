@@ -9,7 +9,9 @@ import pandas as pd
 import psutil
 from tqdm import tqdm
 
+from experiments.smolyak_experiments import interpolate_and_evaluate_list
 from grid.grid.grid import Grid
+from grid.grid.random_grid import RandomGrid
 from grid.provider.random_grid_provider import RandomGridProvider
 from grid.provider.rule_grid_provider import RuleGridProvider
 from grid.rule.random_grid_rule import RandomGridRule
@@ -17,7 +19,10 @@ from interpolate.basis_types import BasisType
 from fit.method.least_squares_method import LeastSquaresMethod
 from fit.method.interpolation_method import InterpolationMethod
 from interpolate.least_squares import LeastSquaresInterpolator
+
 from interpolate.smolyak import SmolyakInterpolator
+from fit.smolyak import Smolyak
+
 from function.type import FunctionType
 from function.provider import ParametrizedFunctionProvider
 from utils.utils import calculate_num_points
@@ -26,7 +31,7 @@ from utils.utils import max_error_function_values, l2_error_function_values
 
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType], seed_list: list[int],
                             n_parallel: int, n_avg_c: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
-                            test_grid: Union[np.ndarray, Grid], lb: float, ub: float, method_type: InterpolationMethod,
+                            test_grid: RandomGrid, lb: float, ub: float, method_type: InterpolationMethod,
                             folder_name: str, path: Union[str, None] = None) -> Grid:
     """
     Runs an experiment (or multiple depending on passed parameters) and appends the results to a results file
@@ -49,13 +54,14 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     :return: The created grid, such that it can be used again for an increased scale
     """
+    # TODO [Jakob]: Adjust the docstring everywhere
 
     # TODO: Delete seed list. It is currently only used to ensure that we have a right plotting
 
     start_time = time.time()
 
-    if isinstance(test_grid, Grid):
-        test_grid = test_grid.grid
+    # if isinstance(test_grid, Grid):
+    #     test_grid = test_grid.grid
 
     n_function_types = int(len(f_types))
 
@@ -70,7 +76,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     functions = list()
     function_names = list()
-    y = np.empty(shape=(n_parallel * n_function_types * n_avg_c, test_grid.shape[0]), dtype=np.float64)
+    # y = np.empty(shape=(n_parallel * n_function_types * n_avg_c, test_grid.shape[0]), dtype=np.float64)
 
     for i, func_type in enumerate(f_types):
         for j in range(n_parallel):
@@ -78,16 +84,20 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
                 index = i * n_parallel + j * n_avg_c + k
                 f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :], w=w[index, :])
                 functions.append(f)
-                y[index, :] = f(test_grid)
+                # y[index, :] = f(test_grid)
                 function_names.append(func_type.name)
 
-    si = SmolyakInterpolator(grid, method=method_type)
-    si.fit(functions)
+    # si = SmolyakInterpolator(grid, method=method_type)
+    # si.fit(functions)
+    # y_hat = si.interpolate(test_grid)
 
-    y_hat = si.interpolate(test_grid)
+    # l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
+    # max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
 
-    l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
-    max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
+    # smol = Smolyak(grid=grid)
+    # smol_model = smol.fit(f)
+    # y_hat = smol_model(test_grid)
+    l_2_error, max_error = interpolate_and_evaluate_list(functions, grid, test_grid)
 
     end_time = time.time()
     needed_time = end_time - start_time
@@ -105,8 +115,8 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
             row_entry['w'] = w[i, :]
             row_entry['c'] = c[i, :]
             row_entry['sum_c'] = row_entry['c'].sum()
-            row_entry['grid_type'] = si.grid.grid_type.name
-            row_entry['basis_type'] = si.basis_type.name
+            row_entry['grid_type'] = grid.rule.name  # si.grid.grid_type.name # TODO [Jakob] Adjust
+            row_entry['basis_type'] =  BasisType.CHEBYSHEV # TODO [Jakob] Adjust - We actually don't need this for Smolyak
             row_entry['method_type'] = method_type.name
             row_entry['n_samples'] = n_samples
             row_entry['scale'] = scale

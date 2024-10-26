@@ -3,10 +3,7 @@ Basis types
 """
 from enum import Enum
 
-from deprecated.classic import deprecated
 
-
-@deprecated
 class BasisType(Enum):
     CHEBYSHEV = 1,
-    REGULAR = 2,
+    REGULAR = 2
