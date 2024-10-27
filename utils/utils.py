@@ -274,11 +274,11 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
 
     smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
     least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
-    boolean_series = (filtered_data['grid_type'] == 'RANDOM_CHEBYSHEV').reindex(least_squares_data.index,
-                                                                                fill_value=False)
+    boolean_series = (filtered_data['grid_type'] == 'CHEBYSHEV').reindex(least_squares_data.index,
+                                                                         fill_value=False)
     least_squares_data_chebyshev_weight = least_squares_data[boolean_series]
-    boolean_series = (filtered_data['grid_type'] == 'RANDOM_UNIFORM').reindex(least_squares_data.index,
-                                                                              fill_value=False)
+    boolean_series = (filtered_data['grid_type'] == 'UNIFORM').reindex(least_squares_data.index,
+                                                                       fill_value=False)
     least_squares_data_uniform = least_squares_data[boolean_series]
 
     smolyak_data = smolyak_data.sort_values(by='scale')

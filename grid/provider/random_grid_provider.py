@@ -1,3 +1,5 @@
+from typing import Callable
+
 import numpy as np
 
 from grid.provider.grid_provider import GridProvider
@@ -10,15 +12,15 @@ from utils.utils import calculate_num_points
 
 class RandomGridProvider(GridProvider):
     def __init__(self, input_dim: int, output_dim: int = 1, lower_bound: float = 0., upper_bound: float = 1.,
-                 seed: int = None, rule: RandomGridRule = RandomGridRule.UNIFORM, multiplier: float = 1.):
+                 seed: int = None, rule: RandomGridRule = RandomGridRule.UNIFORM, multiplier_fun: Callable = lambda x: x):
         super().__init__(input_dim, output_dim, lower_bound, upper_bound)
         self.seed = seed if seed else None
         self.rng = np.random.default_rng(seed=self.seed)
         self.rule = rule
-        self.multiplier = multiplier
+        self.multiplier_fun = multiplier_fun
 
     def generate(self, scale: int) -> RandomGrid:
-        n_points = int(calculate_num_points(scale, self.input_dim) * self.multiplier)
+        n_points = int(self.multiplier_fun(calculate_num_points(scale, self.input_dim)))
         if self.rule == RandomGridRule.UNIFORM:
             return RandomGrid(self.input_dim, self.output_dim, scale, self._generate_uniform(n_points), rule=self.rule,
                               seed=self.seed)
@@ -27,8 +29,8 @@ class RandomGridProvider(GridProvider):
                               rule=self.rule, seed=self.seed)
 
     def increase_scale(self, current_grid: Grid, delta: int = 1, keep_old_pts: bool = True) -> Grid:
-        target_no_points = int(
-            calculate_num_points(scale=current_grid.scale + delta, dimension=self.input_dim) * self.multiplier)
+        target_no_points = int(self.multiplier_fun(
+            calculate_num_points(scale=current_grid.scale + delta, dimension=self.input_dim)))
         if self.rule == RandomGridRule.UNIFORM:
             if keep_old_pts:
                 new_pts = self._generate_uniform(target_no_points - current_grid.get_num_points())

@@ -137,15 +137,15 @@ class LeastSquaresInterpolator(Interpolator):
             y = f(grid)
 
         # weighted least squares
-        if self.grid.grid_type == RandomGridRule.CHEBYSHEV:
+        if self.grid.rule == RandomGridRule.CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
                 weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
 
-        elif self.grid.grid_type == RandomGridRule.UNIFORM:
+        elif self.grid.rule == RandomGridRule.UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
-            raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
+            raise ValueError(f"Unsupported grid type {self.grid.rule}")
 
         x_poly = (weight * self.basis.T).T
         del self.basis

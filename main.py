@@ -8,11 +8,11 @@ from utils.utils import plot_errors
 from typing import Union
 import argparse
 
-# TODO [Jakob] Check if load and save indices and grids is implemented if possible
+# TODO [Jakob] Check if load and save indices and grids is implemented if possible (everywhere)
 
 def main_method(folder_name: Union[str, None] = None):
     dim_range = range(3, 4)
-    scale_range = range(1, 9)
+    scale_range = range(1, 5)
     methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -24,11 +24,11 @@ def main_method(folder_name: Union[str, None] = None):
     smolyak_method_type = InterpolationMethod.STANDARD
     additional_multiplier = 2
 
-    multiplier_fun = lambda x: additional_multiplier * x # TODO: New method (from Elias) might not adapt this behavior
+    multiplier_fun = lambda x: additional_multiplier * x # TODO[Jakob]: New method (from Elias) might not adapt this behavior
 
     n_fun_parallel = 20
 
-    ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
+    ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ # TODO[Jakob]: Make something similar also for Smolyak
 
     current_datetime = datetime.datetime.now()
 
@@ -44,14 +44,15 @@ def main_method(folder_name: Union[str, None] = None):
         run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
                         scales=scale_range, methods=methods, average_c=average_c,
                         ls_method=ls_method_type, smolyak_method=smolyak_method_type,
-                        folder_name=folder_name)
+                        folder_name=folder_name, multiplier_fun=multiplier_fun)
     except MemoryError as e:
         error = True
         print(f"Memory error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
 
-    except Exception as e:
-        error = True
-        print(f"Unknown error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
+    # TODO [Jakob]: Rethink if this is necessary, as in the debugging process it is not useful
+    # except Exception as e:
+    #     error = True
+    #     print(f"Unknown error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
 
     if not error:
         # save all images in results folder
