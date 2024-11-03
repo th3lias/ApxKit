@@ -13,7 +13,11 @@ class RuleGridProvider(GridProvider):
     Allowed grid rules can be found in the GridRule enum and it's descendants.
     """
 
-    def __init__(self, input_dim: int, output_dim: int = 1, lower_bound: float = 0., upper_bound: float = 1.,
+    def __init__(self,
+                 input_dim: int,
+                 output_dim: int = 1,
+                 lower_bound: float = 0.,
+                 upper_bound: float = 1.,
                  strategy: SelectionStrategy = SelectionStrategy.LEVEL,
                  rule: RuleGridRule = RuleGridRule.CLENSHAW_CURTIS):
         """

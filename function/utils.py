@@ -5,7 +5,6 @@ def oscillatory(x, d, c, w):
     """
         Oscillatory function.
     """
-    x = x.squeeze()
     if x.ndim == 1:
         if d != 1:
             return np.cos(np.inner(c, x) + 2 * np.pi * w[0]).squeeze()

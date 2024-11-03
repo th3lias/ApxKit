@@ -23,7 +23,7 @@ class SmolyakModel(Model):
                 Before calling this method, the user should call 'is_fitted' to avoid repeated checking in here.
             !
         """
-        x = x.squeeze()
+        x = x.reshape(-1, self.dim)
         return self.tasmanian.evaluate(x) if x.ndim == 1 else self.tasmanian.evaluateBatch(x)
 
     def is_fitted(self):
