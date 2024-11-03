@@ -33,7 +33,7 @@ class SmolyakInterpolator(Interpolator):
 
     def fit(self, f: Union[Callable, List[Callable]]):
 
-        if self.method == InterpolationMethod.STANDARD:
+        if self.method == InterpolationMethod.STANDARD: # TODO[Jakob] For now this is already queried before. Later we will have 1 Large Smolyak Class, where we use
             if self.basis is None:
                 self.basis = self._build_basis()
                 self.L, self.U = lu(self.basis, permute_l=True)[-2:]
@@ -44,7 +44,7 @@ class SmolyakInterpolator(Interpolator):
                 for i, func in enumerate(f):
                     if not isinstance(func, Callable):
                         raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                    y[:, i] = func(self.grid.grid)
+                    y[:, i] = func(self.grid.grid.getPoints())
             else:
                 y = f(self.grid.grid)
             coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))

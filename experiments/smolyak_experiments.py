@@ -7,6 +7,8 @@ from grid.grid.rule_grid import RuleGrid
 
 import numpy as np # TODO [Jakob] I am unhappy with the current error calculation. Maybe we could like make here a "quality assessment wrapper function/class".
 
+# TODO: Add docstring
+# TODO: Inconsistent. Why do we return only the interpolated here and in the method where we accept a list of functions, we return the losses
 def interpolate_and_evaluate(function: Function, training_grid: RuleGrid, points: RandomGrid):
     """
     This function interpolates the given function using a standard grid. The function is assumed to have the same
@@ -20,6 +22,7 @@ def interpolate_and_evaluate(function: Function, training_grid: RuleGrid, points
     return interpolated
 
 
+# TODO: Add docstring
 def interpolate_and_evaluate_list(functions: list[Function], training_grid: RuleGrid, points: RandomGrid):
     """
     This function interpolates the given functions using a standard grid. The functions are assumed to have the same

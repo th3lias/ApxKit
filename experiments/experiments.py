@@ -28,6 +28,7 @@ from function.provider import ParametrizedFunctionProvider
 from utils.utils import calculate_num_points
 from utils.utils import max_error_function_values, l2_error_function_values
 
+
 # TODO[Jakob] f_types might be also only a singleton -> Adjust (and also adjust docstring)
 def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: list[FunctionType], seed_list: list[int],
                             n_parallel: int, n_avg_c: int, scale: int, grid: Union[Grid, None], test_grid_seed: int,
@@ -57,6 +58,7 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
     # TODO [Jakob]: Adjust the docstring everywhere
 
     # TODO: Delete seed list. It is currently only used to ensure that we have a right plotting
+    # TODO: Experiments showed that the seed does not make a huge difference for that much points
 
     start_time = time.time()
 
@@ -76,29 +78,42 @@ def run_experiments_smolyak(dim: int, w: np.ndarray, c: np.ndarray, f_types: lis
 
     functions = list()
     function_names = list()
-    # y = np.empty(shape=(n_parallel * n_function_types * n_avg_c, test_grid.shape[0]), dtype=np.float64)
 
-    for i, func_type in enumerate(f_types):
-        for j in range(n_parallel):
-            for k in range(n_avg_c):
-                index = i * n_parallel + j * n_avg_c + k
-                f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :],
-                                                              w=w[index, :])
-                functions.append(f)
-                # y[index, :] = f(test_grid)
-                function_names.append(func_type.name)
+    l_2_error = []
+    max_error = []
 
-    # si = SmolyakInterpolator(grid, method=method_type)
-    # si.fit(functions)
-    # y_hat = si.interpolate(test_grid)
+    if method_type == InterpolationMethod.TASMANIAN:  # TODO[Jakob] The for loop could be put outside
+        for i, func_type in enumerate(f_types):
+            for j in range(n_parallel):
+                for k in range(n_avg_c):
+                    index = i * n_parallel + j * n_avg_c + k
+                    f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :],
+                                                                  w=w[index, :])
+                    functions.append(f)
+                    function_names.append(func_type.name)
 
-    # l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
-    # max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
+        l_2_error, max_error = interpolate_and_evaluate_list(functions, grid, test_grid)
 
-    # smol = Smolyak(grid=grid)
-    # smol_model = smol.fit(f)
-    # y_hat = smol_model(test_grid)
-    l_2_error, max_error = interpolate_and_evaluate_list(functions, grid, test_grid)
+    if method_type == InterpolationMethod.STANDARD:
+        y = np.empty(shape=(n_parallel * n_function_types * n_avg_c, test_grid.get_num_points()), dtype=np.float64)
+
+        for i, func_type in enumerate(f_types):
+            for j in range(n_parallel):
+                for k in range(n_avg_c):
+                    index = i * n_parallel + j * n_avg_c + k
+                    f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :],
+                                                                  w=w[index, :])
+                    functions.append(f)
+                    y[index, :] = f(test_grid.grid)
+                    function_names.append(func_type.name)
+
+        si = SmolyakInterpolator(grid, method=method_type)
+        si.fit(functions)
+
+        y_hat = si.interpolate(test_grid)
+
+        l_2_error = l2_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
+        max_error = max_error_function_values(y, y_hat).reshape(n_parallel * n_function_types * n_avg_c)
 
     end_time = time.time()
     needed_time = end_time - start_time
@@ -239,7 +254,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
         row_entry['w'] = w[i, :]
         row_entry['c'] = c[i, :]
         row_entry['sum_c'] = row_entry['c'].sum()
-        row_entry['grid_type'] = grid_type.name # TODO[Jakob] Check that
+        row_entry['grid_type'] = grid_type.name  # TODO[Jakob] Check that
         row_entry['basis_type'] = ls.basis_type.name
         row_entry['method_type'] = method_type.name
         row_entry['n_samples'] = int(multiplier_fun(n_samples))
@@ -378,20 +393,20 @@ def run_experiments(function_types: list[FunctionType], n_functions_parallel: in
                     elif method == 'Least_Squares_Chebyshev_Weight':
 
                         ls_chebyshev_grid = run_experiments_least_squares(dim=dim, w=w, c=c,
-                                                                        f_types=function_types,
-                                                                        n_parallel=n_functions_parallel,
-                                                                        n_avg_c=n_avg_c,
-                                                                        scale=scale, seed=seed,
-                                                                        multiplier_fun=multiplier_fun,
-                                                                        grid=ls_chebyshev_grid,
-                                                                        test_grid_seed=test_grid_seed,
-                                                                        test_grid=test_grid, lb=lb,
-                                                                        ub=ub,
-                                                                        grid_type=RandomGridRule.CHEBYSHEV,
-                                                                        basis_type=BasisType.CHEBYSHEV,
-                                                                        method_type=ls_method,
-                                                                        folder_name=folder_name,
-                                                                        sample_new=False, path=None)
+                                                                          f_types=function_types,
+                                                                          n_parallel=n_functions_parallel,
+                                                                          n_avg_c=n_avg_c,
+                                                                          scale=scale, seed=seed,
+                                                                          multiplier_fun=multiplier_fun,
+                                                                          grid=ls_chebyshev_grid,
+                                                                          test_grid_seed=test_grid_seed,
+                                                                          test_grid=test_grid, lb=lb,
+                                                                          ub=ub,
+                                                                          grid_type=RandomGridRule.CHEBYSHEV,
+                                                                          basis_type=BasisType.CHEBYSHEV,
+                                                                          method_type=ls_method,
+                                                                          folder_name=folder_name,
+                                                                          sample_new=False, path=None)
 
                     else:
                         raise ValueError(f"The method {method} is not supported. "

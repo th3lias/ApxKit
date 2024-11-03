@@ -21,14 +21,13 @@ def main_method(folder_name: Union[str, None] = None):
 
     realization_seeds = [42]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
     average_c = [1]
-    smolyak_method_type = InterpolationMethod.STANDARD
+    smolyak_method_type = InterpolationMethod.TASMANIAN
+    ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
     additional_multiplier = 2
 
-    multiplier_fun = lambda x: additional_multiplier * x # TODO[Jakob]: New method (from Elias) might not adapt this behavior
+    multiplier_fun = lambda x: additional_multiplier * x
 
     n_fun_parallel = 20
-
-    ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ # TODO[Jakob]: Make something similar also for Smolyak
 
     current_datetime = datetime.datetime.now()
 
@@ -38,32 +37,21 @@ def main_method(folder_name: Union[str, None] = None):
     if folder_name is None:
         folder_name = current_datetime.strftime('%d_%m_%Y_%H_%M')
 
-    error = False
+    run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
+                    scales=scale_range, methods=methods, average_c=average_c,
+                    ls_method=ls_method_type, smolyak_method=smolyak_method_type,
+                    folder_name=folder_name, multiplier_fun=multiplier_fun)
 
-    try:
-        run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
-                        scales=scale_range, methods=methods, average_c=average_c,
-                        ls_method=ls_method_type, smolyak_method=smolyak_method_type,
-                        folder_name=folder_name, multiplier_fun=multiplier_fun)
-    except MemoryError as e:
-        error = True
-        print(f"Memory error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
 
-    # TODO [Jakob]: Rethink if this is necessary, as in the debugging process it is not useful
-    # except Exception as e:
-    #     error = True
-    #     print(f"Unknown error occured at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')} with message {e}")
-
-    if not error:
-        # save all images in results folder
-        total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
-        with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-            for dim in dim_range:
-                for fun_type in function_types:
-                    for seed in realization_seeds:
-                        plot_errors(dim, seed, fun_type, scale_range, multiplier_fun, save=True,
-                                    folder_name=folder_name, same_axis_both_plots=True)
-                        pbar.update(1)
+    # save all images in results folder
+    total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
+    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+        for dim in dim_range:
+            for fun_type in function_types:
+                for seed in realization_seeds:
+                    plot_errors(dim, seed, fun_type, scale_range, multiplier_fun, save=True,
+                                folder_name=folder_name, same_axis_both_plots=True)
+                    pbar.update(1)
 
     print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 

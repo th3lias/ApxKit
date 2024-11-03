@@ -100,15 +100,15 @@ class LeastSquaresInterpolator(Interpolator):
 
     def _self_implementation(self, y: np.ndarray):
 
-        if self.grid.grid_type == RandomGridRule.CHEBYSHEV:
+        if self.grid.grid.grid_type == RandomGridRule.CHEBYSHEV: # TODO: Check was previously just a self.grid.grid_type
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
                 weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
 
-        elif self.grid.grid_type == RandomGridRule.UNIFORM:
+        elif self.grid.grid.grid_type == RandomGridRule.UNIFORM: # TODO: Check was previously just a self.grid.grid_type
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
-            raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
+            raise ValueError(f"Unsupported grid type {self.grid.grid.grid_type}") # TODO: Check was previously just a self.grid.grid_type
 
         print("Warning: The following is very unstable, since we calculate A.T@A")
 
