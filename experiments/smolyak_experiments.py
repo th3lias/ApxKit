@@ -52,7 +52,7 @@ class FitnessTrainer:
         self.scales = scales
         self.dims = dims
 
-    def workout_in_the_smolyak_gym(self, functions: list[Function]) -> list[tuple[int, int, float, float]]:
+    def workout_in_the_smolyak_gym(self, functions: list[Function]) -> list[tuple[str, int, int, float, float]]:
         """
             Send a couple of newbies to the Smolyak Gym to train.
         """
