@@ -1,19 +1,27 @@
-from typing import Callable
-
+from function.f import Function
 from function.model.model import Model
 from grid.grid.grid import Grid
 
 
 class Fitter:
     """
-    Abstract fitter class that defines the interface for all fitters. Currently, we only support fitting functions
-    which map to one output, i.e. output_dim=1!
+        Abstract fitter class that defines the interface for all fitters. Currently, we only support fitting functions
+        which map to one output, i.e. output_dim=1!
     """
 
-    def __init__(self, grid: Grid):
-        self.grid = grid
-        self.scale = grid.scale
-        self.dim = grid.input_dim
-
-    def fit(self, f: list[Callable]) -> Model:
+    def __init__(self, dim: int):
+        self.dim = dim
+    
+    def fit(self, f: Function, grid: Grid) -> Model:
+        """
+            Fits the function on a given grid of points.
+        """
         raise NotImplementedError("The method `fit` must be implemented by the subclass.")
+    
+    def is_fittable(self, f: Function) -> bool:
+        """
+            Checks if the model is able to compute an approximation for the given function.
+        """
+        if f.dim != self.dim:
+            return False
+        return True

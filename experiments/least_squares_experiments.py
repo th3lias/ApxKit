@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from fit.least_squares import LeastSquares
+from fit.least_squares_fitter import LeastSquaresFitter
 from function.f import Function
 from grid.grid.grid import Grid
 from grid.grid.random_grid import RandomGrid
@@ -17,7 +17,7 @@ def interpolate_and_evaluate(function: Function, training_grid: Grid, points: Ra
     """
     assert points.grid.input_dim == function.dim, "The dimensionality of the function and the grid do not match."
     assert training_grid.input_dim == function.dim, "The dimensionality of the function and the grid do not match."
-    fitter = LeastSquares(grid=training_grid)
+    fitter = LeastSquaresFitter(grid=training_grid)
     model = fitter.fit(function)
     interpolated = model.__call__(points.grid)
     return interpolated
@@ -30,7 +30,7 @@ def interpolate_and_evaluate_list(functions: list[Function], training_grid: Grid
     """
     assert points.grid.input_dim == functions[0].dim, "The dimensionality of the functions and the grid do not match."
     assert training_grid.input_dim == functions[0].dim, "The dimensionality of the functions and the grid do not match."
-    fitter = LeastSquares(grid=training_grid)
+    fitter = LeastSquaresFitter(grid=training_grid)
     l2_losses = list()
     abs_losses = list()  # TODO[Jakob] Optimize?? Calls the function $n$ times. Maybe this is slow. Unless it is optimized, such that only the fitter step takes long
     for function in functions:

@@ -1,100 +1,86 @@
-from __future__ import annotations
+import numpy as np
+import pandas as pd
 
-from fit.smolyak import Smolyak
-from function.f import Function
-from function.provider import ParametrizedFunctionProvider
-from function.type import FunctionType
-from grid.grid.random_grid import RandomGrid
-from grid.grid.rule_grid import RuleGrid
-
-import numpy as np # TODO [Jakob] I am unhappy with the current error calculation. Maybe we could like make here a "quality assessment wrapper function/class".
-
-from grid.provider.rule_grid_provider import RuleGridProvider
+from fit import SmolyakFitter
+from function import SmolyakModel, Function, FunctionType, ParametrizedFunctionProvider
+from grid import RuleGridProvider
 
 
-# TODO: Add docstring
-# TODO: Inconsistent. Why do we return only the interpolated here and in the method where we accept a list of functions, we return the losses
-def interpolate_and_evaluate(function: Function, training_grid: RuleGrid, points: RandomGrid):
-    """
-    This function interpolates the given function using a standard grid. The function is assumed to have the same
-    properties as the grid. Interpolation fails otherwise. RandomGrid has to have the same dimensionality as the function.
-    """
-    assert points.grid.input_dim == function.dim, "The dimensionality of the function and the grid do not match."
-    assert training_grid.input_dim == function.dim, "The dimensionality of the function and the grid do not match."
-    fitter = Smolyak(grid=training_grid)
-    model = fitter.fit(function)
-    interpolated = model.__call__(points.grid)
-    return interpolated
+class SmolyakExperimentExecutor:
+	def __init__(self, dim_list: list[int], scale_list: list[int], num_test_points: int,
+	             path: str = "results/current_results.csv"):
+		"""
+			An object that can execute a series of experiments on Smolyak models.
+		"""
+		self.dim_list = dim_list
+		self.scale_list = scale_list
+		self.num_test_points = num_test_points
+		# Ensure that any used directory is created before this object is created, otherwise this fails.
+		self.results_path = path
+		header = {
+			"function": [],
+			"dim": [],
+			"scale": [],
+			"l_2": [],
+			"l_inf": []
+		}
+		df = pd.DataFrame(header)
+		df.to_csv(self.results_path, index=False)
+	
+	def execute_random_experiments(self, function_types: list[FunctionType]):
+		for dim in self.dim_list:
+			fitter = SmolyakFitter(dim)
+			rule_grid_provider = RuleGridProvider(dim)
+			test_points = np.random.uniform(0, 1, (self.num_test_points, dim))
+			self.execute_single_dim_experiment(dim, function_types, fitter, rule_grid_provider, test_points)
+	
+	def execute_single_dim_experiment(self, dim: int, function_types: list[FunctionType], fitter: SmolyakFitter,
+	                                  rule_grid_provider: RuleGridProvider, test_points: np.ndarray):
+		c = np.random.uniform(0, 1, dim)
+		c = c / np.sum(c) * dim
+		w = np.random.uniform(0, 1, dim)
+		for function_type in function_types:
+			function = ParametrizedFunctionProvider.get_function(function_type, dim, c=c, w=w)
+			self.execute_single_function_experiment(function, fitter, rule_grid_provider, test_points)
+	
+	def execute_single_function_experiment(self, function: Function, fitter: SmolyakFitter,
+	                                       rule_grid_provider: RuleGridProvider, test_points):
+		for scale in self.scale_list:
+			grid = rule_grid_provider.generate(scale)
+			model = fitter.fit(function, grid)
+			l_2, l_inf = self.evaluate_model(function, model, test_points)
+			self.save_stats(function, scale, l_2, l_inf)
+	
+	@staticmethod
+	def evaluate_model(function: Function, model: SmolyakModel, test_points: np.ndarray):
+		"""
+			Evaluate the model on the test points and return the L2 and L_inf norms.
+		"""
+		model_values = model(test_points).reshape(-1, 1)
+		true_values = function(test_points).reshape(-1, 1)
+		l_2 = np.sum(np.square(model_values - true_values)) / function.dim
+		l_inf = np.max(np.abs(model_values - true_values))
+		return l_2, l_inf
+	
+	def save_stats(self, function: Function, scale: int, l_2: float, l_inf: float):
+		"""
+			Keep the CSV up to date with the current results.
+		"""
+		data = {
+			"function": [function.name],
+			"dim": [function.dim],
+			"scale": [scale],
+			"l_2": [l_2],
+			"l_inf": [l_inf]
+		}
+		df = pd.DataFrame(data)
+		df.to_csv(self.results_path, mode='a', header=False, index=False)
 
 
-# TODO: Add docstring
-def interpolate_and_evaluate_list(functions: list[Function], training_grid: RuleGrid, points: RandomGrid):
-    """
-    This function interpolates the given functions using a standard grid. The functions are assumed to have the same
-    properties as the grid. Interpolation fails otherwise. RandomGrid has to have the same dimensionality as the functions.
-    """
-    assert points.input_dim == functions[0].dim, "The dimensionality of the functions and the grid do not match."
-    assert training_grid.input_dim == functions[0].dim, "The dimensionality of the functions and the grid do not match."
-    fitter = Smolyak(grid=training_grid)
-    l2_losses = list()
-    abs_losses = list()
-    for function in functions:# TODO[Jakob] Optimize?? Calls the function $n$ times. Maybe this is slow. Unless it is optimized, such that only the fitter step takes long
-        model = fitter.fit(function)
-        y = function.__call__(points.grid)
-        interpolated = model.__call__(points.grid)
-        l2_losses.append((np.square(y - interpolated)).mean())
-        abs_losses.append(np.max(np.abs(y - interpolated)))
-        fitter.fitted = False
-    return l2_losses, abs_losses
-
-class FitnessTrainer:
-    def __init__(self, scales: list[int], dims: list[int]):
-        self.scales = scales
-        self.dims = dims
-
-    def workout_in_the_smolyak_gym(self, functions: list[Function]) -> list[tuple[str, int, int, float, float]]:
-        """
-            Send a couple of newbies to the Smolyak Gym to train.
-        """
-        losses = list()
-        for scale in self.scales:
-            for dim in self.dims:
-                test_grid = np.random.uniform(0, 1, (1000, dim))
-                rule_grid = RuleGridProvider(input_dim=dim).generate(scale)
-                for function in functions:
-                    fitter = Smolyak(grid=rule_grid)
-                    model = fitter.fit(function)
-                    l2, l_inf = self.calculate_strength_gain(function, model, test_grid)
-                    losses.append((function.name, scale, dim, l2, l_inf))
-                del test_grid, rule_grid
-        return losses
-
-    def workout_in_the_least_squares_gym(self, functions: list[Function]):
-        pass
-
-    @staticmethod
-    def calculate_strength_gain(function: Function, model: Function, barbells: np.array) -> tuple[float, float]:
-        y = function(barbells)
-        y_hat = model(barbells)
-        l2_loss = (np.square(y - y_hat)).mean()
-        abs_loss = np.max(np.abs(y - y_hat))
-        return l2_loss, abs_loss
-
-
-###########################################
-# Script Part
-###########################################
-
-if __name__ == "__main__":
-    dims = [1, 2, 3]
-    scales = [2, 3, 4, 5]
-    types = [e.name for e in FunctionType]
-    functions = list()
-    for t in types:
-        for d in dims:
-            c = np.random.uniform(-1, 1, (1, d))
-            w = np.random.uniform(0, 1, (1, d))
-            functions.append(ParametrizedFunctionProvider().get_function(FunctionType[t], d, c, w))
-    trainer = FitnessTrainer(scales, dims)
-    results = trainer.workout_in_the_smolyak_gym(functions)
-    print(results)
+if __name__ == "__main__":  # Example usage
+	dims = [2, 3, 4, 5, 6]
+	scales = [2, 3, 4, 5]
+	num_points = 10000
+	experiment_executor = SmolyakExperimentExecutor(dims, scales, num_points)
+	functions = [FunctionType.OSCILLATORY, FunctionType.GAUSSIAN, FunctionType.G_FUNCTION]
+	experiment_executor.execute_random_experiments(functions)

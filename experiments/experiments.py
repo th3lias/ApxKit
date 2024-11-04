@@ -21,7 +21,7 @@ from fit.method.interpolation_method import InterpolationMethod
 from interpolate.least_squares import LeastSquaresInterpolator
 
 from interpolate.smolyak import SmolyakInterpolator
-from fit.smolyak import Smolyak
+from fit.smolyak_fitter import SmolyakFitter
 
 from function.type import FunctionType
 from function.provider import ParametrizedFunctionProvider

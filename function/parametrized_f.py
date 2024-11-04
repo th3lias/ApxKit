@@ -11,6 +11,6 @@ class ParametrizedFunction(Function):
     """
     def __init__(self, f: Callable, dim: int, w: np.ndarray, c: np.ndarray, upper: float = 1.0, lower: float = 0.0,
                  name: str = "unknown"):
-        super().__init__(f, dim, upper, lower, name)
+        super(ParametrizedFunction, self).__init__(f, dim, upper, lower, name)
         self.w = w
         self.c = c
