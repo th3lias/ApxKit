@@ -164,7 +164,7 @@ class LeastSquaresInterpolator(Interpolator):
 
         self.coeff = coeff
 
-    def _approximate_scipy_gelsd(self, f: Union[Callable, list[Callable]], lapack_driver: str = 'gelsd'):
+    def _approximate_scipy_lstsq(self, f: Union[Callable, list[Callable]], lapack_driver: str = 'gelsd'):
 
         grid = self.grid.grid
         if not self.include_bias:
