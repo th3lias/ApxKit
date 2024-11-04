@@ -1,6 +1,7 @@
 from typing import Callable, Union, List, Tuple
 
 import numpy as np
+import scipy
 from sklearn.preprocessing import PolynomialFeatures
 
 from grid.grid.grid import Grid
@@ -35,6 +36,12 @@ class LeastSquaresInterpolator(Interpolator):
             self._approximate_exact(f)
         elif self.method == LeastSquaresMethod.NUMPY_LSTSQ:
             self._approximate_numpy_lstsq(f)
+        elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSD:
+            self._approximate_scipy_lstsq(f, 'gelsd')
+        elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSS:
+            self._approximate_scipy_lstsq(f, 'gelss')
+        elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSY:
+            self._approximate_scipy_lstsq(f, 'gelsy')
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
 
@@ -100,15 +107,16 @@ class LeastSquaresInterpolator(Interpolator):
 
     def _self_implementation(self, y: np.ndarray):
 
-        if self.grid.grid.grid_type == RandomGridRule.CHEBYSHEV: # TODO: Check was previously just a self.grid.grid_type
+        if self.grid.grid.grid_type == RandomGridRule.CHEBYSHEV:  # TODO: Check was previously just a self.grid.grid_type
             weight = np.empty(shape=(self.grid.get_num_points()))
             for i, row in enumerate(self.grid.grid):
                 weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
 
-        elif self.grid.grid.grid_type == RandomGridRule.UNIFORM: # TODO: Check was previously just a self.grid.grid_type
+        elif self.grid.grid.grid_type == RandomGridRule.UNIFORM:  # TODO: Check was previously just a self.grid.grid_type
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
-            raise ValueError(f"Unsupported grid type {self.grid.grid.grid_type}") # TODO: Check was previously just a self.grid.grid_type
+            raise ValueError(
+                f"Unsupported grid type {self.grid.grid.grid_type}")  # TODO: Check was previously just a self.grid.grid_type
 
         print("Warning: The following is very unstable, since we calculate A.T@A")
 
@@ -152,6 +160,41 @@ class LeastSquaresInterpolator(Interpolator):
         y_prime = (weight * y.T).T
 
         sol = np.linalg.lstsq(x_poly, y_prime, rcond=None)
+        coeff = sol[0]
+
+        self.coeff = coeff
+
+    def _approximate_scipy_gelsd(self, f: Union[Callable, list[Callable]], lapack_driver: str = 'gelsd'):
+
+        grid = self.grid.grid
+        if not self.include_bias:
+            print("Please be aware that the result may become significantly worse when using no intercept (bias)")
+        n_samples = grid.shape[0]
+        if isinstance(f, list):
+            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
+            for i, func in enumerate(f):
+                if not isinstance(func, Callable):
+                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
+                y[:, i] = func(grid)
+        else:
+            y = f(grid)
+
+        # weighted least squares
+        if self.grid.rule == RandomGridRule.CHEBYSHEV:
+            weight = np.empty(shape=(self.grid.get_num_points()))
+            for i, row in enumerate(self.grid.grid):
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
+
+        elif self.grid.rule == RandomGridRule.UNIFORM:
+            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
+        else:
+            raise ValueError(f"Unsupported grid type {self.grid.rule}")
+
+        x_poly = (weight * self.basis.T).T
+        del self.basis
+        y_prime = (weight * y.T).T
+
+        sol = scipy.linalg.lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
         coeff = sol[0]
 
         self.coeff = coeff
