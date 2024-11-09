@@ -31,22 +31,13 @@ class SmolyakInterpolator(Interpolator):
     def set_method(self, method: InterpolationMethod):
         self.method = method
 
-    def fit(self, f: Union[Callable, List[Callable]]):
+    def fit(self, y: np.ndarray):
 
         if self.method == InterpolationMethod.STANDARD: # TODO[Jakob] For now this is already queried before. Later we will have 1 Large Smolyak Class, where we use
             if self.basis is None:
                 self.basis = self._build_basis()
                 self.L, self.U = lu(self.basis, permute_l=True)[-2:]
-            n_samples = self.grid.get_num_points() if isinstance(self.grid.grid, TasmanianSparseGrid) else \
-            self.grid.grid.shape[0]
-            if isinstance(f, list):
-                y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-                for i, func in enumerate(f):
-                    if not isinstance(func, Callable):
-                        raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                    y[:, i] = func(self.grid.grid.getPoints())
-            else:
-                y = f(self.grid.grid)
+
             coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))
 
             self.coeff = coeff

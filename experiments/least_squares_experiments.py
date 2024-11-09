@@ -1,11 +1,26 @@
 from __future__ import annotations
 
 import numpy as np
+from typing import Union, Callable, List
 
+from experiments.experiment_executor import ExperimentExecutor
 from fit.least_squares_fitter import LeastSquaresFitter
+from function import FunctionType
 from function.f import Function
 from grid.grid.grid import Grid
 from grid.grid.random_grid import RandomGrid
+
+class LeastSquaresExperimentExecutor(ExperimentExecutor):
+    # TODO: Also make uniform or Chebyshev a property
+    def __init__(self, dim_list: list[int], scale_list: List[int], num_test_points: int, path: str):
+        """
+            An object that can execute a series of experiments on Least Squares models.
+        """
+        super().__init__(dim_list, scale_list, num_test_points, path)
+
+
+    def execute_random_experiments(self, function_types: Union[list[FunctionType], FunctionType]):
+
 
 
 # TODO [Jakob] Check this.

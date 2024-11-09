@@ -27,7 +27,7 @@ class Interpolator:
     def interpolate(self, grid: Union[Grid, np.ndarray]):
         raise NotImplementedError
 
-    def fit(self, f: Union[Callable, List[Callable]]) -> None:
+    def fit(self, y: np.ndarray) -> None:
         raise NotImplementedError
 
     def set_grid(self, grid: Grid):

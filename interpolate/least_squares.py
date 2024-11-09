@@ -1,4 +1,4 @@
-from typing import Callable, Union, List, Tuple
+from typing import Union, List, Tuple
 
 import numpy as np
 import scipy
@@ -25,7 +25,7 @@ class LeastSquaresInterpolator(Interpolator):
     def set_method(self, method: LeastSquaresMethod):
         self.method = method
 
-    def fit(self, f: Union[Callable, List[Callable]]):
+    def fit(self, y: np.ndarray):
 
         assert self.grid is not None, "Grid needs to be set before interpolation"
 
@@ -33,15 +33,15 @@ class LeastSquaresInterpolator(Interpolator):
             self.basis = self._build_basis()
 
         if self.method == LeastSquaresMethod.EXACT:
-            self._approximate_exact(f)
+            self._approximate_exact(y)
         elif self.method == LeastSquaresMethod.NUMPY_LSTSQ:
-            self._approximate_numpy_lstsq(f)
+            self._approximate_numpy_lstsq(y)
         elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSD:
-            self._approximate_scipy_lstsq(f, 'gelsd')
+            self._approximate_scipy_lstsq(y, 'gelsd')
         elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSS:
-            self._approximate_scipy_lstsq(f, 'gelss')
+            self._approximate_scipy_lstsq(y, 'gelss')
         elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSY:
-            self._approximate_scipy_lstsq(f, 'gelsy')
+            self._approximate_scipy_lstsq(y, 'gelsy')
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
 
@@ -82,26 +82,14 @@ class LeastSquaresInterpolator(Interpolator):
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
             return poly.fit_transform(grid)
 
-    def _approximate_exact(self, f: Union[Callable, List[Callable]]):
+    def _approximate_exact(self, y: np.ndarray):
         """
         Approximates a (or multiple) function(s) with polynomials by least squares.
         :param f: function or list of functions that need to be approximated on the same points
         :return: fitted function(s)
         """
-        grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
-        if not (isinstance(f, list) or isinstance(f, Callable)):
-            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
-        n_samples = grid.shape[0]
-        if isinstance(f, list):
-            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-            for i, func in enumerate(f):
-                if not isinstance(func, Callable):
-                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                y[:, i] = func(grid)
-        else:
-            y = f(grid)
 
         self._self_implementation(y)
 
@@ -129,20 +117,10 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
-    def _approximate_numpy_lstsq(self, f: Union[Callable, list[Callable]]):
+    def _approximate_numpy_lstsq(self, y: np.ndarray):
 
-        grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercept (bias)")
-        n_samples = grid.shape[0]
-        if isinstance(f, list):
-            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-            for i, func in enumerate(f):
-                if not isinstance(func, Callable):
-                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                y[:, i] = func(grid)
-        else:
-            y = f(grid)
 
         # weighted least squares
         if self.grid.rule == RandomGridRule.CHEBYSHEV:
@@ -164,20 +142,10 @@ class LeastSquaresInterpolator(Interpolator):
 
         self.coeff = coeff
 
-    def _approximate_scipy_lstsq(self, f: Union[Callable, list[Callable]], lapack_driver: str = 'gelsd'):
+    def _approximate_scipy_lstsq(self, y: np.ndarray, lapack_driver: str = 'gelsy'):
 
-        grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercept (bias)")
-        n_samples = grid.shape[0]
-        if isinstance(f, list):
-            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-            for i, func in enumerate(f):
-                if not isinstance(func, Callable):
-                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                y[:, i] = func(grid)
-        else:
-            y = f(grid)
 
         # weighted least squares
         if self.grid.rule == RandomGridRule.CHEBYSHEV:

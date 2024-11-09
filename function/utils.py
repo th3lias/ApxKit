@@ -12,14 +12,14 @@ def product_peak(x, d, c, w):
     """
         Product peak function.
     """
-    return np.prod(1 / (1/np.square(c)) + np.square(x - w), axis=1)
+    return np.prod(1 / (1 / np.square(c)) + np.square(x - w), axis=1)
 
 
 def corner_peak(x, d, c, w):
     """
         Corner peak function.
     """
-    return np.power(1+np.dot(x, c), -(d+1))
+    return np.power(1 + np.dot(x, c), -(d + 1))
 
 
 def gaussian(x, d, c, w):
@@ -60,14 +60,14 @@ def morokoff_calfisch_1(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-    return (1+1/d)**d * np.prod(np.multiply(x, c) + w, axis=1)**(1/d)
+    return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
 
 
 def morokoff_calfisch_2(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-    return 1/(d-1/2)**d * np.prod(d - np.multiply(c, x) - w, axis=1)
+    return 1 / (d - 1 / 2) ** d * np.prod(d - np.multiply(c, x) - w, axis=1)
 
 
 def roos_arnold(x, d, c, w):
@@ -81,7 +81,7 @@ def bratley(x, d, c, w):
     """
         Bratley function.
     """
-    return np.sum(np.power(-1, np.arange(1, d+1))) * np.prod(np.multiply(c, x) - w, axis=1)
+    return np.sum(np.power(-1, np.arange(1, d + 1))) * np.prod(np.multiply(c, x) - w, axis=1)
 
 
 def zhou(x, d, c, w):
