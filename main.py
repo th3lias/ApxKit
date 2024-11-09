@@ -22,7 +22,9 @@ def main_method(folder_name: Union[str, None] = None):
     realization_seeds = [42]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
     average_c = [1]
     smolyak_method_type = InterpolationMethod.TASMANIAN
-    ls_method_type = LeastSquaresMethod.NUMPY_LSTSQ
+    ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
+    ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSS
+    ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSD # TODO: Remove those 2 lines
     additional_multiplier = 2
 
     multiplier_fun = lambda x: additional_multiplier * x
