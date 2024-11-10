@@ -49,8 +49,6 @@ class SmolyakExperimentExecutor(ExperimentExecutor):
             l_2, l_inf = self.evaluate_model(function, model, test_points)
             self.save_stats(function, scale, l_2, l_inf)
 
-    def exectute_single_
-
     @staticmethod
     def evaluate_model(function: Function, model: SmolyakModel, test_points: np.ndarray) -> tuple[float, float]:
         """

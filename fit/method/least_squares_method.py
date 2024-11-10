@@ -8,4 +8,5 @@ class LeastSquaresMethod(FitMethod):
     SCIPY_LSTSQ_GELSD = 3
     SCIPY_LSTSQ_GELSS = 4
     SCIPY_LSTSQ_GELSY = 5
+    TASMANIAN = 6 # TODO[Jakob] Check if this makes sense
 

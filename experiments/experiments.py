@@ -228,7 +228,7 @@ def run_experiments_least_squares(dim: int, w: np.ndarray, c: np.ndarray, f_type
                 f = ParametrizedFunctionProvider.get_function(function_type=func_type, d=dim, c=c[index, :],
                                                               w=w[index, :])
                 functions.append(f)
-                y[index, :] = f(test_grid)
+                y[index, :] = f(test_grid) # TODO: This is horribly wrong, needs to be adapted. Reason, test grid is used to fit the
                 function_names.append(func_type.name)
 
     ls = LeastSquaresInterpolator(include_bias=True, basis_type=basis_type, grid=grid, method=method_type)
