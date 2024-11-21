@@ -60,22 +60,21 @@ class ExperimentExecutor:
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
 
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
-                            avg_c: float = 1.0, ls_multiplier_fun: Callable = lambda x: 2 * x, seed: int = 42):
+                            seed: int, avg_c: float = 1.0, ls_multiplier_fun: Callable = lambda x: 2 * x, ):
         """
             Execute a series of experiments with the given function types.
         """
 
         print(
             f"Starting dimension {self.dim_list}, scale {self.scale_list} experiments with cpu {platform.processor()} and "
-            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM")
+            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
         print(f"Results will be stored in {self.results_path}")
-        print("_" * 25)
+        print("_" * 75)
         print("")
 
-        time.sleep(2)
+        time.sleep(1)
 
-        total_iterations = len(self.dim_list) * len(
-            self.scale_list) * 3  # 3 methods (LS_Uniform, LS_Chebyshev, Smolyak)
+        total_iterations = len(self.dim_list) * len(self.scale_list) * 3  # 3 methods (LS_Unif, LS_Cheby, Smolyak)
 
         # TODO: Seed necessary?
 
@@ -136,7 +135,7 @@ class ExperimentExecutor:
                 progress_bar.set_description(
                     f"Experiment: Dim:{dim},Scale:{scale},Method:Smolyak,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                self._run_experiment_smolyak(dim, scale, sparse_grid, seed)
+                self._run_experiment_smolyak(dim, scale, sparse_grid, lambda x: x, seed)
 
                 progress_bar.update(1)
 
@@ -145,7 +144,7 @@ class ExperimentExecutor:
                 progress_bar.set_description(
                     f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Unif,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                self._run_experiment_ls(dim, scale, uniform_grid, "CHEBYSHEV",
+                self._run_experiment_ls(dim, scale, uniform_grid, "UNIFORM", ls_multiplier_fun,
                                         seed)  # TODO: Otherwise we would have REGULAR here instead of CHEBYSHEV
 
                 progress_bar.update(1)
@@ -155,14 +154,14 @@ class ExperimentExecutor:
                 progress_bar.set_description(
                     f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Cheb,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                self._run_experiment_ls(dim, scale, chebyshev_grid, "CHEBYSHEV", seed)
+                self._run_experiment_ls(dim, scale, chebyshev_grid, "CHEBYSHEV", ls_multiplier_fun, seed)
 
                 progress_bar.update(1)
 
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
     # TODO: Unify the following 3 methods to one method
-    def _run_experiment_smolyak(self, dim, scale, grid, seed):
+    def _run_experiment_smolyak(self, dim, scale, grid, multiplier_fun: Callable, seed):
         start_time = time.time()
 
         if self.smolyak_method == InterpolationMethod.STANDARD:
@@ -197,16 +196,16 @@ class ExperimentExecutor:
             method="Smolyak",
             grid_type="CHEBYSHEV",
             basis_type="CHEBYSHEV",
-            multiplier_fun=lambda x: x,
+            multiplier_fun=multiplier_fun,
             seed=seed,
             test_grid_seed=seed,  # TODO: Probably not correct
             ell_2_errors=smolyak_ell_2,
             ell_infty_errors=smolyak_ell_infty,
             datetime=cur_datetime,
-            needed_time=needed_time
+            needed_time=round(needed_time, 3)
         )
 
-    def _run_experiment_ls(self, dim, scale, grid, grid_type: str, seed):
+    def _run_experiment_ls(self, dim, scale, grid, grid_type: str, multiplier_fun: Callable, seed):
         start_time = time.time()
 
         ls_chebyshev = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
@@ -228,13 +227,13 @@ class ExperimentExecutor:
             method="Least_Squares",
             grid_type=grid_type,
             basis_type=ls_chebyshev.basis_type.name,
-            multiplier_fun=lambda x: x,
+            multiplier_fun=multiplier_fun,
             seed=seed,
             test_grid_seed=seed,  # TODO: Probably not correct
             ell_2_errors=ls_cheby_ell_2,
             ell_infty_errors=ls_cheby_ell_infty,
             datetime=cur_datetime,
-            needed_time=needed_time
+            needed_time=round(needed_time, 3)
         )
 
     def _get_functions(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
@@ -296,12 +295,9 @@ class ExperimentExecutor:
         n = len(ell_2_errors)
 
         if method == "Smolyak":  # TODO: Maybe make this more waterproof by not comparing raw strings
-            multiplier_fun = lambda x: x
             method_type = self.smolyak_method.name
-            basis_type = "CHEBYSHEV"
         else:
             method_type = self.least_squares_method.name
-            grid_type = ""
 
         n_points = int(multiplier_fun(calculate_num_points(scale, dim)))
 
@@ -331,28 +327,3 @@ class ExperimentExecutor:
 
         df = pd.DataFrame(data)
         df.to_csv(self.results_path, mode='a', header=False, index=False)
-
-    # # TODO: Maybe adapt the methods in here
-    # def execute_random_experiments(self, function_types: list[FunctionType]):
-    #     """
-    #         Execute a series of experiments with random functions.
-    #     """
-    #     raise NotImplementedError()
-    #
-    # def execute_single_dim_experiment(self, function_types: list[FunctionType]):
-    #     """
-    #         Execute a series of experiments with functions of a single dimension.
-    #     """
-    #     raise NotImplementedError()
-
-
-if __name__ == '__main__':
-    # TODO: Try out Tasmanian method
-    # Test the impmlementation in a small setting
-    dim_list = [2, 3, 4, 5]
-    scale_list = [1, 2, 3, 4]
-    path = None
-    ee = ExperimentExecutor(dim_list, scale_list, InterpolationMethod.TASMANIAN,
-                            LeastSquaresMethod.SCIPY_LSTSQ_GELSY, path)
-    ee.execute_experiments([FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK], 15, 1.0,
-                           lambda x: 2 * x, 42)

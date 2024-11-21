@@ -1,5 +1,7 @@
 import datetime
-from experiments.experiments import run_experiments
+import os
+
+from experiments.experiment_executor import ExperimentExecutor
 from tqdm import tqdm
 from function.type import FunctionType
 from fit.method.least_squares_method import LeastSquaresMethod
@@ -8,53 +10,43 @@ from utils.utils import plot_errors
 from typing import Union
 import argparse
 
+
 # TODO: Change to the new methods in the experiments class
 # TODO [Jakob] Check if load and save indices and grids is implemented if possible (everywhere)
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_range = range(3, 4)
-    scale_range = range(1, 5)
-    methods = ['Smolyak', 'Least_Squares_Uniform', 'Least_Squares_Chebyshev_Weight']
+    dim_list = [5]
+    scale_list = [1,2,3,4]
+
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
-    realization_seeds = [42]  # [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
-    average_c = [1]
-    smolyak_method_type = InterpolationMethod.TASMANIAN
+    seed = 42
+    average_c = 1.0
+    smolyak_method_type = InterpolationMethod.STANDARD
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
-    additional_multiplier = 2
 
-    multiplier_fun = lambda x: additional_multiplier * x
+    multiplier_fun = lambda x: 2 * x
 
     n_fun_parallel = 10
 
-    current_datetime = datetime.datetime.now()
+    ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type)
+    ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun, seed=seed)
 
-    print(f"Started program at {current_datetime.strftime('%d/%m/%Y %H:%M:%S')}")
-
-    # current folder name should be equal to the date and current time
-    if folder_name is None:
-        folder_name = current_datetime.strftime('%d_%m_%Y_%H_%M')
-
-    run_experiments(function_types, n_fun_parallel, seed_realizations=realization_seeds, dims=dim_range,
-                    scales=scale_range, methods=methods, average_c=average_c,
-                    ls_method=ls_method_type, smolyak_method=smolyak_method_type,
-                    folder_name=folder_name, multiplier_fun=multiplier_fun)
-
+    folder_name = os.path.dirname(ex.results_path)
 
     # save all images in results folder
-    total_iterations = len(dim_range) * len(function_types) * len(realization_seeds)
+    total_iterations = len(dim_list) * len(function_types)
     with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-        for dim in dim_range:
+        for dim in dim_list:
             for fun_type in function_types:
-                for seed in realization_seeds:
-                    plot_errors(dim, seed, fun_type, scale_range, multiplier_fun, save=True,
-                                folder_name=folder_name, same_axis_both_plots=True)
-                    pbar.update(1)
+                plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True,
+                            folder_name=folder_name, same_axis_both_plots=True)
+                pbar.update(1)
 
-    print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
 
 
 if __name__ == '__main__':

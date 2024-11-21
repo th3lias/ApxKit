@@ -236,7 +236,7 @@ def get_next_filename(path, extension='png'):
     return f"{next_number}.{extension}"
 
 
-def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range, multiplier_fun: Callable,
+def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[int], multiplier_fun: Callable,
                 folder_name: str, path: Union[str, None] = None, save: bool = False,
                 save_path: Union[str, None] = None, same_axis_both_plots: bool = True):
     """
@@ -257,10 +257,10 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
     """
 
     if path is None:
-        path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
+        path = os.path.join(folder_name, "results_numerical_experiments.csv")
 
     if save_path is None:
-        save_path = os.path.join("results", folder_name, "figures", function_type.name, f'dim{dimension}',
+        save_path = os.path.join(folder_name, "figures", function_type.name, f'dim{dimension}',
                                  f'seed{seed}')
 
     os.makedirs(save_path, exist_ok=True)
@@ -269,8 +269,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)].copy()
 
-    filtered_data.drop(['cpu', 'datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1,
-                       inplace=True)
+    filtered_data.drop(['datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1, inplace=True)
 
     smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
     least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
@@ -287,7 +286,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
 
     titles = ['Max (Abs) Error', 'L2 Error']
 
-    errors = ['max_error', 'l_2_error']
+    errors = ['ell_infty_error', 'ell_2_error']
 
     global_min_uniform, global_max_uniform = None, None
     global_min_l2, global_max_l2 = None, None
@@ -296,7 +295,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
         grouped = smolyak_data.groupby('c')
         for name, group in grouped:
             w = group['w'].iloc[0]
-            if np.isinf(group['max_error']).any() or np.isinf(group['l_2_error']).any():
+            if np.isinf(group['ell_infty_error']).any() or np.isinf(group['ell_2_error']).any():
                 print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
                       f"due to infinity values in errors.")
                 continue
@@ -335,13 +334,13 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
                 axs[i].set_ylabel('Error')
                 axs[i].set_yscale('log')
                 axs[i].legend()
-                if error == 'max_error':
+                if error == 'ell_infty_error':
                     current_min_uniform, current_max_uniform = axs[i].get_ylim()
                     if global_min_uniform is None or current_min_uniform < global_min_uniform:
                         global_min_uniform = current_min_uniform
                     if global_max_uniform is None or current_max_uniform > global_max_uniform:
                         global_max_uniform = current_max_uniform
-                elif error == 'l_2_error':
+                elif error == 'ell_2_error':
                     current_min_l2, current_max_l2 = axs[i].get_ylim()
                     if global_min_l2 is None or current_min_l2 < global_min_l2:
                         global_min_l2 = current_min_l2
@@ -357,17 +356,16 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: range
 
             axs[0].set_ylim(global_min_uniform, global_max_uniform)
             axs[1].set_ylim(global_min_l2, global_max_l2)
-            avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=' '))
+
+            avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=',')) # TODO: This is wrong
             avg_c_str = str(int(np.round(avg_c, 0)))
             fig.suptitle(
                 f'{function_type.name}; multiplier={multiplier_fun(1.0)}; dim={dimension}'
                 f'; avg_c={avg_c}\nc={name}\nw={w}')
             plt.tight_layout()
             if save:
-                c_folder = os.path.join(save_path, avg_c_str)
-                os.makedirs(c_folder, exist_ok=True)
-                filename = get_next_filename(c_folder)
-                img_path = os.path.join(c_folder, filename)
+                filename = get_next_filename(save_path)
+                img_path = os.path.join(save_path, filename)
                 plt.savefig(img_path)
                 plt.close()
             else:
