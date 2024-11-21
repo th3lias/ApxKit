@@ -1,9 +1,11 @@
 import datetime
 import os.path
+import platform
 import time
 
 import numpy as np
 import pandas as pd
+import psutil
 from numpy import flatiter
 
 from fit import InterpolationMethod, LeastSquaresMethod, SmolyakFitter, BasisType
@@ -16,6 +18,7 @@ from grid.rule.random_grid_rule import RandomGridRule
 from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import calculate_num_points
+from tqdm import tqdm
 
 
 class ExperimentExecutor:
@@ -32,7 +35,7 @@ class ExperimentExecutor:
 
         if path is None:
             self.results_path = os.path.join("results", current_datetime.strftime('%d_%m_%Y_%H_%M_%S'),
-                                "results_numerical_experiments.csv")
+                                             "results_numerical_experiments.csv")
 
         self.dim_list = dim_list
         self.scale_list = scale_list
@@ -46,6 +49,10 @@ class ExperimentExecutor:
                             'datetime', 'needed_time']  # TODO: This needs to be adapted
         header = dict.fromkeys(self.header_keys, list())
         self.functions = None
+        self.cs = None
+        self.ws = None
+        self.f_names = None
+
         df = pd.DataFrame(header)
 
         os.makedirs(os.path.dirname(self.results_path), exist_ok=True)
@@ -58,9 +65,21 @@ class ExperimentExecutor:
             Execute a series of experiments with the given function types.
         """
 
+        print(
+            f"Starting dimension {self.dim_list}, scale {self.scale_list} experiments with cpu {platform.processor()} and "
+            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM")
+        print(f"Results will be stored in {self.results_path}")
+        print("_" * 25)
+        print("")
+
+        time.sleep(2)
+
+        total_iterations = len(self.dim_list) * len(
+            self.scale_list) * 3  # 3 methods (LS_Uniform, LS_Chebyshev, Smolyak)
+
         # TODO: Seed necessary?
 
-        # TODO: Time these experiments
+        progress_bar = tqdm(total=total_iterations, desc="Initializing", unit="iteration")
 
         for dim in self.dim_list:
 
@@ -103,128 +122,120 @@ class ExperimentExecutor:
 
                 # Test Grid
 
-                test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0).generate(scale)
-                n_points = test_grid.get_num_points()
-                y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
+                self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0).generate(scale)
+                n_points = self.test_grid.get_num_points()
+                self.y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
 
                 for i, function in enumerate(self.functions):
-                    y_test[i] = function(test_grid.grid)
+                    self.y_test[i] = function(self.test_grid.grid)
 
                 # TODO: Maybe make the same for the train grid and get y from the function as otherwise it will be called several time although it is the same calculation
 
                 # SMOLYAK
 
-                start_time = time.time()
+                progress_bar.set_description(
+                    f"Experiment: Dim:{dim},Scale:{scale},Method:Smolyak,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                if self.smolyak_method == InterpolationMethod.STANDARD:
-                    si = SmolyakInterpolator(sparse_grid, self.smolyak_method)
-                    si.fit(self.functions)
+                self._run_experiment_smolyak(dim, scale, sparse_grid, seed)
 
-                    y_test_hat_smolyak = si.interpolate(test_grid)
-
-
-                elif self.smolyak_method == InterpolationMethod.TASMANIAN:
-                    fitter = SmolyakFitter(dim)
-                    y_test_hat_smolyak = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
-                    for i, function in enumerate(self.functions):
-                        model = fitter.fit(function, sparse_grid) # TODO: Check if this is possible for multiple in parallel
-                        y_test_hat_smolyak[i] = model(test_grid.grid).squeeze()
-
-                else:
-                    raise ValueError("Unknown interpolation method")
-
-                # Error calculation
-
-                smolyak_ell_2 = np.sqrt(np.mean(np.square(y_test - y_test_hat_smolyak), axis=1))
-                smolyak_ell_infty = np.max(np.abs(y_test - y_test_hat_smolyak), axis=1)
-
-                end_time = time.time()
-                needed_time = end_time - start_time
-                cur_datetime = datetime.datetime.now()
-
-                self.save_stats(
-                    dim=dim,
-                    scale=scale,
-                    method="Smolyak",
-                    grid_type="CHEBYSHEV",
-                    basis_type="CHEBYSHEV",
-                    multiplier_fun=lambda x: x,
-                    seed=seed,
-                    test_grid_seed=seed,  # TODO: Probably not correct
-                    ell_2_errors=smolyak_ell_2,
-                    ell_infty_errors=smolyak_ell_infty,
-                    datetime=cur_datetime,
-                    needed_time=needed_time
-                )
+                progress_bar.update(1)
 
                 # LEAST SQUARES UNIFORM
 
-                start_time = time.time()
+                progress_bar.set_description(
+                    f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Unif,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                ls_uniform = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
-                                                      grid=uniform_grid, method=self.least_squares_method)
-                ls_uniform.fit(self.functions)
+                self._run_experiment_ls(dim, scale, uniform_grid, "CHEBYSHEV",
+                                        seed)  # TODO: Otherwise we would have REGULAR here instead of CHEBYSHEV
 
-                y_test_hat_ls_uniform = ls_uniform.interpolate(test_grid)
-
-                # TODO: This could be generalized (also for the following error calculations
-                ls_uniform_ell_2 = np.sqrt(np.mean(np.square(y_test - y_test_hat_ls_uniform), axis=1))
-                ls_uniform_ell_infty = np.max(np.abs(y_test - y_test_hat_ls_uniform), axis=1)
-
-                end_time = time.time()
-                needed_time = end_time - start_time
-                cur_datetime = datetime.datetime.now()
-
-                self.save_stats(
-                    dim=dim,
-                    scale=scale,
-                    method="Least_Squares",
-                    grid_type=uniform_grid_provider.rule.name, # Check if that corresponds to some sort of Least-Squares Random Uniform
-                    basis_type=ls_uniform.basis_type.name,
-                    multiplier_fun=lambda x: x,
-                    seed=seed,
-                    test_grid_seed=seed,  # TODO: Probably not correct
-                    ell_2_errors=ls_uniform_ell_2,
-                    ell_infty_errors=ls_uniform_ell_infty,
-                    datetime=cur_datetime,
-                    needed_time=needed_time
-                )
+                progress_bar.update(1)
 
                 # LEAST SQUARES CHEBYSHEV
 
-                start_time = time.time()
+                progress_bar.set_description(
+                    f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Cheb,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                ls_chebyshev = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
-                                                        grid=chebyshev_grid, method=self.least_squares_method)
-                ls_chebyshev.fit(self.functions)
+                self._run_experiment_ls(dim, scale, chebyshev_grid, "CHEBYSHEV", seed)
 
-                y_test_hat_cheby_uniform = ls_chebyshev.interpolate(test_grid)
+                progress_bar.update(1)
 
-                ls_cheby_ell_2 = np.sqrt(np.mean(np.square(y_test - y_test_hat_cheby_uniform), axis=1))
-                ls_cheby_ell_infty = np.max(np.abs(y_test - y_test_hat_cheby_uniform), axis=1)
+        print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                end_time = time.time()
-                needed_time = end_time - start_time
-                cur_datetime = datetime.datetime.now()
+    # TODO: Unify the following 3 methods to one method
+    def _run_experiment_smolyak(self, dim, scale, grid, seed):
+        start_time = time.time()
 
-                self.save_stats(
-                    dim=dim,
-                    scale=scale,
-                    method="Least_Squares",
-                    grid_type=chebyshev_grid_provider.rule.name,
-                    # Check if that corresponds to some sort of Least-Squares Random Uniform
-                    basis_type=ls_chebyshev.basis_type.name,
-                    multiplier_fun=lambda x: x,
-                    seed=seed,
-                    test_grid_seed=seed,  # TODO: Probably not correct
-                    ell_2_errors=ls_cheby_ell_2,
-                    ell_infty_errors=ls_cheby_ell_infty,
-                    datetime=cur_datetime,
-                    needed_time=needed_time
-                )
+        if self.smolyak_method == InterpolationMethod.STANDARD:
+            si = SmolyakInterpolator(grid, self.smolyak_method)
+            si.fit(self.functions)
 
-        print("Done")
-        # TODO: Add more statistics: Progressbar, RAM, time, datetime, etc.
+            y_test_hat_smolyak = si.interpolate(self.test_grid)
+
+        elif self.smolyak_method == InterpolationMethod.TASMANIAN:
+            fitter = SmolyakFitter(dim)
+            y_test_hat_smolyak = np.empty(dtype=np.float64,
+                                          shape=(len(self.functions), self.test_grid.get_num_points()))
+            for i, function in enumerate(self.functions):
+                model = fitter.fit(function, grid)  # TODO: Check if this is possible for multiple in parallel
+                y_test_hat_smolyak[i] = model(self.test_grid.grid).squeeze()
+
+        else:
+            raise ValueError("Unknown interpolation method")
+
+        # Error calculation
+
+        smolyak_ell_2 = np.sqrt(np.mean(np.square(self.y_test - y_test_hat_smolyak), axis=1))
+        smolyak_ell_infty = np.max(np.abs(self.y_test - y_test_hat_smolyak), axis=1)
+
+        end_time = time.time()
+        needed_time = end_time - start_time
+        cur_datetime = datetime.datetime.now()
+
+        self._save_stats(
+            dim=dim,
+            scale=scale,
+            method="Smolyak",
+            grid_type="CHEBYSHEV",
+            basis_type="CHEBYSHEV",
+            multiplier_fun=lambda x: x,
+            seed=seed,
+            test_grid_seed=seed,  # TODO: Probably not correct
+            ell_2_errors=smolyak_ell_2,
+            ell_infty_errors=smolyak_ell_infty,
+            datetime=cur_datetime,
+            needed_time=needed_time
+        )
+
+    def _run_experiment_ls(self, dim, scale, grid, grid_type: str, seed):
+        start_time = time.time()
+
+        ls_chebyshev = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                                grid=grid, method=self.least_squares_method)
+        ls_chebyshev.fit(self.functions)
+
+        y_test_hat_cheby_uniform = ls_chebyshev.interpolate(self.test_grid)
+
+        ls_cheby_ell_2 = np.sqrt(np.mean(np.square(self.y_test - y_test_hat_cheby_uniform), axis=1))
+        ls_cheby_ell_infty = np.max(np.abs(self.y_test - y_test_hat_cheby_uniform), axis=1)
+
+        end_time = time.time()
+        needed_time = end_time - start_time
+        cur_datetime = datetime.datetime.now()
+
+        self._save_stats(
+            dim=dim,
+            scale=scale,
+            method="Least_Squares",
+            grid_type=grid_type,
+            basis_type=ls_chebyshev.basis_type.name,
+            multiplier_fun=lambda x: x,
+            seed=seed,
+            test_grid_seed=seed,  # TODO: Probably not correct
+            ell_2_errors=ls_cheby_ell_2,
+            ell_infty_errors=ls_cheby_ell_infty,
+            datetime=cur_datetime,
+            needed_time=needed_time
+        )
 
     def _get_functions(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
                        dim: int, avg_c: float) -> (List[Function], List[np.ndarray], List[np.ndarray], List[str]):
@@ -267,15 +278,13 @@ class ExperimentExecutor:
 
         return c, w
 
-    def save_stats(self, dim: int, scale: int, method: str, grid_type: str, basis_type: str, multiplier_fun: Callable, seed: int, test_grid_seed: int,
-                   ell_2_errors: Union[np.ndarray, List[float]],
-                   ell_infty_errors: Union[np.ndarray, List[float]], datetime: datetime.datetime, needed_time: float):
+    def _save_stats(self, dim: int, scale: int, method: str, grid_type: str, basis_type: str, multiplier_fun: Callable,
+                    seed: int, test_grid_seed: int,
+                    ell_2_errors: Union[np.ndarray, List[float]],
+                    ell_infty_errors: Union[np.ndarray, List[float]], datetime: datetime.datetime, needed_time: float):
         """
             Keep the CSV up to date with the current results.
         """
-
-        # TODO: For one specific c-value we got the scientific notation, which was then stored as a string in the csv
-
 
         data = dict.fromkeys(self.header_keys, list())
 
@@ -286,7 +295,7 @@ class ExperimentExecutor:
 
         n = len(ell_2_errors)
 
-        if method == "Smolyak": # TODO: Maybe make this more waterproof by not comparing raw strings
+        if method == "Smolyak":  # TODO: Maybe make this more waterproof by not comparing raw strings
             multiplier_fun = lambda x: x
             method_type = self.smolyak_method.name
             basis_type = "CHEBYSHEV"

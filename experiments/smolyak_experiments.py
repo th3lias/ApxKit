@@ -47,7 +47,7 @@ class SmolyakExperimentExecutor(ExperimentExecutor):
             grid = rule_grid_provider.generate(scale)
             model = fitter.fit(function, grid)
             l_2, l_inf = self.evaluate_model(function, model, test_points)
-            self.save_stats(function, scale, l_2, l_inf)
+            self._save_stats(function, scale, l_2, l_inf)
 
     @staticmethod
     def evaluate_model(function: Function, model: SmolyakModel, test_points: np.ndarray) -> tuple[float, float]:
@@ -60,7 +60,7 @@ class SmolyakExperimentExecutor(ExperimentExecutor):
         l_inf = np.max(np.abs(model_values - true_values))
         return l_2, l_inf
 
-    def save_stats(self, function: ParametrizedFunction, scale: int, l_2: float, l_inf: float):
+    def _save_stats(self, function: ParametrizedFunction, scale: int, l_2: float, l_inf: float):
         """
             Keep the CSV up to date with the current results.
         """
