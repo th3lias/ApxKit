@@ -294,11 +294,17 @@ class ExperimentExecutor:
 
         n_points = int(multiplier_fun(calculate_num_points(scale, dim)))
 
+        formatted_cs = [np.array2string(c, precision=5, separator=',', suppress_small=True).replace('\n', '') for c in
+                        self.cs]
+
+        formatted_ws = [np.array2string(w, precision=5, separator=',', suppress_small=True).replace('\n', '') for w in
+                        self.ws]
+
         data['dim'] = [dim] * n
         data['scale'] = [scale] * n
         data['method'] = [method] * n
-        data['w'] = self.ws
-        data['c'] = self.cs
+        data['w'] = formatted_ws
+        data['c'] = formatted_cs
         data['sum_c'] = [round(np.sum(c), 3) for c in self.cs]
         data['grid_type'] = [grid_type] * n
         data['basis_type'] = [basis_type] * n
