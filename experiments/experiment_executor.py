@@ -23,6 +23,7 @@ class ExperimentExecutor:
     # TODO: Needs to somehow generalize such that Smolyak and Least Squares use the same functions
     # TODO: Docstring
     # TODO: Progressbar necessary
+    # TODO: Adapt to the TASMANIAN API but not necessarily use the tasmanian API
 
     def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, path: str = None):
@@ -123,10 +124,11 @@ class ExperimentExecutor:
 
 
                 elif self.smolyak_method == InterpolationMethod.TASMANIAN:
-                    sparse_grid = RuleGridProvider.generate(scale)
                     fitter = SmolyakFitter(dim)
-                    model = fitter.fit(self.functions, sparse_grid)
-                    y_test_hat_smolyak = model(test_grid.grid)
+                    y_test_hat_smolyak = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
+                    for i, function in enumerate(self.functions):
+                        model = fitter.fit(function, sparse_grid) # TODO: Check if this is possible for multiple in parallel
+                        y_test_hat_smolyak[i] = model(test_grid.grid).squeeze()
 
                 else:
                     raise ValueError("Unknown interpolation method")
@@ -338,10 +340,10 @@ class ExperimentExecutor:
 if __name__ == '__main__':
     # TODO: Try out Tasmanian method
     # Test the impmlementation in a small setting
-    dim_list = [3, 4, 5]
+    dim_list = [2, 3, 4, 5]
     scale_list = [1, 2, 3, 4]
     path = None
-    ee = ExperimentExecutor(dim_list, scale_list, InterpolationMethod.STANDARD,
+    ee = ExperimentExecutor(dim_list, scale_list, InterpolationMethod.TASMANIAN,
                             LeastSquaresMethod.SCIPY_LSTSQ_GELSY, path)
     ee.execute_experiments([FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK], 15, 1.0,
                            lambda x: 2 * x, 42)
