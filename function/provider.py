@@ -9,6 +9,7 @@ from function.utils import oscillatory, product_peak, corner_peak, gaussian, con
 
 
 class ParametrizedFunctionProvider:
+    # TODO: Function type is not the same as the enumerate type --> Change this
     @staticmethod
     def get_function(function_type: FunctionType, d: int, c: Union[np.array, None] = None,
                       w: Union[np.array, None] = None) -> ParametrizedFunction:
