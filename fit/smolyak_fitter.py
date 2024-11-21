@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import dtype
+from typing import Union, List
 
 from fit.fitter import Fitter
 from function.f import Function
@@ -12,13 +13,14 @@ class SmolyakFitter(Fitter):
 	def __init__(self, input_dim: int):
 		super(SmolyakFitter, self).__init__(dim=input_dim)
 	
-	def fit(self, f: Function, grid: RuleGrid) -> SmolyakModel:
+	def fit(self, f: Union[Function, List[Function]], grid: RuleGrid) -> SmolyakModel: # TODO: Adapt to list of functions
 		"""
 			f is a function that takes a numpy array of shape (n, d) as input and returns a numpy array of shape (n, 1)
 			as output. The input array contains n points in the d-dimensional input space. The output array contains
 			the corresponding function values.
 		"""
-		assert self.is_fittable(f), "The function is not fittable by this model."
+
+		assert self.is_fittable(f), "At least one of the provided functions is not fittable by this model."
 		model_values = f(grid.get_needed_points())
 		grid.load_needed_values(model_values.reshape(-1, 1))
 		return SmolyakModel(f=f, dim=grid.input_dim, upper=grid.upper_bound, lower=grid.lower_bound,

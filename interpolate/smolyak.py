@@ -4,8 +4,9 @@ import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 from scipy.linalg import lu
 
+from fit import BasisType
+from function import Function
 from grid.grid.grid import Grid
-from interpolate.basis_types import BasisType
 from fit.method.interpolation_method import InterpolationMethod
 from interpolate.interpolator import Interpolator
 
@@ -31,12 +32,15 @@ class SmolyakInterpolator(Interpolator):
     def set_method(self, method: InterpolationMethod):
         self.method = method
 
-    def fit(self, y: np.ndarray):
+    def fit(self, f: Union[Function, List[Function]]):
 
-        if self.method == InterpolationMethod.STANDARD: # TODO[Jakob] For now this is already queried before. Later we will have 1 Large Smolyak Class, where we use
+        if self.method == InterpolationMethod.STANDARD:  # TODO[Jakob] For now this is already queried before. Later we will have 1 Large Smolyak Class, where we use
             if self.basis is None:
                 self.basis = self._build_basis()
                 self.L, self.U = lu(self.basis, permute_l=True)[-2:]
+
+            # calculate y
+            y = self._calculate_y(f)
 
             coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))
 
@@ -51,6 +55,10 @@ class SmolyakInterpolator(Interpolator):
     def interpolate(self, grid: Union[Grid, np.ndarray]) -> np.ndarray:
         if isinstance(grid, Grid):
             grid = grid.grid
+
+        if isinstance(grid, TasmanianSparseGrid):
+        # transform to numpy array
+            grid = grid.getPoints() # TODO[Jakob] Check if this is correct
 
         if self.method == InterpolationMethod.STANDARD:
             data_transformed = self._build_basis(grid=grid, b_idx=self._b_idx)

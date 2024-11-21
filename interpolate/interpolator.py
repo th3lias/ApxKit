@@ -3,6 +3,7 @@ from typing import Callable, Union, List, Tuple, Generator
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 
+from function import Function
 from grid.grid.grid import Grid
 from functools import reduce
 from operator import mul
@@ -290,3 +291,14 @@ class Interpolator:
         # only save if not existent already
         if not os.path.exists(path):
             np.save(path, _b_idx, allow_pickle=True)
+
+    def _calculate_y(self, f: Union[Function, List[Function]]):
+        if isinstance(f, Function):
+            f = [f]
+
+        if isinstance(self.grid.grid, TasmanianSparseGrid):
+            grid = self.grid.grid.getPoints()
+        else:
+            grid = self.grid.grid
+
+        return np.array([f_i(grid) for f_i in f]).T# TODO: Transpose necessary?

@@ -1,12 +1,14 @@
 from typing import Union, List, Tuple
+from deprecated.classic import deprecated
 
 import numpy as np
 import scipy
 from sklearn.preprocessing import PolynomialFeatures
 
+from fit import BasisType
+from function import Function
 from grid.grid.grid import Grid
 from grid.rule.random_grid_rule import RandomGridRule
-from interpolate.basis_types import BasisType
 from interpolate.interpolator import Interpolator
 from fit.method.least_squares_method import LeastSquaresMethod
 from utils.utils import find_degree
@@ -25,12 +27,14 @@ class LeastSquaresInterpolator(Interpolator):
     def set_method(self, method: LeastSquaresMethod):
         self.method = method
 
-    def fit(self, y: np.ndarray):
+    def fit(self, f: Union[Function, List[Function]]):
 
         assert self.grid is not None, "Grid needs to be set before interpolation"
 
         if self.basis is None:
             self.basis = self._build_basis()
+
+        y = self._calculate_y(f)
 
         if self.method == LeastSquaresMethod.EXACT:
             self._approximate_exact(y)
@@ -117,6 +121,7 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
+    @deprecated
     def _approximate_numpy_lstsq(self, y: np.ndarray):
 
         if not self.include_bias:
