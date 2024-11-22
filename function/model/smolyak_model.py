@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union, List
 
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
@@ -6,7 +6,7 @@ from TasmanianSG import TasmanianSparseGrid
 from function.model.model import Model
 
 class SmolyakModel(Model):
-    def __init__(self, f: Callable, dim: int, upper: float, lower: float, tasmanian: TasmanianSparseGrid = None,
+    def __init__(self, f: Union[Callable, List[Callable]], dim: int, upper: float, lower: float, tasmanian: TasmanianSparseGrid = None,
                  fitted: bool = False):
         """
             In this case, the SmolyakModel contains a 'tasmanian: TasmanianSparseGrid' parameter, which persists
@@ -24,7 +24,7 @@ class SmolyakModel(Model):
             !
         """
         x = x.reshape(-1, self.dim)
-        return self.tasmanian.evaluate(x) if x.ndim == 1 else self.tasmanian.evaluateBatch(x)
+        return self.tasmanian.evaluate(x) if x.ndim == 1 else self.tasmanian.evaluateBatch(x).T
 
     def is_fitted(self):
         return self.fitted

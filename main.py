@@ -1,4 +1,3 @@
-import datetime
 import os
 
 from experiments.experiment_executor import ExperimentExecutor
@@ -11,12 +10,11 @@ from typing import Union
 import argparse
 
 
-# TODO: Change to the new methods in the experiments class
 # TODO [Jakob] Check if load and save indices and grids is implemented if possible (everywhere)
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [5]
-    scale_list = [1,2,3,4]
+    dim_list = [2]
+    scale_list = [1, 2, 3, 4, 5, 6, 7, 8]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -25,7 +23,7 @@ def main_method(folder_name: Union[str, None] = None):
 
     seed = 42
     average_c = 1.0
-    smolyak_method_type = InterpolationMethod.STANDARD
+    smolyak_method_type = InterpolationMethod.TASMANIAN
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
 
     multiplier_fun = lambda x: 2 * x
@@ -35,7 +33,8 @@ def main_method(folder_name: Union[str, None] = None):
     ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun, seed=seed)
 
-    folder_name = os.path.dirname(ex.results_path)
+    if folder_name is not None:
+        folder_name = os.path.dirname(ex.results_path)
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
@@ -45,8 +44,6 @@ def main_method(folder_name: Union[str, None] = None):
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True,
                             folder_name=folder_name, same_axis_both_plots=True)
                 pbar.update(1)
-
-
 
 
 if __name__ == '__main__':

@@ -357,8 +357,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
             axs[0].set_ylim(global_min_uniform, global_max_uniform)
             axs[1].set_ylim(global_min_l2, global_max_l2)
 
-            avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=',')) # TODO: This is wrong
-            avg_c_str = str(int(np.round(avg_c, 0)))
+            avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=','))
             fig.suptitle(
                 f'{function_type.name}; multiplier={multiplier_fun(1.0)}; dim={dimension}'
                 f'; avg_c={avg_c}\nc={name}\nw={w}')

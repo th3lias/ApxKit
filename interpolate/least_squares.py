@@ -38,8 +38,6 @@ class LeastSquaresInterpolator(Interpolator):
 
         if self.method == LeastSquaresMethod.EXACT:
             self._approximate_exact(y)
-        elif self.method == LeastSquaresMethod.NUMPY_LSTSQ:
-            self._approximate_numpy_lstsq(y)
         elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSD:
             self._approximate_scipy_lstsq(y, 'gelsd')
         elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSS:
@@ -99,16 +97,7 @@ class LeastSquaresInterpolator(Interpolator):
 
     def _self_implementation(self, y: np.ndarray):
 
-        if self.grid.grid.grid_type == RandomGridRule.CHEBYSHEV:  # TODO: Check was previously just a self.grid.grid_type
-            weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
-
-        elif self.grid.grid.grid_type == RandomGridRule.UNIFORM:  # TODO: Check was previously just a self.grid.grid_type
-            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
-        else:
-            raise ValueError(
-                f"Unsupported grid type {self.grid.grid.grid_type}")  # TODO: Check was previously just a self.grid.grid_type
+        weight = self._get_weights_for_weighted_ls()
 
         print("Warning: The following is very unstable, since we calculate A.T@A")
 
@@ -121,47 +110,12 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
-    @deprecated
-    def _approximate_numpy_lstsq(self, y: np.ndarray):
-
-        if not self.include_bias:
-            print("Please be aware that the result may become significantly worse when using no intercept (bias)")
-
-        # weighted least squares
-        if self.grid.rule == RandomGridRule.CHEBYSHEV:
-            weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
-
-        elif self.grid.rule == RandomGridRule.UNIFORM:
-            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
-        else:
-            raise ValueError(f"Unsupported grid type {self.grid.rule}")
-
-        x_poly = (weight * self.basis.T).T
-        del self.basis
-        y_prime = (weight * y.T).T
-
-        sol = np.linalg.lstsq(x_poly, y_prime, rcond=None)
-        coeff = sol[0]
-
-        self.coeff = coeff
-
     def _approximate_scipy_lstsq(self, y: np.ndarray, lapack_driver: str = 'gelsy'):
 
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercept (bias)")
 
-        # weighted least squares
-        if self.grid.rule == RandomGridRule.CHEBYSHEV:
-            weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
-
-        elif self.grid.rule == RandomGridRule.UNIFORM:
-            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
-        else:
-            raise ValueError(f"Unsupported grid type {self.grid.rule}")
+        weight = self._get_weights_for_weighted_ls()
 
         x_poly = (weight * self.basis.T).T
         del self.basis
@@ -171,3 +125,18 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = sol[0]
 
         self.coeff = coeff
+
+    def _get_weights_for_weighted_ls(self):
+
+        # weighted least squares
+        if self.grid.rule == RandomGridRule.CHEBYSHEV:
+            weight = np.empty(shape=(self.grid.get_num_points()))
+            for i, row in enumerate(self.grid.grid):
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
+
+        elif self.grid.rule == RandomGridRule.UNIFORM:
+            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
+        else:
+            raise ValueError(f"Unsupported grid type {self.grid.rule}")
+
+        return weight

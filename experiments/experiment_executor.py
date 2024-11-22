@@ -81,8 +81,8 @@ class ExperimentExecutor:
         progress_bar = tqdm(total=total_iterations, desc="Initializing", unit="iteration")
 
         for dim in self.dim_list:
-
-            sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0)
+            outdim = len(function_types) * n_functions_parallel
+            sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0, output_dim = outdim)
 
             uniform_grid_provider = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                        multiplier_fun=ls_multiplier_fun, seed=seed,
@@ -97,6 +97,8 @@ class ExperimentExecutor:
 
             # Calculates the functions, their names, cs and ws and stores them in the object
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
+
+            # TODO: Globally calculate y_train and pass it to the smolyak methods etc.
 
             for scale in self.scale_list:
 
@@ -154,6 +156,7 @@ class ExperimentExecutor:
 
                 progress_bar.update(1)
 
+        progress_bar.close()
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
     # TODO: Unify the following 3 methods to one method
@@ -167,13 +170,17 @@ class ExperimentExecutor:
             y_test_hat_smolyak = si.interpolate(self.test_grid)
 
         elif self.smolyak_method == InterpolationMethod.TASMANIAN:
-            fitter = SmolyakFitter(dim)
-            y_test_hat_smolyak = np.empty(dtype=np.float64,
-                                          shape=(len(self.functions), self.test_grid.get_num_points()))
-            for i, function in enumerate(self.functions):
-                model = fitter.fit(function, grid)  # TODO: Check if this is possible for multiple in parallel
-                y_test_hat_smolyak[i] = model(self.test_grid.grid).squeeze()
 
+            # TODO: Delete
+            fitter = SmolyakFitter(dim)
+            # y_test_hat_smolyak_old = np.empty(dtype=np.float64,
+            #                               shape=(len(self.functions), self.test_grid.get_num_points()))
+            model = fitter.fit(self.functions, grid)
+            y_test_hat_smolyak = model(self.test_grid.grid)
+            # for i, function in enumerate(self.functions):
+            #     model = fitter.fit(function, grid)  # TODO: Check if this is possible for multiple in parallel and in any case make the loop within the fit function
+            #     y_test_hat_smolyak_old[i] = model(self.test_grid.grid).squeeze()
+            # print("Test")
         else:
             raise ValueError("Unknown interpolation method")
 

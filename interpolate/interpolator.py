@@ -205,6 +205,7 @@ class Interpolator:
         else:
             return 2 ** (i - 1) + 1
 
+    # TODO: Delete this, all usages are from tests
     @staticmethod
     @deprecated
     def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
@@ -301,4 +302,4 @@ class Interpolator:
         else:
             grid = self.grid.grid
 
-        return np.array([f_i(grid) for f_i in f]).T# TODO: Transpose necessary?
+        return np.array([f_i(grid) for f_i in f]).T

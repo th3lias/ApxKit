@@ -19,13 +19,10 @@ class Fitter:
         """
         raise NotImplementedError("The method `fit` must be implemented by the subclass.")
 
-    def is_fittable(self, f: Union[Function, List[Function]]) -> bool:
+    def is_fittable(self, f: List[Function]) -> bool:
         """
             Checks if the model is able to compute an approximation for the given function.
         """
-
-        if isinstance(f, Function):
-            f = [f]
 
         for function in f:
             if function.dim != self.dim:

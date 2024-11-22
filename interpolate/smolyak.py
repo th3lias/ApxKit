@@ -19,6 +19,7 @@ from interpolate.interpolator import Interpolator
 
 # from Kenneth L. Judd, Lilia Maliar, Serguei Maliar and Rafael Valero
 
+# TODO: Migrate to smolyak_fitter.py
 
 class SmolyakInterpolator(Interpolator):
     def __init__(self, grid: Grid, method: InterpolationMethod, basis_type: BasisType = BasisType.CHEBYSHEV):
@@ -46,9 +47,6 @@ class SmolyakInterpolator(Interpolator):
 
             self.coeff = coeff
 
-        elif self.method == InterpolationMethod.LAGRANGE:
-            raise NotImplementedError("Not yet implemented")
-
         else:
             raise ValueError(f"Method {self.method} is not supported!")
 
@@ -58,7 +56,7 @@ class SmolyakInterpolator(Interpolator):
 
         if isinstance(grid, TasmanianSparseGrid):
         # transform to numpy array
-            grid = grid.getPoints() # TODO[Jakob] Check if this is correct
+            grid = grid.getPoints()
 
         if self.method == InterpolationMethod.STANDARD:
             data_transformed = self._build_basis(grid=grid, b_idx=self._b_idx)
@@ -66,8 +64,6 @@ class SmolyakInterpolator(Interpolator):
             if y_hat.ndim > 1:
                 return y_hat.T
             return y_hat
-        elif self.method == InterpolationMethod.LAGRANGE:
-            raise NotImplementedError("The method is not implemented yet")
         else:
             raise ValueError(f"Method {self.method} is not supported!")
 
