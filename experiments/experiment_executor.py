@@ -82,7 +82,8 @@ class ExperimentExecutor:
 
         for dim in self.dim_list:
             outdim = len(function_types) * n_functions_parallel
-            sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0, output_dim = outdim)
+            # TODO: Also for uniform and chebyshev grid relevant?
+            sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0, output_dim=outdim)
 
             uniform_grid_provider = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                        multiplier_fun=ls_multiplier_fun, seed=seed,
@@ -97,8 +98,6 @@ class ExperimentExecutor:
 
             # Calculates the functions, their names, cs and ws and stores them in the object
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
-
-            # TODO: Globally calculate y_train and pass it to the smolyak methods etc.
 
             for scale in self.scale_list:
 
@@ -171,23 +170,16 @@ class ExperimentExecutor:
 
         elif self.smolyak_method == InterpolationMethod.TASMANIAN:
 
-            # TODO: Delete
             fitter = SmolyakFitter(dim)
-            # y_test_hat_smolyak_old = np.empty(dtype=np.float64,
-            #                               shape=(len(self.functions), self.test_grid.get_num_points()))
             model = fitter.fit(self.functions, grid)
             y_test_hat_smolyak = model(self.test_grid.grid)
-            # for i, function in enumerate(self.functions):
-            #     model = fitter.fit(function, grid)  # TODO: Check if this is possible for multiple in parallel and in any case make the loop within the fit function
-            #     y_test_hat_smolyak_old[i] = model(self.test_grid.grid).squeeze()
-            # print("Test")
+
         else:
             raise ValueError("Unknown interpolation method")
 
         # Error calculation
 
-        smolyak_ell_2 = np.sqrt(np.mean(np.square(self.y_test - y_test_hat_smolyak), axis=1))
-        smolyak_ell_infty = np.max(np.abs(self.y_test - y_test_hat_smolyak), axis=1)
+        smolyak_ell_2, smolyak_ell_infty = self._calc_error(y_test_hat_smolyak)
 
         end_time = time.time()
         needed_time = end_time - start_time
@@ -211,14 +203,13 @@ class ExperimentExecutor:
     def _run_experiment_ls(self, dim, scale, grid, grid_type: str, multiplier_fun: Callable, seed):
         start_time = time.time()
 
-        ls_chebyshev = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
-                                                grid=grid, method=self.least_squares_method)
-        ls_chebyshev.fit(self.functions)
+        ls = LeastSquaresInterpolator(include_bias=True, basis_type=BasisType.CHEBYSHEV,
+                                      grid=grid, method=self.least_squares_method)
+        ls.fit(self.functions)
 
-        y_test_hat_cheby_uniform = ls_chebyshev.interpolate(self.test_grid)
+        y_test_hat_cheby_uniform = ls.interpolate(self.test_grid)
 
-        ls_cheby_ell_2 = np.sqrt(np.mean(np.square(self.y_test - y_test_hat_cheby_uniform), axis=1))
-        ls_cheby_ell_infty = np.max(np.abs(self.y_test - y_test_hat_cheby_uniform), axis=1)
+        ls_ell_2, ls_ell_infty = self._calc_error(y_test_hat_cheby_uniform)
 
         end_time = time.time()
         needed_time = end_time - start_time
@@ -229,12 +220,12 @@ class ExperimentExecutor:
             scale=scale,
             method="Least_Squares",
             grid_type=grid_type,
-            basis_type=ls_chebyshev.basis_type.name,
+            basis_type=ls.basis_type.name,
             multiplier_fun=multiplier_fun,
             seed=seed,
             test_grid_seed=seed,  # TODO: Probably not correct
-            ell_2_errors=ls_cheby_ell_2,
-            ell_infty_errors=ls_cheby_ell_infty,
+            ell_2_errors=ls_ell_2,
+            ell_infty_errors=ls_ell_infty,
             datetime=cur_datetime,
             needed_time=round(needed_time, 3)
         )
@@ -332,3 +323,9 @@ class ExperimentExecutor:
 
         df = pd.DataFrame(data)
         df.to_csv(self.results_path, mode='a', header=False, index=False)
+
+    def _calc_error(self, test_array):
+        ell_2 = np.sqrt(np.mean(np.square(self.y_test - test_array), axis=1))
+        ell_infty = np.max(np.abs(self.y_test - test_array), axis=1)
+
+        return ell_2, ell_infty

@@ -60,7 +60,23 @@ def morokoff_calfisch_1(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-    return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
+
+    # return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
+
+    if not isinstance(x, np.ndarray):
+            raise ValueError("Cannot work with non-numpy arrays")
+
+    x = x.squeeze()
+    if x.ndim == 1:
+        if d != 1:
+            return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
+        else:
+            return np.array([2 * (i * c[0] + w[0]) for i in x])
+    elif x.ndim == 2:
+        return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
+    else:
+        raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
 
 
 def morokoff_calfisch_2(x, d, c, w):
@@ -81,6 +97,7 @@ def bratley(x, d, c, w):
     """
         Bratley function.
     """
+    # TODO: Makes Trouble
     return np.sum(np.power(-1, np.arange(1, d + 1))) * np.prod(np.multiply(c, x) - w, axis=1)
 
 

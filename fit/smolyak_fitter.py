@@ -20,14 +20,11 @@ class SmolyakFitter(Fitter):
             The output array contains the corresponding function values.
         """
 
-        # TODO: Now it uses function by function, can it also do multiple of those?
-
         if isinstance(f, Function):
             f = [f]
 
         assert self.is_fittable(f), "At least one of the provided functions is not fittable by this model."
         model_values = self._calculate_y(f, grid)
-        # model_values = f(grid.get_needed_points()) # TODO: Remove if possible
         grid.load_needed_values(model_values)
         return SmolyakModel(f=f, dim=grid.input_dim, upper=grid.upper_bound, lower=grid.lower_bound,
                             tasmanian=grid.grid)

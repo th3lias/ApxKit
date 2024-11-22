@@ -14,7 +14,7 @@ import argparse
 
 def main_method(folder_name: Union[str, None] = None):
     dim_list = [2]
-    scale_list = [1, 2, 3, 4, 5, 6, 7, 8]
+    scale_list = [1, 2, 3, 4, 5, 6]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -33,7 +33,7 @@ def main_method(folder_name: Union[str, None] = None):
     ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun, seed=seed)
 
-    if folder_name is not None:
+    if folder_name is None:
         folder_name = os.path.dirname(ex.results_path)
 
     # save all images in results folder
