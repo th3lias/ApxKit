@@ -25,7 +25,6 @@ class ExperimentExecutor:
     # TODO: Maybe this is the main class, and we don't need the other ones
     # TODO: Needs to somehow generalize such that Smolyak and Least Squares use the same functions
     # TODO: Docstring
-    # TODO: Progressbar necessary
     # TODO: Adapt to the TASMANIAN API but not necessarily use the tasmanian API
 
     def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
@@ -41,17 +40,18 @@ class ExperimentExecutor:
         self.scale_list = scale_list
         self.smolyak_method = smoylak_method
         self.least_squares_method = least_squares_method
-        # TODO: Check this comment below
-        # Ensure that any used directory is created before this object is created, otherwise this fails.
 
         self.header_keys = ['dim', 'scale', 'method', 'w', 'c', 'sum_c', 'grid_type', 'basis_type', 'method_type',
                             'n_samples', 'seed', 'test_grid_seed', 'f_name', 'ell_2_error', 'ell_infty_error',
-                            'datetime', 'needed_time']  # TODO: This needs to be adapted
+                            'datetime', 'needed_time']
         header = dict.fromkeys(self.header_keys, list())
+
         self.functions = None
         self.cs = None
         self.ws = None
         self.f_names = None
+        self.test_grid = None
+        self.y_test = None
 
         df = pd.DataFrame(header)
 
@@ -82,23 +82,21 @@ class ExperimentExecutor:
 
         for dim in self.dim_list:
 
-            sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0,
-                                                    upper_bound=1.0)  # TODO: This is kind of a Tasmanian thing, we need to make this variable
+            sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0)
 
             uniform_grid_provider = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                        multiplier_fun=ls_multiplier_fun, seed=seed,
-                                                       rule=RandomGridRule.UNIFORM)  # TODO: Check this
+                                                       rule=RandomGridRule.UNIFORM)
             chebyshev_grid_provider = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                          multiplier_fun=ls_multiplier_fun, seed=seed,
-                                                         rule=RandomGridRule.CHEBYSHEV)  # TODO: Check this
+                                                         rule=RandomGridRule.CHEBYSHEV)
 
             sparse_grid = None
             uniform_grid = None
             chebyshev_grid = None
 
-            self.functions, self.cs, self.ws, self.f_names = self._get_functions(function_types, n_functions_parallel,
-                                                                                 dim,
-                                                                                 avg_c)  # TODO: maybe no need to store that at >>self<<
+            # Calculates the functions, their names, cs and ws and stores them in the object
+            self._get_functions(function_types, n_functions_parallel, dim, avg_c)
 
             for scale in self.scale_list:
 
@@ -127,8 +125,6 @@ class ExperimentExecutor:
 
                 for i, function in enumerate(self.functions):
                     self.y_test[i] = function(self.test_grid.grid)
-
-                # TODO: Maybe make the same for the train grid and get y from the function as otherwise it will be called several time although it is the same calculation
 
                 # SMOLYAK
 
@@ -258,11 +254,13 @@ class ExperimentExecutor:
                 function = ParametrizedFunctionProvider.get_function(fun_type, dim, c=c, w=w)
                 cs.append(c)
                 ws.append(w)
-                f_names.append(
-                    fun_type.name)  # TODO: Maybe adapt the name of the functions by just using the name of the enum
+                f_names.append(fun_type.name)
                 functions.append(function)
 
-        return functions, cs, ws, f_names
+        self.functions = functions
+        self.cs = cs
+        self.ws = ws
+        self.f_names = f_names
 
     def _get_c_and_w(self, n_fun_parallel: float, avg_c: float, dim: int):
         """
