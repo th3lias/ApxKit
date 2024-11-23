@@ -64,7 +64,7 @@ def morokoff_calfisch_1(x, d, c, w):
     # return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
 
     if not isinstance(x, np.ndarray):
-            raise ValueError("Cannot work with non-numpy arrays")
+        raise ValueError("Cannot work with non-numpy arrays")
 
     x = x.squeeze()
     if x.ndim == 1:
@@ -76,7 +76,6 @@ def morokoff_calfisch_1(x, d, c, w):
         return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
-
 
 
 def morokoff_calfisch_2(x, d, c, w):
@@ -97,8 +96,8 @@ def bratley(x, d, c, w):
     """
         Bratley function.
     """
-    # TODO: Makes Trouble
-    return np.sum(np.power(-1, np.arange(1, d + 1))) * np.prod(np.multiply(c, x) - w, axis=1)
+
+    return np.sum(np.multiply(np.power(-1, np.arange(1, d + 1)), np.cumprod(np.multiply(c, x) - w, axis=1)), axis=1)
 
 
 def zhou(x, d, c, w):
