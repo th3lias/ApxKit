@@ -1,7 +1,7 @@
 from function.f import Function
 from function.model.model import Model
 from grid.grid.grid import Grid
-from typing import Union, List
+from typing import List
 
 
 class Fitter:

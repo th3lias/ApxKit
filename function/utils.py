@@ -56,14 +56,8 @@ def morokoff_calfisch_1(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-
-    # TODO: We might have problems in the smolyak case (sparse grid has negative values, the other grid uses values in [0,1]^d) since we have maybe negative values to a fractional power
-    # Suggestion:
-    x = x + 1
-    # This suppresses all negative values in the discriminant -> no numpy problems any more
-    # If this suggestion is approved, we can remove the comments and directly add the 1 in the function itself
-
-    return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
+    # We add the constant 1 to the grid in order to ensure a positive discriminant
+    return (1 + 1 / d) ** d * np.prod(np.multiply(x + 1, c) + w, axis=1) ** (1 / d)
 
 
 def morokoff_calfisch_2(x, d, c, w):
@@ -91,7 +85,7 @@ def zhou(x, d, c, w):
     """
         Zhou function.
     """
-    
+
     x = x.squeeze()
     if x.ndim == 1:
         if d != 1:

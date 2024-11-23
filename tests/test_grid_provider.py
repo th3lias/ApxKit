@@ -1,6 +1,3 @@
-
-# TODO [Jakob] Adapt the tests to also work with the new structure and not rely on the "interpolate" package anymore
-
 import unittest
 
 from grid.provider.random_grid_provider import RandomGridProvider

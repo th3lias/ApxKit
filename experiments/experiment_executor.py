@@ -6,9 +6,8 @@ import time
 import numpy as np
 import pandas as pd
 import psutil
-from numpy import flatiter
 
-from fit import InterpolationMethod, LeastSquaresMethod, SmolyakFitter, BasisType, FitMethod
+from fit import InterpolationMethod, LeastSquaresMethod, SmolyakFitter, BasisType
 from function import FunctionType, Function, ParametrizedFunctionProvider
 from typing import Union, List, Callable
 
@@ -25,8 +24,6 @@ class ExperimentExecutor:
     """
         Runs the experiments, where Smolyak and Least Squares are compared
     """
-
-    # TODO: Adapt to the TASMANIAN API but not necessarily use the tasmanian API
 
     def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
@@ -149,8 +146,7 @@ class ExperimentExecutor:
                 progress_bar.set_description(
                     f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Unif,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-                self._run_experiment_ls(dim, scale, uniform_grid, "UNIFORM",
-                                        ls_multiplier_fun)  # TODO: Otherwise we would have REGULAR here instead of CHEBYSHEV
+                self._run_experiment_ls(dim, scale, uniform_grid, "UNIFORM", ls_multiplier_fun)
 
                 progress_bar.update(1)
 
@@ -166,7 +162,6 @@ class ExperimentExecutor:
         progress_bar.close()
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-    # TODO: Unify the following 2 methods to one method
     def _run_experiment_smolyak(self, dim, scale, grid, multiplier_fun: Callable):
         start_time = time.time()
 
@@ -253,7 +248,7 @@ class ExperimentExecutor:
         for fun_type in function_types:
             for i in range(n_functions_parallel):
                 # get c and w
-                c, w = self._get_c_and_w(n_functions_parallel, avg_c, dim)
+                c, w = self._get_c_and_w(avg_c, dim)
                 function = ParametrizedFunctionProvider.get_function(fun_type, dim, c=c, w=w)
                 cs.append(c)
                 ws.append(w)
@@ -265,7 +260,8 @@ class ExperimentExecutor:
         self.ws = ws
         self.f_names = f_names
 
-    def _get_c_and_w(self, n_fun_parallel: float, avg_c: float, dim: int):
+    @staticmethod
+    def _get_c_and_w(avg_c: float, dim: int):
         """
             Get c and w for the functions.
         """
@@ -281,7 +277,7 @@ class ExperimentExecutor:
     def _save_stats(self, dim: int, scale: int, method: str, grid_type: str, basis_type: str,
                     multiplier_fun: Callable,
                     seed: int, ell_2_errors: Union[np.ndarray, List[float]],
-                    ell_infty_errors: Union[np.ndarray, List[float]], datetime: datetime.datetime,
+                    ell_infty_errors: Union[np.ndarray, List[float]], date_time: datetime.datetime,
                     needed_time: float):
         """
             Keep the CSV up to date with the current results.
@@ -296,7 +292,7 @@ class ExperimentExecutor:
 
         n = len(ell_2_errors)
 
-        if method == "Smolyak":  # TODO: Maybe make this more waterproof by not comparing raw strings
+        if method == "Smolyak":
             method_type = self.smolyak_method.name
         else:
             method_type = self.least_squares_method.name
@@ -325,7 +321,7 @@ class ExperimentExecutor:
         data['f_name'] = self.f_names
         data['ell_2_error'] = ell_2_errors
         data['ell_infty_error'] = ell_infty_errors
-        data['datetime'] = [datetime] * n
+        data['datetime'] = [date_time] * n
         data['needed_time'] = [needed_time] * n
 
         df = pd.DataFrame(data)

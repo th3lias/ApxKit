@@ -1,5 +1,7 @@
 from typing import Callable
 
+import numpy as np
+
 from function.f import Function
 
 
@@ -14,3 +16,6 @@ class Model(Function):
             was no approximation performed, this parameter should be None.
         """
         super().__init__(f, dim, upper, lower)
+
+    def __call__(self, x: np.ndarray):
+        raise NotImplementedError()

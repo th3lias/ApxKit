@@ -12,8 +12,6 @@ from typing import Union
 import argparse
 
 
-# TODO [Jakob] Check if load and save indices and grids is implemented if possible (everywhere)
-
 def main_method(folder_name: Union[str, None] = None):
     dim_list = [2]
     scale_list = [1, 2, 3, 4]

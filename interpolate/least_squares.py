@@ -1,5 +1,4 @@
 from typing import Union, List, Tuple
-from deprecated.classic import deprecated
 
 import numpy as np
 import scipy
@@ -12,6 +11,7 @@ from grid.rule.random_grid_rule import RandomGridRule
 from interpolate.interpolator import Interpolator
 from fit.method.least_squares_method import LeastSquaresMethod
 from utils.utils import find_degree
+from scipy.linalg import lstsq
 
 from scipy.linalg import lu
 
@@ -87,8 +87,7 @@ class LeastSquaresInterpolator(Interpolator):
     def _approximate_exact(self, y: np.ndarray):
         """
         Approximates a (or multiple) function(s) with polynomials by least squares.
-        :param f: function or list of functions that need to be approximated on the same points
-        :return: fitted function(s)
+        :param y: function values
         """
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
@@ -121,7 +120,7 @@ class LeastSquaresInterpolator(Interpolator):
         del self.basis
         y_prime = (weight * y.T).T
 
-        sol = scipy.linalg.lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
+        sol = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
         coeff = sol[0]
 
         self.coeff = coeff

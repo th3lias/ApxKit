@@ -1,4 +1,4 @@
-from typing import Callable, Union, List, Tuple
+from typing import Union, List, Tuple
 
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
@@ -18,8 +18,6 @@ from interpolate.interpolator import Interpolator
 # Lagrange interpolation, anisotropic grid and adaptive domain
 
 # from Kenneth L. Judd, Lilia Maliar, Serguei Maliar and Rafael Valero
-
-# TODO: Migrate to smolyak_fitter.py
 
 class SmolyakInterpolator(Interpolator):
     def __init__(self, grid: Grid, method: InterpolationMethod, basis_type: BasisType = BasisType.CHEBYSHEV):

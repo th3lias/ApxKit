@@ -1,5 +1,5 @@
 import os
-from typing import Callable, Union, List, Tuple, Generator
+from typing import Union, List, Tuple
 import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 
@@ -7,10 +7,9 @@ from function import Function
 from grid.grid.grid import Grid
 from functools import reduce
 from operator import mul
-from itertools import product, permutations
+from itertools import product
 
 from interpolate.partition import Partition
-from deprecated import deprecated
 
 
 class Interpolator:

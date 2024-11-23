@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from fit import BasisType
 from function.type import FunctionType
 
 from function.provider import ParametrizedFunctionProvider
@@ -15,7 +16,8 @@ from interpolate.least_squares import LeastSquaresInterpolator
 from fit.method.least_squares_method import LeastSquaresMethod
 
 from utils.utils import sample
-from interpolate.basis_types import BasisType
+
+# TODO: This needs to be adapted/deleted
 
 
 class LeastSquaresTests(unittest.TestCase):
@@ -27,11 +29,9 @@ class LeastSquaresTests(unittest.TestCase):
         self.n_test_samples = 100
         self.lb = 0.0
         self.ub = 1.0
-        self.gp = RandomGridProvider(dimension=self.dimension, multiplier_fun=lambda x: x)
-        self.grid = self.gp.generate(grid_type=RandomGridRule.CHEBYSHEV, scale=self.scale)
+        self.gp = RandomGridProvider(input_dim=self.dimension, multiplier_fun=lambda x: x, rule=RandomGridRule.CHEBYSHEV)
+        self.grid = self.gp.generate(scale=self.scale)
         self.test_grid = np.random.uniform(low=self.lb, high=self.ub, size=(self.n_test_samples, self.dimension))
-
-    # TODO[Jakob] Test also the interpolate_and_evaluate_list function from LeastSquares
 
     def test_parallel_exact(self):
         f_1 = ParametrizedFunctionProvider.get_function(FunctionType.OSCILLATORY, c=sample(dim=self.dimension),

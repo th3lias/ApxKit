@@ -28,11 +28,8 @@ class Grid:
         raise NotImplementedError("Method not implemented for this grid type.")
 
     def __eq__(self, other):
-        return (self.input_dim, self.output_dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound) == (
+        return (self.input_dim, self.output_dim, self.scale, self.lower_bound, self.upper_bound) == (
             other.input_dim, other.output_dim, other.scale, other.grid_type, other.lower_bound, other.upper_bound)
 
     def __hash__(self):
-        return hash((self.input_dim, self.output_dim, self.scale, self.grid_type, self.lower_bound, self.upper_bound))
-
-    # TODO [Jakob] check if it is possible to include the "_save_sparse_grid" method like in the other branch
-    #  (as well as the correpsonding load method)
+        return hash((self.input_dim, self.output_dim, self.scale, self.lower_bound, self.upper_bound))
