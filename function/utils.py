@@ -1,8 +1,6 @@
 import numpy as np
 
 
-# TODO: Check if we have <c, x> + w (and not some other variations) except for those that are given with a w parameter
-
 def oscillatory(x, d, c, w):
     """
         Oscillatory function.
@@ -79,7 +77,7 @@ def roos_arnold(x, d, c, w):
     """
         Roos Arnold Function.
     """
-    return np.prod(np.abs(4 * np.multiply(c, x) - 2 + w), axis=1)
+    return np.prod(np.abs(4 * np.multiply(c, x) - 2 - w), axis=1)
 
 
 def bratley(x, d, c, w):
@@ -93,7 +91,7 @@ def zhou(x, d, c, w):
     """
         Zhou function.
     """
-    # TODO: Use norm here
+    
     x = x.squeeze()
     if x.ndim == 1:
         if d != 1:

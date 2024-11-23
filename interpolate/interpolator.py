@@ -63,27 +63,8 @@ class Interpolator:
         npts = grid.shape[0]
         basis = np.empty(shape=(npts, n_polys))
 
-        # Convert self._b_idx to a NumPy array for efficient indexing
-        # b_idx_np = np.array(self._b_idx) - 1
-
-        # Select the required Chebyshev polynomials using advanced indexing
-        # selected_ts = ts[b_idx_np, np.arange(self.dim), :]
-
-        # Compute the product along the dimension axis
-        # basis = np.prod(selected_ts, axis=1).T
-
-        # for ind, comb in enumerate(self._b_idx):
-        #     res = np.ones(npts)
-        #     for i in range(self.dim):
-        #         cheby_polynomial_idx = comb[i] - 1
-        #         dimension = i
-        #         res *= ts[cheby_polynomial_idx, dimension, :]
-        #     basis[:, ind] = res
-
         for ind, comb in enumerate(self._b_idx):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
-
-        # print(f'Building basis took {time.time() - start_time} seconds')
 
         return basis
 
@@ -204,38 +185,6 @@ class Interpolator:
             return i
         else:
             return 2 ** (i - 1) + 1
-
-    # TODO: Delete this, all usages are from tests
-    @staticmethod
-    @deprecated
-    def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
-        # TODO: Can probably be replaced with Partition class
-        """
-        Creates a generator object that yields all permutations of the given array/list. The permutations are unique,
-        if the parameter drop_duplicates is set to True
-        At the beginning, the array/list gets sorted.
-        :param array: Array or List where the permutations should be calculated
-        :param drop_duplicates: If True, a permutation which is the same as another permutation since there were
-        duplicate values in the array is dropped, otherwise it is kept
-        """
-        if isinstance(array, np.ndarray):
-            if array.ndim == 1:
-                array = np.sort(array)
-            else:
-                raise ValueError(
-                    f"Wrong number of dimensions for the parameter 'array'. Expected ndim=1 but got {array.ndim}"
-                )
-        elif isinstance(array, list):
-            array = sorted(array)
-        else:
-            raise ValueError(f"Expected 'array' to be a list or a np.ndarray but got {type(array)}")
-
-        seen = set()
-
-        for perm in permutations(array):
-            if perm not in seen or not drop_duplicates:
-                seen.add(perm)
-                yield list(perm)
 
     @staticmethod
     def _cheby2n(x, n):

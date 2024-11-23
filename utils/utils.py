@@ -269,7 +269,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
 
     filtered_data = data[(data['dim'] == dimension) & (data['f_name'] == function_type.name)].copy()
 
-    filtered_data.drop(['datetime', 'needed_time', 'sum_c', 'f_name', 'test_grid_seed'], axis=1, inplace=True)
+    filtered_data.drop(['datetime', 'needed_time', 'sum_c', 'f_name'], axis=1, inplace=True)
 
     smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
     least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
