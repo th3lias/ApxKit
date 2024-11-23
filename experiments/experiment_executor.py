@@ -197,7 +197,7 @@ class ExperimentExecutor:
             seed=self.seed,
             ell_2_errors=smolyak_ell_2,
             ell_infty_errors=smolyak_ell_infty,
-            datetime=cur_datetime,
+            date_time=cur_datetime,
             needed_time=round(needed_time, 3)
         )
 
@@ -226,7 +226,7 @@ class ExperimentExecutor:
             seed=self.seed,
             ell_2_errors=ls_ell_2,
             ell_infty_errors=ls_ell_infty,
-            datetime=cur_datetime,
+            date_time=cur_datetime,
             needed_time=round(needed_time, 3)
         )
 
