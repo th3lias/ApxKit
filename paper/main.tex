@@ -59,7 +59,7 @@ Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical i
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-We use \({[N]}_0 \defn \set{0, 1, \dots, N}\) and \([N]\) for the set \(\set{1, \dots, N}\). For the set of polynomials \(p: V \to W\) of maximal degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation \(p \in \pols[N]{V, W}\). We use \(f \propto g\) for functions \(f, g\) to denote \(f = c g\) for a constant \(c \in \R\).
+We use \({[N]}_0 \defn \set{0, 1, \dots, N}\) and \([N]\) for the set \(\set{1, \dots, N}\). For the set of polynomials \(p: V \to W\) of maximal degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation \(p \in \pols[N]{V, W}\). We use \(f \propto g\) for functions \(f, g\) to denote \(f = c g\) for a constant \(c \in \R\) and \(f \lesssim g\) to denote \(f \leq c g\).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,6 +171,25 @@ with \(\cI^{(0)} = 0\).
 \section{Least Squares}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Contrary to the construction of exactly interpolating approximants in the case of Smolyak's algorithm, least squares is a conceptually simpler algorithm. We are given the overdetermined system \[
+    Vz = y
+\]
+where \(V \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(z \in \C^{m}\) with the smallest error
+\begin{equation}\label{eq:leastSquares}
+    \inf_{z \in \R^{m}} \norm[]{Vz - y}.
+\end{equation}
+It is further known that, in case of a full--rank matrix \(V\), the unique solution to \cref{eq:leastSquares} is given by \[
+    z^\star = \left(V^\top V\right)^{-1} V^\top y.
+\]
+
+In our specific case of polynomial interpolation, \(V\) is the Vandermonde matrix, consisting of basis polynomials \(b_1, b_2, \dots, b_m\) evaluated at the sampled points \(x_1, x_2, \dots, x_n\) in \(\Omega \subseteq \R^d\) and \(y\) is a vector of function values sampled from the unknown function \(f: \Omega \to \R\), i.e.\ \(y = \left(f(x_j)\right)_{j=1}^n\). In this case, the Vandermonde matrix is never singular as long as the sampled points do not overlap.
+Hence, the solution to the approximation problem \[
+    \inf_{p} \norm[]{f-p}
+\]
+can analytically be expressed as \[
+    p^\star: \Omega \to \R, t \mapsto \sum_{j=1}^m z_j^\star b_j(t)
+\]
+where \(z^\star = \left(z_j\right)_{j=1}^m\) is given by \cref{eq:leastSquares}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theoretical Guarantees}
