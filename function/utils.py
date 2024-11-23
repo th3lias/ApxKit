@@ -1,6 +1,8 @@
 import numpy as np
 
 
+# TODO: Check if we have <c, x> + w (and not some other variations) except for those that are given with a w parameter
+
 def oscillatory(x, d, c, w):
     """
         Oscillatory function.
@@ -48,12 +50,8 @@ def g_function(x, d, c, w):
     """
         G-function.
     """
-    return np.prod(
-        np.divide(
-            np.abs(4 * x - 2 - w) + c,
-            1 + c
-        ), axis=1
-    )
+    # Based on https://www.sfu.ca/~ssurjano/gfunc.html we have c_i given by (i-2)/2 -> we make it variable however
+    return np.prod(np.divide(np.abs(4 * x - 2 - w) + c, 1 + c), axis=1)
 
 
 def morokoff_calfisch_1(x, d, c, w):
@@ -61,42 +59,33 @@ def morokoff_calfisch_1(x, d, c, w):
         Morokoff Calfisch function.
     """
 
-    # return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
+    # TODO: We might have problems in the smolyak case (sparse grid has negative values, the other grid uses values in [0,1]^d) since we have maybe negative values to a fractional power
+    # Suggestion:
+    x = x + 1
+    # This suppresses all negative values in the discriminant -> no numpy problems any more
+    # If this suggestion is approved, we can remove the comments and directly add the 1 in the function itself
 
-    if not isinstance(x, np.ndarray):
-        raise ValueError("Cannot work with non-numpy arrays")
-
-    x = x.squeeze()
-    if x.ndim == 1:
-        if d != 1:
-            return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
-        else:
-            return np.array([2 * (i * c[0] + w[0]) for i in x])
-    elif x.ndim == 2:
-        return (1 + 1 / d) ** d * (np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)).squeeze()
-    else:
-        raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+    return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
 
 
 def morokoff_calfisch_2(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-    return 1 / (d - 1 / 2) ** d * np.prod(d - np.multiply(c, x) - w, axis=1)
+    return np.multiply((1 / (d - 1 / 2) ** d), np.prod(d - np.multiply(c, x) + w, axis=1))
 
 
 def roos_arnold(x, d, c, w):
     """
         Roos Arnold Function.
     """
-    return np.prod(np.abs(4 * np.multiply(c, x) - 2 - w), axis=1)
+    return np.prod(np.abs(4 * np.multiply(c, x) - 2 + w), axis=1)
 
 
 def bratley(x, d, c, w):
     """
         Bratley function.
     """
-
     return np.sum(np.multiply(np.power(-1, np.arange(1, d + 1)), np.cumprod(np.multiply(c, x) - w, axis=1)), axis=1)
 
 
@@ -104,6 +93,7 @@ def zhou(x, d, c, w):
     """
         Zhou function.
     """
+    # TODO: Use norm here
     x = x.squeeze()
     if x.ndim == 1:
         if d != 1:
