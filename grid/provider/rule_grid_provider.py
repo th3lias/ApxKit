@@ -1,3 +1,4 @@
+import numpy as np
 from TasmanianSG import TasmanianSparseGrid
 
 from grid.provider.grid_provider import GridProvider
@@ -33,13 +34,15 @@ class RuleGridProvider(GridProvider):
         self.tasmanian_type = tasmanian_type
 
     def generate(self, scale: int) -> RuleGrid:
+        #  Set the domain transform -> in most cases this transforms the domain to [0, 1]^d instead of [-1, 1]^d
+        self._compute_domain_transform()
         match self.tasmanian_type:
             case TasmanianGridType.STANDARD_GLOBAL:
                 return self.generate_global_grid(scale)
             case TasmanianGridType.WAVELET:
                 return self.generate_wavelet_grid(scale)
             case TasmanianGridType.LOCAL_POLYNOMIAL:
-                return self.generate_localp_grid(scale)
+                return self.generate_local_polynomial_grid(scale)
             case _:
                 raise ValueError("Invalid Tasmanian grid type")
 
@@ -54,7 +57,7 @@ class RuleGridProvider(GridProvider):
         grid.makeWaveletGrid(iDimension=self.input_dim, iOutputs=self.output_dim, iDepth=scale)
         return RuleGrid(self.input_dim, self.output_dim, scale, grid, self.rule, self.lower_bound, self.upper_bound)
 
-    def generate_localp_grid(self, scale: int) -> RuleGrid:
+    def generate_local_polynomial_grid(self, scale: int) -> RuleGrid:
         grid = TasmanianSparseGrid()
         grid.makeLocalPolynomialGrid(iDimension=self.input_dim, iOutputs=self.output_dim, iDepth=scale)
         return RuleGrid(self.input_dim, self.output_dim, scale, grid, self.rule, self.lower_bound, self.upper_bound)
@@ -66,3 +69,14 @@ class RuleGridProvider(GridProvider):
         old_scale = current_grid.scale
         del current_grid
         return self.generate(old_scale + delta)
+
+    def _compute_domain_transform(self):
+        """
+            Compute the domain transformation for the grid.
+            According to TasmanianSG documentation:
+            llfTransform: a 2-D numpy.ndarray of size iDimension X 2
+                  transform specifies the lower and upper bound
+                  of the domain in each direction.
+        """
+        domain = np.array([[self.lower_bound, self.upper_bound]])
+        self.domain_transform = np.full((self.input_dim, 2), domain)
