@@ -23,7 +23,6 @@ class Fitter:
         """
             Checks if the model is able to compute an approximation for the given function.
         """
-
         for function in f:
             if function.dim != self.dim:
                 return False

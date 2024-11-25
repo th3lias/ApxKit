@@ -17,10 +17,8 @@ class SmolyakFitter(Fitter):
             numpy array of shape (n, 1) as output. The input array contains n points in the d-dimensional input space.
             The output array contains the corresponding function values.
         """
-
         if isinstance(f, Function):
             f = [f]
-
         assert self.is_fittable(f), "At least one of the provided functions is not fittable by this model."
         model_values = self._calculate_y(f, grid)
         grid.load_needed_values(model_values)

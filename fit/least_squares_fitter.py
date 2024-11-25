@@ -18,7 +18,4 @@ class LeastSquaresFitter(Fitter):  # TODO[Elias] Rework this to fit the new sign
             the corresponding function values.
         """
         assert self.is_fittable(f), "The function is not fittable by this model."
-        # model_values = self._compute_values(f)
-        # self.grid.load_needed_values(model_values.reshape(-1, 1))
-        # self.fitted = True
         return LeastSquaresModel(f=f, dim=self.grid.input_dim, upper=self.grid.upper_bound, lower=self.grid.lower_bound)

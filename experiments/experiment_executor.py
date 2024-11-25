@@ -2,22 +2,21 @@ import datetime
 import os.path
 import platform
 import time
+from typing import Union, List, Callable
 
 import numpy as np
 import pandas as pd
 import psutil
+from tqdm import tqdm
 
 from fit import InterpolationMethod, LeastSquaresMethod, SmolyakFitter, BasisType
 from function import FunctionType, Function, ParametrizedFunctionProvider
-from typing import Union, List, Callable
-
-from grid import RuleGridProvider
+from grid import RuleGridProvider, TasmanianGridType
 from grid.provider.random_grid_provider import RandomGridProvider
 from grid.rule.random_grid_rule import RandomGridRule
 from interpolate.least_squares import LeastSquaresInterpolator
 from interpolate.smolyak import SmolyakInterpolator
 from utils.utils import calculate_num_points
-from tqdm import tqdm
 
 
 class ExperimentExecutor:
@@ -27,10 +26,8 @@ class ExperimentExecutor:
 
     def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
-                 path: str = None):
-
+                 path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL):
         current_datetime = datetime.datetime.now()
-
         if path is None:
             self.results_path = os.path.join("results", current_datetime.strftime('%d_%m_%Y_%H_%M_%S'),
                                              "results_numerical_experiments.csv")
@@ -41,26 +38,20 @@ class ExperimentExecutor:
         self.least_squares_method = least_squares_method
         self.seed = seed
         self.least_squares_basis_type = ls_basis_type
-
-        # set numpy seed globally
+        self.tasmanian_grid_type = tasmanian_grid_type
         np.random.seed(seed)
 
         self.header_keys = ['dim', 'scale', 'method', 'w', 'c', 'sum_c', 'grid_type', 'basis_type', 'method_type',
-                            'n_samples', 'seed', 'f_name', 'ell_2_error', 'ell_infty_error',
-                            'datetime', 'needed_time']
+                            'n_samples', 'seed', 'f_name', 'ell_2_error', 'ell_infty_error', 'datetime', 'needed_time']
         header = dict.fromkeys(self.header_keys, list())
-
         self.functions = None
         self.cs = None
         self.ws = None
         self.f_names = None
         self.test_grid = None
         self.y_test = None
-
         df = pd.DataFrame(header)
-
         os.makedirs(os.path.dirname(self.results_path), exist_ok=True)
-
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
 
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
@@ -68,7 +59,6 @@ class ExperimentExecutor:
         """
             Execute a series of experiments with the given function types.
         """
-
         print(
             f"Starting dimension {self.dim_list}, scale {self.scale_list} experiments with cpu {platform.processor()} and "
             f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
@@ -77,22 +67,16 @@ class ExperimentExecutor:
         print("")
 
         time.sleep(1)
-
         total_iterations = len(self.dim_list) * len(self.scale_list) * 3  # 3 methods (LS_Unif, LS_Cheby, Smolyak)
-
         progress_bar = tqdm(total=total_iterations, desc="Initializing", unit="iteration")
-
         for dim in self.dim_list:
 
-            # output_dim is not set for the RandomGridProvider, because it is not used
-
             sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0,
-                                                    output_dim=len(function_types) * n_functions_parallel)
-
+                                                    output_dim=len(function_types) * n_functions_parallel,
+                                                    tasmanian_type=self.tasmanian_grid_type)
             uniform_grid_provider = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                        multiplier_fun=ls_multiplier_fun, seed=self.seed,
                                                        rule=RandomGridRule.UNIFORM)
-
             chebyshev_grid_provider = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                          multiplier_fun=ls_multiplier_fun, seed=self.seed,
                                                          rule=RandomGridRule.CHEBYSHEV)
@@ -101,13 +85,12 @@ class ExperimentExecutor:
             uniform_grid = None
             chebyshev_grid = None
 
-            # Calculates the functions, their names, cs and ws and stores them in the object
+            # Calculates the functions, their names, cs and ws and stores them on class--level
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
 
             for scale in self.scale_list:
 
                 # Training Grids
-
                 if sparse_grid is None:
                     sparse_grid = sparse_grid_provider.generate(scale)
                 else:
@@ -124,7 +107,6 @@ class ExperimentExecutor:
                     chebyshev_grid = chebyshev_grid_provider.increase_scale(chebyshev_grid, 1)
 
                 # Test Grid
-
                 self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0).generate(scale)
                 n_points = self.test_grid.get_num_points()
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
@@ -132,47 +114,38 @@ class ExperimentExecutor:
                 for i, function in enumerate(self.functions):
                     self.y_test[i] = function(self.test_grid.grid)
 
-                # SMOLYAK
-
-                progress_bar.set_description(
-                    f"Experiment: Dim:{dim},Scale:{scale},Method:Smolyak,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+                # Smolyak
+                progress_bar.set_description(f"Experiment: Dim:{dim},Scale:{scale},"
+                                             f"Method:Smolyak,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
                 self._run_experiment_smolyak(dim, scale, sparse_grid, lambda x: x)
 
                 progress_bar.update(1)
 
-                # LEAST SQUARES UNIFORM
-
-                progress_bar.set_description(
-                    f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Unif,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-
+                # LSQ Uniform
+                progress_bar.set_description(f"Experiment: Dim:{dim},Scale:{scale},"
+                                             f"Method:LS_Unif,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
                 self._run_experiment_ls(dim, scale, uniform_grid, "UNIFORM", ls_multiplier_fun)
-
                 progress_bar.update(1)
 
-                # LEAST SQUARES CHEBYSHEV
-
-                progress_bar.set_description(
-                    f"Experiment: Dim:{dim},Scale:{scale},Method:LS_Cheb,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-
+                # LSQ Chebyshev
+                progress_bar.set_description(f"Experiment: Dim:{dim},Scale:{scale},"
+                                             f"Method:LS_Cheb,datetime:{datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
                 self._run_experiment_ls(dim, scale, chebyshev_grid, "CHEBYSHEV", ls_multiplier_fun)
-
                 progress_bar.update(1)
 
+        # End of the experiments
         progress_bar.close()
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
     def _run_experiment_smolyak(self, dim, scale, grid, multiplier_fun: Callable):
         start_time = time.time()
 
-        if self.smolyak_method == InterpolationMethod.STANDARD:
+        if self.smolyak_method == InterpolationMethod.STANDARD:  # Least Squares at the Sparse Grid points
             si = SmolyakInterpolator(grid, self.smolyak_method)
             si.fit(self.functions)
-
             y_test_hat_smolyak = si.interpolate(self.test_grid)
-
-        elif self.smolyak_method == InterpolationMethod.TASMANIAN:
-
+        elif self.smolyak_method == InterpolationMethod.TASMANIAN:  # Smolyak with Tasmanian
             fitter = SmolyakFitter(dim)
             model = fitter.fit(self.functions, grid)
             y_test_hat_smolyak = model(self.test_grid.grid)
@@ -180,26 +153,15 @@ class ExperimentExecutor:
             raise ValueError(f"Method {self.smolyak_method} is not supported!")
 
         # Error calculation
-
         smolyak_ell_2, smolyak_ell_infty = self._calc_error(y_test_hat_smolyak)
 
         end_time = time.time()
         needed_time = end_time - start_time
         cur_datetime = datetime.datetime.now()
 
-        self._save_stats(
-            dim=dim,
-            scale=scale,
-            method="Smolyak",
-            grid_type="CHEBYSHEV",
-            basis_type="CHEBYSHEV",
-            multiplier_fun=multiplier_fun,
-            seed=self.seed,
-            ell_2_errors=smolyak_ell_2,
-            ell_infty_errors=smolyak_ell_infty,
-            date_time=cur_datetime,
-            needed_time=round(needed_time, 3)
-        )
+        self._save_stats(dim=dim, scale=scale, method="Smolyak", grid_type="CHEBYSHEV", basis_type="CHEBYSHEV",
+            multiplier_fun=multiplier_fun, seed=self.seed, ell_2_errors=smolyak_ell_2,
+            ell_infty_errors=smolyak_ell_infty, date_time=cur_datetime, needed_time=round(needed_time, 3))
 
     def _run_experiment_ls(self, dim, scale, grid, grid_type: str, multiplier_fun: Callable):
         start_time = time.time()
@@ -207,28 +169,15 @@ class ExperimentExecutor:
         ls = LeastSquaresInterpolator(include_bias=True, basis_type=self.least_squares_basis_type, grid=grid,
                                       method=self.least_squares_method)
         ls.fit(self.functions)
-
         y_test_hat_cheby_uniform = ls.interpolate(self.test_grid)
-
         ls_ell_2, ls_ell_infty = self._calc_error(y_test_hat_cheby_uniform)
-
         end_time = time.time()
         needed_time = end_time - start_time
         cur_datetime = datetime.datetime.now()
-
-        self._save_stats(
-            dim=dim,
-            scale=scale,
-            method="Least_Squares",
-            grid_type=grid_type,
-            basis_type=self.least_squares_basis_type.name,
-            multiplier_fun=multiplier_fun,
-            seed=self.seed,
-            ell_2_errors=ls_ell_2,
-            ell_infty_errors=ls_ell_infty,
-            date_time=cur_datetime,
-            needed_time=round(needed_time, 3)
-        )
+        self._save_stats(dim=dim, scale=scale, method="Least_Squares", grid_type=grid_type,
+            basis_type=self.least_squares_basis_type.name, multiplier_fun=multiplier_fun, seed=self.seed,
+            ell_2_errors=ls_ell_2, ell_infty_errors=ls_ell_infty, date_time=cur_datetime,
+            needed_time=round(needed_time, 3))
 
     def _get_functions(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
                        dim: int, avg_c: float) -> (List[Function], List[np.ndarray], List[np.ndarray], List[str]):
@@ -274,11 +223,9 @@ class ExperimentExecutor:
 
         return c, w
 
-    def _save_stats(self, dim: int, scale: int, method: str, grid_type: str, basis_type: str,
-                    multiplier_fun: Callable,
+    def _save_stats(self, dim: int, scale: int, method: str, grid_type: str, basis_type: str, multiplier_fun: Callable,
                     seed: int, ell_2_errors: Union[np.ndarray, List[float]],
-                    ell_infty_errors: Union[np.ndarray, List[float]], date_time: datetime.datetime,
-                    needed_time: float):
+                    ell_infty_errors: Union[np.ndarray, List[float]], date_time: datetime.datetime, needed_time: float):
         """
             Keep the CSV up to date with the current results.
         """
@@ -299,12 +246,10 @@ class ExperimentExecutor:
 
         n_points = int(multiplier_fun(calculate_num_points(scale, dim)))
 
-        formatted_cs = [np.array2string(c, precision=5, separator=',', suppress_small=True).replace('\n', '') for c
-                        in
+        formatted_cs = [np.array2string(c, precision=5, separator=',', suppress_small=True).replace('\n', '') for c in
                         self.cs]
 
-        formatted_ws = [np.array2string(w, precision=5, separator=',', suppress_small=True).replace('\n', '') for w
-                        in
+        formatted_ws = [np.array2string(w, precision=5, separator=',', suppress_small=True).replace('\n', '') for w in
                         self.ws]
 
         data['dim'] = [dim] * n
