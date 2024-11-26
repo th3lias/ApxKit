@@ -35,16 +35,18 @@ class RuleGridProvider(GridProvider):
 
     def generate(self, scale: int) -> RuleGrid:
         #  Set the domain transform -> in most cases this transforms the domain to [0, 1]^d instead of [-1, 1]^d
-        self._compute_domain_transform()
+        domain_transform = self._compute_domain_transform()
         match self.tasmanian_type:
             case TasmanianGridType.STANDARD_GLOBAL:
-                return self.generate_global_grid(scale)
+                grid = self.generate_global_grid(scale)
             case TasmanianGridType.WAVELET:
-                return self.generate_wavelet_grid(scale)
+                grid = self.generate_wavelet_grid(scale)
             case TasmanianGridType.LOCAL_POLYNOMIAL:
-                return self.generate_local_polynomial_grid(scale)
+                grid = self.generate_local_polynomial_grid(scale)
             case _:
                 raise ValueError("Invalid Tasmanian grid type")
+        grid.set_domain_transform(domain_transform)
+        return grid
 
     def generate_global_grid(self, scale: int) -> RuleGrid:
         grid = TasmanianSparseGrid()
@@ -79,4 +81,4 @@ class RuleGridProvider(GridProvider):
                   of the domain in each direction.
         """
         domain = np.array([[self.lower_bound, self.upper_bound]])
-        self.domain_transform = np.full((self.input_dim, 2), domain)
+        return np.full((self.input_dim, 2), domain)
