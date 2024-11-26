@@ -10,7 +10,7 @@ from fit.method.interpolation_method import InterpolationMethod
 from fit.method.least_squares_method import LeastSquaresMethod
 from function.type import FunctionType
 from grid import TasmanianGridType
-from utils.utils import plot_errors
+from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
