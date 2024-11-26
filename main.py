@@ -17,6 +17,10 @@ def main_method(folder_name: Union[str, None] = None):
     dim_list = [2]
     scale_list = [2, 3, 4, 5, 6, 7]
 
+    function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
+                      FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
+                      FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
+                      FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
     function_types = [FunctionType.OSCILLATORY]
 
     seed = 42
