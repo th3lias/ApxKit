@@ -14,4 +14,3 @@ class FunctionType(Enum):
     ROOS_ARNOLD = 10,
     BRATLEY = 11,
     ZHOU = 12
-

@@ -1,11 +1,13 @@
-from typing import Callable, Union, List, Tuple
+from typing import Union, List, Tuple
 
 import numpy as np
+from TasmanianSG import TasmanianSparseGrid
 from scipy.linalg import lu
 
-from grid.grid import Grid
-from interpolate.basis_types import BasisType
-from interpolate.interpolation_methods import SmolyakMethod
+from fit import BasisType
+from function import Function
+from grid.grid.grid import Grid
+from fit.method.interpolation_method import InterpolationMethod
 from interpolate.interpolator import Interpolator
 
 
@@ -17,9 +19,8 @@ from interpolate.interpolator import Interpolator
 
 # from Kenneth L. Judd, Lilia Maliar, Serguei Maliar and Rafael Valero
 
-
 class SmolyakInterpolator(Interpolator):
-    def __init__(self, grid: Grid, method: SmolyakMethod, basis_type: BasisType = BasisType.CHEBYSHEV):
+    def __init__(self, grid: Grid, method: InterpolationMethod, basis_type: BasisType = BasisType.CHEBYSHEV):
         if grid is None:
             raise ValueError("Grid must not be None, but of type Grid!")
 
@@ -27,46 +28,36 @@ class SmolyakInterpolator(Interpolator):
         self.method = method
         self.basis_type = basis_type
 
-    def set_method(self, method: SmolyakMethod):
+    def set_method(self, method: InterpolationMethod):
         self.method = method
 
-    def fit(self, f: Union[Callable, List[Callable]]):
+    def fit(self, f: Union[Function, List[Function]]):
 
-        if self.method == SmolyakMethod.STANDARD:
-            if self.basis is None:
-                self.basis = self._build_basis()
-                self.L, self.U = lu(self.basis, permute_l=True)[-2:]
-            n_samples = self.grid.grid.shape[0]
-            if isinstance(f, list):
-                y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-                for i, func in enumerate(f):
-                    if not isinstance(func, Callable):
-                        raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                    y[:, i] = func(self.grid.grid)
-            else:
-                y = f(self.grid.grid)
-            coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))
+        if self.basis is None:
+            self.basis = self._build_basis()
+            self.L, self.U = lu(self.basis, permute_l=True)[-2:]
 
-            self.coeff = coeff
+        # calculate y
+        y = self._calculate_y(f)
 
-        elif self.method == SmolyakMethod.LAGRANGE:
-            raise NotImplementedError("Not yet implemented")
+        coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y))
 
-        else:
-            raise ValueError(f"Method {self.method} is not supported!")
+        self.coeff = coeff
 
     def interpolate(self, grid: Union[Grid, np.ndarray]) -> np.ndarray:
         if isinstance(grid, Grid):
             grid = grid.grid
 
-        if self.method == SmolyakMethod.STANDARD:
+        if isinstance(grid, TasmanianSparseGrid):
+            # transform to numpy array
+            grid = grid.getPoints()
+
+        if self.method == InterpolationMethod.STANDARD:
             data_transformed = self._build_basis(grid=grid, b_idx=self._b_idx)
             y_hat = data_transformed @ self.coeff
             if y_hat.ndim > 1:
                 return y_hat.T
             return y_hat
-        elif self.method == SmolyakMethod.LAGRANGE:
-            raise NotImplementedError("The method is not implemented yet")
         else:
             raise ValueError(f"Method {self.method} is not supported!")
 

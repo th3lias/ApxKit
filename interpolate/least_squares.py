@@ -1,14 +1,17 @@
-from typing import Callable, Union, List, Tuple
+from typing import Union, List, Tuple
 
 import numpy as np
+import scipy
 from sklearn.preprocessing import PolynomialFeatures
 
-from grid.grid import Grid
-from grid.grid_type import GridType
-from interpolate.basis_types import BasisType
+from fit import BasisType
+from function import Function
+from grid.grid.grid import Grid
+from grid.rule.random_grid_rule import RandomGridRule
 from interpolate.interpolator import Interpolator
-from interpolate.interpolation_methods import LeastSquaresMethod
+from fit.method.least_squares_method import LeastSquaresMethod
 from utils.utils import find_degree
+from scipy.linalg import lstsq
 
 from scipy.linalg import lu
 
@@ -24,17 +27,23 @@ class LeastSquaresInterpolator(Interpolator):
     def set_method(self, method: LeastSquaresMethod):
         self.method = method
 
-    def fit(self, f: Union[Callable, List[Callable]]):
+    def fit(self, f: Union[Function, List[Function]]):
 
         assert self.grid is not None, "Grid needs to be set before interpolation"
 
         if self.basis is None:
             self.basis = self._build_basis()
 
+        y = self._calculate_y(f)
+
         if self.method == LeastSquaresMethod.EXACT:
-            self._approximate_exact(f)
-        elif self.method == LeastSquaresMethod.NUMPY_LSTSQ:
-            self._approximate_numpy_lstsq(f)
+            self._approximate_exact(y)
+        elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSD:
+            self._approximate_scipy_lstsq(y, 'gelsd')
+        elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSS:
+            self._approximate_scipy_lstsq(y, 'gelss')
+        elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSY:
+            self._approximate_scipy_lstsq(y, 'gelsy')
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
 
@@ -75,40 +84,19 @@ class LeastSquaresInterpolator(Interpolator):
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
             return poly.fit_transform(grid)
 
-    def _approximate_exact(self, f: Union[Callable, List[Callable]]):
+    def _approximate_exact(self, y: np.ndarray):
         """
         Approximates a (or multiple) function(s) with polynomials by least squares.
-        :param f: function or list of functions that need to be approximated on the same points
-        :return: fitted function(s)
+        :param y: function values
         """
-        grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercepts (bias)")
-        if not (isinstance(f, list) or isinstance(f, Callable)):
-            raise ValueError(f"f needs to be a function or a list of functions but is {type(f)}")
-        n_samples = grid.shape[0]
-        if isinstance(f, list):
-            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-            for i, func in enumerate(f):
-                if not isinstance(func, Callable):
-                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                y[:, i] = func(grid)
-        else:
-            y = f(grid)
 
         self._self_implementation(y)
 
     def _self_implementation(self, y: np.ndarray):
 
-        if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
-            weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row) / np.pi))
-
-        elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
-            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
-        else:
-            raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
+        weight = self._get_weights_for_weighted_ls()
 
         print("Warning: The following is very unstable, since we calculate A.T@A")
 
@@ -121,37 +109,33 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
-    def _approximate_numpy_lstsq(self, f: Union[Callable, list[Callable]]):
+    def _approximate_scipy_lstsq(self, y: np.ndarray, lapack_driver: str = 'gelsy'):
 
-        grid = self.grid.grid
         if not self.include_bias:
             print("Please be aware that the result may become significantly worse when using no intercept (bias)")
-        n_samples = grid.shape[0]
-        if isinstance(f, list):
-            y = np.empty(shape=(n_samples, len(f)), dtype=np.float64)
-            for i, func in enumerate(f):
-                if not isinstance(func, Callable):
-                    raise ValueError(f"One element of the list is not a function but from the type {type(func)}")
-                y[:, i] = func(grid)
-        else:
-            y = f(grid)
 
-        # weighted least squares
-        if self.grid.grid_type == GridType.RANDOM_CHEBYSHEV:
-            weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
-
-        elif self.grid.grid_type == GridType.RANDOM_UNIFORM:
-            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
-        else:
-            raise ValueError(f"Unsupported grid type {self.grid.grid_type}")
+        weight = self._get_weights_for_weighted_ls()
 
         x_poly = (weight * self.basis.T).T
         del self.basis
         y_prime = (weight * y.T).T
 
-        sol = np.linalg.lstsq(x_poly, y_prime, rcond=None)
+        sol = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
         coeff = sol[0]
 
         self.coeff = coeff
+
+    def _get_weights_for_weighted_ls(self):
+
+        # weighted least squares
+        if self.grid.rule == RandomGridRule.CHEBYSHEV:
+            weight = np.empty(shape=(self.grid.get_num_points()))
+            for i, row in enumerate(self.grid.grid):
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
+
+        elif self.grid.rule == RandomGridRule.UNIFORM:
+            weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
+        else:
+            raise ValueError(f"Unsupported grid type {self.grid.rule}")
+
+        return weight

@@ -1,3 +1,7 @@
+# Custom
+/grids
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -240,9 +244,6 @@ fabric.properties
 
 # indices
 indices/
-
-# grids
-grids/
 
 # logs for tensorboard
 logs/

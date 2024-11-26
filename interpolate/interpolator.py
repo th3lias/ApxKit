@@ -1,21 +1,22 @@
 import os
-from typing import Callable, Union, List, Tuple, Generator
+from typing import Union, List, Tuple
 import numpy as np
+from TasmanianSG import TasmanianSparseGrid
 
-from grid.grid import Grid
+from function import Function
+from grid.grid.grid import Grid
 from functools import reduce
 from operator import mul
-from itertools import product, permutations
+from itertools import product
 
 from interpolate.partition import Partition
-from deprecated import deprecated
 
 
 class Interpolator:
     def __init__(self, grid: Grid):
         self.grid = grid
         self.scale = grid.scale
-        self.dim = grid.dim
+        self.dim = grid.input_dim
         self._idx = None
         self._b_idx = Interpolator._load_basis_indices_if_existent(self.dim, self.scale)
         self.basis = None
@@ -24,10 +25,9 @@ class Interpolator:
         self.coeff = None
 
     def interpolate(self, grid: Union[Grid, np.ndarray]):
-        # TODO: Maybe change to JNP aswell in the type-hints @th3lias
         raise NotImplementedError
 
-    def fit(self, f: Union[Callable, List[Callable]]) -> None:
+    def fit(self, y: np.ndarray) -> None:
         raise NotImplementedError
 
     def set_grid(self, grid: Grid):
@@ -54,32 +54,16 @@ class Interpolator:
         if grid is None:
             grid = self.grid.grid
 
+        if isinstance(grid, TasmanianSparseGrid):
+            grid = grid.getNeededPoints()
+
         ts = self._cheby2n(grid.T, self._m_i(scale + 1))
         n_polys = len(self._b_idx)
         npts = grid.shape[0]
         basis = np.empty(shape=(npts, n_polys))
 
-        # Convert self._b_idx to a NumPy array for efficient indexing
-        # b_idx_np = np.array(self._b_idx) - 1
-
-        # Select the required Chebyshev polynomials using advanced indexing
-        # selected_ts = ts[b_idx_np, np.arange(self.dim), :]
-
-        # Compute the product along the dimension axis
-        # basis = np.prod(selected_ts, axis=1).T
-
-        # for ind, comb in enumerate(self._b_idx):
-        #     res = np.ones(npts)
-        #     for i in range(self.dim):
-        #         cheby_polynomial_idx = comb[i] - 1
-        #         dimension = i
-        #         res *= ts[cheby_polynomial_idx, dimension, :]
-        #     basis[:, ind] = res
-
         for ind, comb in enumerate(self._b_idx):
             basis[:, ind] = reduce(mul, [ts[comb[i] - 1, i, :] for i in range(self.dim)])
-
-        # print(f'Building basis took {time.time() - start_time} seconds')
 
         return basis
 
@@ -202,37 +186,6 @@ class Interpolator:
             return 2 ** (i - 1) + 1
 
     @staticmethod
-    @deprecated
-    def _permute(array: Union[list, np.ndarray], drop_duplicates: bool = True) -> Generator:
-        # TODO: Can probably be replaced with Partition class
-        """
-        Creates a generator object that yields all permutations of the given array/list. The permutations are unique,
-        if the parameter drop_duplicates is set to True
-        At the beginning, the array/list gets sorted.
-        :param array: Array or List where the permutations should be calculated
-        :param drop_duplicates: If True, a permutation which is the same as another permutation since there were
-        duplicate values in the array is dropped, otherwise it is kept
-        """
-        if isinstance(array, np.ndarray):
-            if array.ndim == 1:
-                array = np.sort(array)
-            else:
-                raise ValueError(
-                    f"Wrong number of dimensions for the parameter 'array'. Expected ndim=1 but got {array.ndim}"
-                )
-        elif isinstance(array, list):
-            array = sorted(array)
-        else:
-            raise ValueError(f"Expected 'array' to be a list or a np.ndarray but got {type(array)}")
-
-        seen = set()
-
-        for perm in permutations(array):
-            if perm not in seen or not drop_duplicates:
-                seen.add(perm)
-                yield list(perm)
-
-    @staticmethod
     def _cheby2n(x, n):
         """
         Computes the first :math:`n+1` Chebyshev polynomials of the first
@@ -287,3 +240,14 @@ class Interpolator:
         # only save if not existent already
         if not os.path.exists(path):
             np.save(path, _b_idx, allow_pickle=True)
+
+    def _calculate_y(self, f: Union[Function, List[Function]]):
+        if isinstance(f, Function):
+            f = [f]
+
+        if isinstance(self.grid.grid, TasmanianSparseGrid):
+            grid = self.grid.grid.getPoints()
+        else:
+            grid = self.grid.grid
+
+        return np.array([f_i(grid) for f_i in f]).T
