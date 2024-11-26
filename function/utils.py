@@ -56,11 +56,7 @@ def morokoff_calfisch_1(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-
-    offset = 0
-
-    # We add the constant 1 to the grid in order to ensure a positive discriminant
-    return (1 + 1 / d) ** d * np.prod(np.multiply(x + offset, c) + w, axis=1) ** (1 / d)
+    return (1 + 1 / d) ** d * np.prod(np.multiply(x, c) + w, axis=1) ** (1 / d)
 
 
 def morokoff_calfisch_2(x, d, c, w):

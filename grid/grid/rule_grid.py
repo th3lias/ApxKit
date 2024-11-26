@@ -28,3 +28,6 @@ class RuleGrid(Grid):
 
     def __eq__(self, other):
         return super().__eq__(other)
+
+    def set_domain_transform(self, domain_transform):
+        self.grid.setDomainTransform(domain_transform)
