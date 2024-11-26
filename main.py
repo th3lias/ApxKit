@@ -10,19 +10,18 @@ from fit.method.interpolation_method import InterpolationMethod
 from fit.method.least_squares_method import LeastSquaresMethod
 from function.type import FunctionType
 from grid import TasmanianGridType
+from plot.plot_distribution import plot_all_errors
 from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2]
+    dim_list = [3]
     scale_list = [1, 2, 3, 4, 5, 6]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
-    # function_types = [FunctionType.OSCILLATORY]
-    function_types = [FunctionType.MOROKOFF_CALFISCH_2]
 
     seed = 42
     average_c = 1.0
@@ -32,10 +31,10 @@ def main_method(folder_name: Union[str, None] = None):
     smolyak_method_type = InterpolationMethod.TASMANIAN
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
     least_squares_basis_type = BasisType.CHEBYSHEV
+    tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
 
     ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type, seed=seed,
-                            ls_basis_type=least_squares_basis_type,
-                            tasmanian_grid_type=TasmanianGridType.STANDARD_GLOBAL)
+                            ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
     if folder_name is None:
@@ -49,6 +48,9 @@ def main_method(folder_name: Union[str, None] = None):
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
                             same_axis_both_plots=True)
                 pbar.update(1)
+
+    # Plot distribution
+    plot_all_errors(file_name=ex.results_path, save=True)
 
 
 if __name__ == '__main__':

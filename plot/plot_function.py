@@ -31,6 +31,14 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     Only used if save is True
     """
 
+        # Ensure consistent colors and markers for each method
+
+    method_styles = {
+        'Smolyak': {'color': 'blue', 'marker': 'o', 'label': 'Smolyak'},
+        'Least_Squares Uniform': {'color': 'orange', 'marker': 's', 'label': 'Least Squares Uniform'},
+        'Least_Squares Chebyshev Weight': {'color': 'green', 'marker': '^', 'label': 'Least Squares Chebyshev Weight'}
+    }
+
     if path is None:
         path = os.path.join(folder_name, "results_numerical_experiments.csv")
 
@@ -59,7 +67,6 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     least_squares_data_uniform = least_squares_data_uniform.sort_values(by='scale')
 
     titles = ['Max (Abs) Error', 'L2 Error']
-
     errors = ['ell_infty_error', 'ell_2_error']
 
     global_min_uniform, global_max_uniform = None, None
@@ -73,8 +80,9 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 print(f"Skipping plot for {function_type.name}, c={name} and dimension {dimension} "
                       f"due to infinity values in errors.")
                 continue
-            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+            fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(12, 6), sharey=same_axis_both_plots)
             for i, error in enumerate(errors):
+                axs[i].yaxis.set_tick_params(labelleft=True)
                 data_temp = smolyak_data[smolyak_data['c'] == name]
                 n_points_sy = data_temp.loc[smolyak_data['seed'] == seed, 'n_samples']
                 data_temp = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name]
@@ -82,24 +90,31 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 xticklabels = [f"{scale}\n{n_points_sy.iloc[j]}\n{n_points_ls.iloc[j]}" for j, scale in
                                enumerate(scales)]
 
-                label = 'Smolyak'
+                # Plotting Smolyak data with specific markers and colors
                 smolyak_data_filtered = smolyak_data[smolyak_data['c'] == name]
                 smolyak_plot_data = smolyak_data_filtered[smolyak_data_filtered['seed'] == seed]
-                axs[i].plot(scales, smolyak_plot_data[error], label=label)
+                axs[i].plot(scales, smolyak_plot_data[error], label=method_styles['Smolyak']['label'],
+                            color=method_styles['Smolyak']['color'], marker=method_styles['Smolyak']['marker'])
 
-                label = 'Least Squares Uniform'
+                # Plotting Least Squares Uniform data with specific markers and colors
                 least_squares_data_uniform_filtered = least_squares_data_uniform[
                     least_squares_data_uniform['c'] == name]
                 least_squares_plot_data_uniform = least_squares_data_uniform_filtered[
                     least_squares_data_uniform_filtered['seed'] == seed]
-                axs[i].plot(scales, least_squares_plot_data_uniform[error], label=label)
+                axs[i].plot(scales, least_squares_plot_data_uniform[error],
+                            label=method_styles['Least_Squares Uniform']['label'],
+                            color=method_styles['Least_Squares Uniform']['color'],
+                            marker=method_styles['Least_Squares Uniform']['marker'])
 
-                label = 'Least Squares Chebyshev Weight'
+                # Plotting Least Squares Chebyshev Weight data with specific markers and colors
                 least_squares_data_chebyshev_weight_filtered = least_squares_data_chebyshev_weight[
                     least_squares_data_chebyshev_weight['c'] == name]
                 least_squares_plot_data_chebyshev_weight = least_squares_data_chebyshev_weight_filtered[
                     least_squares_data_chebyshev_weight_filtered['seed'] == seed]
-                axs[i].plot(scales, least_squares_plot_data_chebyshev_weight[error], label=label)
+                axs[i].plot(scales, least_squares_plot_data_chebyshev_weight[error],
+                            label=method_styles['Least_Squares Chebyshev Weight']['label'],
+                            color=method_styles['Least_Squares Chebyshev Weight']['color'],
+                            marker=method_styles['Least_Squares Chebyshev Weight']['marker'])
 
                 axs[i].set_xticks(scales)
                 axs[i].set_xticklabels(xticklabels)
@@ -108,6 +123,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 axs[i].set_ylabel('Error')
                 axs[i].set_yscale('log')
                 axs[i].legend()
+
                 if error == 'ell_infty_error':
                     current_min_uniform, current_max_uniform = axs[i].get_ylim()
                     if global_min_uniform is None or current_min_uniform < global_min_uniform:
@@ -120,16 +136,6 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                         global_min_l2 = current_min_l2
                     if global_max_l2 is None or current_max_l2 > global_max_l2:
                         global_max_l2 = current_max_l2
-
-            if same_axis_both_plots:
-                minimum = min(global_min_uniform, global_min_l2)
-                maximum = max(global_max_uniform, global_max_l2)
-
-                global_min_uniform, global_max_uniform = minimum, maximum
-                global_min_l2, global_max_l2 = minimum, maximum
-
-            axs[0].set_ylim(global_min_uniform, global_max_uniform)
-            axs[1].set_ylim(global_min_l2, global_max_l2)
 
             avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=','))
             fig.suptitle(
