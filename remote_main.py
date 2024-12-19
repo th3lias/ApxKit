@@ -5,7 +5,7 @@ import datetime
 if __name__ == '__main__':
     cur_datetime = datetime.datetime.now()
 
-    cur_datetime_string = cur_datetime.strftime('%d_%m_%Y_%H_%M')
+    cur_datetime_string = cur_datetime.strftime('%d_%m_%Y_%H_%M_%S')
 
     filename_res = os.path.join("results", cur_datetime_string, "console_out.txt")
     filename_pid = os.path.join("results", cur_datetime_string, "pid.txt")

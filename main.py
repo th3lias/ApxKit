@@ -34,7 +34,8 @@ def main_method(folder_name: Union[str, None] = None):
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
 
     ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type, seed=seed,
-                            ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type)
+                            ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type,
+                            path=folder_name)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
     if folder_name is None:
