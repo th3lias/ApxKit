@@ -31,6 +31,8 @@ class ExperimentExecutor:
         if path is None:
             self.results_path = os.path.join("results", current_datetime.strftime('%d_%m_%Y_%H_%M_%S'),
                                              "results_numerical_experiments.csv")
+        else:
+            self.results_path = path
 
         self.dim_list = dim_list
         self.scale_list = scale_list

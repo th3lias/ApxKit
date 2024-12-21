@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import os
 from typing import Union
 
@@ -16,7 +17,7 @@ from plot.plot_function import plot_errors
 
 def main_method(folder_name: Union[str, None] = None):
     dim_list = [3]
-    scale_list = [1, 2, 3, 4, 5, 6]
+    scale_list = [1, 2, 3]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -33,13 +34,18 @@ def main_method(folder_name: Union[str, None] = None):
     least_squares_basis_type = BasisType.CHEBYSHEV
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
 
-    ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type, seed=seed,
+    if folder_name is not None:
+        path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
+    else:
+        path = None
+
+    ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type,
+                            seed=seed,
                             ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type,
-                            path=folder_name)
+                            path=path)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
-    if folder_name is None:
-        folder_name = os.path.dirname(ex.results_path)
+    folder_name = os.path.dirname(ex.results_path)
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
@@ -52,7 +58,6 @@ def main_method(folder_name: Union[str, None] = None):
 
     # Plot distribution
     plot_all_errors(file_name=ex.results_path, save=True)
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')
