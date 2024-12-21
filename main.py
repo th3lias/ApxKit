@@ -33,13 +33,15 @@ def main_method(folder_name: Union[str, None] = None):
     least_squares_basis_type = BasisType.CHEBYSHEV
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
 
+    if folder_name is None:
+        folder_name = os.path.dirname(ex.results_path)
+
     ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type, seed=seed,
                             ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type,
                             path=folder_name)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
-    if folder_name is None:
-        folder_name = os.path.dirname(ex.results_path)
+
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
