@@ -5,16 +5,55 @@ import numpy as np
 import os
 
 
-# TODO: Also add the needed time and the number of points to the table
 
-def highlight(value, min_value):
+
+def highlight_matching_value(value, min_value):
     return r"\first{" + f"{value:.2e}" + r"}" if np.isclose(value, min_value, atol=1e-17) else f"{value:.2e}"
 
+
 def generate_table(results_csv_path: str, output_folder: str):
+    r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
+
+        In the LaTeX File, the table can be printed via
+        \begin{table}[htbp]
+                \centering
+                \begin{adjustbox}{width=\linewidth}
+                    \input{>>TEX-FILE-PATH<<}
+                \end{adjustbox}
+                \vspace{0.1cm}
+                \caption{Test\label{tab:dim1_results}}
+        \end{table}
+
+        For that, the following packages are needed
+        % Packages for the tabulars
+        \usepackage{booktabs}
+        \usepackage{array}
+        \usepackage{adjustbox}
+        \usepackage{multirow}
+        \usepackage{makecell}
+    """
+
+
+    abbreviation_dict = {
+        "BRATLEY" : "Bratley",
+        "CONTINUOUS" : "Cont.",
+        "CORNER_PEAK": "Corn. Peak",
+        "DISCONTINUOUS": "Disc.",
+        "G_FUNCTION": "G-Func.",
+        "GAUSSIAN": "Gauss.",
+        "MOROKOFF_CALFISCH_1": "Mor. Cal. 1",
+        "MOROKOFF_CALFISCH_2": "Mor. Cal. 2",
+        "OSCILLATORY": "Oscill.",
+        "PRODUCT_PEAK": "Prod. Peak",
+        "ROOS_ARNOLD": "Roos Arn.",
+        "ZHOU": "Zhou"
+    }
+
     output = dict()
 
     errors = [r'\ell_2', r'\ell_\infty']
-    error_reductions = ['mean', 'max']  # do not swap unless you are sure that the results in the csv are in the correct order
+    error_reductions = ['mean',
+                        'max']  # do not swap unless you are sure that the results in the csv are in the correct order
     no_error_combinations = len(errors) * len(error_reductions)
 
     results = pd.read_csv(results_csv_path, sep=',', header=0, decimal='.')
@@ -36,16 +75,18 @@ def generate_table(results_csv_path: str, output_folder: str):
         output[dim_name] += r" &  "
         for i in range(1, max_scale + 1):
             if i == 1:
-                output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(i) + r"}"
+                output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
+                    no_error_combinations) + r"}{c}{Scale" + str(i) + r"}"
             else:
-                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{|c}{Scale" + str(i) + r"}"
+                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(i) + r"}"
         output[dim_name] += r"\\" + "\n"
 
         output[dim_name] += r" &  "
         for i in range(1, max_scale + 1):
             for j, error_reduction in enumerate(error_reductions):
                 if i == 1 and j == 0:
-                    output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
+                    output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
+                        error_reduction) + r"}"
                 else:
                     output[dim_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
         output[dim_name] += r"\\" + "\n"
@@ -58,7 +99,7 @@ def generate_table(results_csv_path: str, output_folder: str):
                         output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{1}{c}{$" + error + r"$}"
                     else:
                         output[dim_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
-        output[dim_name] += r"\\\toprule\\" + "\n"
+        output[dim_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
         for fun_name, fun_df in dim_df.groupby('f_name'):
             min_values = {}
@@ -86,6 +127,8 @@ def generate_table(results_csv_path: str, output_folder: str):
 
                 for scale_index, (scale_name, scale_df) in enumerate(method_df.groupby('scale')):
 
+                    n_functions = len(scale_df)
+
                     if method_name == ('Least_Squares', 'CHEBYSHEV'):
                         str_method_name = "LS-Chebyshev"
                     elif method_name == ('Least_Squares', 'UNIFORM'):
@@ -97,7 +140,7 @@ def generate_table(results_csv_path: str, output_folder: str):
 
                     if scale_index == 0:
                         if method_index == 0:
-                            output[dim_name] += r"\multirow{3}{*}{{\rotatebox[origin=c]{90}{\textbf{" + str(fun_name).replace("_", "-") + r"}}}} & "
+                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[str(fun_name)] + r"}\\" + r"$n=" + str(n_functions) + r"$}} & "
                         else:
                             output[dim_name] += r" & "
                         output[dim_name] += str_method_name
@@ -113,14 +156,14 @@ def generate_table(results_csv_path: str, output_folder: str):
                     ell_2_max = ell_2_error.max()
 
                     output[dim_name] += (
-                        r" & "
-                        + highlight(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
-                        + r" & "
-                        + highlight(ell_infty_mean, min_values[str(scale_name)]['ell_infty_mean'])
-                        + r" & "
-                        + highlight(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
-                        + r" & "
-                        + highlight(ell_infty_max, min_values[str(scale_name)]['ell_infty_max'])
+                            r" & "
+                            + highlight_matching_value(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
+                            + r" & "
+                            + highlight_matching_value(ell_infty_mean, min_values[str(scale_name)]['ell_infty_mean'])
+                            + r" & "
+                            + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
+                            + r" & "
+                            + highlight_matching_value(ell_infty_max, min_values[str(scale_name)]['ell_infty_max'])
                     )
                 output[dim_name] += r"\\" + "\n"
             output[dim_name] += r"\bottomrule" + "\n"
@@ -130,7 +173,6 @@ def generate_table(results_csv_path: str, output_folder: str):
         with open(os.path.join(output_folder, f"dim{dim_name}.tex"), "w") as f:
             f.write(table)
     print("Done")
-
 
 
 if __name__ == '__main__':
