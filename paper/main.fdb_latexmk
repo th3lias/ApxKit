@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex main"] 1741946161.60382 "main.aux" "main.bbl" "main" 1741947504.20006 0
+["bibtex main"] 1741957923.44883 "main.aux" "main.bbl" "main" 1741958563.38066 0
   "./bibliography.bib" 1741945223.32472 1096 b1e03b48b771df053c4b14485e4e3751 ""
-  "./main-blx.bib" 1741947503.92295 342 20d1170ef6c1d70c658d70e011e08dba ""
+  "./main-blx.bib" 1741958563.11517 342 20d1170ef6c1d70c658d70e011e08dba ""
   "/usr/local/texlive/2025/texmf-dist/bibtex/bst/biblatex/biblatex.bst" 1711143581 65510 b1f696b0241395385f422f67543c37fd ""
-  "main.aux" 1741947503.92155 5833 b928e54d4074b4e7c443039849b1a1c8 "pdflatex"
+  "main.aux" 1741958563.11372 5833 f40889a58efc40665fd51ef25e63181d "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1741947503.25363 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1741947504.20019 0
-  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1741947503.15679 19653 6b9e0a2adebb61a45415ca933230028a ""
+["pdflatex"] 1741958562.46081 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1741958563.38079 0
+  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1741958562.35761 19773 65e94615b8849f6a949a36ed2cb7933e ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -112,11 +112,11 @@
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741766721 3345740 5f702b3a0ee2d783e5afee2544ea1b37 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
   "macros.tex" 1741944333.04635 2467 d8b0215fd270c5fe312728ac25da1627 ""
-  "main.aux" 1741947503.92155 5833 b928e54d4074b4e7c443039849b1a1c8 "pdflatex"
-  "main.bbl" 1741946161.67695 3534 3fc8d6def121df0a540c41a30a5dca45 "bibtex main"
-  "main.run.xml" 1741947503.92346 2524 e9a58f345a6116e73902156d87aa949f "pdflatex"
-  "main.tex" 1741947503.15679 19653 6b9e0a2adebb61a45415ca933230028a ""
-  "main.toc" 1741947503.92351 762 674df1fbaf442d6474cd0af9d29a1506 "pdflatex"
+  "main.aux" 1741958563.11372 5833 f40889a58efc40665fd51ef25e63181d "pdflatex"
+  "main.bbl" 1741957923.52883 3534 3fc8d6def121df0a540c41a30a5dca45 "bibtex main"
+  "main.run.xml" 1741958563.11562 2524 e9a58f345a6116e73902156d87aa949f "pdflatex"
+  "main.tex" 1741958562.35761 19773 65e94615b8849f6a949a36ed2cb7933e ""
+  "main.toc" 1741958563.11568 762 674df1fbaf442d6474cd0af9d29a1506 "pdflatex"
   (generated)
   "main-blx.bib"
   "main.aux"
