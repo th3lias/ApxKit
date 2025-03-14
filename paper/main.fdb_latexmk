@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex main"] 1741946161.60382 "main.aux" "main.bbl" "main" 1741946738.99001 0
+["bibtex main"] 1741946161.60382 "main.aux" "main.bbl" "main" 1741947504.20006 0
   "./bibliography.bib" 1741945223.32472 1096 b1e03b48b771df053c4b14485e4e3751 ""
-  "./main-blx.bib" 1741946738.7225 342 20d1170ef6c1d70c658d70e011e08dba ""
+  "./main-blx.bib" 1741947503.92295 342 20d1170ef6c1d70c658d70e011e08dba ""
   "/usr/local/texlive/2025/texmf-dist/bibtex/bst/biblatex/biblatex.bst" 1711143581 65510 b1f696b0241395385f422f67543c37fd ""
-  "main.aux" 1741946738.72133 5833 b928e54d4074b4e7c443039849b1a1c8 "pdflatex"
+  "main.aux" 1741947503.92155 5833 b928e54d4074b4e7c443039849b1a1c8 "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1741946738.08551 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1741946738.99013 0
-  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1741946737.98986 19670 8dff6113a5f6d83a9b8f4fc3f82be8e9 ""
+["pdflatex"] 1741947503.25363 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1741947504.20019 0
+  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1741947503.15679 19653 6b9e0a2adebb61a45415ca933230028a ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -45,7 +45,6 @@
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1248133631 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1248133631 36741 fa121aac0049305630cf160b86157ee4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb" 1248133631 37166 8ab3487cbe3ab49ebce74c29ea2418db ""
-  "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1248133631 36281 c355509802a035cadc5f15869451dcee ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1248133631 35469 70d41d2b9ea31d5d813066df7c99281c ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1248133631 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
@@ -113,11 +112,11 @@
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1741766721 3345740 5f702b3a0ee2d783e5afee2544ea1b37 ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
   "macros.tex" 1741944333.04635 2467 d8b0215fd270c5fe312728ac25da1627 ""
-  "main.aux" 1741946738.72133 5833 b928e54d4074b4e7c443039849b1a1c8 "pdflatex"
+  "main.aux" 1741947503.92155 5833 b928e54d4074b4e7c443039849b1a1c8 "pdflatex"
   "main.bbl" 1741946161.67695 3534 3fc8d6def121df0a540c41a30a5dca45 "bibtex main"
-  "main.run.xml" 1741946738.72297 2524 e9a58f345a6116e73902156d87aa949f "pdflatex"
-  "main.tex" 1741946737.98986 19670 8dff6113a5f6d83a9b8f4fc3f82be8e9 ""
-  "main.toc" 1741946738.72302 762 674df1fbaf442d6474cd0af9d29a1506 "pdflatex"
+  "main.run.xml" 1741947503.92346 2524 e9a58f345a6116e73902156d87aa949f "pdflatex"
+  "main.tex" 1741947503.15679 19653 6b9e0a2adebb61a45415ca933230028a ""
+  "main.toc" 1741947503.92351 762 674df1fbaf442d6474cd0af9d29a1506 "pdflatex"
   (generated)
   "main-blx.bib"
   "main.aux"
