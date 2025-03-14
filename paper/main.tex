@@ -2,6 +2,9 @@
 
 \usepackage{amssymb}
 \usepackage{cleveref}
+\usepackage[backend=bibtex]{biblatex}
+\usepackage{mathtools}
+\addbibresource{bibliography.bib}
 
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prop}[thm]{Proposition}
@@ -59,7 +62,7 @@ Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical i
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-We use \({[N]}_0 \defn \set{0, 1, \dots, N}\) and \([N]\) for the set \(\set{1, \dots, N}\). For the set of polynomials \(p: V \to W\) of maximal degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation \(p \in \pols[N]{V, W}\). We use \(f \propto g\) for functions \(f, g\) to denote \(f = c g\) for a constant \(c \in \R\) and \(f \lesssim g\) to denote \(f \leq c g\).
+We use \({[N]}_0 \defn \set{0, 1, \dots, N}\) and \([N]\) for the set \(\set{1, \dots, N}\). For the set of polynomials \(p: V \to W\) of maximal degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation \(p \in \pols[N]{V, W}\). We use \(f \propto g\) for functions \(f, g\) to denote \(f = c g\) for a constant \(c \in \R\) and \(f \lesssim g\) to denote \(f \leq c g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\), i.e.\ \(B(X) \defn \set{x \in X: \norm[X]{x} \leq 1}\).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -154,15 +157,15 @@ All points used by this algorithm are then
 \end{equation}
 We call \(\XX\) a \emph{sparse grid}. We use \(\XX^=(q)\) for denoting the corresponding set replaced with the rule that it takes all vectors \(N: \norm[1]{N} = q\). In case the point set is nice, for example for Chebyshev points, one obtains a \emph{nesting} of sparse grids for increasing fineness scales: \(\XX^\leq(q) \subset \XX^\leq(q+1)\). This construction has the advantage that the practicioner does not need to save the whole grid \(\XX\) at once. It is enough to use the refinements of each level-increase \(q \mapsto q+1\) and interpolate at each such level separately, each time discarding the old values. We may thus define the difference operator
 \begin{equation}\label{eq:differenceOp}
-    \Delta^{(N)} \defn \left(\cI^{N_1} \otimes \cdots \otimes \cI^{N_d}\right) - \left(\cI^{N_1-1} \otimes \cdots \otimes \cI^{N_d-1}\right).
+    \Delta^{(q)} \defn \left( \bigotimes_{\norm[1]{N}=q+1} \cI^{(N)} \right) - \left( \bigotimes_{\norm[1]{N} = q} \cI^{(N)} \right)
 \end{equation}
 Now, Smolyak's algorithm can be written as
 \begin{equation}\label{eq:SmolyakWithDifferences1}
-    \cA(q, d) = \sum_{k=d}^q \sum_{\norm[1]{N}=k} \Delta^{(N)}(\XX(N))
+    \cA(q, d) \defn \sum_{\norm[1]{N} \leq q} \Delta^{(q)}(\XX(N))
 \end{equation}
 or equivalently
 \begin{equation}\label{eq:SmolyakWithDifferences2}
-    \cA(q, d) = \cA(q-1, d) + \sum_{\norm[1]{N}=q} \Delta^{(N)}\left(\XX(N)\right)
+    \cA(q, d) = \cA(q-1, d) + \sum_{\norm[1]{N}=q} \cI^{(N)}(\XX(N))
 \end{equation}
 with \(\cI^{(0)} = 0\).
 
@@ -195,9 +198,70 @@ where \(z^\star = \left(z_j\right)_{j=1}^m\) is given by \cref{eq:leastSquares}.
 \section{Theoretical Guarantees}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+The notation in the following is borrowed from \cite{Ullrich_2020}.
+In this section we introduce a formal setting to the former considerations. That is, we consider a Hilbert space \(H\) of real-valued functions on a set \(D\) such that point evaluation \[
+    \delta_x: f \mapsto \int_D f\ \d \delta_x = f(x)
+\]
+is a bounded, linear functional on \(H\).
+The general formulation of least squares allows for a broad class of recovery problems. In our specific case, the function recovery of real--valued functions on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a \(k\)--dimensional subspace \(V_k \defn \spn \set{b_1, \dots, b_k}\), we consider the specific form of least squares, given by\[
+    A_{n, k}(f) \defn \argmin_{g \in V_k} \sum_{i=1}^n \frac{\abs{g(x_i) - f(x_i)}^2}{\varrho_k(x_i)}
+\]
+where \[
+    \varrho_k(x) = \frac{1}{2} \left( \frac{1}{k} \sum_{j < k} b_{j+1}(x)^2 + \frac{1}{\sum_{j \geq k} a_j^2} \sum_{j \geq k} a_j^2 b_{j+1}(x)^2 \right)
+\]
+and \(x_1, \dots, x_n \in D\). Whenever \(f \in V_k\), then, of course, \(f = A_{n, k}(f)\). With
+\begin{equation}\label{eq:worstCaseError}
+    e\left(A_{n,k}, H\right) \defn \sup_{f \in B(H)} \norm[L_2]{f - A_{n,k}(f)},
+\end{equation}
+we denote the worst case error of \(A_{n,k}\), where we measure the error of the reconstruction in the space \(L_2 \defn L_2(D, \Sigma, \mu)\) of square integrable functions on \(D\) with respect to the measure \(\mu\), such that \(H\) is embedded into \(L_2\). In light of this, the \(n\)--th minimal error is denoted by \[
+    e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i},
+\]
+and can be understood as the worst case error of the optimal algorithm using \(n\) function values. We get the clear inequality \(e_n(H) \leq e(A_{n,k}, H)\) for any point set \(\set{x_1, \dots, x_n}\). With \[
+    a_n(H) := \inf_{\substack{h_1^\star, \dots, h_n^\star \in H^\star \\ \phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n h_i^\star(f) \phi_i}
+\]
+we denote the \(n\)-th approximation number, which is the worst-case error of an optimal algorithm that uses the \(n\) best arbitrary linear and bounded functionals as information about the unknown. This quantity is equal to the \(n\)-th singular value of the embedding \(\id: H \to L_2\).
+
+The following is known since \cite{Krieg_2020}.
+\begin{thm}[Krieg--Ullrich]\label{thm:kriegUllrich2020}
+    There exist constants \(C, c > 0\) and a sequence of natural numbers \((k_n)\) with each \(k_n \geq cn/\log(n+1)\) and for any \(n \in \N\) and measure space \(D, \Sigma, \mu\), and any RKHS \(H\) of real-valued functions on \(D\) embedded into \(L_2(D, \Sigma, \mu)\), we have \[
+        e_n(H) \leq \sqrt{\frac{C}{k_n} \sum_{j \geq k_n} a_j(H)^2}.
+    \]
+\end{thm}
+In particular, for 
+\begin{equation}\label{eq:orderOfApproximationNumbers}
+    a_n(H) \lesssim n^{-s} \log^{\alpha + s}(n)
+\end{equation}
+with \(s > 1/2, \alpha \in \R\), this implies \[
+    e_n(H) \lesssim n^{-s} \log^{\alpha+s}(n).
+\]
+The following follows from \cite{Ullrich_2020}.
+\begin{thm}[Ullrich]
+    Given \(n \geq 2\) and \(c > 0\), let \[
+        k_n := \floor*{\frac{n}{2^8 (2+c) \log n}},
+    \]
+    then, for any measure space \(D, \Sigma, \mu\) and any RKHS \(H\) of real-valued functions on \(D\), embedded into \(L_2(D, \Sigma, \mu)\), it holds that \[
+        e_n\left(A_{n, k_n}, H\right) \leq \sqrt{ \frac{2}{k_n} \sum_{j > k_n} a_j(H)^2 }
+    \]
+    with probability at least \(1-8n^{-c}\).
+\end{thm}
+
+\subsection*{Examples}
+In particular, \ref{eq:orderOfApproximationNumbers} is satisfied for the approximation numbers on the Sobolev space of dominating mixed smoothness, \begin{align*}
+    H &\defn H_{\text{mix}}^s\left(\T^d\right)\\
+    &\defn \set{f \in L_2\left(\T^d\right) \mid \norm[H]{f}^2 \defn \sum_{m \in \N_0^d} \prod_{j=1}^d (1+\abs{m_j}^{2s}) \inner{f}{b_m}^2_{L_2} < \infty}
+\end{align*}
+where \(b_m \defn \otimes_{j=1}^d b_{m_j}^{(1)}\) and \(m = (m_1, \dots, m_d)\) with \begin{align*}
+    b_{2m}^{(1)} &\defn \sqrt{2}\cos(2\pi m x)\\
+    b_{2m-1}^{(1)} &\defn \sqrt{2}\sin(2\pi m x)
+\end{align*}
+and \(b_0^{(1)} := 1\). This satisfies the assumption for \(s > 1/2\). In particular, we can say
+\begin{equation}\label{eq:conclusio}
+    e_n\left( H_{\text{mix}}^s\left(\T^d\right) \right) \lesssim n^{-s}\log^{sd}(n)
+\end{equation}
+whenever \(s > 1/2\). This disproves a previously posted conjecture (Conjecture 5.26) in \cite{Dung_Temlyakov_Ullrich_2018} and shows that Smolyak's algorithm is not optimal in this case. The surprising fact is that, despite an optimal, deterministic construction of the point sets used for reconstruction being unknown, random i.i.d. points suffice for a reconstruction error that is on the order of optimal points, with probability tending to \(1\). We verify this by our experimental findings, presented in \ref{sec:experimentalFindings} with a much better relative number of points used for LSQ function recovery vs. SA recovery than guaranteed in this section, i.e. better constants than explicitly known before. It remains an open problem to rigorously improve upon the constants in \ref{eq:conclusio}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Experimental Findings}
+\section{Experimental Findings}\label{sec:experimentalFindings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -207,4 +271,8 @@ where \(z^\star = \left(z_j\right)_{j=1}^m\) is given by \cref{eq:leastSquares}.
 
 
 \newpage
+
+\nocite{*}
+\printbibliography
+
 \end{document}
