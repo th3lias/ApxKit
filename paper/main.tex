@@ -6,9 +6,11 @@
 \documentclass[12pt, oneside]{amsart}
 
 \usepackage{amssymb}
-\usepackage{cleveref}
 \usepackage[backend=bibtex]{biblatex}
 \usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{cleveref}
 \addbibresource{bibliography.bib}
 
 \newtheorem{thm}{Theorem}[section]
@@ -56,18 +58,26 @@
 
 
 \begin{abstract}
-We present novel, large-scale experiments for polynomial interpolation in high dimensional settings using some of the most popular algorithms available. We compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using random data. We empirically confirm that interpolation using LSQ performs equally as good on smooth and better on non-smooth functions if SA is given \(n\) and LSQ is given \(\cO(n \log n)\) points.
+We present novel, large-scale experiments for polynomial interpolation in high 
+dimensional settings using some of the most popular algorithms available. We 
+compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using 
+random data. We empirically confirm that interpolation using LSQ performs 
+equally as good on smooth and better on non-smooth functions if SA is given 
+\(n\) and LSQ is given \(\cO(n \log n)\) points.\newline
+Code available at: 
+\url{https://github.com/th3lias/NumericalExperiments}
+% TODO: Make repository public or maybe change owner
 \end{abstract}
 
 \maketitle
-
 
 %\tableofcontents
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical interest for a long time.
+Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical 
+interest for a long time. % TODO: Make this longer
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,7 +86,17 @@ Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical i
 
 % TODO: Probably rewrite a bit
 
-We use \({[N]}_0 \defn \set{0, 1, \dots, N}\) and \([N]\) for the set \(\set{1, \dots, N}\). For the set of polynomials \(p: V \to W\) of maximal degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation \(p \in \pols[N]{V, W}\). We use \(f \propto g\) for functions \(f, g\) to denote \(f = c g\) for a constant \(c \in \R\) and \(f \lesssim g\) to denote \(f \leq c g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\), i.e.\ \(B(X) \defn \set{x \in X: \norm[X]{x} \leq 1}\). With \(X^\star\) we denote the space of linear, bounded functionals on \(X\), i.e. \(X^\star \defn \set{x^\star: X \to \R \mid x^\star \text{ is linear and bounded}}\).
+We use for $m\leq n$ \(\indexset[m]{n} \) as the set of all indices $i\in \Z$ 
+with $m\leq i\leq n$. For the set of polynomials \(p \from V \to W\) of maximal 
+degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation 
+\(p \in \pols[N]{V, W}\) \jakob{I mean this is the general notation but do we 
+even have polynomials that map to $\C^K$}
+We use \(f \propto g\) for functions \(f, g\) to denote \(f = 
+c g\) for a constant \(c \in \R\) and \(f \lesssim g\) to denote \(f \leq c 
+g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\), 
+i.e.\ \(B(X) \defn \set{x \in X: \norm[X]{x} \leq 1}\). With \(X^\star\) we 
+denote the space of linear, bounded functionals on \(X\), i.e. \(X^\star \defn 
+\set{x^\star\from X \to \R \mid x^\star \text{ is linear and bounded}}\).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,15 +112,44 @@ Smolyak's Algorithm is determinstic and can be used in various settings. These i
     \item \(\cdots\)
 \end{enumerate}
 \subsection*{Interpolation in one dimension}
-In the onedimensional setting it is well known that for any collection of points \(\ZZ \defn \set{z_n}_{n=0}^N \subseteq \R\) and known function values \(f(z_n): n \in {[N]}_0\) for \(f: \R \to \R\) there is always a unique interpolating polynomial \(i\), i.e. \(i \in \pols[N]{\R, \R}: i(z_j) = f(z_j)\) s.t.\ \(j \in {[N]}_0\). To find the polynomial \(i\), one can, among other available methods, choose to perform Lagrange Interpolation which yields an explicit construction of the form
+In the onedimensional setting it is well known that for any collection of 
+points \(\ZZ \defn \set{z_n}_{n=0}^N \subseteq \R\) and known function values 
+\(f(z_n): n \in \indexset[0]{N}\) for \(f\from \R \to \R\) there is always a 
+unique 
+interpolating polynomial \(i\), i.e. \(i \in \pols[N]{\R, \R}: i(z_j) = 
+f(z_j)\) s.t.\ \(j \in \indexset[0]{N}\). To find the polynomial \(i\), one 
+can, among 
+other available methods, choose to perform Lagrange Interpolation which yields 
+an explicit construction of the form
 \begin{equation}\label{eq:lagrangeInterpolation}
     \mathcal{I}\left(\FF\right)(x) = \sum_{n=0}^N f(z_n) \ell_n(x)\quad \text{ s.t. }\quad \ell_n(x) \defn \prod_{\substack{j = 0\\n \neq j}}^N \frac{x-z_j}{z_n-z_j}
 \end{equation}
-where \(\FF \defn \set{\left[z_n, f\left(z_n\right)\right]}_{n=1}^{N}\). We set \(i \defn \cI(\FF)\). Note that \(\cI\) is a mapping from data, which may be seen as arranged in a \(2 \times N\) matrix, to an \(N\)-degree polynomial. Thus \(\cI: \R^{2 \times N} \to \pols[N]{\R,\R}\). since each basis function \(\ell_n(x)\) is a polynomial of degree \(N\). Thus, if \(f \in \pols[N]{\R, \R}\), one obtains \(i = f\). Moreover, \(i\) is interpolating since \(\ell_n(z_j) = \delta_{n}(j)\). Even though (\ref{eq:lagrangeInterpolation}) has nice theoretical properties, it is suboptimal for practical settings due to the following facts. (1) If a node \(z_n\) is close to a node \(z_j\) such that \(n \neq j\), computing the product \(\ell_n(x)\) becomes numerically unstable. (2) The addition of new data \(\left(z, f(z)\right)\) requires to recalculate all basis functions anew in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires computational complexity of \(\cO(N^2)\). This does not mean that one has to abandon Lagrange Interpolation at once. We may write \cref{eq:lagrangeInterpolation} in a much more stable way as
+where \(\FF \defn \set{\left[z_n, f\left(z_n\right)\right]}_{n=1}^{N}\). We set 
+\(i \defn \cI(\FF)\). Note that \(\cI\) is a mapping from data, which may be 
+seen as arranged in a \(2 \times N\) matrix, to an \(N\)-degree polynomial. 
+Thus \(\cI\from \R^{2 \times N} \to \pols[N]{\R,\R}\). since each basis 
+function \(\ell_n(x)\) is a polynomial of degree \(N\). Thus, if \(f \in 
+\pols[N]{\R, \R}\), one obtains \(i = f\). Moreover, \(i\) is interpolating 
+since \(\ell_n(z_j) = \delta_{n}(j)\). Even though 
+(\ref{eq:lagrangeInterpolation}) has nice theoretical properties, it is 
+suboptimal for practical settings due to the following facts. (1) If a node 
+\(z_n\) is close to a node \(z_j\) such that \(n \neq j\), computing the 
+product \(\ell_n(x)\) becomes numerically unstable. (2) The addition of new 
+data \(\left(z, f(z)\right)\) requires to recalculate all basis functions anew 
+in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires 
+computational complexity of \(\cO(N^2)\). This does not mean that one has to 
+abandon Lagrange Interpolation at once. We may write 
+\cref{eq:lagrangeInterpolation} in a much more stable way as
 \begin{equation}\label{eq:barycentricLagrange}
     i(x) \defn \cI(\FF)(x) = \frac{\sum_{n=0}^N \frac{w_n}{x-z_n} f(z_n)}{\sum_{n=0}^N \frac{w_n}{x-z_n}}
 \end{equation}
-for \(w_n \in \R : n \in {[N]}_0\). If the weights \(w_n\) are known, computing \(i(x)\) in this form admits a complexity of \(\cO(N)\). Luckily, the weights have closed-form, analytic solutions for many deterministic point sets used in practice and are hence considered to be computable in \(\cO(1)\) time. Thus, adding a new data pair \((z, f(z))\) requires total complexity of \(\cO(N)\) for the recomputation of said weights. The general identity \[
+for \(w_n \in \R : n \in \indexset[0]{N}\). If the weights \(w_n\) are known, 
+computing 
+\(i(x)\) in this form admits a complexity of \(\cO(N)\). Luckily, the weights 
+have closed-form, analytic solutions for many deterministic point sets used in 
+practice and are hence considered to be computable in \(\cO(1)\) time. Thus, 
+adding a new data pair \((z, f(z))\) requires total complexity of \(\cO(N)\) 
+for the recomputation of said weights. The general identity \[
     w_n = \frac{1}{\prod_{\substack{j=0\\j \neq n}}^N x_n - x_j} = \frac{1}{\ell'(x_n)}
 \]
 always holds. To specify the above, consider the set of \emph{equidistant} nodes \(\set{z_n \defn 2/n} \subset [-1, 1]\). Then \begin{equation}\label{eq:weightsEquidistant}
@@ -108,11 +157,13 @@ always holds. To specify the above, consider the set of \emph{equidistant} nodes
 \end{equation}
 For large \(N\), \cref{eq:weightsEquidistant} is problematic since weights \(w_j, w_n: n \neq j\) now may vary by factors as large as \(\cO\left(2^N\right)\). This means that interpolation in equispaced points is susceptible to the \emph{Runge phenomenon}. For this interpolation problem to be well posed one should use point sets with asymptotic density \(\rho(x) \propto 1/\sqrt{1-x^2}\). Many point sets admit this asymptotic density, for example the Chebyshev points of the first kind are given as
 \begin{equation}\label{eq:chebyPts1}
-    \ZZ_C^{(1)}(N) \defn \set{z^{(1)}_n \defn \cos \frac{\left(2n+1\right) \pi}{2n+2} \mid n \in {[N]}_0},
+    \ZZ_C^{(1)}(N) \defn \set{z^{(1)}_n \defn \cos \frac{\left(2n+1\right) 
+    \pi}{2n+2} \mid n \in \indexset[0]{N}},
 \end{equation}
 similarly, the Chebyshev points of the second kind are
 \begin{equation}\label{eq:chebyPts2}
-    \ZZ_C^{(2)}(N) \defn \set{z^{(2)}_n \defn \cos \frac{n\pi}{N} \mid n \in {[N]}_0}.
+    \ZZ_C^{(2)}(N) \defn \set{z^{(2)}_n \defn \cos \frac{n\pi}{N} \mid n \in 
+    \indexset[0]{N}}.
 \end{equation}
 In either of these cases, the weights \(w_n\) admit nice closed forms as \(w_n^{(k)}: k \in \set{1,2}\) dependent on which point set is in use as
 \begin{equation}\label{eq:weightsChebyshev}
@@ -137,13 +188,16 @@ where \(z_n \defn \left(z_{n_1}, \dots, z_{n_d}\right)\) and \(N \defn \left(N_1
 \end{equation}
 where \(\FF \defn \bigcup_{j=1}^d \FF(N_j)\). In this case, the tensor product interpolation is a mapping of the form
 \begin{equation}\label{eq:tensorProdInterpMappingSpecification}
-    \bigotimes_{j=1}^d \cI^{(N_j)}: \R^{(d+1) \times \left(\sum_{j=1}^d m(N_j) \right)} \to \pols[\left(\max \set{m(N_j)} \right)]{\R^d, \R}.
+    \bigotimes_{j=1}^d \cI^{(N_j)}\from \R^{(d+1) \times \left(\sum_{j=1}^d 
+    m(N_j) \right)} \to \pols[\left(\max \set{m(N_j)} \right)]{\R^d, \R}.
 \end{equation}
 We denote \(\cI^{(N)} \defn \bigotimes_{j=1}^d \cI^{(N_j)}\). If the basis functions \(b_n\) are scalar-valued, their tensor product is just
 \begin{equation}\label{eq:tensorProdFunc}
     \left( \bigotimes_{n=1}^d b_n \right)(x_1, \dots, x_d) \defn \prod_{n \in [d]} b_n(x_n).
 \end{equation}
-In Smolyak's Algorithm, the function \(m: \N \to \N\) is used as a growth rule specifying how many points are to be used by the interpolant. Specifically, we will use a doubling rule such that \[
+In Smolyak's Algorithm, the function \(m\from \N \to \N\) is used as a growth 
+rule specifying how many points are to be used by the interpolant. 
+Specifically, we will use a doubling rule such that \[
     m(n) \defn \begin{cases}
         2^{n-1}+1 &n > 1\\
         1 &\text{else}.
@@ -199,12 +253,18 @@ It is further known that, in case of a full--rank matrix \(V\), the unique solut
     z^\star = \left(V^\top V\right)^{-1} V^\top y.
 \]
 
-In our specific case of polynomial interpolation, \(V\) is the Vandermonde matrix, consisting of basis polynomials \(b_1, b_2, \dots, b_m\) evaluated at the sampled points \(x_1, x_2, \dots, x_n\) in \(\Omega \subseteq \R^d\) and \(y\) is a vector of function values sampled from the unknown function \(f: \Omega \to \R\), i.e.\ \(y = \left(f(x_j)\right)_{j=1}^n\). In this case, the Vandermonde matrix is never singular as long as the sampled points do not overlap.
+In our specific case of polynomial interpolation, \(V\) is the Vandermonde 
+matrix, consisting of basis polynomials \(b_1, b_2, \dots, b_m\) evaluated at 
+the sampled points \(x_1, x_2, \dots, x_n\) in \(\Omega \subseteq \R^d\) and 
+\(y\) is a vector of function values sampled from the unknown function \(f\from 
+\Omega \to \R\), i.e.\ \(y = \left(f(x_j)\right)_{j=1}^n\). In this case, the 
+Vandermonde matrix is never singular as long as the sampled points do not 
+overlap.
 Hence, the solution to the approximation problem \[
     \inf_{p} \norm[]{f-p}
 \]
 can analytically be expressed as \[
-    p^\star: \Omega \to \R, t \mapsto \sum_{j=1}^m z_j^\star b_j(t)
+    p^\star\from \Omega \to \R, t \mapsto \sum_{j=1}^m z_j^\star b_j(t)
 \]
 where \(z^\star = \left(z_j\right)_{j=1}^m\) is given by \cref{eq:leastSquares}.
 
@@ -231,9 +291,14 @@ we denote the worst case error of \(A_{n,k}\), where we measure the error of the
     e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i},
 \]
 and can be understood as the worst case error of the optimal algorithm using \(n\) function values. We get the clear inequality \(e_n(H) \leq e(A_{n,k}, H)\) for any point set \(\set{x_1, \dots, x_n}\). With \[
-    a_n(H) := \inf_{\substack{h_1^\star, \dots, h_n^\star \in H^\star \\ \phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n h_i^\star(f) \phi_i}
+    a_n(H) \defn \inf_{\substack{h_1^\star, \dots, h_n^\star \in H^\star \\ 
+    \phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - 
+    \sum_{i=1}^n h_i^\star(f) \phi_i}
 \]
-we denote the \(n\)-th approximation number, which is the worst-case error of an optimal algorithm that uses the \(n\) best arbitrary linear and bounded functionals as information about the unknown. This quantity is equal to the \(n\)-th singular value of the embedding \(\id: H \to L_2\).
+we denote the \(n\)-th approximation number, which is the worst-case error of 
+an optimal algorithm that uses the \(n\) best arbitrary linear and bounded 
+functionals as information about the unknown. This quantity is equal to the 
+\(n\)-th singular value of the embedding \(\id\from H \to L_2\).
 
 The following is known since \cite{Krieg_2020}.
 \begin{thm}[Krieg--Ullrich]\label{thm:kriegUllrich2020}
@@ -251,7 +316,7 @@ with \(s > 1/2, \alpha \in \R\), this implies \[
 The following follows from \cite{Ullrich_2020}.
 \begin{thm}[Ullrich]
     Given \(n \geq 2\) and \(c > 0\), let \[
-        k_n := \floor*{\frac{n}{2^8 (2+c) \log n}},
+        k_n \defn \floor*{\frac{n}{2^8 (2+c) \log n}},
     \]
     then, for any measure space \((D, \Sigma, \mu)\) and any RKHS \(H\) of real-valued functions on \(D\), embedded into \(L_2(D, \Sigma, \mu)\), it holds that \[
         e_n\left(A_{n, 2 k_n}, H\right) \leq \sqrt{ \frac{2}{k_n} \sum_{j > k_n} a_j(H)^2 }
@@ -268,7 +333,8 @@ where \(b_m \defn \otimes_{j=1}^d b_{m_j}^{(1)}\) and \(m = (m_1, \dots, m_d)\) 
     b_{2m}^{(1)} &\defn \sqrt{2}\cos(2\pi m x)\\
     b_{2m-1}^{(1)} &\defn \sqrt{2}\sin(2\pi m x)
 \end{align*}
-and \(b_0^{(1)} := 1\). This satisfies the assumption for \(s > 1/2\). In particular, we can say
+and \(b_0^{(1)} \defn 1\). This satisfies the assumption for \(s > 1/2\). In 
+particular, we can say
 \begin{equation}\label{eq:conclusio}
     e_n\left( H_{\text{mix}}^s\left(\T^d\right) \right) \lesssim n^{-s}\log^{sd}(n)
 \end{equation}

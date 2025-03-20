@@ -28,6 +28,12 @@
 % Set brackets
 \newcommand{\set}[1]{\left\{#1\right\}}
 
+% Make index set from 1 to (inclusive) m:
+\newcommand*{\indexset}[2][1]{[#1:#2]}
+
+% Make a colon: (Used for defining a function from A to B)
+\newcommand*{\from}{\colon}
+
 % Probability commands: Expectation, Variance, Covariance, Bias
 \newcommand{\E}{\mathbb{E}}
 
@@ -96,3 +102,9 @@
 \DeclareMathOperator{\id}{id}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+% Comments
+\newcommand*{\jakob}[1]{\color{red} \textbf{\emph{#1}} \color{black}}
+\newcommand*{\elias}[1]{\color{blue} \textbf{\emph{#1}} \color{black}}
+\newcommand*{\mario}[1]{\color{green} \textbf{\emph{#1}} \color{black}}
