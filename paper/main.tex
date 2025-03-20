@@ -27,20 +27,30 @@
 \include{macros}
 
 \begin{document}
-\title{Least Squares and Smolyak's Algorithm}
+\title{Least Squares and Smolyak's Algorithm} % TODO: Add small title in 
+%[]-Brackets
 
 
-\author{Jakob Eggl}
-\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
-\email{jakob.eggl@jku.at}
+% With the following definition of the authors, we don't have the unnecessary 
+%extra comma before "And Mario 
+% Ullrich"
+\author{Jakob Eggl, Elias Mindlberger and Mario Ullrich}
+\date{\today}
+\keywords{Polynomial interpolation, Sparse-Grids, Least-Squares, Smolyak} % 
+%TODO: Add or Adapt Keywords
 
-\author{Elias Mindlberger}
-\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
-\email{elias.mindlberger@jku.at}
 
-\author{Mario Ullrich}
-\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
-\email{mario.ullrich@jku.at}
+%\author{Jakob Eggl}
+%\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
+%\email{jakob.eggl@jku.at}
+%
+%\author{Elias Mindlberger}
+%\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
+%\email{elias.mindlberger@jku.at}
+%
+%\author{Mario Ullrich}
+%\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
+%\email{mario.ullrich@jku.at}
 
 % \thanks{\(\star\) Equal Contribution.}
 
@@ -49,14 +59,11 @@
 We present novel, large-scale experiments for polynomial interpolation in high dimensional settings using some of the most popular algorithms available. We compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using random data. We empirically confirm that interpolation using LSQ performs equally as good on smooth and better on non-smooth functions if SA is given \(n\) and LSQ is given \(\cO(n \log n)\) points.
 \end{abstract}
 
-
 \maketitle
-\thispagestyle{empty}
 
 
-\tableofcontents
+%\tableofcontents
 
-\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -281,5 +288,16 @@ whenever \(s > 1/2\). This disproves a previously posted conjecture (Conjecture 
 
 \nocite{*}
 \printbibliography
+
+\bigskip
+
+\noindent
+\address{J.E., Johannes Kepler University Linz; 
+\texttt{jakob.eggl@jku.at}; \\
+	E.M., Johannes Kepler University Linz; 
+	\texttt{elias.mindlberger@jku.at}; \\
+	M.U., Johannes Kepler University Linz; 
+	\texttt{mario.ullrich@jku.at}
+}
 
 \end{document}
