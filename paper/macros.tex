@@ -1,3 +1,20 @@
+
+% Package specific things
+
+% TODO: Do we want to have equations just labeled with "(3.1)" or with 
+% TODO: "equation 3.1".
+%\crefname{equation}{equation}{equations} 
+%\Crefname{equation}{Equation}{Equations}
+\crefname{equation}{}{} 
+\Crefname{equation}{}{}
+
+\crefname{table}{table}{tables}
+\Crefname{table}{Table}{Tables}
+
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
+
+
 % Definitions
 \newcommand{\defn}{\ensuremath{:=}}
 \newcommand{\revdefn}{=:}
@@ -18,7 +35,7 @@
 \newcommand{\cA}{\mathcal{A}}
 
 % Function Spaces
-\newcommand*{\pols}[2][2]{\ensuremath{\cP^{#1}\left(#2\right)}}
+\newcommand*{\pols}[2][]{\ensuremath{\cP^{#1}\left(#2\right)}}
 
 % bold
 \newcommand{\ZZ}{\ensuremath{\mathbf{Z}}}
