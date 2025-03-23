@@ -164,7 +164,7 @@ in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires
 computational complexity of \(\cO(N^2)\). This does not mean that one has to 
 abandon Lagrange Interpolation at once. We may write 
 \Cref{eq:lagrangeInterpolation} in a much more stable way as
-\begin{equation}\label{eq:barycentricLagrange} % TODO: Woher???
+\begin{equation}\label{eq:barycentricLagrange}
     i(x) \defn \cI(\FF)(x) = \frac{\sum_{n=0}^N \frac{w_n}{x-z_n} f(z_n)}{\sum_{n=0}^N \frac{w_n}{x-z_n}}
 \end{equation}
 for \(w_n \in \R : n \in \indexset[0]{N}\). If the weights \(w_n\) are known, 
@@ -173,11 +173,11 @@ computing
 have a closed-form, analytic solution for many deterministic point sets used in 
 practice and are hence considered to be computable in \(\cO(1)\) time. Thus, 
 adding a new data pair \((z, f(z))\) requires total complexity of \(\cO(N)\) 
-for the recomputation of said weights. The general identity % TODO: Woher?
+for the recomputation of said weights. The general identity
  \[
-    w_n = \frac{1}{\prod_{\substack{j=0\\j \neq n}}^N x_n - x_j} = \frac{1}{\ell'(x_n)}
+    w_n = \frac{1}{\ell'(x_n)}
 \]
-always holds. To specify the above, consider the set of \emph{equidistant} 
+always holds. A survey on the \emph{barycentric} form of Lagrange interpolation can be found in \cite{Berut_2004}. To specify the above, consider the set of \emph{equidistant} 
 nodes \(\set{z_n \defn 2/n}_{n=0}^{N} \subset [-1, 1]\). Then 
 \begin{equation}\label{eq:weightsEquidistant}
     w_n = {\left(-1\right)}^n \binom{N}{n}.
