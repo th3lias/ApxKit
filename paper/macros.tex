@@ -1,0 +1,127 @@
+
+% Package specific things
+
+% TODO: Do we want to have equations just labeled with "(3.1)" or with 
+% TODO: "equation 3.1".
+%\crefname{equation}{equation}{equations} 
+%\Crefname{equation}{Equation}{Equations}
+\crefname{equation}{}{} 
+\Crefname{equation}{}{}
+
+\crefname{table}{table}{tables}
+\Crefname{table}{Table}{Tables}
+
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
+
+
+% Definitions
+\newcommand{\defn}{\ensuremath{:=}}
+\newcommand{\revdefn}{=:}
+
+% Sets
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\T}{\mathbb{T}}
+
+% Caligraphic
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\cZ}{\mathcal{Z}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cA}{\mathcal{A}}
+
+% Function Spaces
+\newcommand*{\pols}[2][]{\ensuremath{\cP^{#1}\left(#2\right)}}
+
+% bold
+\newcommand{\ZZ}{\ensuremath{\mathbf{Z}}}
+\newcommand{\FF}{\ensuremath{\mathbf{F}}}
+\newcommand{\XX}{\ensuremath{\mathbf{X}}}
+
+% Set brackets
+\newcommand{\set}[1]{\left\{#1\right\}}
+
+% Make index set from 1 to (inclusive) m:
+\newcommand*{\indexset}[2][1]{[#1:#2]}
+
+% Make a colon: (Used for defining a function from A to B)
+\newcommand*{\from}{\colon}
+
+% Probability commands: Expectation, Variance, Covariance, Bias
+\newcommand{\E}{\mathbb{E}}
+
+% Vector Norm
+\newcommand{\norm}[2][2]{\left\lVert#2\right\rVert_{#1}}
+
+% Derivatives
+\newcommand{\deriv}[2][x]{\frac{\mathrm{d}}{\mathrm{d}#1} (#2)}
+
+% Partial derivatives
+\newcommand{\pderiv}[2]{\frac{\partial #1}{\partial #2}}
+
+% Integral 
+\newcommand{\integral}[4]{\int\limits_{#1}^{#2}#3~\mathrm{d}#4}
+
+% Inner product
+\newcommand{\inner}[2]{\left\langle#1,#2\right\rangle}
+
+% Absolute value
+\newcommand{\abs}[1]{\left \vert #1 \right \vert }
+
+% If else (ternary operator)
+\newcommand{\ifelse}[3]{#1~\textrm{if}~#2~\textrm{else}~#3}
+
+% Vector-Arrow
+\newcommand{\vecarrow}[1]{\vec{#1}}
+
+% Vector 2 dimensions
+\newcommand{\vtwo}[2]{\left(\begin{array}{c}#1\\#2\end{array}\right)}
+
+% Vector 3 dimensions
+\newcommand{\vthree}[3]{\left(\begin{array}{c}#1\\#2\\#3\end{array}\right)}
+
+% Large Limit bar for defined integral borders
+\newcommand{\eval}[2]{\Biggr|_{#1}^{#2}}
+
+% Divides symbol
+\newcommand{\divides}{\vert}
+
+% Changing greek letters
+\let\uglyepsilon\epsilon % Still saving the previous one
+\let\epsilon\varepsilon
+
+\let\otherphi\phi % Still saving the previous one
+\let\phi\varphi
+
+% Images from inkscape
+
+\newcommand{\incfig}[2][\columnwidth]{%
+	\def\svgwidth{#1}
+	\import{../figures/}{#2.pdf_tex}
+}
+
+\renewcommand*{\aa}{\mathbf{a}}
+
+\renewcommand*{\Re}{\mathrm{Re}}
+\renewcommand*{\Im}{\mathrm{Im}}
+
+%Shortcuts
+\renewcommand{\d}{\mathrm{d}}
+
+% Mathematical Operators:
+\DeclareMathOperator*{\supp}{supp} % support of a vector
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\spn}{span}
+\DeclareMathOperator{\id}{id}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+% Comments
+\newcommand*{\jakob}[1]{\color{red} \textbf{\emph{#1}} \color{black}}
+\newcommand*{\elias}[1]{\color{blue} \textbf{\emph{#1}} \color{black}}
+\newcommand*{\mario}[1]{\color{green} \textbf{\emph{#1}} \color{black}}

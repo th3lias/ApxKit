@@ -1,0 +1,197 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{Berut_2004}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=33e4cc6b193a3e4ec6b54626971e6656}{%
+           family={Berrut},
+           familyi={B\bibinitperiod},
+           given={Jean-Paul},
+           giveni={J\bibinithyphendelim P\bibinitperiod}}}%
+        {{hash=e3376455eaec77b00950a1dc9ce095f5}{%
+           family={Trefethen},
+           familyi={T\bibinitperiod},
+           given={Lloyd\bibnamedelima N},
+           giveni={L\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {SIAM}%
+      }
+      \strng{namehash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{fullhash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{fullhashraw}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{bibnamehash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{authorbibnamehash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{authornamehash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{authorfullhash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{authorfullhashraw}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{SIAM review}
+      \field{number}{3}
+      \field{title}{Barycentric lagrange interpolation}
+      \field{volume}{46}
+      \field{year}{2004}
+      \field{pages}{501\bibrangedash 517}
+      \range{pages}{17}
+    \endentry
+    \entry{Dung_Temlyakov_Ullrich_2018}{book}{}{}
+      \name{author}{3}{}{%
+        {{hash=adb6c4c0ef3c38ed774b39c8718ea2ed}{%
+           family={Dũng},
+           familyi={D\bibinitperiod},
+           given={Dinh},
+           giveni={D\bibinitperiod}}}%
+        {{hash=58c02d5d860b13a9e5d821480098864a}{%
+           family={Temlyakov},
+           familyi={T\bibinitperiod},
+           given={Vladimir},
+           giveni={V\bibinitperiod}}}%
+        {{hash=b5b9727377480918670c10b7f7a44a9f}{%
+           family={Ullrich},
+           familyi={U\bibinitperiod},
+           given={Tino},
+           giveni={T\bibinitperiod}}}%
+      }
+      \name{editor}{1}{}{%
+        {{hash=99080f98f08f7ae8b204b1ccac16acd0}{%
+           family={Tikhonov},
+           familyi={T\bibinitperiod},
+           given={Sergey},
+           giveni={S\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Birkhäuser}%
+      }
+      \strng{namehash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{fullhash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{fullhashraw}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{bibnamehash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{authorbibnamehash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{authornamehash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{authorfullhash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{authorfullhashraw}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{editorbibnamehash}{99080f98f08f7ae8b204b1ccac16acd0}
+      \strng{editornamehash}{99080f98f08f7ae8b204b1ccac16acd0}
+      \strng{editorfullhash}{99080f98f08f7ae8b204b1ccac16acd0}
+      \strng{editorfullhashraw}{99080f98f08f7ae8b204b1ccac16acd0}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Hyperbolic Cross approximation}
+      \field{year}{2018}
+    \endentry
+    \entry{Krieg_2020}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=c0b6f2e1df73527d61b8b0d8b81f9424}{%
+           family={Krieg},
+           familyi={K\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod}}}%
+        {{hash=c3bf7b6ce42130c996a85cdfc707454b}{%
+           family={Ullrich},
+           familyi={U\bibinitperiod},
+           given={Mario},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{2}{%
+        {Springer Science}%
+        {Business Media LLC}%
+      }
+      \strng{namehash}{3387a83b81a130854c5670b30b917089}
+      \strng{fullhash}{3387a83b81a130854c5670b30b917089}
+      \strng{fullhashraw}{3387a83b81a130854c5670b30b917089}
+      \strng{bibnamehash}{3387a83b81a130854c5670b30b917089}
+      \strng{authorbibnamehash}{3387a83b81a130854c5670b30b917089}
+      \strng{authornamehash}{3387a83b81a130854c5670b30b917089}
+      \strng{authorfullhash}{3387a83b81a130854c5670b30b917089}
+      \strng{authorfullhashraw}{3387a83b81a130854c5670b30b917089}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{1615-3383}
+      \field{journaltitle}{Foundations of Computational Mathematics}
+      \field{month}{12}
+      \field{number}{4}
+      \field{title}{Function Values Are Enough for \(L_2\)-Approximation}
+      \field{volume}{21}
+      \field{year}{2020}
+      \field{pages}{1141\bibrangedash 1151}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1007/s10208-020-09481-w
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.1007/s10208-020-09481-w
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.1007/s10208-020-09481-w
+      \endverb
+    \endentry
+    \entry{Ullrich_2020}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=c3bf7b6ce42130c996a85cdfc707454b}{%
+           family={Ullrich},
+           familyi={U\bibinitperiod},
+           given={Mario},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier BV}%
+      }
+      \strng{namehash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{fullhash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{fullhashraw}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{bibnamehash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{authorbibnamehash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{authornamehash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{authorfullhash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{authorfullhashraw}{c3bf7b6ce42130c996a85cdfc707454b}
+      \field{sortinit}{U}
+      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0885-064X}
+      \field{journaltitle}{Journal of Complexity}
+      \field{month}{10}
+      \field{title}{On the worst-case error of least squares algorithms for \(L_2\)-approximation with high probability}
+      \field{volume}{60}
+      \field{year}{2020}
+      \field{pages}{101484}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.jco.2020.101484
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.1016/j.jco.2020.101484
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.1016/j.jco.2020.101484
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
