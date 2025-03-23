@@ -187,8 +187,7 @@ For large \(N\), \Cref{eq:weightsEquidistant} is problematic since weights
 \(\cO\left(2^N\right)\). This means that interpolation in equispaced points is 
 susceptible to the \emph{Runge phenomenon}. For this interpolation problem to 
 be well posed one should use point sets with asymptotic density \(\rho(x) 
-\propto 1/\sqrt{1-x^2}\).\newline 
-% TODO: Call this Chebyshev Density?
+\propto 1/\sqrt{1-x^2}\). This is called the \emph{Chebyshev} density.\newline 
 Many point sets admit this asymptotic density, for 
 example the Chebyshev points of the first kind are given as the roots of the 
 $n+1$-th Chebyshev polynomial and thus given by
@@ -204,7 +203,6 @@ Similarly, the Chebyshev points of the second kind are defined
     \ZZ_C^{(2)}(N) \defn
     \set{\cos \frac{n\pi}{N} \mid n \in \indexset[0]{N}}.
 \end{equation}
-% TODO: Woher?
 In either of these cases, the weights \(w_n\) admit nice closed forms as \(w_n^{(k)}: k \in \set{1,2}\) dependent on which point set is in use as
 \begin{equation}\label{eq:weightsChebyshev}
     w_n^{(1)} = {\left(-1\right)}^n \sin \frac{\left(2n+1\right) \pi}{2n+2}, \quad w_n^{(2)} = {\left(-1\right)}^n \cdot \begin{cases}
@@ -277,7 +275,6 @@ Specifically, we will use a doubling rule such that
         1 &\text{else}.
     \end{cases}
 \]
-% TODO: Is the following citation correct?
 Clearly, the usual representation of the Lagrange polynomial 
 \Cref{eq:lagrangeInterpolation} fits this framework. For the barycentric form, 
 see \cite{Berut_2004}, one obtains the \(d\)-variate interpolation
