@@ -218,7 +218,7 @@ class ExperimentExecutor:
         """
 
         w = np.random.uniform(low=0.0, high=1.0, size=dim)
-        c = np.random.uniform(low=0.0, high=2.0, size=dim)
+        c = np.random.uniform(low=0.0, high=1.0, size=dim)
 
         # normalize c
         c = c / np.sum(c) * dim * avg_c
