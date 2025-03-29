@@ -19,6 +19,46 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global/global}
+    \entry{BarthelmannHighDim_2000}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=43ada668475c4133c15f2467be6a7c9a}{%
+           family={Barthelmann},
+           familyi={B\bibinitperiod},
+           given={Volker},
+           giveni={V\bibinitperiod}}}%
+        {{hash=b921f8d0f55cbd9ffb8bc589460082f9}{%
+           family={Novak},
+           familyi={N\bibinitperiod},
+           given={Erich},
+           giveni={E\bibinitperiod}}}%
+        {{hash=c4ada04a4ca5499333195c24dfce4878}{%
+           family={Ritter},
+           familyi={R\bibinitperiod},
+           given={Klaus},
+           giveni={K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{fullhash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{fullhashraw}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{bibnamehash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{authorbibnamehash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{authornamehash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{authorfullhash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{authorfullhashraw}{ce1c3593d3d0e39e6c41170852642b37}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Advances in Computational Mathematics}
+      \field{title}{High dimensional polynomial interpolation on sparse grids}
+      \field{volume}{12}
+      \field{year}{2000}
+      \field{pages}{273\bibrangedash 288}
+      \range{pages}{16}
+    \endentry
     \entry{Berut_2004}{article}{}{}
       \name{author}{2}{}{%
         {{hash=33e4cc6b193a3e4ec6b54626971e6656}{%
@@ -54,6 +94,29 @@
       \field{year}{2004}
       \field{pages}{501\bibrangedash 517}
       \range{pages}{17}
+    \endentry
+    \entry{BurkardtCounting_2014}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=c63195a3096a750af40e6f1b75e2b1c4}{%
+           family={Burkardt},
+           familyi={B\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{fullhash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{fullhashraw}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{bibnamehash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{authorbibnamehash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{authornamehash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{authorfullhash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{authorfullhashraw}{c63195a3096a750af40e6f1b75e2b1c4}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Counting Abscissas in Sparse Grids}
+      \field{year}{2014}
     \endentry
     \entry{Dung_Temlyakov_Ullrich_2018}{book}{}{}
       \name{author}{3}{}{%
@@ -102,6 +165,63 @@
       \field{title}{Hyperbolic Cross approximation}
       \field{year}{2018}
     \endentry
+    \entry{GenzPackage_1987}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=deb53ea799914f6f6fa4ab58a89c12ee}{%
+           family={Genz},
+           familyi={G\bibinitperiod},
+           given={Alan},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{fullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{fullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{bibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorbibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authornamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorfullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorfullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \field{extraname}{1}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Numerical integration: Recent developments, software and applications}
+      \field{title}{A package for testing multiple integration subroutines}
+      \field{year}{1987}
+      \field{pages}{337\bibrangedash 340}
+      \range{pages}{4}
+    \endentry
+    \entry{GenzTesting_1984}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{hash=deb53ea799914f6f6fa4ab58a89c12ee}{%
+           family={Genz},
+           familyi={G\bibinitperiod},
+           given={Alan},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{fullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{fullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{bibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorbibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authornamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorfullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorfullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \field{extraname}{2}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proc. of international conference on Tools, methods and languages for scientific and engineering computation}
+      \field{title}{Testing multidimensional integration routines}
+      \field{year}{1984}
+      \field{pages}{81\bibrangedash 94}
+      \range{pages}{14}
+    \endentry
     \entry{Krieg_2020}{article}{}{}
       \name{author}{2}{}{%
         {{hash=c0b6f2e1df73527d61b8b0d8b81f9424}{%
@@ -149,6 +269,34 @@
       \verb{url}
       \verb http://dx.doi.org/10.1007/s10208-020-09481-w
       \endverb
+    \endentry
+    \entry{Simulationlib_2013}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=9d0b2e066d115b60f8338d117d33e4a6}{%
+           family={Surjanovic},
+           familyi={S\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=166647801c94dc0c76b859cd8b4c8a2a}{%
+           family={Bingham},
+           familyi={B\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{fullhash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{fullhashraw}{d5f5953c94336d105225c13157ce8c25}
+      \strng{bibnamehash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{authorbibnamehash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{authornamehash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{authorfullhash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{authorfullhashraw}{d5f5953c94336d105225c13157ce8c25}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{Retrieved March 29, 2025, from \url{https://www.sfu.ca/~ssurjano/integration.html}}
+      \field{title}{Virtual Library of Simulation Experiments: Test Functions and Datasets}
     \endentry
     \entry{Ullrich_2020}{article}{}{}
       \name{author}{1}{}{%
