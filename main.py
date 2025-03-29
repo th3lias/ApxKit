@@ -26,8 +26,6 @@ def main_method(folder_name: Union[str, None] = None):
 
     seed = 42
 
-
-
     average_c = 1.0
     multiplier_fun = lambda x: 2 * x
     n_fun_parallel = 10
