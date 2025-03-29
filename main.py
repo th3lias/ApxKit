@@ -16,8 +16,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [3]
-    scale_list = [1, 2, 3]
+    dim_list = [5]
+    scale_list = [1, 2, 3, 4, 5]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -25,6 +25,9 @@ def main_method(folder_name: Union[str, None] = None):
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
     seed = 42
+
+
+
     average_c = 1.0
     multiplier_fun = lambda x: 2 * x
     n_fun_parallel = 10
