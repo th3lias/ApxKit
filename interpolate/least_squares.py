@@ -126,12 +126,19 @@ class LeastSquaresInterpolator(Interpolator):
         self.coeff = coeff
 
     def _get_weights_for_weighted_ls(self):
+        """
+        Calculates the weights for the weighted least squares. Since the function expects points in [-1,1],
+        we shift them in the argument if we have lower bound 0 and upper bound 1
+        """
 
-        # weighted least squares
         if self.grid.rule == RandomGridRule.CHEBYSHEV:
             weight = np.empty(shape=(self.grid.get_num_points()))
-            for i, row in enumerate(self.grid.grid):
-                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(row)))
+            for i, point in enumerate(self.grid.grid):
+                if self.grid.lower_bound == 0.0 and self.grid.upper_bound == 1.0:
+                    point = 2 * point - 1
+                elif self.grid.lower_bound != -1.0 or self.grid.upper_bound != 1.0:
+                    raise ValueError("The Chebyshev rule only supports the range [-1, 1] or [0, 1]")
+                weight[i] = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(point)))
 
         elif self.grid.rule == RandomGridRule.UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)

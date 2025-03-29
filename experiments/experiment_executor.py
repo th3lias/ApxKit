@@ -41,7 +41,6 @@ class ExperimentExecutor:
         self.seed = seed
         self.least_squares_basis_type = ls_basis_type
         self.tasmanian_grid_type = tasmanian_grid_type
-        np.random.seed(seed)
 
         self.header_keys = ['dim', 'scale', 'method', 'w', 'c', 'sum_c', 'grid_type', 'basis_type', 'method_type',
                             'n_samples', 'seed', 'f_name', 'ell_2_error', 'ell_infty_error', 'datetime', 'needed_time']
@@ -61,6 +60,9 @@ class ExperimentExecutor:
         """
             Execute a series of experiments with the given function types.
         """
+
+        np.random.seed(self.seed)
+
         print(
             f"Starting dimension {self.dim_list}, scale {self.scale_list} experiments with cpu {platform.processor()} and "
             f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
@@ -109,7 +111,7 @@ class ExperimentExecutor:
                     chebyshev_grid = chebyshev_grid_provider.increase_scale(chebyshev_grid, 1)
 
                 # Test Grid
-                self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0).generate(scale)
+                self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0, seed=self.seed).generate(scale)
                 n_points = self.test_grid.get_num_points()
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
 
@@ -216,6 +218,8 @@ class ExperimentExecutor:
         """
             Get c and w for the functions.
         """
+
+
 
         w = np.random.uniform(low=0.0, high=1.0, size=dim)
         c = np.random.uniform(low=0.0, high=1.0, size=dim)

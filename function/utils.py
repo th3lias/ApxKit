@@ -63,7 +63,7 @@ def morokoff_calfisch_2(x, d, c, w):
     """
         Morokoff Calfisch function.
     """
-    return np.multiply((1 / (d - 1 / 2) ** d), np.prod(d - np.multiply(c, x) + w, axis=1))
+    return np.multiply((1 / (d - 1 / 2) ** d), np.prod(d - np.multiply(c, x) + w, axis=1)) # TODO: Why do we have +w and not -w?
 
 
 def roos_arnold(x, d, c, w):
