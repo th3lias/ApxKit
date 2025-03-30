@@ -24,7 +24,7 @@ def generate_table(results_csv_path: str, output_folder: str):
                 \caption{Test\label{tab:dim1_results}}
         \end{table}
 
-        For that, the following packages are needed
+        For that, (maybe not all of) the following packages are needed
         % Packages for the tabulars
         \usepackage{booktabs}
         \usepackage{array}

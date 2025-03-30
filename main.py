@@ -54,11 +54,12 @@ def main_method(folder_name: Union[str, None] = None):
         for dim in dim_list:
             for fun_type in function_types:
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
-                            same_axis_both_plots=True)
+                            same_axis_both_plots=True, latex=True)
                 pbar.update(1)
 
     # Plot distribution
-    plot_all_errors(file_name=ex.results_path, save=True)
+    plot_all_errors(file_name=ex.results_path, save=True, latex=True)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')
