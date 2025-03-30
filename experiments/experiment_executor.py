@@ -111,8 +111,9 @@ class ExperimentExecutor:
                     chebyshev_grid = chebyshev_grid_provider.increase_scale(chebyshev_grid, 1)
 
                 # Test Grid
-                test_grid_seed = self.seed + 42
-                assert not self.seed == test_grid_seed, "The seed for the test grid should be different from the training grid, otherwise uniform least squares is trained and tested on the same data"
+                test_grid_seed = self.seed + 42 if self.seed is not None else None
+                if test_grid_seed is not None and self.seed is not None:
+                    assert not self.seed == test_grid_seed, "The seed for the test grid should be different from the training grid, otherwise uniform least squares is trained and tested on the same data"
                 self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                     seed=test_grid_seed).generate(scale)
                 n_points = self.test_grid.get_num_points()
