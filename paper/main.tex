@@ -24,6 +24,13 @@ isbn=false, natbib=true]{biblatex} % set bibliography = bibtex in TexStudio
 %\usepackage{multirow}
 %\usepackage{makecell}
 
+% For figures
+\usepackage{graphicx}
+
+% Floating for positioning environments
+\usepackage{float}
+
+
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{lem}[thm]{Lemma}
@@ -560,20 +567,34 @@ bottlenecks based on the exponential increase in the used points, see also
 grid. Both Least Squares algorithms enjoyed twice the amount of points, 
 compared to the Smolyak algorithm, sampled in their respective distributions.
 
+% TODO:
+\begin{itemize}
+	\item Least Squares Implementation: \cite{HarrisNumpy_2020} using the 
+	\emph{lstsq}-method
+	\item Smolyak Implementation: \cite{TasmanianLibrary_2013} or 
+	\cite{JuddSmolyak_2014} with \cite{Coleman_SmoylakGithub_2013}
+\end{itemize}
+
 For assessing the quality of the interpolants, we generated $n$ random points 
 $x_1, \ldots, x_n$ distributed uniformly in $[0,1]^d$, where $n$ is the number 
-of points in the 
-Sparse Grid. Afterwards we compute
+of points in the Sparse Grid. Afterwards we compute the error quantities
 % TODO: Maybe use other notation of algorithms here to have it consistent
+	% TODO: For example least squares should now also be called "A_j(q,d)..."
 \begin{align*} 
-	e_{\ell_2}(q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
+	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
 	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
-	e_{\ell_\infty}(q,f) &\defn \max_{i\in\indexset{n}} 
+	e_{\ell_\infty}(A_j,q,f) &\defn \max_{i\in\indexset{n}} 
 	\abs{f(x_i)-\left(A_j(q,d)(f)\right)(x_i)}
 \end{align*}
 for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform}, 
 \text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
-functions.
+functions. Those quantities are now depicted in 
+\Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
+Additionally, \Cref{tab:dim1_results} summarizes in combination with 
+the different distributions for each function class 
+\Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
+ the performance of each algorithm based on multiple realizations. 
+% TODO: Describe the Tabular in more detail and also the distribution images.
 
 % TODO: Also mention the distribution of the errors.
 The results are also depicted in the following tables and figures.
@@ -595,16 +616,58 @@ tables. Tell them, what scale means (Probably need to adapt the notation of the
 images, i.e. use $q$ and not scale). Maybe adapt notation to $q$ or whichever 
 character we used before for the description of Smolyak.}
 
+% TODO: The following is just a test, to see whether the imports works
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/realization1_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:Osc_1_dim5_scale4}
+\end{figure}
 
-% TODO: This is just a test, to see whether the import works
-\begin{table}[htbp]
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/realization2_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:Osc_2_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/realization3_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:Osc_3_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:morokoff_calfisch1_distribution_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:morokoff_calfisch2_distribution_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H] % TODO: Still with boxplot -> Maybe change
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/distro_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:zhou_distribution_dim5_scale4}
+\end{figure}
+
+
+\begin{table}[H]
 	\centering
 	\begin{adjustbox}{width=\linewidth}
 		\input{tables/dim2}
 	\end{adjustbox}
-	\vspace{0.1cm}
-	\caption{Test\label{tab:dim1_results}}
+	\caption{Caption}
 \end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}\label{sec:conclusion}
