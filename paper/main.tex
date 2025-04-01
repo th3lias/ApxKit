@@ -348,7 +348,9 @@ with \(\cI^{(0)} = 0\).
 % TODO: Bad notation, as we are using $^\star$ for the optimal solution and
 % TODO: We are using $^\star$ for the functionals
 
-Contrary to the construction of exactly interpolating approximants in the case of Smolyak's algorithm, least squares is a conceptually simpler algorithm. We are given the overdetermined system \[
+Contrary to the construction of exactly interpolating approximants in the case 
+of Smolyak's algorithm, Least Squares is a conceptually simpler algorithm. We 
+are given the overdetermined system \[
     Vz = y
 \]
 where \(V \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(z \in \C^{m}\) with the smallest error
@@ -388,7 +390,11 @@ In this section we introduce a formal setting to the former considerations. That
 \]
 is a bounded, linear functional on \(H\).
 %TODO: Mention >>Weighted<< Least Squares?
-The general formulation of least squares allows for a broad class of recovery problems. In our specific case, the function recovery of real--valued functions on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a \(k\)--dimensional subspace \(V_k \defn \spn \set{b_1, \dots, b_k}\), we consider the specific form of least squares, given by\[
+The general formulation of Least Squares allows for a broad class of recovery 
+problems. In our specific case, the function recovery of real--valued functions 
+on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a 
+\(k\)--dimensional subspace \(V_k \defn \spn \set{b_1, \dots, b_k}\), we 
+consider the specific form of Least Squares, given by\[
     A_{n, k}(f) \defn \argmin_{g \in V_k} \sum_{i=1}^n \frac{\abs{g(x_i) - f(x_i)}^2}{\varrho_k(x_i)}
 \]
 where \[
@@ -543,7 +549,7 @@ each entry of $c$ and $w$ from a uniform distribution $\mathcal{U}(0,1)$ and
 rescale $c$ afterwards such that $\norm[1]{c}=d$.
 
 \begin{remark}
-	In \cite{BarthelmannHighDim_2000}, experiments were made for the Genz 
+	In \cite{BarthelmannHighDim_2000}, experiments were performed for the Genz 
 	families, defined on $[-1,1]^d$. We use $[0,1]^d$ as this ensures that also 
 	the other families are well-defined for any sampled $c,w\in\R^d$.
 \end{remark}
@@ -606,7 +612,7 @@ The results are also depicted in the following tables and figures.
 \newpage
 
 \jakob{Reference to the formulas 
-above, i.e. which formula is least squares? Section 5?}
+above, i.e. which formula is Least Squares? Section 5?}
 
 \jakob{Write something about the setting in which we tested the functions. 
 Maybe this can and should be combined with all the previous stuff. I.e. talk 
