@@ -24,7 +24,7 @@ def generate_table(results_csv_path: str, output_folder: str):
                 \caption{Test\label{tab:dim1_results}}
         \end{table}
 
-        For that, (maybe not all of) the following packages are needed
+        For that all the following packages are needed
         % Packages for the tabulars
         \usepackage{booktabs}
         \usepackage{array}
@@ -68,7 +68,7 @@ def generate_table(results_csv_path: str, output_folder: str):
         right_text = ("|" + ("r" * no_error_combinations)) * max_scale
 
         output[dim_name] = f"% Created with Python on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}" + "\n"
-        output[dim_name] += f"% {results_csv_path}, dim={dim_name}" + "\n"
+        output[dim_name] += f"% {results_csv_path}, dim={dim_name}, min. scale={min_scale}, max. scale={max_scale}" + "\n"
         output[dim_name] += r"\begin{tabular}{ll" + right_text + r"|}" + "\n"
 
         # add header
@@ -176,7 +176,7 @@ def generate_table(results_csv_path: str, output_folder: str):
 
 
 if __name__ == '__main__':
-    input_path = os.path.join("..", "results", "23_11_2024_14_36_53", "results_numerical_experiments.csv")
+    input_path = os.path.join("..", "results", "27_11_2024_19_55_24", "results_numerical_experiments.csv")
     output_folder = os.path.join("..", "paper", "tables")
 
     generate_table(input_path, output_folder)
