@@ -6,16 +6,6 @@
 \documentclass[12pt, oneside]{amsart}
 
 \usepackage{amssymb}
-%\usepackage[%
-%	backend=biber,
-%	style=numeric-comp, % authoryear
-%	bibstyle=numeric, % authoryear
-%	citestyle=numeric, % authoryear
-%	% maxcitenames=2,
-%	sorting=none, %nty
-%	backref=true,
-%	backrefstyle=none
-%]{biblatex}
 \usepackage[style=numeric-comp, backend=biber, sorting=nty, doi=false, 
 isbn=false, natbib=true]{biblatex} % set bibliography = bibtex in TexStudio
 \addbibresource{bibliography.bib}
@@ -23,8 +13,23 @@ isbn=false, natbib=true]{biblatex} % set bibliography = bibtex in TexStudio
 
 \usepackage{mathtools}
 \usepackage{xcolor}
+\usepackage{url} % Makes urls nicer
 \usepackage[breaklinks=true]{hyperref}
 \usepackage{cleveref}
+
+% For tabular
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{makecell}
+
+% For figures
+\usepackage{graphicx}
+
+% Floating for positioning environments
+\usepackage{float}
+
 
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prop}[thm]{Proposition}
@@ -43,9 +48,9 @@ isbn=false, natbib=true]{biblatex} % set bibliography = bibtex in TexStudio
 
 % %%%%%%%%%%%%% %
 % General TODOs %
-% TODO: Cite Barthelmann, Ritter, Novak
-% TODO: 
-
+% TODO: Cite Barthelmann, Ritter, Novak in the beginning
+% TODO: Bold notation for vectors???
+% TODO: Check for present tense (this should be the goal)?!´
 
 \begin{document}
 \title{Least Squares and Smolyak's Algorithm} % TODO: Add small title in 
@@ -212,7 +217,7 @@ In either of these cases, the weights \(w_n\) admit nice closed forms as \(w_n^{
 \end{equation}
 
 \subsection*{Interpolation in \(d\) dimensions} In principle, one may just 
-\emph{extend} one dimensional interpolation rules to \(d\) dimensions by 
+\emph{extend} one dimensional interpolation rules to dimension \(d\) by 
 forming the tensor product of all interpolation rules. To specify, take the one 
 dimensional algorithm
 % TODO: Notation passt nicht ganz zu vorher zusammen. 1d Lagrange hatte Punkte 
@@ -343,7 +348,9 @@ with \(\cI^{(0)} = 0\).
 % TODO: Bad notation, as we are using $^\star$ for the optimal solution and
 % TODO: We are using $^\star$ for the functionals
 
-Contrary to the construction of exactly interpolating approximants in the case of Smolyak's algorithm, least squares is a conceptually simpler algorithm. We are given the overdetermined system \[
+Contrary to the construction of exactly interpolating approximants in the case 
+of Smolyak's algorithm, Least Squares is a conceptually simpler algorithm. We 
+are given the overdetermined system \[
     Vz = y
 \]
 where \(V \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(z \in \C^{m}\) with the smallest error
@@ -383,7 +390,11 @@ In this section we introduce a formal setting to the former considerations. That
 \]
 is a bounded, linear functional on \(H\).
 %TODO: Mention >>Weighted<< Least Squares?
-The general formulation of least squares allows for a broad class of recovery problems. In our specific case, the function recovery of real--valued functions on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a \(k\)--dimensional subspace \(V_k \defn \spn \set{b_1, \dots, b_k}\), we consider the specific form of least squares, given by\[
+The general formulation of Least Squares allows for a broad class of recovery 
+problems. In our specific case, the function recovery of real--valued functions 
+on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a 
+\(k\)--dimensional subspace \(V_k \defn \spn \set{b_1, \dots, b_k}\), we 
+consider the specific form of Least Squares, given by\[
     A_{n, k}(f) \defn \argmin_{g \in V_k} \sum_{i=1}^n \frac{\abs{g(x_i) - f(x_i)}^2}{\varrho_k(x_i)}
 \]
 where \[
@@ -464,20 +475,245 @@ constants in \Cref{eq:conclusio}.
 \section{Experimental Findings}\label{sec:experimentalFindings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% TODO: Add what computer and software we used etc. Also how much RAM was used
+% TODO: And also, how long it took.
+% TODO: Mention, that we use the chebyshev polynomials here as our basis!
+% TODO: Mention, that we used a seed for deterministic randomness
+% TODO: Least Squares groß oder klein?
+% TODO: Sparse Grid groß oder klein?
+% TODO: Mention Implementation details (Tasmanian) and self-implementation
+% TODO: Mention lstsq as a Lapack method, because otherwise performance is bad
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For assessing the performance of the Least Squares algorithms in comparison to 
+the Sparse Grid alternative, we use the following $12$ families of test 
+functions from \cite{Simulationlib_2013}, each defined of the $d$-dimensional 
+unit-cube $[0,1]^d$.
+% TODO: Should we use a slightly different notation with inner products etc. ?
+% TODO: Or should we stick to the original notation?
+% TODO: Mention, that c is difficulty and w is a shift?
+\begin{align*}
+	\begin{array}{l l}
+		\text{1. Continuous:} & f_1(x) = \exp\left( - 
+		\displaystyle\sum_{i=1}^{d} c_i \abs{x_i - w_i} \right) \\[12pt]
+		\text{2. Corner Peak:} & f_2(x) = \left( 1 + 
+		\displaystyle\sum_{i=1}^{d} c_i x_i 
+		\right)^{-(d+1)} \\[12pt]
+		\text{3. Discontinuous:} & f_3(x) = 
+		\begin{cases}
+			0, & \text{if } x_1 > w_1 \text{ or } x_2 > w_2, \\
+			\exp\left( \displaystyle\sum_{i=1}^{d} c_i x_i \right), & 
+			\text{otherwise}
+		\end{cases} \\[12pt]
+		\text{4. Gaussian:} & f_4(x) = \exp\left( - 
+		\displaystyle\sum_{i=1}^{d} c_i^2 (x_i 
+		- w_i)^2 \right) \\[12pt]
+		\text{5. Oscillatory:} & f_5(x) = \cos\left( 2\pi w_1 + 
+		\displaystyle\sum_{i=1}^{d} c_i x_i \right) \\[12pt]
+		\text{6. Product Peak:} & f_6(x) = \displaystyle\prod_{i=1}^{d} 
+		\left( c_i^{-2} + (x_i - w_i)^2 \right)^{-1} \\[12pt]
+		\text{7. G-Function:} & f_7(x) = \displaystyle\prod_{i=1}^{d} 
+		\frac{\abs{4x_i-2-w_i}+c_i}{1+c_i}
+				\\[12pt]
+		\text{8. Morokoff \& Calfisch 1:} & f_8(x) = 
+		\displaystyle\left(1+1/d\right)^d  
+		\prod_{i=1}^{d}\left(c_ix_i+w_i\right)^{1/d}
+		\\[12pt]
+		\text{9. Morokoff \& Calfisch 2:} & \displaystyle f_9(x) = 
+		\frac{1}{\left(d-0.5\right)^d} 
+		\prod_{i=1}^{d}\left(d-c_ix_i+w_i\right)
+		\\[12pt]
+		\text{10. Roos \& Arnold:} & f_{10}(x) = \displaystyle \prod_{i=1}^{d} 
+		\abs{4c_ix_i-2-w_i}
+		\\[12pt]
+		\text{11. Bratley:} & f_{11}(x) = \displaystyle 
+		\sum_{d=1}^{d}(-1)^{i}\prod_{j=1}^{d} \left(c_ix_i-w_i\right)
+		\\[12pt]
+		\text{12. Zhou:} & f_{12}(x) = \displaystyle \frac{10^d}{2} 
+		\left[\phi\left(x-\frac13\right)+\phi\left(x-\frac23\right)\right] 
+		\\[12pt]
+		& \phi(x) = \displaystyle \frac{10}{\left(2\pi\right)^{d/2}} \exp 
+		\left(-\frac{1}{2}\norm[2]{c\left(x-w\right)}^2\right)
+	\end{array}
+\end{align*}
+Note that the first $6$ function classes are also known as the \emph{Genz 
+Integrand Families} and were introduced by Genz in \cite{GenzTesting_1984, 
+GenzPackage_1987}. In comparison to the original definition in 
+\cite{Simulationlib_2013}, we also introduce the parameters $c$ and $w$ in 
+each class by making something like an affine-linear transformation of the 
+input $x$. 
+This allows for testing multiple realizations of these functions. 
+
+Generating a function from a specific family is done 
+by sampling the random vectors $c, w \in\R^d$. In our experiments, we sample 
+each entry of $c$ and $w$ from a uniform distribution $\mathcal{U}(0,1)$ and 
+rescale $c$ afterwards such that $\norm[1]{c}=d$.
+
+\begin{remark}
+	In \cite{BarthelmannHighDim_2000}, experiments were performed for the Genz 
+	families, defined on $[-1,1]^d$. We use $[0,1]^d$ as this ensures that also 
+	the other families are well-defined for any sampled $c,w\in\R^d$.
+\end{remark}
+
+In the following experiments, we compare the Smolyak algorithm with two 
+realizations of the \emph{weighted} Least Squares algorithm. In the first 
+realization we use random points that are uniformly distributed in $[0,1]^d$, 
+and we don't reweight those point. In the second realization we sample the 
+points from $(1-x^2)^{1/2}$, which is often referred as the 
+\emph{Chebyshev Density} or \emph{Chebyshev Weight} and we use the value of 
+this exact density at each point as the basis for the weight calculation. 
+All 3 algorithms have the same basis functions, which are established from the 
+application of the Smolyak algorithm. 
+% TODO: Make a more detailed description of the Smolyak algorithm.
+All Algorithms are tested for all families of functions with multiple $>10$ 
+realizations and for all dimensions $d\in \indexset[2]{10}$. In each dimension, 
+the fineness scale $q\in\N$ was varied. Note that $q>d$. Depending on $d$ 
+smaller or larger values for $q$ were possible because of computational 
+bottlenecks based on the exponential increase in the used points, see also 
+\cite{BurkardtCounting_2014} for a overview on the number of points in a sparse 
+grid. Both Least Squares algorithms enjoyed twice the amount of points, 
+compared to the Smolyak algorithm, sampled in their respective distributions.
+
+% TODO:
+\begin{itemize}
+	\item Least Squares Implementation: \cite{HarrisNumpy_2020} using the 
+	\emph{lstsq}-method
+	\item Smolyak Implementation: \cite{TasmanianLibrary_2013} or 
+	\cite{JuddSmolyak_2014} with \cite{Coleman_SmoylakGithub_2013}
+\end{itemize}
+
+For assessing the quality of the interpolants, we generated $n$ random points 
+$x_1, \ldots, x_n$ distributed uniformly in $[0,1]^d$, where $n$ is the number 
+of points in the Sparse Grid. Afterwards we compute the error quantities
+% TODO: Maybe use other notation of algorithms here to have it consistent
+	% TODO: For example least squares should now also be called "A_j(q,d)..."
+\begin{align*} 
+	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
+	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
+	e_{\ell_\infty}(A_j,q,f) &\defn \max_{i\in\indexset{n}} 
+	\abs{f(x_i)-\left(A_j(q,d)(f)\right)(x_i)}
+\end{align*}
+for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform}, 
+\text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
+functions. Those quantities are now depicted in 
+\Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
+Additionally, \Cref{tab:dim1_results} summarizes in combination with 
+the different distributions for each function class 
+\Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
+ the performance of each algorithm based on multiple realizations. 
+% TODO: Describe the Tabular in more detail and also the distribution images.
+
+% TODO: Also mention the distribution of the errors.
+The results are also depicted in the following tables and figures.
+
+
+% TODO: Make plots and tables here
 
 
 \newpage
 
-\nocite{*}
+\jakob{Reference to the formulas 
+above, i.e. which formula is Least Squares? Section 5?}
+
+\jakob{Write something about the setting in which we tested the functions. 
+Maybe this can and should be combined with all the previous stuff. I.e. talk 
+about the error metrics. Tell them which formulas were used for each algorithm. 
+Some implementation details. Then refer to the figures and also to important 
+tables. Tell them, what scale means (Probably need to adapt the notation of the 
+images, i.e. use $q$ and not scale). Maybe adapt notation to $q$ or whichever 
+character we used before for the description of Smolyak.}
+
+% TODO: The following is just a test, to see whether the imports works
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/realization1_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:Osc_1_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/realization2_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:Osc_2_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/realization3_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:Osc_3_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:morokoff_calfisch1_distribution_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:morokoff_calfisch2_distribution_dim5_scale4}
+\end{figure}
+
+\begin{figure}[H] % TODO: Still with boxplot -> Maybe change
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/distro_dim5_scale4.pdf}
+	\caption{Caption}
+	\label{fig:zhou_distribution_dim5_scale4}
+\end{figure}
+
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim8}
+	\end{adjustbox}
+	\caption{Caption}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}\label{sec:conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% TODO: Write that down
+Ideas
+\begin{itemize}
+	\item Same (or usually not a worse---mostly better) order of decay
+	\item $2n$ points seem to suffice compared to the number of the paper
+	\item In some cases, Least Squares outperforms Smolyak a lot
+	\item Tasmainian: Sometimes bad performance: Bad implementation or maybe 
+	sometimes Smolyak really bad (Mario: Approxing the $0$-Function). People 
+	might not be aware of the fact that the approximation quality might be 
+	extra-poor
+	\item 
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% TODO: Maybe thank the Algebra Institute and RICAM for borrowing their cluster.
+% TODO: Maybe thank other mathematicians for some comments and discussions 
+	% TODO: (Mario has talked with some people I think)
+
+% TODO: Richard Küng and Department for Functional Analysis for job?
+% TODO: 
+
+
+\newpage
+
+%\nocite{*}
 \printbibliography
 
 \bigskip
 
 \noindent
+% TODO: Mention the institue, and if yes, which one?
 \address{J.E., Johannes Kepler University Linz; 
 \texttt{jakob.eggl@jku.at}; \\
 	E.M., Johannes Kepler University Linz; 

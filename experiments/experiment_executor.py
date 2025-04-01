@@ -41,7 +41,6 @@ class ExperimentExecutor:
         self.seed = seed
         self.least_squares_basis_type = ls_basis_type
         self.tasmanian_grid_type = tasmanian_grid_type
-        np.random.seed(seed)
 
         self.header_keys = ['dim', 'scale', 'method', 'w', 'c', 'sum_c', 'grid_type', 'basis_type', 'method_type',
                             'n_samples', 'seed', 'f_name', 'ell_2_error', 'ell_infty_error', 'datetime', 'needed_time']
@@ -61,6 +60,9 @@ class ExperimentExecutor:
         """
             Execute a series of experiments with the given function types.
         """
+
+        np.random.seed(self.seed)
+
         print(
             f"Starting dimension {self.dim_list}, scale {self.scale_list} experiments with cpu {platform.processor()} and "
             f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
@@ -109,7 +111,11 @@ class ExperimentExecutor:
                     chebyshev_grid = chebyshev_grid_provider.increase_scale(chebyshev_grid, 1)
 
                 # Test Grid
-                self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0).generate(scale)
+                test_grid_seed = self.seed + 42 if self.seed is not None else None
+                if test_grid_seed is not None and self.seed is not None:
+                    assert not self.seed == test_grid_seed, "The seed for the test grid should be different from the training grid, otherwise uniform least squares is trained and tested on the same data"
+                self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
+                                                    seed=test_grid_seed).generate(scale)
                 n_points = self.test_grid.get_num_points()
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
 
@@ -162,8 +168,8 @@ class ExperimentExecutor:
         cur_datetime = datetime.datetime.now()
 
         self._save_stats(dim=dim, scale=scale, method="Smolyak", grid_type="CHEBYSHEV", basis_type="CHEBYSHEV",
-            multiplier_fun=multiplier_fun, seed=self.seed, ell_2_errors=smolyak_ell_2,
-            ell_infty_errors=smolyak_ell_infty, date_time=cur_datetime, needed_time=round(needed_time, 3))
+                         multiplier_fun=multiplier_fun, seed=self.seed, ell_2_errors=smolyak_ell_2,
+                         ell_infty_errors=smolyak_ell_infty, date_time=cur_datetime, needed_time=round(needed_time, 3))
 
     def _run_experiment_ls(self, dim, scale, grid, grid_type: str, multiplier_fun: Callable):
         start_time = time.time()
@@ -177,9 +183,9 @@ class ExperimentExecutor:
         needed_time = end_time - start_time
         cur_datetime = datetime.datetime.now()
         self._save_stats(dim=dim, scale=scale, method="Least_Squares", grid_type=grid_type,
-            basis_type=self.least_squares_basis_type.name, multiplier_fun=multiplier_fun, seed=self.seed,
-            ell_2_errors=ls_ell_2, ell_infty_errors=ls_ell_infty, date_time=cur_datetime,
-            needed_time=round(needed_time, 3))
+                         basis_type=self.least_squares_basis_type.name, multiplier_fun=multiplier_fun, seed=self.seed,
+                         ell_2_errors=ls_ell_2, ell_infty_errors=ls_ell_infty, date_time=cur_datetime,
+                         needed_time=round(needed_time, 3))
 
     def _get_functions(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
                        dim: int, avg_c: float) -> (List[Function], List[np.ndarray], List[np.ndarray], List[str]):
@@ -218,7 +224,7 @@ class ExperimentExecutor:
         """
 
         w = np.random.uniform(low=0.0, high=1.0, size=dim)
-        c = np.random.uniform(low=0.0, high=2.0, size=dim)
+        c = np.random.uniform(low=0.0, high=1.0, size=dim)
 
         # normalize c
         c = c / np.sum(c) * dim * avg_c

@@ -7,13 +7,14 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 from utils.utils import get_next_filename
 
 
 def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[int], multiplier_fun: Callable,
                 folder_name: str, path: Union[str, None] = None, save: bool = False,
-                save_path: Union[str, None] = None, same_axis_both_plots: bool = True):
+                save_path: Union[str, None] = None, same_axis_both_plots: bool = True, latex: bool = False):
     """
     Creates plots of each different c-value for a given function type, given the path of the results-csv file.
     The ell2 and the max error are plotted.
@@ -28,10 +29,11 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     :param save: Specifies whether the images should be saved. If False, the images are shown.
     :param save_path: Path where the images should be saved. If None, a default path will be used.
     :param same_axis_both_plots: Determines whether the same y-axis should be used for both error-plots
-    Only used if save is True
+    :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
+
     """
 
-        # Ensure consistent colors and markers for each method
+    # Ensure consistent colors and markers for each method
 
     method_styles = {
         'Smolyak': {'color': 'blue', 'marker': 'o', 'label': 'Smolyak'},
@@ -66,7 +68,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     least_squares_data_chebyshev_weight = least_squares_data_chebyshev_weight.sort_values(by='scale')
     least_squares_data_uniform = least_squares_data_uniform.sort_values(by='scale')
 
-    titles = ['Max (Abs) Error', 'L2 Error']
+    # titles = ['Max (Abs) Error', 'L2 Error']
+    titles = ['$e_{\ell_\infty}(A_j,q,f)$', '$e_{\ell_2}(A_j,q,f)$']
     errors = ['ell_infty_error', 'ell_2_error']
 
     global_min_uniform, global_max_uniform = None, None
@@ -146,9 +149,35 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 filename = get_next_filename(save_path)
                 img_path = os.path.join(save_path, filename)
                 plt.savefig(img_path)
-                plt.close()
+                if latex:
+                    plt.savefig(img_path.replace(".png", ".pdf"), format="pdf")
             else:
                 plt.show()
-                plt.close()
+            plt.close()
     else:
         print("Chebyshev data is empty, this is deprecated")
+
+
+if __name__ == '__main__':
+
+    seed = 42
+
+    results_path = None
+    dim_list = [5]
+    scale_list = [1, 2, 3, 4]
+    multiplier_fun = lambda x: 2 * x
+    function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
+                      FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
+                      FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
+                      FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
+
+    folder_name = os.path.join("..", "results", "23_11_2024_15_13_23")
+
+    # save all images in results folder
+    total_iterations = len(dim_list) * len(function_types)
+    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+        for dim in dim_list:
+            for fun_type in function_types:
+                plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
+                            same_axis_both_plots=True, latex=True)
+                pbar.update(1)

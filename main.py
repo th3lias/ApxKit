@@ -16,8 +16,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [3]
-    scale_list = [1, 2, 3]
+    dim_list = [4]
+    scale_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -25,9 +25,10 @@ def main_method(folder_name: Union[str, None] = None):
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
     seed = 42
+
     average_c = 1.0
     multiplier_fun = lambda x: 2 * x
-    n_fun_parallel = 10
+    n_fun_parallel = 25
 
     smolyak_method_type = InterpolationMethod.TASMANIAN
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
@@ -53,11 +54,12 @@ def main_method(folder_name: Union[str, None] = None):
         for dim in dim_list:
             for fun_type in function_types:
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
-                            same_axis_both_plots=True)
+                            same_axis_both_plots=True, latex=True)
                 pbar.update(1)
 
     # Plot distribution
-    plot_all_errors(file_name=ex.results_path, save=True)
+    plot_all_errors(file_name=ex.results_path, save=True, latex=True)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')
