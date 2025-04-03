@@ -122,8 +122,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 axs[i].set_xticks(scales)
                 axs[i].set_xticklabels(xticklabels)
                 axs[i].set_title(titles[i])
-                axs[i].set_xlabel('Scale\npoints Smolyak\npoints Least Squares')
-                axs[i].set_ylabel('Error')
+                axs[i].set_xlabel('scale ($q-d$)\npoints Smolyak\npoints Least Squares')
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
@@ -139,6 +138,9 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                         global_min_l2 = current_min_l2
                     if global_max_l2 is None or current_max_l2 > global_max_l2:
                         global_max_l2 = current_max_l2
+
+            axs[0].set_ylabel('estimated uniform error')
+            axs[1].set_ylabel('estimated mean squared error')
 
             avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=','))
             fig.suptitle(
@@ -163,15 +165,15 @@ if __name__ == '__main__':
     seed = 42
 
     results_path = None
-    dim_list = [5]
-    scale_list = [1, 2, 3, 4]
+    dim_list = [4]
+    scale_list = [1, 2, 3, 4,5,6]
     multiplier_fun = lambda x: 2 * x
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
-    folder_name = os.path.join("..", "results", "23_11_2024_15_13_23")
+    folder_name = os.path.join("..", "results", "31_03_2025_07_17_20")
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
