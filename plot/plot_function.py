@@ -34,7 +34,6 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     """
 
     # Ensure consistent colors and markers for each method
-
     method_styles = {
         'Smolyak': {'color': 'blue', 'marker': 'o', 'label': 'Smolyak'},
         'Least_Squares Uniform': {'color': 'orange', 'marker': 's', 'label': 'Least Squares Uniform'},
@@ -55,20 +54,14 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
 
     filtered_data.drop(['datetime', 'needed_time', 'sum_c', 'f_name'], axis=1, inplace=True)
 
-    smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
-    least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
-    boolean_series = (filtered_data['grid_type'] == 'CHEBYSHEV').reindex(least_squares_data.index,
-                                                                         fill_value=False)
-    least_squares_data_chebyshev_weight = least_squares_data[boolean_series]
-    boolean_series = (filtered_data['grid_type'] == 'UNIFORM').reindex(least_squares_data.index,
-                                                                       fill_value=False)
-    least_squares_data_uniform = least_squares_data[boolean_series]
+    smolyak_data = filtered_data[(filtered_data['grid_type']) == 'SPARSE']
+    least_squares_data_uniform = filtered_data[(filtered_data['grid_type']) == 'UNIFORM']
+    least_squares_data_chebyshev = filtered_data[(filtered_data['grid_type']) == 'CHEBYSHEV']
 
     smolyak_data = smolyak_data.sort_values(by='scale')
-    least_squares_data_chebyshev_weight = least_squares_data_chebyshev_weight.sort_values(by='scale')
+    least_squares_data_chebyshev = least_squares_data_chebyshev.sort_values(by='scale')
     least_squares_data_uniform = least_squares_data_uniform.sort_values(by='scale')
 
-    # titles = ['Max (Abs) Error', 'L2 Error']
     titles = ['$e_{\ell_\infty}(A_j,q,f)$', '$e_{\ell_2}(A_j,q,f)$']
     errors = ['ell_infty_error', 'ell_2_error']
 
@@ -88,8 +81,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 axs[i].yaxis.set_tick_params(labelleft=True)
                 data_temp = smolyak_data[smolyak_data['c'] == name]
                 n_points_sy = data_temp.loc[smolyak_data['seed'] == seed, 'n_samples']
-                data_temp = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name]
-                n_points_ls = data_temp.loc[least_squares_data_chebyshev_weight['seed'] == seed, 'n_samples']
+                data_temp = least_squares_data_chebyshev[least_squares_data_chebyshev['c'] == name]
+                n_points_ls = data_temp.loc[least_squares_data_chebyshev['seed'] == seed, 'n_samples']
                 xticklabels = [f"{scale}\n{n_points_sy.iloc[j]}\n{n_points_ls.iloc[j]}" for j, scale in
                                enumerate(scales)]
 
@@ -110,8 +103,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                             marker=method_styles['Least_Squares Uniform']['marker'])
 
                 # Plotting Least Squares Chebyshev Weight data with specific markers and colors
-                least_squares_data_chebyshev_weight_filtered = least_squares_data_chebyshev_weight[
-                    least_squares_data_chebyshev_weight['c'] == name]
+                least_squares_data_chebyshev_weight_filtered = least_squares_data_chebyshev[
+                    least_squares_data_chebyshev['c'] == name]
                 least_squares_plot_data_chebyshev_weight = least_squares_data_chebyshev_weight_filtered[
                     least_squares_data_chebyshev_weight_filtered['seed'] == seed]
                 axs[i].plot(scales, least_squares_plot_data_chebyshev_weight[error],
@@ -166,7 +159,7 @@ if __name__ == '__main__':
 
     results_path = None
     dim_list = [4]
-    scale_list = [1, 2, 3, 4,5,6]
+    scale_list = [1, 2, 3, 4, 5, 6]
     multiplier_fun = lambda x: 2 * x
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,

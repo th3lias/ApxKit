@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import glob
 import math
 import os
 import time
@@ -7,6 +8,7 @@ from typing import Callable, Union, List
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from grid.grid.grid import Grid
 
@@ -327,3 +329,80 @@ def find_degree(scale: int, dimension: int):
 
     return degree
 
+def reformat_old_file_to_new_one(path: str, old: bool) -> None:
+    df = pd.read_csv(path, header=0, decimal='.', sep=',')
+
+    new_column_order = ["dim", "scale", "method", "w", "c", "sum_c", "grid_type", "basis_type", "method_type",
+                        "n_samples", "seed", "f_name", "ell_2_error", "ell_infty_error", "datetime", "needed_time"]
+    old_column_order = ["dim", "method", "w", "c", "sum_c", "grid_type", "basis_type", "method_type", "n_samples",
+                        "scale", "seed", "f_name", "ell_2_error", "ell_infty_error", "cpu", "datetime", "needed_time"]
+
+    if old:
+        # TODO: do this with the 3 files from the server
+        # reorder the columns
+        df.drop(columns=['cpu'], inplace=True)
+        df = df[new_column_order]
+
+        # change numerics for c and w
+        df['w'] = df['w'].apply(lambda x: ','.join(x.replace('\n', '').split()) if isinstance(x, str) else x)
+        df['c'] = df['c'].apply(lambda x: ','.join(x.replace('\n', '').split()) if isinstance(x, str) else x)
+
+        # change grid_type from RANDOM_CHEBYSHEV zu SPARSE
+
+        def replace_name(x: str):
+            if x == "CHEBYSHEV":
+                return "SPARSE"
+            if x == "RANDOM_CHEBYSHEV":
+                return "CHEBYSHEV"
+            if x == "RANDOM_UNIFORM":
+                return "UNIFORM"
+            return x
+
+        df['grid_type'] = df['grid_type'].apply(lambda x: replace_name(x))
+
+        # replace NUMPY_LSTSQ with SCIPY_LSTSQ_GELSY
+        df['method_type'] = df['method_type'].apply(lambda x: x.replace("NUMPY_LSTSQ", "SCIPY_LSTSQ_GELSY"))
+
+    else:
+
+        def replace_name_new(method: str, grid_type: str):
+            if method == 'Smolyak' and grid_type == 'CHEBYSHEV':
+                return "SPARSE"
+            return grid_type
+
+        df['grid_type'] = df.apply(lambda x: replace_name_new(x.method, x.grid_type), axis=1)
+
+    # save the dataframe
+    df.to_csv(path, index=False, sep=',', decimal='.', header=True)
+
+
+def combine_result_files_to_combined_one(folder_path: str, required_columns: List[str] = None,
+                                         output_file_path: str = None):
+    if output_file_path is None:
+        output_file_path = os.path.join(folder_path, "combined_results_numerical_experiments.csv")
+
+    data_frames = []
+
+    search_pattern = os.path.join(folder_path, '**', 'results_numerical_experiments.csv')
+    csv_files = glob.glob(search_pattern, recursive=True)
+
+    for file_path in csv_files:
+        try:
+            df = pd.read_csv(file_path)
+
+            data_frames.append(df)
+        except Exception as e:
+            print(f"Could not process {file_path}: {e}")
+
+    if data_frames:
+        combined_df = pd.concat(data_frames, ignore_index=True)
+        try:
+            combined_df.to_csv(output_file_path, index=False)
+            print(f"Combined CSV file saved to {output_file_path}")
+        except Exception as e:
+            print(f"Could not save the combined file: {e}")
+    else:
+        print("No files found to combine.")
+
+if __name__ == '__main__':
+    raise ValueError("This file is not meant to be run directly. Please use the appropriate files.")

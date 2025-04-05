@@ -58,7 +58,7 @@ class ExperimentExecutor:
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
                             avg_c: float = 1.0, ls_multiplier_fun: Callable = lambda x: 2 * x, ):
         """
-            Execute a series of experiments with the given function types.
+            Execute a series of comparisons with the given function types.
         """
 
         np.random.seed(self.seed)
@@ -142,7 +142,6 @@ class ExperimentExecutor:
                 self._run_experiment_ls(dim, scale, chebyshev_grid, "CHEBYSHEV", ls_multiplier_fun)
                 progress_bar.update(1)
 
-        # End of the experiments
         progress_bar.close()
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
@@ -167,7 +166,7 @@ class ExperimentExecutor:
         needed_time = end_time - start_time
         cur_datetime = datetime.datetime.now()
 
-        self._save_stats(dim=dim, scale=scale, method="Smolyak", grid_type="CHEBYSHEV", basis_type="CHEBYSHEV",
+        self._save_stats(dim=dim, scale=scale, method="Smolyak", grid_type="SPARSE", basis_type="CHEBYSHEV",
                          multiplier_fun=multiplier_fun, seed=self.seed, ell_2_errors=smolyak_ell_2,
                          ell_infty_errors=smolyak_ell_infty, date_time=cur_datetime, needed_time=round(needed_time, 3))
 

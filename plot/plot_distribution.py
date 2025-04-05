@@ -26,12 +26,10 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
     colors = prop_cycle.by_key()['color']
     markers = ['o', 's', '^', 'D', 'v', '<', '>', 'P', 'X']  # Different markers
 
-    df['method_grid_combo'] = df['method'] + '|' + df['grid_type']
-
     # Get distinct values for dimension, function type, grids, methods, and scales
     dimensions = df['dim'].unique()
     function_types = df['f_name'].unique()
-    different_combinations = df['method_grid_combo'].unique()
+    grid_types = df['grid_type'].unique()
     scales = sorted(df['scale'].unique())
 
     total_plots = len(function_types) * len(dimensions)
@@ -43,22 +41,28 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
                 fig, axs = plt.subplots(1, 2, figsize=(14, 7), sharey=True)
                 axs[1].yaxis.set_tick_params(labelleft=True)
 
-                for index, elem in enumerate(different_combinations):
-                    method, grid = elem.split('|')
+                for index, grid in enumerate(grid_types):
                     # Filter the relevant data
                     data = df[
                         (df['dim'] == dim) &
                         (df['f_name'] == f_type) &
-                        (df['grid_type'] == str(grid)) &
-                        (df['method'] == str(method))
+                        (df['grid_type'] == str(grid))
                         ].copy()
+
+                    if grid == "SPARSE":
+                        method = "Smolyak"
+                    elif grid == "UNIFORM" or grid == "CHEBYSHEV":
+                        method = "Least_Sqares"
+                    else:
+                        raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
                     # Drop unnecessary columns
                     data.drop(['datetime', 'needed_time', 'sum_c', 'f_name', 'c', 'w'], axis=1, inplace=True,
                               errors='ignore')
 
                     # Define an offset based on the index
-                    offset = (index - len(different_combinations) / 2) * box_plot_width * 0.9  # Spread out boxplots slightly
+                    offset = (index - len(
+                        grid_types) / 2) * box_plot_width * 0.95  # Spread out boxplots slightly
 
                     # Get a color and marker for the current method-grid combination
                     c = colors[index % len(colors)]
@@ -68,7 +72,6 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
                     mean_values_ell2 = []
                     n_points_ls = []
                     n_points_sy = []
-
 
                     for scale in scales:
                         scale_data = data[data['scale'] == scale]
@@ -113,13 +116,11 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
                     axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                 linestyle='-')
 
-
                     # get the number of points in smolyak for each scale uniquely
 
                 pbar.update(1)
 
-
-                xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in  enumerate(scales)]
+                xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
 
                 for ax in axs:
                     ax.set_xlabel('scale ($q-d$)\npoints Smolyak\npoints Least Squares')
@@ -150,7 +151,7 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
 if __name__ == '__main__':
     plottype = "boxplot"
 
-    folder_name = os.path.join("..", "results", "31_03_2025_07_17_20")
+    folder_name = os.path.join("..", "results", "1_1_1")
     filename = os.path.join(folder_name, "results_numerical_experiments.csv")
 
     plot_all_errors(filename, save=True, latex=True, plot_type=plottype)

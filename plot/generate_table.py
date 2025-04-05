@@ -5,8 +5,6 @@ import numpy as np
 import os
 
 
-
-
 def highlight_matching_value(value, min_value):
     return r"\first{" + f"{value:.2e}" + r"}" if np.isclose(value, min_value, atol=1e-17) else f"{value:.2e}"
 
@@ -31,12 +29,15 @@ def generate_table(results_csv_path: str, output_folder: str):
         \usepackage{adjustbox}
         \usepackage{multirow}
         \usepackage{makecell}
+
+        Additionally, we need the following commands
+        % Command for the first entry in a row
+        \newcommand{\first}[1]{\textbf{#1}}
     """
 
-
     abbreviation_dict = {
-        "BRATLEY" : "Bratley",
-        "CONTINUOUS" : "Cont.",
+        "BRATLEY": "Bratley",
+        "CONTINUOUS": "Cont.",
         "CORNER_PEAK": "Corn. Peak",
         "DISCONTINUOUS": "Disc.",
         "G_FUNCTION": "G-Func.",
@@ -68,7 +69,8 @@ def generate_table(results_csv_path: str, output_folder: str):
         right_text = ("|" + ("r" * no_error_combinations)) * max_scale
 
         output[dim_name] = f"% Created with Python on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}" + "\n"
-        output[dim_name] += f"% {results_csv_path}, dim={dim_name}, min. scale={min_scale}, max. scale={max_scale}" + "\n"
+        output[
+            dim_name] += f"% {results_csv_path}, dim={dim_name}, min. scale={min_scale}, max. scale={max_scale}" + "\n"
         output[dim_name] += r"\begin{tabular}{ll" + right_text + r"|}" + "\n"
 
         # add header
@@ -123,27 +125,28 @@ def generate_table(results_csv_path: str, output_folder: str):
                     'ell_infty_max': min(ell_infty_max),
                 }
 
-            for method_index, (method_name, method_df) in enumerate(fun_df.groupby(['method', 'grid_type'])):
+            for grid_index, (grid_name, grid_df) in enumerate(fun_df.groupby('grid_type')):
 
-                for scale_index, (scale_name, scale_df) in enumerate(method_df.groupby('scale')):
+                for scale_index, (scale_name, scale_df) in enumerate(grid_df.groupby('scale')):
 
                     n_functions = len(scale_df)
 
-                    if method_name == ('Least_Squares', 'CHEBYSHEV'):
-                        str_method_name = "LS-Chebyshev"
-                    elif method_name == ('Least_Squares', 'UNIFORM'):
-                        str_method_name = "LS-Uniform"
-                    elif method_name == ('Smolyak', 'CHEBYSHEV'):
-                        str_method_name = 'Smolyak'
+                    if grid_name == 'CHEBYSHEV':
+                        method_name = "LS-Chebyshev"
+                    elif grid_name == 'UNIFORM':
+                        method_name = "LS-Uniform"
+                    elif grid_name == 'SPARSE':
+                        method_name = 'Smolyak'
                     else:
-                        raise ValueError(f"Can't handle Method: {method_name}")
+                        raise ValueError(f"Can't handle grid: {grid_name}")
 
                     if scale_index == 0:
-                        if method_index == 0:
-                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[str(fun_name)] + r"}\\" + r"$n=" + str(n_functions) + r"$}} & "
+                        if grid_index == 0:
+                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[
+                                str(fun_name)] + r"}\\" + r"$n=" + str(n_functions) + r"$}} & "
                         else:
                             output[dim_name] += r" & "
-                        output[dim_name] += str_method_name
+                        output[dim_name] += method_name
                     else:
                         output[dim_name] += r" "
 
@@ -176,7 +179,7 @@ def generate_table(results_csv_path: str, output_folder: str):
 
 
 if __name__ == '__main__':
-    input_path = os.path.join("..", "results", "27_11_2024_19_55_24", "results_numerical_experiments.csv")
+    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\1_1_1\results_numerical_experiments.csv"
     output_folder = os.path.join("..", "paper", "tables")
 
     generate_table(input_path, output_folder)
