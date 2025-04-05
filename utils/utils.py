@@ -235,6 +235,7 @@ def get_next_filename(path, extension='png'):
     next_number = max(numbers, default=0) + 1
     return f"{next_number}.{extension}"
 
+
 def _comp_next(n: int, k: int, a: List[int], more, h, t) -> bool:
     """
     Helper method which is used to calculate the number of points in a chebyshev sparse grid.
@@ -329,6 +330,7 @@ def find_degree(scale: int, dimension: int):
 
     return degree
 
+
 def reformat_old_file_to_new_one(path: str, old: bool) -> None:
     df = pd.read_csv(path, header=0, decimal='.', sep=',')
 
@@ -403,11 +405,11 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
     else:
         print("No files found to combine.")
 
-if __name__ == '__main__':
 
-    path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
-    #
-    combine_result_files_to_combined_one(path)
+if __name__ == '__main__':
+    # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
+    # #
+    # combine_result_files_to_combined_one(path)
 
     # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results\30_03_2025_13_47_35\results_numerical_experiments.csv"
     # old = False
