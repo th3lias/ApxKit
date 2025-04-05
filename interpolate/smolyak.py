@@ -11,8 +11,8 @@ from fit.method.interpolation_method import InterpolationMethod
 from interpolate.interpolator import Interpolator
 
 
-# most of the content (non-lagrange method) is adapted from https://github.com/EconForge/Smolyak,
-# which implemented the Smolyak algorithm based on the paper:
+# most of the content (some parts of it in the >>Interpolator<< class) is adapted from
+# https://github.com/EconForge/Smolyak, which implemented the Smolyak algorithm based on the paper:
 
 # Smolyak method for solving dynamic economic models:
 # Lagrange interpolation, anisotropic grid and adaptive domain
@@ -20,11 +20,12 @@ from interpolate.interpolator import Interpolator
 # from Kenneth L. Judd, Lilia Maliar, Serguei Maliar and Rafael Valero
 
 class SmolyakInterpolator(Interpolator):
-    def __init__(self, grid: Grid, method: InterpolationMethod, basis_type: BasisType = BasisType.CHEBYSHEV):
+    def __init__(self, grid: Grid, method: InterpolationMethod, basis_type: BasisType = BasisType.CHEBYSHEV,
+                 store_indices: bool = True):
         if grid is None:
             raise ValueError("Grid must not be None, but of type Grid!")
 
-        super().__init__(grid)
+        super().__init__(grid, store_indices)
         self.method = method
         self.basis_type = basis_type
 

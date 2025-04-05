@@ -11,9 +11,16 @@ from itertools import product
 
 from interpolate.partition import Partition
 
+# most of the content here and in the Smolyak Library is adapted from
+# https://github.com/EconForge/Smolyak, which implemented the Smolyak algorithm based on the paper:
+
+# Smolyak method for solving dynamic economic models:
+# Lagrange interpolation, anisotropic grid and adaptive domain
+
+# from Kenneth L. Judd, Lilia Maliar, Serguei Maliar and Rafael Valero
 
 class Interpolator:
-    def __init__(self, grid: Grid):
+    def __init__(self, grid: Grid, store_indices: bool):
         self.grid = grid
         self.scale = grid.scale
         self.dim = grid.input_dim
@@ -23,6 +30,7 @@ class Interpolator:
         self.L = None
         self.U = None
         self.coeff = None
+        self.store_indices = store_indices
 
     def interpolate(self, grid: Union[Grid, np.ndarray]):
         raise NotImplementedError
@@ -45,7 +53,8 @@ class Interpolator:
         if self._b_idx is None and b_idx is None:
             self._idx = self._smolyak_idx()
             self._b_idx = self._poly_idx(self._idx)
-            Interpolator._save_basis_indices(self._b_idx, self.dim, self.scale)
+            if self.store_indices:
+                Interpolator._save_basis_indices(self._b_idx, self.dim, self.scale)
         elif b_idx is not None:
             self._b_idx = b_idx
 

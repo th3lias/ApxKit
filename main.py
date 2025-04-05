@@ -16,8 +16,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [4]
-    scale_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    dim_list = [2]
+    scale_list = [1, 2, 3, 4, 5]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -30,7 +30,9 @@ def main_method(folder_name: Union[str, None] = None):
     multiplier_fun = lambda x: 2 * x
     n_fun_parallel = 25
 
-    smolyak_method_type = InterpolationMethod.TASMANIAN
+    store_indices = True
+
+    smolyak_method_type = InterpolationMethod.STANDARD
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
     least_squares_basis_type = BasisType.CHEBYSHEV
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
@@ -41,9 +43,8 @@ def main_method(folder_name: Union[str, None] = None):
         path = None
 
     ex = ExperimentExecutor(dim_list, scale_list, smolyak_method_type, least_squares_method=ls_method_type,
-                            seed=seed,
-                            ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type,
-                            path=path)
+                            seed=seed, ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type,
+                            path=path, store_indices=store_indices)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
     folder_name = os.path.dirname(ex.results_path)

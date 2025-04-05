@@ -179,7 +179,7 @@ def generate_table(results_csv_path: str, output_folder: str):
 
 
 if __name__ == '__main__':
-    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\1_1_1\results_numerical_experiments.csv"
+    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\1_1_1\combined_results_numerical_experiments.csv"
     output_folder = os.path.join("..", "paper", "tables")
 
     generate_table(input_path, output_folder)

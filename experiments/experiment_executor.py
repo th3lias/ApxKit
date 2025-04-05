@@ -26,7 +26,8 @@ class ExperimentExecutor:
 
     def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
-                 path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL):
+                 path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL,
+                 store_indices: bool = True):
         current_datetime = datetime.datetime.now()
         if path is None:
             self.results_path = os.path.join("results", current_datetime.strftime('%d_%m_%Y_%H_%M_%S'),
@@ -51,6 +52,7 @@ class ExperimentExecutor:
         self.f_names = None
         self.test_grid = None
         self.y_test = None
+        self.store_indices = store_indices
         df = pd.DataFrame(header)
         os.makedirs(os.path.dirname(self.results_path), exist_ok=True)
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
@@ -149,7 +151,7 @@ class ExperimentExecutor:
         start_time = time.time()
 
         if self.smolyak_method == InterpolationMethod.STANDARD:  # Least Squares at the Sparse Grid points
-            si = SmolyakInterpolator(grid, self.smolyak_method)
+            si = SmolyakInterpolator(grid, self.smolyak_method, store_indices=self.store_indices)
             si.fit(self.functions)
             y_test_hat_smolyak = si.interpolate(self.test_grid)
         elif self.smolyak_method == InterpolationMethod.TASMANIAN:  # Smolyak with Tasmanian
@@ -174,7 +176,7 @@ class ExperimentExecutor:
         start_time = time.time()
 
         ls = LeastSquaresInterpolator(include_bias=True, basis_type=self.least_squares_basis_type, grid=grid,
-                                      method=self.least_squares_method)
+                                      method=self.least_squares_method, store_indices=self.store_indices)
         ls.fit(self.functions)
         y_test_hat_cheby_uniform = ls.interpolate(self.test_grid)
         ls_ell_2, ls_ell_infty = self._calc_error(y_test_hat_cheby_uniform)
