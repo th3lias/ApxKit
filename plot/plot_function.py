@@ -176,3 +176,10 @@ if __name__ == '__main__':
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
                             same_axis_both_plots=True, latex=True)
                 pbar.update(1)
+
+    plottype = "boxplot"
+
+    folder_name = os.path.join("..", "results", "1_1_1")
+    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
+
+    plot_all_errors(filename, save=True, latex=True, plot_type=plottype)

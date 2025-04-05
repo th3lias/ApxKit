@@ -30,24 +30,22 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
     dimensions = df['dim'].unique()
     function_types = df['f_name'].unique()
     grid_types = df['grid_type'].unique()
-    scales = sorted(df['scale'].unique())
+
 
     total_plots = len(function_types) * len(dimensions)
 
     with tqdm(total=total_plots, desc="Plotting errors") as pbar:
         for f_type in function_types:
+            data_f_type = df[df['f_name'] == f_type].copy()
             for dim in dimensions:
+                data_dim = data_f_type[data_f_type['dim'] == dim].copy()
                 # Create the figure with two subplots
                 fig, axs = plt.subplots(1, 2, figsize=(14, 7), sharey=True)
                 axs[1].yaxis.set_tick_params(labelleft=True)
-
+                scales = sorted(data_dim['scale'].unique())
                 for index, grid in enumerate(grid_types):
-                    # Filter the relevant data
-                    data = df[
-                        (df['dim'] == dim) &
-                        (df['f_name'] == f_type) &
-                        (df['grid_type'] == str(grid))
-                        ].copy()
+
+                    data_grid_type = data_dim[data_dim['grid_type'] == str(grid)].copy()
 
                     if grid == "SPARSE":
                         method = "Smolyak"
@@ -57,7 +55,7 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
                     # Drop unnecessary columns
-                    data.drop(['datetime', 'needed_time', 'sum_c', 'f_name', 'c', 'w'], axis=1, inplace=True,
+                    data_grid_type.drop(['datetime', 'needed_time', 'sum_c', 'f_name', 'c', 'w'], axis=1, inplace=True,
                               errors='ignore')
 
                     # Define an offset based on the index
@@ -74,7 +72,7 @@ def plot_all_errors(file_name: str, plot_type: str = "errorbar", box_plot_width:
                     n_points_sy = []
 
                     for scale in scales:
-                        scale_data = data[data['scale'] == scale]
+                        scale_data = data_grid_type[data_grid_type['scale'] == scale].copy()
 
                         # get number of points
                         n_points_sy.append(scale_data['n_samples'].iloc[0])
@@ -152,6 +150,6 @@ if __name__ == '__main__':
     plottype = "boxplot"
 
     folder_name = os.path.join("..", "results", "1_1_1")
-    filename = os.path.join(folder_name, "results_numerical_experiments.csv")
+    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
 
     plot_all_errors(filename, save=True, latex=True, plot_type=plottype)

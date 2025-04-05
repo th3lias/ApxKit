@@ -376,8 +376,7 @@ def reformat_old_file_to_new_one(path: str, old: bool) -> None:
     df.to_csv(path, index=False, sep=',', decimal='.', header=True)
 
 
-def combine_result_files_to_combined_one(folder_path: str, required_columns: List[str] = None,
-                                         output_file_path: str = None):
+def combine_result_files_to_combined_one(folder_path: str, output_file_path: str = None):
     if output_file_path is None:
         output_file_path = os.path.join(folder_path, "combined_results_numerical_experiments.csv")
 
@@ -405,4 +404,14 @@ def combine_result_files_to_combined_one(folder_path: str, required_columns: Lis
         print("No files found to combine.")
 
 if __name__ == '__main__':
+
+    path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
+    #
+    combine_result_files_to_combined_one(path)
+
+    # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results\30_03_2025_13_47_35\results_numerical_experiments.csv"
+    # old = False
+
+    # reformat_old_file_to_new_one(path, old)
+
     raise ValueError("This file is not meant to be run directly. Please use the appropriate files.")
