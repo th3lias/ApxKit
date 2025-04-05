@@ -49,6 +49,9 @@ def main_method(folder_name: Union[str, None] = None):
 
     folder_name = os.path.dirname(ex.results_path)
 
+    # Plot distribution
+    plot_all_errors(file_name=ex.results_path, save=True, latex=True)
+
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
     with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
@@ -57,9 +60,6 @@ def main_method(folder_name: Union[str, None] = None):
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
                             same_axis_both_plots=True, latex=True)
                 pbar.update(1)
-
-    # Plot distribution
-    plot_all_errors(file_name=ex.results_path, save=True, latex=True)
 
 
 if __name__ == '__main__':
