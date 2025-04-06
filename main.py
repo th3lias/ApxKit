@@ -11,12 +11,12 @@ from fit.method.interpolation_method import InterpolationMethod
 from fit.method.least_squares_method import LeastSquaresMethod
 from function.type import FunctionType
 from grid import TasmanianGridType
-from plot.plot_distribution import plot_all_errors
+from plot.plot_distribution import plot_all_errors_fixed_dim, plot_all_errors_fixed_scale
 from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2]
+    dim_list = [2, 3, 4, 5, 6, 7, 8]
     scale_list = [1, 2, 3, 4, 5]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
@@ -28,7 +28,7 @@ def main_method(folder_name: Union[str, None] = None):
 
     average_c = 1.0
     multiplier_fun = lambda x: 2 * x
-    n_fun_parallel = 25
+    n_fun_parallel = 50
 
     store_indices = True
 
@@ -50,7 +50,8 @@ def main_method(folder_name: Union[str, None] = None):
     folder_name = os.path.dirname(ex.results_path)
 
     # Plot distribution
-    plot_all_errors(file_name=ex.results_path, save=True, latex=True)
+    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True)
+    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True)
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
