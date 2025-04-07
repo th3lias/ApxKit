@@ -16,8 +16,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2, 3, 4, 5, 6, 7, 8]
-    scale_list = [1, 2, 3, 4, 5]
+    dim_list = [2, 3, 4, 5]
+    scale_list = [1, 2, 3, 4, 5, 6]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -28,7 +28,7 @@ def main_method(folder_name: Union[str, None] = None):
 
     average_c = 1.0
     multiplier_fun = lambda x: 2 * x
-    n_fun_parallel = 50
+    n_fun_parallel = 25
 
     store_indices = True
 

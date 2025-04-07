@@ -298,7 +298,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 if __name__ == '__main__':
     plottype = "boxplot"
 
-    folder_name = os.path.join("..", "results", "06_04_2025_16_21_40")
+    folder_name = os.path.join("..", "results", "06_04_2025_22_46_58")
     filename = os.path.join(folder_name, "results_numerical_experiments.csv")
 
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype)
