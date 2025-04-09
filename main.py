@@ -16,8 +16,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2, 3, 4, 5]
-    scale_list = [1, 2, 3, 4, 5, 6]
+    dim_list = [2, 3, 4, 5, 6, 7]
+    scale_list = [1, 2, 3]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,

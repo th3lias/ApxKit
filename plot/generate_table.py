@@ -4,14 +4,14 @@ import pandas as pd
 import numpy as np
 import os
 
+from typing import List, Union, Dict
+
 
 def highlight_matching_value(value, min_value):
     return r"\first{" + f"{value:.2e}" + r"}" if np.isclose(value, min_value, atol=1e-17) else f"{value:.2e}"
 
-
-# TODO: Check whether this matches the images!!!!!!
-
-def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: bool = False):
+def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
+                   skip_scale: Union[Dict, None] = None):
     r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via
@@ -69,7 +69,15 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
         max_scale = dim_df['scale'].max()
         min_scale = dim_df['scale'].min()
 
-        assert min_scale == 1, "Scale needs to start at 1"
+        if skip_scale is None:
+            skip_scale = dict()
+
+        skip_scale_dim = skip_scale.get(str(dim_name), [])
+
+
+        # get scales
+        scales = sorted(dim_df['scale'].unique())
+        scales = [s for s in scales if s not in skip_scale_dim]
 
         right_text = ("|" + ("r" * no_error_combinations)) * max_scale
 
@@ -80,18 +88,18 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
 
         # add header
         output[dim_name] += r" &  "
-        for i in range(1, max_scale + 1):
-            if i == 1:
+        for i, scale in enumerate(scales):
+            if i == 0:
                 output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
-                    no_error_combinations) + r"}{c}{Scale" + str(i) + r"}"
+                    no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
             else:
-                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(i) + r"}"
+                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
         output[dim_name] += r"\\" + "\n"
 
         output[dim_name] += r" &  "
-        for i in range(1, max_scale + 1):
+        for i, scale in enumerate(scales):
             for j, error_reduction in enumerate(error_reductions):
-                if i == 1 and j == 0:
+                if i == 0 and j == 0:
                     output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
                         error_reduction) + r"}"
                 else:
@@ -99,10 +107,10 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
         output[dim_name] += r"\\" + "\n"
 
         output[dim_name] += r" &  "
-        for i in range(1, max_scale + 1):
+        for i, scale in enumerate(scales):
             for j, error_reduction in enumerate(error_reductions):
                 for k, error in enumerate(errors):
-                    if i == 1 and j == 0 and k == 0:
+                    if i == 0 and j == 0 and k == 0:
                         output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{1}{c}{$" + error + r"$}"
                     else:
                         output[dim_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
@@ -110,8 +118,8 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
 
         for fun_name, fun_df in dim_df.groupby('f_name'):
             min_values = {}
-            for i in range(1, max_scale + 1):
-                scale_df = fun_df[fun_df['scale'] == i]
+            for i, scale in enumerate(scales):
+                scale_df = fun_df[fun_df['scale'] == scale]
 
                 ell_2_max = []
                 ell_infty_max = []
@@ -128,13 +136,13 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
                         ell_2_mean.append(method_df['ell_2_error'].mean())
                         ell_infty_mean.append(method_df['ell_infty_error'].mean())
 
-                min_values[str(i)] = {
+                min_values[str(scale)] = {
                     'ell_2_max': min(ell_2_max),
                     'ell_infty_max': min(ell_infty_max),
                 }
 
                 if not skip_mean_error:
-                    min_values[str(i)] = {
+                    min_values[str(scale)] = {
                         'ell_2_max': min(ell_2_max),
                         'ell_infty_max': min(ell_infty_max),
                         'ell_2_mean': min(ell_2_mean),
@@ -142,6 +150,9 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
                     }
 
             for grid_index, (grid_name, grid_df) in enumerate(fun_df.groupby('grid_type', sort=False)):
+
+                # filter out the scales that are not in the scales list
+                grid_df = grid_df[grid_df['scale'].isin(scales)]
 
                 for scale_index, (scale_name, scale_df) in enumerate(grid_df.groupby('scale')):
 
@@ -207,7 +218,13 @@ def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: b
 
 
 if __name__ == '__main__':
-    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\07_04_2025_07_52_53\results_numerical_experiments.csv"
+    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\09_04_2025_19_15_53\results_numerical_experiments.csv"
     output_folder = os.path.join("..", "paper", "tables")
 
-    generate_table(input_path, output_folder, skip_mean_error=True)
+    skip_mean = True
+    ignore_scale = {
+        "2": [1, 3, 8],
+        "3": [9, 4, 2]
+    }
+
+    generate_table(input_path, output_folder, skip_mean_error=skip_mean, skip_scale=ignore_scale)

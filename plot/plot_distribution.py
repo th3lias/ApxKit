@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15, save: bool = False,
+def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
+                              save: bool = False,
                               latex: bool = False):
     """
         Creates distribution plots for each function class at a certain dimension
@@ -90,12 +91,12 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                         if plot_type == "boxplot":
                             # Boxplots
                             axs[0].boxplot(scale_data['ell_infty_error'], positions=[scale + offset], showfliers=False,
-                                           widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
+                                           widths=box_plot_width, boxprops=dict(color=c, linestyle='--'), whis=[0, 100],
                                            whiskerprops=dict(color=c), capprops=dict(color=c),
                                            medianprops=dict(color='black'))
 
                             axs[1].boxplot(scale_data['ell_2_error'], positions=[scale + offset], showfliers=False,
-                                           widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
+                                           widths=box_plot_width, boxprops=dict(color=c, linestyle='--'), whis=[0, 100],
                                            whiskerprops=dict(color=c), capprops=dict(color=c),
                                            medianprops=dict(color='black'))
 
@@ -238,12 +239,12 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                             # Boxplots
                             axs[0].boxplot(dim_data['ell_infty_error'], positions=[dim + offset], showfliers=False,
                                            widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
-                                           whiskerprops=dict(color=c), capprops=dict(color=c),
+                                           whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
                                            medianprops=dict(color='black'))
 
                             axs[1].boxplot(dim_data['ell_2_error'], positions=[dim + offset], showfliers=False,
                                            widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
-                                           whiskerprops=dict(color=c), capprops=dict(color=c),
+                                           whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
                                            medianprops=dict(color='black'))
 
                         elif plot_type == "errorbar":
@@ -298,8 +299,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 if __name__ == '__main__':
     plottype = "boxplot"
 
-    folder_name = os.path.join("..", "results", "06_04_2025_22_46_58")
+    folder_name = os.path.join("..", "results", "09_04_2025_19_15_53")
     filename = os.path.join(folder_name, "results_numerical_experiments.csv")
 
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype)
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype)
