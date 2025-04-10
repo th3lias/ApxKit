@@ -10,8 +10,8 @@ def highlight_matching_value(value, min_value):
     return r"\first{" + f"{value:.2e}" + r"}" if np.isclose(value, min_value, atol=1e-17) else f"{value:.2e}"
 
 
-def generate_table(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
-                   skip_scale: Union[Dict, None] = None):
+def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
+                             skip_scale: Union[Dict, None] = None):
     r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via
@@ -407,7 +407,7 @@ if __name__ == '__main__':
         "3": [9, 4, 2]
     }
 
-    generate_table(input_path, output_folder, skip_mean_error=skip_mean, skip_scale=ignore_scale)
+    generate_table_fixed_dim(input_path, output_folder, skip_mean_error=skip_mean, skip_scale=ignore_scale)
 
     input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\09_04_2025_22_08_52\results_numerical_experiments.csv"
     output_folder = os.path.join("..", "paper", "tables")

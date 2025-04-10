@@ -340,7 +340,7 @@ def reformat_old_file_to_new_one(path: str, old: bool) -> None:
                         "scale", "seed", "f_name", "ell_2_error", "ell_infty_error", "cpu", "datetime", "needed_time"]
 
     if old:
-        # TODO: do this with the 3 files from the server
+        # TODO: do this with the 3 files from the server (30.03, 31.03, 02.04)
         # reorder the columns
         df.drop(columns=['cpu'], inplace=True)
         df = df[new_column_order]
