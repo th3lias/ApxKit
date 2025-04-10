@@ -16,8 +16,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2, 3, 4]
-    scale_list = [1, 2, 4, 5]
+    dim_list = [2, 3, 4, 5, 6, 7, 8, 9]
+    scale_list = [1, 2, 3]
 
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
@@ -52,9 +52,6 @@ def main_method(folder_name: Union[str, None] = None):
     # Plot distribution
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True)
     plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True)
-
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
-    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
