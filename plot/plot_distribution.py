@@ -165,11 +165,11 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
                 if save:
                     if only_maximum:
-                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                                 'max_error_distribution_fixed_scale.png')
+                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
+                                                 'max_error_distribution_fixed_dim.png')
                     else:
-                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                                 'error_distribution_fixed_scale.png')
+                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
+                                                 'error_distribution_fixed_dim.png')
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
                     if latex:
