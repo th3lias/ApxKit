@@ -18,8 +18,8 @@ from scipy.linalg import lu
 
 class LeastSquaresInterpolator(Interpolator):
     def __init__(self, include_bias: bool, basis_type: BasisType, method: LeastSquaresMethod = LeastSquaresMethod.EXACT,
-                 grid: Union[Grid, None] = None):
-        super().__init__(grid)
+                 grid: Union[Grid, None] = None, store_indices: bool = True):
+        super().__init__(grid, store_indices)
         self.include_bias = include_bias
         self.method = method
         self.basis_type = basis_type
@@ -117,7 +117,7 @@ class LeastSquaresInterpolator(Interpolator):
         weight = self._get_weights_for_weighted_ls()
 
         x_poly = (weight * self.basis.T).T
-        del self.basis
+        self.basis = None
         y_prime = (weight * y.T).T
 
         sol = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)

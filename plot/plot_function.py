@@ -34,7 +34,6 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     """
 
     # Ensure consistent colors and markers for each method
-
     method_styles = {
         'Smolyak': {'color': 'blue', 'marker': 'o', 'label': 'Smolyak'},
         'Least_Squares Uniform': {'color': 'orange', 'marker': 's', 'label': 'Least Squares Uniform'},
@@ -55,20 +54,14 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
 
     filtered_data.drop(['datetime', 'needed_time', 'sum_c', 'f_name'], axis=1, inplace=True)
 
-    smolyak_data = filtered_data[(filtered_data['method']) == 'Smolyak']
-    least_squares_data = filtered_data[(filtered_data['method']) == 'Least_Squares']
-    boolean_series = (filtered_data['grid_type'] == 'CHEBYSHEV').reindex(least_squares_data.index,
-                                                                         fill_value=False)
-    least_squares_data_chebyshev_weight = least_squares_data[boolean_series]
-    boolean_series = (filtered_data['grid_type'] == 'UNIFORM').reindex(least_squares_data.index,
-                                                                       fill_value=False)
-    least_squares_data_uniform = least_squares_data[boolean_series]
+    smolyak_data = filtered_data[(filtered_data['grid_type']) == 'SPARSE']
+    least_squares_data_uniform = filtered_data[(filtered_data['grid_type']) == 'UNIFORM']
+    least_squares_data_chebyshev = filtered_data[(filtered_data['grid_type']) == 'CHEBYSHEV']
 
     smolyak_data = smolyak_data.sort_values(by='scale')
-    least_squares_data_chebyshev_weight = least_squares_data_chebyshev_weight.sort_values(by='scale')
+    least_squares_data_chebyshev = least_squares_data_chebyshev.sort_values(by='scale')
     least_squares_data_uniform = least_squares_data_uniform.sort_values(by='scale')
 
-    # titles = ['Max (Abs) Error', 'L2 Error']
     titles = ['$e_{\ell_\infty}(A_j,q,f)$', '$e_{\ell_2}(A_j,q,f)$']
     errors = ['ell_infty_error', 'ell_2_error']
 
@@ -88,8 +81,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 axs[i].yaxis.set_tick_params(labelleft=True)
                 data_temp = smolyak_data[smolyak_data['c'] == name]
                 n_points_sy = data_temp.loc[smolyak_data['seed'] == seed, 'n_samples']
-                data_temp = least_squares_data_chebyshev_weight[least_squares_data_chebyshev_weight['c'] == name]
-                n_points_ls = data_temp.loc[least_squares_data_chebyshev_weight['seed'] == seed, 'n_samples']
+                data_temp = least_squares_data_chebyshev[least_squares_data_chebyshev['c'] == name]
+                n_points_ls = data_temp.loc[least_squares_data_chebyshev['seed'] == seed, 'n_samples']
                 xticklabels = [f"{scale}\n{n_points_sy.iloc[j]}\n{n_points_ls.iloc[j]}" for j, scale in
                                enumerate(scales)]
 
@@ -110,8 +103,8 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                             marker=method_styles['Least_Squares Uniform']['marker'])
 
                 # Plotting Least Squares Chebyshev Weight data with specific markers and colors
-                least_squares_data_chebyshev_weight_filtered = least_squares_data_chebyshev_weight[
-                    least_squares_data_chebyshev_weight['c'] == name]
+                least_squares_data_chebyshev_weight_filtered = least_squares_data_chebyshev[
+                    least_squares_data_chebyshev['c'] == name]
                 least_squares_plot_data_chebyshev_weight = least_squares_data_chebyshev_weight_filtered[
                     least_squares_data_chebyshev_weight_filtered['seed'] == seed]
                 axs[i].plot(scales, least_squares_plot_data_chebyshev_weight[error],
@@ -122,8 +115,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                 axs[i].set_xticks(scales)
                 axs[i].set_xticklabels(xticklabels)
                 axs[i].set_title(titles[i])
-                axs[i].set_xlabel('Scale\npoints Smolyak\npoints Least Squares')
-                axs[i].set_ylabel('Error')
+                axs[i].set_xlabel('scale ($q-d$)\npoints Smolyak\npoints Least Squares')
                 axs[i].set_yscale('log')
                 axs[i].legend()
 
@@ -139,6 +131,9 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
                         global_min_l2 = current_min_l2
                     if global_max_l2 is None or current_max_l2 > global_max_l2:
                         global_max_l2 = current_max_l2
+
+            axs[0].set_ylabel('estimated uniform error')
+            axs[1].set_ylabel('estimated mean squared error')
 
             avg_c = np.mean(np.fromstring(name[1:-1], dtype=float, sep=','))
             fig.suptitle(
@@ -163,15 +158,15 @@ if __name__ == '__main__':
     seed = 42
 
     results_path = None
-    dim_list = [5]
-    scale_list = [1, 2, 3, 4]
+    dim_list = [4]
+    scale_list = [1, 2, 3, 4, 5, 6]
     multiplier_fun = lambda x: 2 * x
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
-    folder_name = os.path.join("..", "results", "23_11_2024_15_13_23")
+    folder_name = os.path.join("..", "results", "31_03_2025_07_17_20")
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
@@ -181,3 +176,10 @@ if __name__ == '__main__':
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
                             same_axis_both_plots=True, latex=True)
                 pbar.update(1)
+
+    plottype = "boxplot"
+
+    folder_name = os.path.join("..", "results", "1_1_1")
+    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
+
+    plot_all_errors(filename, save=True, latex=True, plot_type=plottype)

@@ -26,7 +26,8 @@ class ExperimentExecutor:
 
     def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
-                 path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL):
+                 path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL,
+                 store_indices: bool = True):
         current_datetime = datetime.datetime.now()
         if path is None:
             self.results_path = os.path.join("results", current_datetime.strftime('%d_%m_%Y_%H_%M_%S'),
@@ -51,6 +52,7 @@ class ExperimentExecutor:
         self.f_names = None
         self.test_grid = None
         self.y_test = None
+        self.store_indices = store_indices
         df = pd.DataFrame(header)
         os.makedirs(os.path.dirname(self.results_path), exist_ok=True)
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
@@ -58,7 +60,7 @@ class ExperimentExecutor:
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
                             avg_c: float = 1.0, ls_multiplier_fun: Callable = lambda x: 2 * x, ):
         """
-            Execute a series of experiments with the given function types.
+            Execute a series of comparisons with the given function types.
         """
 
         np.random.seed(self.seed)
@@ -142,7 +144,6 @@ class ExperimentExecutor:
                 self._run_experiment_ls(dim, scale, chebyshev_grid, "CHEBYSHEV", ls_multiplier_fun)
                 progress_bar.update(1)
 
-        # End of the experiments
         progress_bar.close()
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
@@ -150,7 +151,7 @@ class ExperimentExecutor:
         start_time = time.time()
 
         if self.smolyak_method == InterpolationMethod.STANDARD:  # Least Squares at the Sparse Grid points
-            si = SmolyakInterpolator(grid, self.smolyak_method)
+            si = SmolyakInterpolator(grid, self.smolyak_method, store_indices=self.store_indices)
             si.fit(self.functions)
             y_test_hat_smolyak = si.interpolate(self.test_grid)
         elif self.smolyak_method == InterpolationMethod.TASMANIAN:  # Smolyak with Tasmanian
@@ -167,7 +168,7 @@ class ExperimentExecutor:
         needed_time = end_time - start_time
         cur_datetime = datetime.datetime.now()
 
-        self._save_stats(dim=dim, scale=scale, method="Smolyak", grid_type="CHEBYSHEV", basis_type="CHEBYSHEV",
+        self._save_stats(dim=dim, scale=scale, method="Smolyak", grid_type="SPARSE", basis_type="CHEBYSHEV",
                          multiplier_fun=multiplier_fun, seed=self.seed, ell_2_errors=smolyak_ell_2,
                          ell_infty_errors=smolyak_ell_infty, date_time=cur_datetime, needed_time=round(needed_time, 3))
 
@@ -175,7 +176,7 @@ class ExperimentExecutor:
         start_time = time.time()
 
         ls = LeastSquaresInterpolator(include_bias=True, basis_type=self.least_squares_basis_type, grid=grid,
-                                      method=self.least_squares_method)
+                                      method=self.least_squares_method, store_indices=self.store_indices)
         ls.fit(self.functions)
         y_test_hat_cheby_uniform = ls.interpolate(self.test_grid)
         ls_ell_2, ls_ell_infty = self._calc_error(y_test_hat_cheby_uniform)

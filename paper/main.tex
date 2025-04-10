@@ -51,6 +51,7 @@ isbn=false, natbib=true]{biblatex} % set bibliography = bibtex in TexStudio
 % TODO: Cite Barthelmann, Ritter, Novak in the beginning
 % TODO: Bold notation for vectors???
 % TODO: Check for present tense (this should be the goal)?!´
+% TODO: Cite Numpy or actually Scipy?
 
 \begin{document}
 \title{Least Squares and Smolyak's Algorithm} % TODO: Add small title in 
@@ -531,7 +532,9 @@ unit-cube $[0,1]^d$.
 		\text{12. Zhou:} & f_{12}(x) = \displaystyle \frac{10^d}{2} 
 		\left[\phi\left(x-\frac13\right)+\phi\left(x-\frac23\right)\right] 
 		\\[12pt]
-		& \phi(x) = \displaystyle \frac{10}{\left(2\pi\right)^{d/2}} \exp 
+		& \text{with }\phi(x) = \displaystyle 
+		\frac{10}{\left(2\pi\right)^{d/2}} 
+		\exp 
 		\left(-\frac{1}{2}\norm[2]{c\left(x-w\right)}^2\right)
 	\end{array}
 \end{align*}
@@ -669,9 +672,10 @@ character we used before for the description of Smolyak.}
 \begin{table}[H]
 	\centering
 	\begin{adjustbox}{width=\linewidth}
-		\input{tables/dim8}
+		\input{tables/dim10}
 	\end{adjustbox}
 	\caption{Caption}
+	\label{tab:dim1_results}
 \end{table}
 
 
