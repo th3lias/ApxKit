@@ -164,8 +164,12 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
 
                 if save:
-                    save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
-                                             'error_distribution_fixed_dim.png')
+                    if only_maximum:
+                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
+                                                 'max_error_distribution_fixed_scale.png')
+                    else:
+                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
+                                                 'error_distribution_fixed_scale.png')
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
                     if latex:
@@ -331,8 +335,13 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
 
                 if save:
-                    save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                             'error_distribution_fixed_scale.png')
+                    if only_maximum:
+                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
+                                                 'max_error_distribution_fixed_scale.png')
+                    else:
+                        save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
+                                                 'error_distribution_fixed_scale.png')
+
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
                     if latex:
@@ -348,5 +357,5 @@ if __name__ == '__main__':
     folder_name = os.path.join("..", "results", "09_04_2025_19_15_53")
     filename = os.path.join(folder_name, "results_numerical_experiments.csv")
 
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
