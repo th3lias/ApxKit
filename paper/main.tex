@@ -6,10 +6,15 @@
 \documentclass[12pt, oneside]{amsart}
 
 \usepackage{amssymb}
-\usepackage[style=numeric-comp, backend=biber, sorting=nty, doi=false, 
-isbn=false, natbib=true]{biblatex} % set bibliography = bibtex in TexStudio
-\addbibresource{bibliography.bib}
-\emergencystretch=1em % To remove error with bad box
+\usepackage[
+    style=numeric-comp,
+    backend=biber,
+    sorting=nty,
+    doi=false,
+    isbn=false, 
+    natbib=true]{biblatex}
+\addbibresource{references.bib}
+\emergencystretch=1em
 
 \usepackage{mathtools}
 \usepackage{xcolor}
@@ -88,7 +93,7 @@ dimensional settings using some of the most popular algorithms available. We
 compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using 
 random data. We empirically confirm that interpolation using LSQ performs 
 equally as good on smooth and better on non-smooth functions if SA is given 
-\(n\) and LSQ is given \(\cO(n \log n)\) points.\newline
+\(n\) and LSQ is given \(2 \cdot n\) points.\newline
 Code available at: 
 \url{https://github.com/th3lias/NumericalExperiments}
 % TODO: Make repository public or maybe change owner
@@ -125,6 +130,64 @@ denote the space of linear, bounded functionals on \(X\), i.e. \(X^\star \defn
 \set{x^\star\from X \to \R \mid x^\star \text{ is linear and bounded}}\).
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Interpolation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Given \(i \in \N\) and distinct data points \(\XX_i \defn \set{x_{i, 0}, \dots, x_{i, n}} \subseteq D \subseteq \R\) and function values \(\YY_i \defn \set{y_{i, 0}, \dots, y_{i, n}} = \set{f(x_{i, 0}), \dots, f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact that there exists a polynomial \(p\) of degree \(n\) such that \[
+    p(x_{i, j}) = y_{i, j},\quad j \in \indexset[0]{n}.
+\]
+We then call \(p\) an \emph{interpolating} polynomial. It can be written down explicitly as \begin{equation}\label{interpolating_polynomial}
+    p = \sum_{j=0}^n y_{i, j} \ell_{i, j}
+\end{equation}
+for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single dimension, the formula for this basis is, quite intuitively, \(\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, m}}{x_{i, j}-x_{i, m}}\) \cite{waring1779, lagrange1901}. We call this type of interpolation \emph{Lagrange interpolation}.
+
+Suppose now we have \(d\) point sets \(\XX_i\). By taking the full tensor product of point sets \[
+    \XX \defn \bigotimes_{i=1}^d \XX_i,
+\] we may identify our grid by \(\XX = \set{\bfx_\bfj}_{\bfj}\) and suppose again we have according function evaluations \(\YY \defn \set{y_\bfj}_\bfj = \set{f(\bfx_\bfj)}_\bfj\) with \(\bfj \in \set{0,1,\dots,n}^d\) for \(f: D \to \R\), \(D \subseteq \R^d\) and \((n+1)^d\) points. Then, we may construct an interpolating polynomial as in \cref{interpolating_polynomial}. Indeed, the general formula stays the same but we take tensor product of basis functions, i.e. \begin{equation}\label{multivariateLagrange}
+    \ell_\bfj(\bfw) = \bigotimes_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d \prod_{\substack{k=0 \\ k \neq j_i}}^n \frac{w_i - x_{i, k}}{x_{i, j_i} - x_{i, k}}
+\end{equation}
+and the sum now ranges over all multiindices \(\bfj = (j_1, \dots, j_d) \in \N_0^d\) with \(\bfj \in \set{0, 1, \dots, n}^d\). Formula \ref{multivariateLagrange} is not a great choice for performing calculations on hardware. Leaving the storage of \((n+1)^d\) grid points aside, for computing one evaluation of the map \(\bfw \mapsto p(\bfw)\), one must compute the sum of \((n+1)^d\) terms, where in each summand, the evaluation of \(d\) one dimensional basis functions is computed, each of which need a product over \(n\) terms. Hence, this evaluation is as costly as \(\cO((n+1)^d d n)\). Although one can counter the costly computation of the interpolating polynomial at a given point by reformulating the above (numerically instable) Lagrange interpolator in it's barycentric form
+\begin{equation}\label{eq:multivarBarycentric}
+    p(\bfw) = \frac{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d) y_\bfj}{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d)}
+\end{equation}
+where
+\begin{equation}\label{eq:barycentricBasis}
+    \ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-\bfx_{\bfj_k}} \mid k \in \indexset[1]{d}.
+\end{equation}
+and \(m_{j_k}\) are the \emph{barycentric} weights which can be computed in \(\cO(n^2)\) time for general point distributions but admit \(\cO(1)\) computation for well--known and widely used point sets \cite{klimke2004}. For example, due to \cite{Berut_2004},
+\begin{equation}\label{barycentric_weights_chebyshev}
+    m_{0} = \frac{1}{2},\quad m_{l} = (-1)^l,\, l \in \indexset[1]{n-1},\, m_n = \frac{1}{2}(-1)^n
+\end{equation}
+for the \emph{Chebyshev Gauss-Lobatto} (or just Chebyshev extrema), in which \[
+    x_l \defn x_{l,n} \defn - \cos\frac{l \pi}{n},\, l \in \indexset[0]{n}.
+\]
+
+Similarly, for the Chebyshev points of the second kind
+\begin{equation}\label{eq:chebyPts2}
+    x_l = x_{l, n} = \cos \frac{l \pi}{n},\, l \in \indexset[0]{n}
+\end{equation}
+one gets the closed form
+\begin{equation}\label{eq:weightsChebyshev}
+    m_l = {\left(-1\right)}^l \cdot \begin{cases}
+        1/2 &l \in \set{0, n}\\
+        1 &\text{else.}
+    \end{cases}
+\end{equation}
+In this case, one achieves an evaluation time of \(\cO((n+1)^d)\).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Smolyak's Algorithm \& Sparse Grids}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The question arises, how one may reduce the complexity of exact interpolation on grids. The central idea of sparse grids is to \emph{not} take the full tensor product of one dimensional point sets. Firstly, take a variable number of points in each direction, i.e.\ let \(\XX_i \defn \set{x_{1, i}, \dots, x_{N(i), i}}\) and take \(\cI_0 \defn 0\), \(\Delta_i \defn \cI_i - \cI_{i-1}\). Then Smolyak's algorithm is given in a simple recursive manner
+\begin{equation}\label{Smolyak}
+    \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \Delta_{j_1} \otimes \cdots \otimes \Delta_{j_d} = \cA_{q-1, d}+\sum_{\norm[1]{\bfj}=q} \Delta_{j_1} \otimes \cdots \otimes \Delta_{j_d}
+\end{equation}
+and \(\cA_{d-1, d} = 0\). Evidently, in no iteration of the algorithm do we have to discard old values.
+
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Smolyak's Algorithm}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -669,15 +732,6 @@ character we used before for the description of Smolyak.}
 \end{figure}
 
 
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/dim10}
-	\end{adjustbox}
-	\caption{Caption}
-	\label{tab:dim1_results}
-\end{table}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}\label{sec:conclusion}
@@ -711,7 +765,7 @@ Ideas
 
 \newpage
 
-%\nocite{*}
+\nocite{*}
 \printbibliography
 
 \bigskip
