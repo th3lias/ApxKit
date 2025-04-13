@@ -1,8 +1,3 @@
-% Magic Comments
-% !TeX spellcheck = en_GB
-% !TeX encoding = utf8
-% !TeX program = pdflatex
-
 \documentclass[12pt, oneside]{amsart}
 
 \usepackage{amssymb}
@@ -140,7 +135,7 @@ for \(\ZZ_i \defn (\XX_i, \YY_i)\)
 We then call \(\cI(\ZZ_i)\) an \emph{interpolating} polynomial. It can be written down explicitly as \begin{equation}\label{interpolating_polynomial}
     \cI(\ZZ_i) = \sum_{j=0}^n y_{i, j} \ell_{i, j}
 \end{equation}
-for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single dimension, the formula for this basis is, quite intuitively, \(\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, m}}{x_{i, j}-x_{i, m}}\) \cite{waring1779, lagrange1901}. We call this type of interpolation \emph{Lagrange interpolation}.
+for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single dimension, the formula for this basis is, quite intuitively, \(\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, m}}{x_{i, j}-x_{i, m}}\) \cite{waring1779, lagrange1901}. We call \(\cI\) the \emph{Lagrange interpolator}.
 
 Suppose now we have \(d\) point sets \(\XX_i\). By taking the full cartesian product of point sets \[
     \XX \defn \bigtimes_{i=1}^d \XX_i,
@@ -157,11 +152,11 @@ Formula \ref{multivariateLagrange} is not a great choice for performing calculat
 \end{equation}
 where
 \begin{equation}\label{eq:barycentricBasis}
-    \ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-\bfx_{\bfj_k}} \mid k \in \indexset[1]{d}.
+    \ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-x_{j_k}} \mid k \in \indexset[1]{d}.
 \end{equation}
-and \(m_{j_k}\) are the \emph{barycentric} weights which can be computed in \(\cO(n^2)\) time for general point distributions but admit \(\cO(1)\) computation for well--known and widely used point sets \cite{klimke2004}. For example, due to \cite{Berut_2004},
+with \(x_{j_k}\) being the \(j_k\)--th entry of \(\bfx\). \(m_{j_k}\) are the \emph{barycentric} weights which can be computed in \(\cO(n^2)\) time for general point distributions but admit \(\cO(1)\) computation for well--known and widely used point sets \cite{klimke2004}. For example, due to \cite{Berut_2004},
 \begin{equation}\label{barycentric_weights_chebyshev}
-    m_{0} = \frac{1}{2},\quad m_{l} = (-1)^l,\, l \in \indexset[1]{n-1},\, m_n = \frac{1}{2}(-1)^n
+    m_{0} = \frac{1}{2},\quad m_{l} = (-1)^l,\, l \in \indexset[1]{n-1},\quad m_n = \frac{1}{2}(-1)^n
 \end{equation}
 for the \emph{Chebyshev Gauss-Lobatto} (or just Chebyshev extrema), in which \begin{equation}\label{ChebyshevGaussLobatto}
     x_l \defn x_{l,n} \defn - \cos\frac{l \pi}{n},\, l \in \indexset[0]{n}.
@@ -198,13 +193,13 @@ where the number of nodes in a given direction can never be \emph{large} for all
 \]
 
 \subsection{Polynomial Exactness}
-Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 1]^d\) for interpolation of unkowns instead of a general domain \(D\). In this case, Smolyak's algorithm is well known to exactly reproduce functions on certain polynomial spaces given that the rules \(\cI_j\) are exact on some nested spaces \(V_j\). The following is well--known, see \cite{DELVOS198299} or \cite{novakRitter1996}.
+Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 1]^d\) for interpolation of unkowns instead of a general domain \(D\). In this case, Smolyak's algorithm is well known to exactly reproduce functions on certain polynomial spaces given that the rules \(\cI_j\) are exact on nested spaces \(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
 \begin{lem}
 	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) and assume \[
 		V_1 \subset V_2 \subset V_3 \subset \dots,
 	\]
 	then \(\cA(q, d)\) is exact on \[
-		\sum_{\norm[1]{j}=q} V_{i_1} \otimes \cdots \otimes V_{i_d}
+		\sum_{\norm[1]{j}=q} V_{j_1} \otimes \cdots \otimes V_{j_d}
 	\]
 \end{lem}
 \cite{BarthelmannHighDim_2000} showed the following.
@@ -223,6 +218,31 @@ Indeed, the following also follows from \cite{BarthelmannHighDim_2000}. Note tha
 \end{lem}
 
 \subsection{Error Bounds}
+Since the interpolation operator \(\cI_j\) as defined before is exact on \(\pols[N(j)-1]{\R, \R}\) one concludes \[
+	\norm[\infty]{f - \cI_j(f)} \leq \err_{N(j)-1}(f)(1+\Lambda_{N(j)})
+\]
+where \(\err_n\) is the error of the best approximation by \(p \in \pols[n]{\R, \R}\), \(\Lambda_n\) is the Lebesgue constant for the point set in \Cref{ChebyshevGaussLobatto} and \(n \geq 2\), in which case it is known that \[
+	\Lambda_n \leq \frac{2}{\pi} \log(n-1)+1,
+\]
+see for example \cite{zeller1966} and \cite{Dzjadyk1983}. The following bounds can be found in \cite{BarthelmannHighDim_2000} and is well known since \cite{smolyak1963, temlyakov1986, WASILKOWSKI19951}.
+
+\begin{lem}
+	For the space
+	\[
+		F_d^k \defn \set{f: [-1, 1]^d \to \R \mid D^\alpha f \text{ continuous if } \alpha_i \leq k \text{ for all } i}
+	\]
+	the error of \(\cA(q, d)\) can be bounded as \[
+		\norm[\op]{I_d - \cA(q, d)} \leq c_{d,k} n^{-k} \left(\log n\right)^{(k+2)(d-1)+1}
+	\]
+	where \(I_d\) is the embedding \(F_d^k \hookrightarrow C([-1, 1]^d)\) and \(c_{d, k}\) is a positive constant only dependent on \(d\) and \(k\).
+\end{lem}
+
+Moreover, for the Sobolev--Hilbert space \(H_w^k\) with \begin{equation}
+	H_w^k \defn \set{f \in L^2_w : \norm[k]{f}^2 = \sum_{\ell \in \N_0} (1+\ell^2)^k \inner{f}{b_\ell}^2 < \infty}
+\end{equation}
+with \(\inner{f}{b_\ell}\) being the \(\ell\)--th Fourier coefficient, one obtains \[
+	\norm[0]{f-\cA(q, d)(f)} \leq c_{d, k} n^{-k} \left(\log n\right)^{(k+1)(d-1)}\norm[k]{f}.
+\]
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

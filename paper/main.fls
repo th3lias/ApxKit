@@ -247,6 +247,8 @@ INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm1
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm
 INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm
+INPUT /Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-italic.luc
+INPUT /Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman7-italic.luc
 INPUT ./figures/oscillatory/realization1_dim5_scale4.pdf
 INPUT ./figures/oscillatory/realization1_dim5_scale4.pdf
 INPUT ./figures/oscillatory/realization2_dim5_scale4.pdf

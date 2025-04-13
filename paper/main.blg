@@ -1,0 +1,17 @@
+[0] Config.pm:308> INFO - This is Biber 2.20
+[0] Config.pm:311> INFO - Logfile is 'main.blg'
+[30] biber-darwin:340> INFO - === Sun Apr 13, 2025, 17:35:00
+[36] Biber.pm:420> INFO - Reading 'main.bcf'
+[75] Biber.pm:991> INFO - Using all citekeys in bib section 0
+[81] Biber.pm:4463> INFO - Processing section 0
+[85] Biber.pm:4654> INFO - Looking for bibtex file 'references.bib' for section 0
+[86] bibtex.pm:1713> INFO - LaTeX decoding ...
+[95] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[171] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[171] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[171] Biber.pm:4283> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[171] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[182] bbl.pm:676> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[187] bbl.pm:779> INFO - Output to main.bbl
+[187] Biber.pm:131> WARN - legacy month field 'Jun' in entry 'Dzjadyk1983' is not an integer - this will probably not sort properly.
+[187] Biber.pm:133> INFO - WARNINGS: 1

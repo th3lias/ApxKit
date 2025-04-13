@@ -232,82 +232,6 @@
       \field{title}{Hyperbolic Cross approximation}
       \field{year}{2018}
     \endentry
-    \entry{Dzjadyk1983}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=94119600ea988c1c8b2cebe40896ee67}{%
-           family={Dzjadyk},
-           familyi={D\bibinitperiod},
-           given={V.\bibnamedelimi K.},
-           giveni={V\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
-        {{hash=c6b23a8b43b3fec5ef2bc31551d9d2cb}{%
-           family={Ivanov},
-           familyi={I\bibinitperiod},
-           given={V.\bibnamedelimi V.},
-           giveni={V\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
-      }
-      \strng{namehash}{cbed1a157ee390589376a615865227c8}
-      \strng{fullhash}{cbed1a157ee390589376a615865227c8}
-      \strng{fullhashraw}{cbed1a157ee390589376a615865227c8}
-      \strng{bibnamehash}{cbed1a157ee390589376a615865227c8}
-      \strng{authorbibnamehash}{cbed1a157ee390589376a615865227c8}
-      \strng{authornamehash}{cbed1a157ee390589376a615865227c8}
-      \strng{authorfullhash}{cbed1a157ee390589376a615865227c8}
-      \strng{authorfullhashraw}{cbed1a157ee390589376a615865227c8}
-      \field{sortinit}{D}
-      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{issn}{1588-273X}
-      \field{journaltitle}{Analysis Mathematica}
-      \field{month}{6}
-      \field{number}{2}
-      \field{title}{On asymptotics and estimates for the uniform norms of the Lagrange interpolation polynomials corresponding to the Chebyshev nodal points}
-      \field{volume}{9}
-      \field{year}{1983}
-      \field{pages}{85\bibrangedash 97}
-      \range{pages}{13}
-      \verb{doi}
-      \verb 10.1007/BF01982005
-      \endverb
-      \verb{urlraw}
-      \verb https://doi.org/10.1007/BF01982005
-      \endverb
-      \verb{url}
-      \verb https://doi.org/10.1007/BF01982005
-      \endverb
-    \endentry
-    \entry{zeller1966}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=42c30921767388ef520a8d6cdb257f27}{%
-           family={Ehlich},
-           familyi={E\bibinitperiod},
-           given={H.},
-           giveni={H\bibinitperiod}}}%
-        {{hash=4545f8aa2ce9846ca875ab49f6fa72dd}{%
-           family={Zeller},
-           familyi={Z\bibinitperiod},
-           given={K.},
-           giveni={K\bibinitperiod}}}%
-      }
-      \strng{namehash}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{fullhash}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{fullhashraw}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{bibnamehash}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{authorbibnamehash}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{authornamehash}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{authorfullhash}{067bab2a0b6ad3e0e643a975928d7e53}
-      \strng{authorfullhashraw}{067bab2a0b6ad3e0e643a975928d7e53}
-      \field{sortinit}{E}
-      \field{sortinithash}{8da8a182d344d5b9047633dfc0cc9131}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Mathematische Annalen}
-      \field{month}{06}
-      \field{title}{Auswertung der Normen von Interpolationsoperatoren}
-      \field{year}{1966}
-      \field{pages}{105\bibrangedash 112}
-      \range{pages}{8}
-    \endentry
     \entry{GenzPackage_1987}{article}{}{}
       \name{author}{1}{}{%
         {{hash=deb53ea799914f6f6fa4ab58a89c12ee}{%
@@ -749,34 +673,6 @@
       \verb 10.1007/s002110050231
       \endverb
     \endentry
-    \entry{smolyak1963}{article}{}{}
-      \name{author}{1}{}{%
-        {{hash=f734e8b2b9252b9b06f47fc8dbe8e59d}{%
-           family={Smolyak},
-           familyi={S\bibinitperiod},
-           given={S.\bibnamedelimi A.},
-           giveni={S\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
-      }
-      \strng{namehash}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{fullhash}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{fullhashraw}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{bibnamehash}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{authorbibnamehash}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{authornamehash}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{authorfullhash}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \strng{authorfullhashraw}{f734e8b2b9252b9b06f47fc8dbe8e59d}
-      \field{sortinit}{S}
-      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Dokl. Akad. Nauk SSSR}
-      \field{number}{5}
-      \field{title}{Quadrature and interpolation formulas for tensor products of certain classes of functions}
-      \field{volume}{148}
-      \field{year}{1963}
-      \field{pages}{1042\bibrangedash 1045}
-      \range{pages}{4}
-    \endentry
     \entry{TasmanianLibrary_2013}{misc}{}{}
       \name{author}{4}{}{%
         {{hash=32c2db792e557edfc9a38532824df259}{%
@@ -852,34 +748,6 @@
       \field{labeltitlesource}{title}
       \field{howpublished}{Retrieved March 29, 2025, from \url{https://www.sfu.ca/~ssurjano/integration.html}}
       \field{title}{Virtual Library of Simulation Experiments: Test Functions and Datasets}
-    \endentry
-    \entry{temlyakov1986}{article}{}{}
-      \name{author}{1}{}{%
-        {{hash=df422056d1b9999d4c5288962efbd325}{%
-           family={Temlyakov},
-           familyi={T\bibinitperiod},
-           given={V.\bibnamedelimi N.},
-           giveni={V\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
-      }
-      \strng{namehash}{df422056d1b9999d4c5288962efbd325}
-      \strng{fullhash}{df422056d1b9999d4c5288962efbd325}
-      \strng{fullhashraw}{df422056d1b9999d4c5288962efbd325}
-      \strng{bibnamehash}{df422056d1b9999d4c5288962efbd325}
-      \strng{authorbibnamehash}{df422056d1b9999d4c5288962efbd325}
-      \strng{authornamehash}{df422056d1b9999d4c5288962efbd325}
-      \strng{authorfullhash}{df422056d1b9999d4c5288962efbd325}
-      \strng{authorfullhashraw}{df422056d1b9999d4c5288962efbd325}
-      \field{sortinit}{T}
-      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Math. USSR-Izv.}
-      \field{number}{2}
-      \field{title}{Approximation of periodic functions of several variables by trigonometric polynomials, and widths of some classes of functions}
-      \field{volume}{27}
-      \field{year}{1986}
-      \field{pages}{285\bibrangedash 322}
-      \range{pages}{38}
     \endentry
     \entry{Ullrich_2020}{article}{}{}
       \name{author}{1}{}{%
@@ -961,49 +829,6 @@
       \endverb
       \verb{url}
       \verb http://www.jstor.org/stable/106408
-      \endverb
-    \endentry
-    \entry{WASILKOWSKI19951}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=ab21cf4a9685e3666d079c9e6c155c55}{%
-           family={Wasilkowski},
-           familyi={W\bibinitperiod},
-           given={G.W.},
-           giveni={G\bibinitperiod}}}%
-        {{hash=6a6924b41fb8d53700ae54c85f31620d}{%
-           family={Wozniakowski},
-           familyi={W\bibinitperiod},
-           given={H.},
-           giveni={H\bibinitperiod}}}%
-      }
-      \strng{namehash}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{fullhash}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{fullhashraw}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{bibnamehash}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{authorbibnamehash}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{authornamehash}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{authorfullhash}{525b5c16d9017a802dd048841d0d6bb8}
-      \strng{authorfullhashraw}{525b5c16d9017a802dd048841d0d6bb8}
-      \field{sortinit}{W}
-      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{issn}{0885-064X}
-      \field{journaltitle}{Journal of Complexity}
-      \field{number}{1}
-      \field{title}{Explicit Cost Bounds of Algorithms for Multivariate Tensor Product Problems}
-      \field{volume}{11}
-      \field{year}{1995}
-      \field{pages}{1\bibrangedash 56}
-      \range{pages}{56}
-      \verb{doi}
-      \verb https://doi.org/10.1006/jcom.1995.1001
-      \endverb
-      \verb{urlraw}
-      \verb https://www.sciencedirect.com/science/article/pii/S0885064X85710011
-      \endverb
-      \verb{url}
-      \verb https://www.sciencedirect.com/science/article/pii/S0885064X85710011
       \endverb
     \endentry
   \enddatalist

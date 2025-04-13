@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber main"] 1744551062.12829 "main.bcf" "main.bbl" "main" 1744552326.29735 0
-  "main.bcf" 1744552326.12997 110556 17968ff6f94b37a2d8001071eb0adad9 "lualatex"
-  "references.bib" 1744545972.46676 6452 77fd7a3dc0e1c26f55f1c54d9ceacb14 ""
+["biber main"] 1744558499.9548 "main.bcf" "main.bbl" "main" 1744558964.87055 0
+  "main.bcf" 1744558964.70652 110976 2f5f2b2bc988697b82a7c912af88a7b0 "lualatex"
+  "references.bib" 1744557361.86222 8371 a56cd5ea7711fb4ec6473621a2eadc10 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["lualatex"] 1744552324.73344 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1744552326.29757 0
+["lualatex"] 1744558963.26412 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1744558964.87077 0
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmmono10-regular.luc" 1744541893.30377 81837 7091cab214959897276971ec5ae174a1 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmmono12-regular.luc" 1744541893.84338 81772 3c7ee58f252b3fad09bb8f8cb378bbcb ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bolditalic.luc" 1744541893.43745 136491 57d9e2a74b597a71db0a3943169a8157 ""
@@ -17,11 +17,13 @@
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-regular.luc" 1744541892.41782 127670 aa0bc69e37a0327ab31f5f335b78c1f7 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman17-regular.luc" 1744541893.62505 128921 07adb2945086befdab18eaf5c6037ccb ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman6-regular.luc" 1744541893.53516 128516 d25d6ff58e1079629986a51338bfd167 ""
+  "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman7-italic.luc" 1744556673.48728 135991 6e3f1875e96acfbf75dd538e620aebfd ""
+  "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-italic.luc" 1744556673.44918 135546 98648c18c53bf275bfef31aa0399c747 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-regular.luc" 1744541893.48462 128146 725fe7f98082e4316d75600fb2954f4b ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman9-regular.luc" 1744541893.18433 127960 76b82d68861ba8202eca352d1e6ca2a0 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmromancaps10-regular.luc" 1744541893.28275 120247 547538728e5d8f437131d444b5015426 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz" 1744541892.32591 676339 d4e074ad3f15f513e5368d2c1d573873 ""
-  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1744552324.63553 40372 d6331436fdada951a61514fb1ce36b0c ""
+  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1744558963.15185 41770 24154034f53351e23e3b164dd995b474 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/lm/lmmono10-regular.otf" 1255129361 64684 15a2082c8e31f411875a86ea2d29a0ee ""
   "/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/lm/lmmono12-regular.otf" 1255129361 63012 5db69ad3c177ae338e5504d80d9e9eb6 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/lm/lmroman10-bolditalic.otf" 1255129361 118204 71070e299cf063366237473420b0fea8 ""
@@ -232,12 +234,12 @@
   "figures/oscillatory/realization2_dim5_scale4.pdf" 1743595128.12017 26926 dd3913106d787d2d234811ff6c7ba530 ""
   "figures/oscillatory/realization3_dim5_scale4.pdf" 1743595128.12051 26833 0b9b147f41fefa6c226b3ddca345f792 ""
   "figures/zhou/distro_dim5_scale4.pdf" 1743595128.12106 26698 1d9622479a9aa9748169251c4e47a19c ""
-  "macros.tex" 1744541735.99391 3619 61b2056968e3f2fd8688a34843966c29 ""
-  "main.aux" 1744552326.12622 12708 def9779054a892653973b8d457decc43 "lualatex"
-  "main.bbl" 1744551063.46581 33731 94126d640246ce0ffafaefb026456647 "biber main"
-  "main.out" 1744552326.12772 2409 eeb4481e5fc94ea5a85857d4b8331d3a "lualatex"
-  "main.run.xml" 1744552326.1305 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
-  "main.tex" 1744552324.63553 40372 d6331436fdada951a61514fb1ce36b0c ""
+  "macros.tex" 1744556772.23882 3696 3af94ee8d285a6406967285868e0051c ""
+  "main.aux" 1744558964.70252 13519 7cc806488f648c9781800a92e6962b24 "lualatex"
+  "main.bbl" 1744558501.14477 41192 2e80a1e5573ee5156edcf01a4ed84258 "biber main"
+  "main.out" 1744558964.70417 2409 eeb4481e5fc94ea5a85857d4b8331d3a "lualatex"
+  "main.run.xml" 1744558964.70706 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
+  "main.tex" 1744558963.15185 41770 24154034f53351e23e3b164dd995b474 ""
   (generated)
   "main.aux"
   "main.bcf"
