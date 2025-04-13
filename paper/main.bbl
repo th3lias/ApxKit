@@ -1,5 +1,5 @@
 % $ biblatex auxiliary file $
-% $ biblatex bbl format version 3.2 $
+% $ biblatex bbl format version 3.3 $
 % Do not modify the above lines!
 %
 % This is an auxiliary file used by the 'biblatex' package.
@@ -18,8 +18,8 @@
 
 
 \refsection{0}
-  \datalist[entry]{nty/global//global/global}
-    \entry{BarthelmannHighDim_2000}{article}{}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{BarthelmannHighDim_2000}{article}{}{}
       \name{author}{3}{}{%
         {{hash=43ada668475c4133c15f2467be6a7c9a}{%
            family={Barthelmann},
@@ -42,10 +42,12 @@
       }
       \strng{namehash}{ce1c3593d3d0e39e6c41170852642b37}
       \strng{fullhash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{fullhashraw}{ce1c3593d3d0e39e6c41170852642b37}
       \strng{bibnamehash}{ce1c3593d3d0e39e6c41170852642b37}
       \strng{authorbibnamehash}{ce1c3593d3d0e39e6c41170852642b37}
       \strng{authornamehash}{ce1c3593d3d0e39e6c41170852642b37}
       \strng{authorfullhash}{ce1c3593d3d0e39e6c41170852642b37}
+      \strng{authorfullhashraw}{ce1c3593d3d0e39e6c41170852642b37}
       \field{sortinit}{B}
       \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
       \field{labelnamesource}{author}
@@ -57,7 +59,7 @@
       \field{pages}{273\bibrangedash 288}
       \range{pages}{16}
     \endentry
-    \entry{Berut_2004}{article}{}
+    \entry{Berut_2004}{article}{}{}
       \name{author}{2}{}{%
         {{hash=33e4cc6b193a3e4ec6b54626971e6656}{%
            family={Berrut},
@@ -75,10 +77,12 @@
       }
       \strng{namehash}{35dd0b14a6f2474f5223b341a78ed0ea}
       \strng{fullhash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{fullhashraw}{35dd0b14a6f2474f5223b341a78ed0ea}
       \strng{bibnamehash}{35dd0b14a6f2474f5223b341a78ed0ea}
       \strng{authorbibnamehash}{35dd0b14a6f2474f5223b341a78ed0ea}
       \strng{authornamehash}{35dd0b14a6f2474f5223b341a78ed0ea}
       \strng{authorfullhash}{35dd0b14a6f2474f5223b341a78ed0ea}
+      \strng{authorfullhashraw}{35dd0b14a6f2474f5223b341a78ed0ea}
       \field{sortinit}{B}
       \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
       \field{labelnamesource}{author}
@@ -91,7 +95,7 @@
       \field{pages}{501\bibrangedash 517}
       \range{pages}{17}
     \endentry
-    \entry{BurkardtCounting_2014}{article}{}
+    \entry{BurkardtCounting_2014}{article}{}{}
       \name{author}{1}{}{%
         {{hash=c63195a3096a750af40e6f1b75e2b1c4}{%
            family={Burkardt},
@@ -101,10 +105,12 @@
       }
       \strng{namehash}{c63195a3096a750af40e6f1b75e2b1c4}
       \strng{fullhash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{fullhashraw}{c63195a3096a750af40e6f1b75e2b1c4}
       \strng{bibnamehash}{c63195a3096a750af40e6f1b75e2b1c4}
       \strng{authorbibnamehash}{c63195a3096a750af40e6f1b75e2b1c4}
       \strng{authornamehash}{c63195a3096a750af40e6f1b75e2b1c4}
       \strng{authorfullhash}{c63195a3096a750af40e6f1b75e2b1c4}
+      \strng{authorfullhashraw}{c63195a3096a750af40e6f1b75e2b1c4}
       \field{sortinit}{B}
       \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
       \field{labelnamesource}{author}
@@ -112,7 +118,7 @@
       \field{title}{Counting Abscissas in Sparse Grids}
       \field{year}{2014}
     \endentry
-    \entry{Coleman_SmoylakGithub_2013}{misc}{}
+    \entry{Coleman_SmoylakGithub_2013}{misc}{}{}
       \name{author}{2}{}{%
         {{hash=7f9223db252ff3d53ccdc9692fb6eb99}{%
            family={Coleman},
@@ -127,10 +133,12 @@
       }
       \strng{namehash}{8cc71c0c88cf4c38c927318a22231f53}
       \strng{fullhash}{8cc71c0c88cf4c38c927318a22231f53}
+      \strng{fullhashraw}{8cc71c0c88cf4c38c927318a22231f53}
       \strng{bibnamehash}{8cc71c0c88cf4c38c927318a22231f53}
       \strng{authorbibnamehash}{8cc71c0c88cf4c38c927318a22231f53}
       \strng{authornamehash}{8cc71c0c88cf4c38c927318a22231f53}
       \strng{authorfullhash}{8cc71c0c88cf4c38c927318a22231f53}
+      \strng{authorfullhashraw}{8cc71c0c88cf4c38c927318a22231f53}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{labelnamesource}{author}
@@ -139,7 +147,45 @@
       \field{title}{Efficient Implementations of Smolyak's Algorithm for Function Approximation in Python and Julia}
       \field{year}{2013}
     \endentry
-    \entry{Dung_Temlyakov_Ullrich_2018}{book}{}
+    \entry{DELVOS198299}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=27fc08ed6db5d506f8d9a5aade199501}{%
+           family={Delvos},
+           familyi={D\bibinitperiod},
+           given={F.-J.},
+           giveni={F\bibinithyphendelim J\bibinitperiod}}}%
+      }
+      \strng{namehash}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{fullhash}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{fullhashraw}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{bibnamehash}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{authorbibnamehash}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{authornamehash}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{authorfullhash}{27fc08ed6db5d506f8d9a5aade199501}
+      \strng{authorfullhashraw}{27fc08ed6db5d506f8d9a5aade199501}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0021-9045}
+      \field{journaltitle}{Journal of Approximation Theory}
+      \field{number}{2}
+      \field{title}{d-Variate Boolean interpolation}
+      \field{volume}{34}
+      \field{year}{1982}
+      \field{pages}{99\bibrangedash 114}
+      \range{pages}{16}
+      \verb{doi}
+      \verb https://doi.org/10.1016/0021-9045(82)90085-5
+      \endverb
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/0021904582900855
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/0021904582900855
+      \endverb
+    \endentry
+    \entry{Dung_Temlyakov_Ullrich_2018}{book}{}{}
       \name{author}{3}{}{%
         {{hash=adb6c4c0ef3c38ed774b39c8718ea2ed}{%
            family={Dũng},
@@ -169,13 +215,16 @@
       }
       \strng{namehash}{f59f827a1f8ec18c0ff21cc582e4d426}
       \strng{fullhash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{fullhashraw}{f59f827a1f8ec18c0ff21cc582e4d426}
       \strng{bibnamehash}{f59f827a1f8ec18c0ff21cc582e4d426}
       \strng{authorbibnamehash}{f59f827a1f8ec18c0ff21cc582e4d426}
       \strng{authornamehash}{f59f827a1f8ec18c0ff21cc582e4d426}
       \strng{authorfullhash}{f59f827a1f8ec18c0ff21cc582e4d426}
+      \strng{authorfullhashraw}{f59f827a1f8ec18c0ff21cc582e4d426}
       \strng{editorbibnamehash}{99080f98f08f7ae8b204b1ccac16acd0}
       \strng{editornamehash}{99080f98f08f7ae8b204b1ccac16acd0}
       \strng{editorfullhash}{99080f98f08f7ae8b204b1ccac16acd0}
+      \strng{editorfullhashraw}{99080f98f08f7ae8b204b1ccac16acd0}
       \field{sortinit}{D}
       \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
       \field{labelnamesource}{author}
@@ -183,7 +232,7 @@
       \field{title}{Hyperbolic Cross approximation}
       \field{year}{2018}
     \endentry
-    \entry{GenzPackage_1987}{article}{}
+    \entry{GenzPackage_1987}{article}{}{}
       \name{author}{1}{}{%
         {{hash=deb53ea799914f6f6fa4ab58a89c12ee}{%
            family={Genz},
@@ -196,10 +245,12 @@
       }
       \strng{namehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{fullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{fullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{bibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{authorbibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{authornamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{authorfullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorfullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
       \field{extraname}{1}
       \field{sortinit}{G}
       \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
@@ -211,7 +262,7 @@
       \field{pages}{337\bibrangedash 340}
       \range{pages}{4}
     \endentry
-    \entry{GenzTesting_1984}{inproceedings}{}
+    \entry{GenzTesting_1984}{inproceedings}{}{}
       \name{author}{1}{}{%
         {{hash=deb53ea799914f6f6fa4ab58a89c12ee}{%
            family={Genz},
@@ -221,10 +272,12 @@
       }
       \strng{namehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{fullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{fullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{bibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{authorbibnamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{authornamehash}{deb53ea799914f6f6fa4ab58a89c12ee}
       \strng{authorfullhash}{deb53ea799914f6f6fa4ab58a89c12ee}
+      \strng{authorfullhashraw}{deb53ea799914f6f6fa4ab58a89c12ee}
       \field{extraname}{2}
       \field{sortinit}{G}
       \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
@@ -236,7 +289,7 @@
       \field{pages}{81\bibrangedash 94}
       \range{pages}{14}
     \endentry
-    \entry{HarrisNumpy_2020}{article}{}
+    \entry{HarrisNumpy_2020}{article}{}{}
       \name{author}{26}{}{%
         {{hash=db2b4761cc46be347b418e68660c9554}{%
            family={Harris},
@@ -381,10 +434,12 @@
       }
       \strng{namehash}{754b3dec5e203c19b9a5798bbb902222}
       \strng{fullhash}{bba1ae456b2655ba67cf6cee2d142dfc}
+      \strng{fullhashraw}{bba1ae456b2655ba67cf6cee2d142dfc}
       \strng{bibnamehash}{754b3dec5e203c19b9a5798bbb902222}
       \strng{authorbibnamehash}{754b3dec5e203c19b9a5798bbb902222}
       \strng{authornamehash}{754b3dec5e203c19b9a5798bbb902222}
       \strng{authorfullhash}{bba1ae456b2655ba67cf6cee2d142dfc}
+      \strng{authorfullhashraw}{bba1ae456b2655ba67cf6cee2d142dfc}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
       \field{labelnamesource}{author}
@@ -407,7 +462,7 @@
       \verb https://doi.org/10.1038/s41586-020-2649-2
       \endverb
     \endentry
-    \entry{JuddSmolyak_2014}{article}{}
+    \entry{JuddSmolyak_2014}{article}{}{}
       \name{author}{4}{}{%
         {{hash=7fa8c147c0c943e5602616a80ff907a9}{%
            family={Judd},
@@ -435,10 +490,12 @@
       }
       \strng{namehash}{4c8a6345db0fd1ca46929a123bd63ed5}
       \strng{fullhash}{3551044831f00c91cd0df568c3a55163}
+      \strng{fullhashraw}{3551044831f00c91cd0df568c3a55163}
       \strng{bibnamehash}{4c8a6345db0fd1ca46929a123bd63ed5}
       \strng{authorbibnamehash}{4c8a6345db0fd1ca46929a123bd63ed5}
       \strng{authornamehash}{4c8a6345db0fd1ca46929a123bd63ed5}
       \strng{authorfullhash}{3551044831f00c91cd0df568c3a55163}
+      \strng{authorfullhashraw}{3551044831f00c91cd0df568c3a55163}
       \field{sortinit}{J}
       \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
       \field{labelnamesource}{author}
@@ -450,7 +507,7 @@
       \field{pages}{92\bibrangedash 123}
       \range{pages}{32}
     \endentry
-    \entry{klimke2004}{article}{}
+    \entry{klimke2004}{article}{}{}
       \name{author}{3}{}{%
         {{hash=b10a66cffcf588674c19a4bc907eed2a}{%
            family={KLIMKE},
@@ -470,10 +527,12 @@
       }
       \strng{namehash}{4ef0f2ec91799326d323a3e9c3096420}
       \strng{fullhash}{4ef0f2ec91799326d323a3e9c3096420}
+      \strng{fullhashraw}{4ef0f2ec91799326d323a3e9c3096420}
       \strng{bibnamehash}{4ef0f2ec91799326d323a3e9c3096420}
       \strng{authorbibnamehash}{4ef0f2ec91799326d323a3e9c3096420}
       \strng{authornamehash}{4ef0f2ec91799326d323a3e9c3096420}
       \strng{authorfullhash}{4ef0f2ec91799326d323a3e9c3096420}
+      \strng{authorfullhashraw}{4ef0f2ec91799326d323a3e9c3096420}
       \field{sortinit}{K}
       \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
       \field{labelnamesource}{author}
@@ -489,7 +548,7 @@
       \verb 10.1142/S0218488504003181
       \endverb
     \endentry
-    \entry{Krieg_2020}{article}{}
+    \entry{Krieg_2020}{article}{}{}
       \name{author}{2}{}{%
         {{hash=c0b6f2e1df73527d61b8b0d8b81f9424}{%
            family={Krieg},
@@ -508,10 +567,12 @@
       }
       \strng{namehash}{3387a83b81a130854c5670b30b917089}
       \strng{fullhash}{3387a83b81a130854c5670b30b917089}
+      \strng{fullhashraw}{3387a83b81a130854c5670b30b917089}
       \strng{bibnamehash}{3387a83b81a130854c5670b30b917089}
       \strng{authorbibnamehash}{3387a83b81a130854c5670b30b917089}
       \strng{authornamehash}{3387a83b81a130854c5670b30b917089}
       \strng{authorfullhash}{3387a83b81a130854c5670b30b917089}
+      \strng{authorfullhashraw}{3387a83b81a130854c5670b30b917089}
       \field{sortinit}{K}
       \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
       \field{labelnamesource}{author}
@@ -535,7 +596,7 @@
       \verb http://dx.doi.org/10.1007/s10208-020-09481-w
       \endverb
     \endentry
-    \entry{lagrange1901}{article}{}
+    \entry{lagrange1901}{article}{}{}
       \name{author}{1}{}{%
         {{hash=2f1b86dc45b8fc797ca1fcda98fa5403}{%
            family={Lagrange},
@@ -558,13 +619,16 @@
       }
       \strng{namehash}{2f1b86dc45b8fc797ca1fcda98fa5403}
       \strng{fullhash}{2f1b86dc45b8fc797ca1fcda98fa5403}
+      \strng{fullhashraw}{2f1b86dc45b8fc797ca1fcda98fa5403}
       \strng{bibnamehash}{2f1b86dc45b8fc797ca1fcda98fa5403}
       \strng{authorbibnamehash}{2f1b86dc45b8fc797ca1fcda98fa5403}
       \strng{authornamehash}{2f1b86dc45b8fc797ca1fcda98fa5403}
       \strng{authorfullhash}{2f1b86dc45b8fc797ca1fcda98fa5403}
+      \strng{authorfullhashraw}{2f1b86dc45b8fc797ca1fcda98fa5403}
       \strng{translatorbibnamehash}{729c3d3718cbd1dbb432c2ff1a01f163}
       \strng{translatornamehash}{729c3d3718cbd1dbb432c2ff1a01f163}
       \strng{translatorfullhash}{729c3d3718cbd1dbb432c2ff1a01f163}
+      \strng{translatorfullhashraw}{729c3d3718cbd1dbb432c2ff1a01f163}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
       \field{labelnamesource}{author}
@@ -573,7 +637,43 @@
       \field{title}{Lectures on Elementary Mathematics. On the employment of curves in the solution of problems}
       \field{year}{1901}
     \endentry
-    \entry{TasmanianLibrary_2013}{misc}{}
+    \entry{novakRitter1996}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=b921f8d0f55cbd9ffb8bc589460082f9}{%
+           family={Novak},
+           familyi={N\bibinitperiod},
+           given={Erich},
+           giveni={E\bibinitperiod}}}%
+        {{hash=c4ada04a4ca5499333195c24dfce4878}{%
+           family={Ritter},
+           familyi={R\bibinitperiod},
+           given={Klaus},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{f54e400205446843acf6022e87953c76}
+      \strng{fullhash}{f54e400205446843acf6022e87953c76}
+      \strng{fullhashraw}{f54e400205446843acf6022e87953c76}
+      \strng{bibnamehash}{f54e400205446843acf6022e87953c76}
+      \strng{authorbibnamehash}{f54e400205446843acf6022e87953c76}
+      \strng{authornamehash}{f54e400205446843acf6022e87953c76}
+      \strng{authorfullhash}{f54e400205446843acf6022e87953c76}
+      \strng{authorfullhashraw}{f54e400205446843acf6022e87953c76}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Numerische Mathematik}
+      \field{month}{10}
+      \field{title}{High Dimensional Integration of Smooth Functions over Cubes}
+      \field{volume}{75}
+      \field{year}{1996}
+      \field{pages}{79\bibrangedash 97}
+      \range{pages}{19}
+      \verb{doi}
+      \verb 10.1007/s002110050231
+      \endverb
+    \endentry
+    \entry{TasmanianLibrary_2013}{misc}{}{}
       \name{author}{4}{}{%
         {{hash=32c2db792e557edfc9a38532824df259}{%
            family={Stoyanov},
@@ -598,10 +698,12 @@
       }
       \strng{namehash}{0e789307ecb878a1e1b7d91ae25e0c65}
       \strng{fullhash}{02469b1806e1c9cb54e4ffb5aafbd94b}
+      \strng{fullhashraw}{02469b1806e1c9cb54e4ffb5aafbd94b}
       \strng{bibnamehash}{0e789307ecb878a1e1b7d91ae25e0c65}
       \strng{authorbibnamehash}{0e789307ecb878a1e1b7d91ae25e0c65}
       \strng{authornamehash}{0e789307ecb878a1e1b7d91ae25e0c65}
       \strng{authorfullhash}{02469b1806e1c9cb54e4ffb5aafbd94b}
+      \strng{authorfullhashraw}{02469b1806e1c9cb54e4ffb5aafbd94b}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
       \field{labelnamesource}{author}
@@ -619,7 +721,7 @@
       \verb https://github.com/ORNL/Tasmanian
       \endverb
     \endentry
-    \entry{Simulationlib_2013}{misc}{}
+    \entry{Simulationlib_2013}{misc}{}{}
       \name{author}{2}{}{%
         {{hash=9d0b2e066d115b60f8338d117d33e4a6}{%
            family={Surjanovic},
@@ -634,10 +736,12 @@
       }
       \strng{namehash}{d5f5953c94336d105225c13157ce8c25}
       \strng{fullhash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{fullhashraw}{d5f5953c94336d105225c13157ce8c25}
       \strng{bibnamehash}{d5f5953c94336d105225c13157ce8c25}
       \strng{authorbibnamehash}{d5f5953c94336d105225c13157ce8c25}
       \strng{authornamehash}{d5f5953c94336d105225c13157ce8c25}
       \strng{authorfullhash}{d5f5953c94336d105225c13157ce8c25}
+      \strng{authorfullhashraw}{d5f5953c94336d105225c13157ce8c25}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
       \field{labelnamesource}{author}
@@ -645,7 +749,7 @@
       \field{howpublished}{Retrieved March 29, 2025, from \url{https://www.sfu.ca/~ssurjano/integration.html}}
       \field{title}{Virtual Library of Simulation Experiments: Test Functions and Datasets}
     \endentry
-    \entry{Ullrich_2020}{article}{}
+    \entry{Ullrich_2020}{article}{}{}
       \name{author}{1}{}{%
         {{hash=c3bf7b6ce42130c996a85cdfc707454b}{%
            family={Ullrich},
@@ -658,10 +762,12 @@
       }
       \strng{namehash}{c3bf7b6ce42130c996a85cdfc707454b}
       \strng{fullhash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{fullhashraw}{c3bf7b6ce42130c996a85cdfc707454b}
       \strng{bibnamehash}{c3bf7b6ce42130c996a85cdfc707454b}
       \strng{authorbibnamehash}{c3bf7b6ce42130c996a85cdfc707454b}
       \strng{authornamehash}{c3bf7b6ce42130c996a85cdfc707454b}
       \strng{authorfullhash}{c3bf7b6ce42130c996a85cdfc707454b}
+      \strng{authorfullhashraw}{c3bf7b6ce42130c996a85cdfc707454b}
       \field{sortinit}{U}
       \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
       \field{labelnamesource}{author}
@@ -684,7 +790,7 @@
       \verb http://dx.doi.org/10.1016/j.jco.2020.101484
       \endverb
     \endentry
-    \entry{waring1779}{article}{}
+    \entry{waring1779}{article}{}{}
       \name{author}{1}{}{%
         {{hash=30658e1f475cc29810c276e9f64fa87d}{%
            family={Waring},
@@ -697,10 +803,12 @@
       }
       \strng{namehash}{30658e1f475cc29810c276e9f64fa87d}
       \strng{fullhash}{30658e1f475cc29810c276e9f64fa87d}
+      \strng{fullhashraw}{30658e1f475cc29810c276e9f64fa87d}
       \strng{bibnamehash}{30658e1f475cc29810c276e9f64fa87d}
       \strng{authorbibnamehash}{30658e1f475cc29810c276e9f64fa87d}
       \strng{authornamehash}{30658e1f475cc29810c276e9f64fa87d}
       \strng{authorfullhash}{30658e1f475cc29810c276e9f64fa87d}
+      \strng{authorfullhashraw}{30658e1f475cc29810c276e9f64fa87d}
       \field{sortinit}{W}
       \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
       \field{labelnamesource}{author}

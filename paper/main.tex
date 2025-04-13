@@ -128,28 +128,32 @@ g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\),
 i.e.\ \(B(X) \defn \set{x \in X: \norm[X]{x} \leq 1}\). With \(X^\star\) we 
 denote the space of linear, bounded functionals on \(X\), i.e. \(X^\star \defn 
 \set{x^\star\from X \to \R \mid x^\star \text{ is linear and bounded}}\).
-
-
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interpolation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Given \(i \in \N\) and distinct data points \(\XX_i \defn \set{x_{i, 0}, \dots, x_{i, n}} \subseteq D \subseteq \R\) and function values \(\YY_i \defn \set{y_{i, 0}, \dots, y_{i, n}} = \set{f(x_{i, 0}), \dots, f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact that there exists a polynomial \(p\) of degree \(n\) such that \[
-    p(x_{i, j}) = y_{i, j},\quad j \in \indexset[0]{n}.
+Given \(i \in \N\) and distinct data points \(\XX_i \defn \set{x_{i, 0}, \dots, x_{i, n}} \subseteq D \subseteq \R\), function values \(\YY_i \defn \set{y_{i, 0}, \dots, y_{i, n}} = \set{f(x_{i, 0}), \dots, f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact that there exists a polynomial \(\cI(\ZZ_i)\) of degree \(n\) such that \[
+    \cI(\ZZ_i) = y_{i, j},\quad j \in \indexset[0]{n}.
 \]
-We then call \(p\) an \emph{interpolating} polynomial. It can be written down explicitly as \begin{equation}\label{interpolating_polynomial}
-    p = \sum_{j=0}^n y_{i, j} \ell_{i, j}
+for \(\ZZ_i \defn (\XX_i, \YY_i)\)
+We then call \(\cI(\ZZ_i)\) an \emph{interpolating} polynomial. It can be written down explicitly as \begin{equation}\label{interpolating_polynomial}
+    \cI(\ZZ_i) = \sum_{j=0}^n y_{i, j} \ell_{i, j}
 \end{equation}
 for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single dimension, the formula for this basis is, quite intuitively, \(\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, m}}{x_{i, j}-x_{i, m}}\) \cite{waring1779, lagrange1901}. We call this type of interpolation \emph{Lagrange interpolation}.
 
-Suppose now we have \(d\) point sets \(\XX_i\). By taking the full tensor product of point sets \[
-    \XX \defn \bigotimes_{i=1}^d \XX_i,
-\] we may identify our grid by \(\XX = \set{\bfx_\bfj}_{\bfj}\) and suppose again we have according function evaluations \(\YY \defn \set{y_\bfj}_\bfj = \set{f(\bfx_\bfj)}_\bfj\) with \(\bfj \in \set{0,1,\dots,n}^d\) for \(f: D \to \R\), \(D \subseteq \R^d\) and \((n+1)^d\) points. Then, we may construct an interpolating polynomial as in \cref{interpolating_polynomial}. Indeed, the general formula stays the same but we take tensor product of basis functions, i.e. \begin{equation}\label{multivariateLagrange}
+Suppose now we have \(d\) point sets \(\XX_i\). By taking the full cartesian product of point sets \[
+    \XX \defn \bigtimes_{i=1}^d \XX_i,
+\] we may identify our grid by \(\XX = \set{\bfx_\bfj}_{\bfj}\) with \(\bfj \in \set{0,1,\dots,n}^d\) and suppose we have according function evaluations \(\YY \defn \set{y_\bfj}_\bfj = \set{f(\bfx_\bfj)}_\bfj\) for \(f: D \to \R\), \(D \subseteq \R^d\). Let \(\ZZ \defn (\XX, \YY)\). Then, we may construct an interpolating polynomial as in \cref{interpolating_polynomial}. Indeed, the general formula stays the same but we take tensor product of basis functions, i.e. \begin{equation}\label{multivariateLagrange}
     \ell_\bfj(\bfw) = \bigotimes_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d \prod_{\substack{k=0 \\ k \neq j_i}}^n \frac{w_i - x_{i, k}}{x_{i, j_i} - x_{i, k}}
 \end{equation}
-and the sum now ranges over all multiindices \(\bfj = (j_1, \dots, j_d) \in \N_0^d\) with \(\bfj \in \set{0, 1, \dots, n}^d\). Formula \ref{multivariateLagrange} is not a great choice for performing calculations on hardware. Leaving the storage of \((n+1)^d\) grid points aside, for computing one evaluation of the map \(\bfw \mapsto p(\bfw)\), one must compute the sum of \((n+1)^d\) terms, where in each summand, the evaluation of \(d\) one dimensional basis functions is computed, each of which need a product over \(n\) terms. Hence, this evaluation is as costly as \(\cO((n+1)^d d n)\). Although one can counter the costly computation of the interpolating polynomial at a given point by reformulating the above (numerically instable) Lagrange interpolator in it's barycentric form
+and the sum now ranges over all multiindices \(\bfj = (j_1, \dots, j_d) \in \N_0^d\) with \(\bfj \in \set{0, 1, \dots, n}^d\). We denote \begin{equation}\label{eq:interpolantdD}
+	\cI(\ZZ) \defn \sum_{j_1 = 0}^n \cdots \sum_{j_d = 0}^n y_{j_1, \dots, j_d} \ell_{j_1, \dots, j_d}
+\end{equation}
+for the interpolant on \(\R^d\).
+Formula \ref{multivariateLagrange} is not a great choice for performing calculations on hardware. Leaving the storage of \((n+1)^d\) grid points aside, for computing one evaluation of the map \(\bfw \mapsto \cI(\ZZ)(\bfw)\), one must compute the sum of \((n+1)^d\) terms, where in each summand, the evaluation of \(d\) one dimensional basis functions is computed, each of which need a product over \(n\) terms. Hence, this evaluation is as costly as \(\cO((n+1)^d d n)\). Although one can counter the costly computation of the interpolating polynomial at a given point by reformulating the above (numerically instable) Lagrange interpolator in it's barycentric form
 \begin{equation}\label{eq:multivarBarycentric}
-    p(\bfw) = \frac{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d) y_\bfj}{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d)}
+    \cI(\ZZ)(\bfw) = \frac{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d) y_\bfj}{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d)}
 \end{equation}
 where
 \begin{equation}\label{eq:barycentricBasis}
@@ -159,11 +163,11 @@ and \(m_{j_k}\) are the \emph{barycentric} weights which can be computed in \(\c
 \begin{equation}\label{barycentric_weights_chebyshev}
     m_{0} = \frac{1}{2},\quad m_{l} = (-1)^l,\, l \in \indexset[1]{n-1},\, m_n = \frac{1}{2}(-1)^n
 \end{equation}
-for the \emph{Chebyshev Gauss-Lobatto} (or just Chebyshev extrema), in which \[
+for the \emph{Chebyshev Gauss-Lobatto} (or just Chebyshev extrema), in which \begin{equation}\label{ChebyshevGaussLobatto}
     x_l \defn x_{l,n} \defn - \cos\frac{l \pi}{n},\, l \in \indexset[0]{n}.
-\]
+\end{equation}
 
-Similarly, for the Chebyshev points of the second kind
+Similarly, for the \emph{Chebyshev points of the second kind}
 \begin{equation}\label{eq:chebyPts2}
     x_l = x_{l, n} = \cos \frac{l \pi}{n},\, l \in \indexset[0]{n}
 \end{equation}
@@ -181,11 +185,44 @@ In this case, one achieves an evaluation time of \(\cO((n+1)^d)\).
 \section{Smolyak's Algorithm \& Sparse Grids}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The question arises, how one may reduce the complexity of exact interpolation on grids. The central idea of sparse grids is to \emph{not} take the full tensor product of one dimensional point sets. Firstly, take a variable number of points in each direction, i.e.\ let \(\XX_i \defn \set{x_{1, i}, \dots, x_{N(i), i}}\) and take \(\cI_0 \defn 0\), \(\Delta_i \defn \cI_i - \cI_{i-1}\). Then Smolyak's algorithm is given in a simple recursive manner
+The following description follows \cite{BarthelmannHighDim_2000}.
+The question arises, how one may reduce the complexity of exact interpolation on grids. The central idea of sparse grids is to \emph{not} take the full tensor product of one dimensional point sets but restrict the number of simultaneously large directions. To that end, take a variable number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, \dots, x_{N(j), j}}\) and take \(\cI_0 \defn 0\), \(\Delta_i \defn \cI_i - \cI_{i-1}\). Then Smolyak's algorithm is given in a simple recursive manner
 \begin{equation}\label{Smolyak}
     \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \Delta_{j_1} \otimes \cdots \otimes \Delta_{j_d} = \cA_{q-1, d}+\sum_{\norm[1]{\bfj}=q} \Delta_{j_1} \otimes \cdots \otimes \Delta_{j_d}
 \end{equation}
-and \(\cA_{d-1, d} = 0\). Evidently, in no iteration of the algorithm do we have to discard old values.
+with \(\cA_{d-1, d} = 0\) and \(d \leq q\) and \(\bfj\), \(\cI\) as before. Evidently, only a relatively small number of knots, through the restriction \(\norm[1]{\bfj} \leq q\), is needed. Hence \(q\) can be thought of as a resolution parameter. By this form, one only needs to assess the function values at the \emph{sparse grid} \[
+	H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times \cdots \times \XX_{j_d}
+\]
+where the number of nodes in a given direction can never be \emph{large} for all directions simultaneously. The number of knots \(N(j)\) used for each one--dimensional interpolation rule \(\cI_j\) remains to be specified. In order to obtain nested points, i.e. \(\XX_j \subset \XX_{j+1}\) and thus \(H(q, d) \subset H(q+1,d)\) together with collocation rules such as \cref{ChebyshevGaussLobatto} or \cref{eq:chebyPts2} it is usual to choose a doubling rule, i.e. \[
+	N(1) = 1,\quad N(j) = 2^{j-1}+1,\, j > 1.
+\]
+
+\subsection{Polynomial Exactness}
+Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 1]^d\) for interpolation of unkowns instead of a general domain \(D\). In this case, Smolyak's algorithm is well known to exactly reproduce functions on certain polynomial spaces given that the rules \(\cI_j\) are exact on some nested spaces \(V_j\). The following is well--known, see \cite{DELVOS198299} or \cite{novakRitter1996}.
+\begin{lem}
+	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) and assume \[
+		V_1 \subset V_2 \subset V_3 \subset \dots,
+	\]
+	then \(\cA(q, d)\) is exact on \[
+		\sum_{\norm[1]{j}=q} V_{i_1} \otimes \cdots \otimes V_{i_d}
+	\]
+\end{lem}
+\cite{BarthelmannHighDim_2000} showed the following.
+\begin{lem}
+	\(\cA(q, d)\) is exact on \[
+		E(q, d) \defn \sum_{\norm[1]{\bfj} = q} \pols[m_{j_1}-1]{\R, \R} \otimes \cdots \otimes \pols[m_{j_d}-1]{\R, \R}
+	\]
+	and \(\cA(d+k, d)\) is exact for all polynomials of degree \(k\).
+\end{lem}
+Indeed, the following also follows from \cite{BarthelmannHighDim_2000}. Note that we now abuse the notation from \ref{interpolating_polynomial} by writing \(\cI(\ZZ) \revdefn \cI(f, \XX) \revdefn \cI(f)\).
+\begin{lem}
+	Assume \(\XX_1 \subset \XX_2 \subset \dots\) and \(\cI_j(f)(x) = f(x)\) for every \(f \in C([-1, 1])\) and every \(x \in \XX_j\). Then \[
+		\cA(q, d)(f)(x) = f(x)
+	\]
+	for every \(f \in C([-1, 1]^d)\) and \(x \in H(q, d)\).
+\end{lem}
+
+\subsection{Error Bounds}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -267,18 +304,7 @@ $n+1$-th Chebyshev polynomial and thus given by
     \set{\cos \frac{\left(2n+1\right) \pi}{2N+2} \mid n \in 
     \indexset[0]{N}}.
 \end{equation}
-Similarly, the Chebyshev points of the second kind are defined
-\begin{equation}\label{eq:chebyPts2}
-    \ZZ_C^{(2)}(N) \defn
-    \set{\cos \frac{n\pi}{N} \mid n \in \indexset[0]{N}}.
-\end{equation}
-In either of these cases, the weights \(w_n\) admit nice closed forms as \(w_n^{(k)}: k \in \set{1,2}\) dependent on which point set is in use as
-\begin{equation}\label{eq:weightsChebyshev}
-    w_n^{(1)} = {\left(-1\right)}^n \sin \frac{\left(2n+1\right) \pi}{2n+2}, \quad w_n^{(2)} = {\left(-1\right)}^n \cdot \begin{cases}
-        1/2 &n \in \set{0, N}\\
-        1 &\text{else.}
-    \end{cases}
-\end{equation}
+
 
 \subsection*{Interpolation in \(d\) dimensions} In principle, one may just 
 \emph{extend} one dimensional interpolation rules to dimension \(d\) by 
@@ -347,14 +373,7 @@ Specifically, we will use a doubling rule such that
 Clearly, the usual representation of the Lagrange polynomial 
 \Cref{eq:lagrangeInterpolation} fits this framework. For the barycentric form, 
 see \cite{Berut_2004}, one obtains the \(d\)-variate interpolation
-\begin{equation}\label{eq:multivarBarycentric} % TODO: Don't know where this 
-%comes from
-    \cI(\FF)(x) \defn \frac{\sum_{n_1=1}^{m(N_1)} b^{(1)}_{n_1}(x_1) \cdots \sum_{n_d=1}^{m(N_d)}b^{(d)}_{n_d}(x_d) f(z_{n_1}, \dots, z_{n_d})}{\sum_{n_1=1}^{m(N_1)} b^{(1)}_{n_1}(x_1) \cdots \sum_{n_d=1}^{m(N_d)}b^{(d)}_{n_d}(x_d)}
-\end{equation}
-where
-\begin{equation}\label{eq:barycentricBasis}
-    b^{(k)}_{n_k}(x) \defn \frac{w_{n_k}}{x-z_{n_k}} \mid k \in [d].
-\end{equation}
+
 % TODO: We have never defined when a point se is admissible. (No point twice 
 %etc.)
 If a rule yielding admissible point sets, like Chebyshev's rules 
