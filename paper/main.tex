@@ -169,14 +169,18 @@ Hence, in this construction, one cannot get around this bottleneck.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The following description follows \cite{BarthelmannHighDim_2000}.
-The question arises, how one may reduce the complexity of exact interpolation on grids. The central idea of sparse grids is to \emph{not} take the full tensor product of one dimensional point sets but restrict the number of simultaneously large directions. To that end, take a variable number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, \dots, x_{N(j), j}}\) and take \(\cI_0 \defn 0\), \(\Delta_i \defn \cI_i - \cI_{i-1}\). Then Smolyak's algorithm is given in a simple recursive manner
+The question arises, how one may reduce the complexity of exact interpolation on grids. The central idea of sparse grids is to \emph{not} take the full tensor product of one dimensional point sets but restrict the number of simultaneously large directions. To that end, take a variable number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, \dots, x_{N(j), j}}\) and \(\cI_j\) the corresponding one--dimensional interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then Smolyak's algorithm is given in a simple recursive manner
 \begin{equation}\label{Smolyak}
-    \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \Delta_{j_1} \otimes \cdots \otimes \Delta_{j_d} = \cA_{q-1, d}+\sum_{\norm[1]{\bfj}=q} \Delta_{j_1} \otimes \cdots \otimes \Delta_{j_d}
+    \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d \Delta_{j_k} = \cA(q-1, d)+\sum_{\norm[1]{\bfj}=q} \bigotimes_{k=1}^d \Delta_{j_k}
 \end{equation}
 with \(\cA_{d-1, d} = 0\) and \(d \leq q\) and \(\bfj\), \(\cI\) as before. Evidently, only a relatively small number of knots, through the restriction \(\norm[1]{\bfj} \leq q\), is needed. Hence \(q\) can be thought of as a resolution parameter. By this form, one only needs to assess the function values at the \emph{sparse grid} \[
 	H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times \cdots \times \XX_{j_d}
 \]
-where the number of nodes in a given direction can never be \emph{large} for all directions simultaneously. The number of knots \(N(j)\) used for each one--dimensional interpolation rule \(\cI_j\) remains to be specified. In order to obtain nested points, i.e. \(\XX_j \subset \XX_{j+1}\) and thus \(H(q, d) \subset H(q+1,d)\) together with collocation rules such as \cref{ChebyshevGaussLobatto} or \cref{eq:chebyPts2} it is usual to choose a doubling rule, i.e. \[
+where the number of nodes in a given direction can never be \emph{large} for all directions simultaneously. Hence, given that \(\XX_j \subset \XX_{j+1}\), one may write the interpolator given by Smolyak's construction as \[
+	\cA(q, d)(f) = \sum_{\norm[1]{\bfj} \leq q} f(\bfx_\bfj) \ell_\bfj,
+\]
+which is familiar from before.
+The number of knots \(N(j)\) used for each one--dimensional interpolation rule \(\cI_j\) remains to be specified. In order to obtain nested points, i.e. \(\XX_j \subset \XX_{j+1}\) and thus \(H(q, d) \subset H(q+1,d)\) together with collocation rules such as \cref{ChebyshevGaussLobatto} or \cref{eq:chebyPts2} it is usual to choose a doubling rule, i.e. \[
 	N(1) = 1,\quad N(j) = 2^{j-1}+1,\, j > 1.
 \]
 
@@ -236,7 +240,7 @@ Here, \(L^2_w\) is the \(L^2\) weighted by the Chebyshev weight \begin{equation}
 \end{equation}
 In that case, it is well known that the Chebyshev polynomials
 \begin{equation}\label{chebyshev_polynomials}
-	q_n(x) \defn \cos(n \arccos(x)).
+	T_n(x) \defn \cos(n \arccos(x)).
 \end{equation}
 form an orthonormal basis.
 \newpage
