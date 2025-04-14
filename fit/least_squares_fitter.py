@@ -19,3 +19,8 @@ class LeastSquaresFitter(Fitter):  # TODO[Elias] Rework this to fit the new sign
         """
         assert self.is_fittable(f), "The function is not fittable by this model."
         return LeastSquaresModel(f=f, dim=self.grid.input_dim, upper=self.grid.upper_bound, lower=self.grid.lower_bound)
+
+#   When we implement the functionality to support wavelet bases, the question is how to design the wavelets.
+#   The idea is to take, as usual, wavelets with thin support around the grid points.
+#   But this becomes nontrivial when we have random grids.
+#   Do we need to save the grid in order to evaluate the interpolant later?
