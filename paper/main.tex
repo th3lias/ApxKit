@@ -247,18 +247,18 @@ form an orthonormal basis.
 Contrary to the construction of exactly interpolating approximants in the case 
 of Smolyak's algorithm, Least Squares is a conceptually simpler algorithm. We 
 are given the overdetermined system \[
-    Vz = y
+    A\bfz = \bfy
 \]
-where \(V \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(z \in \R^{m}\) with the smallest error
+where \(A \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(\bfz \in \R^{m}\) with the smallest error
 \begin{equation}\label{eq:leastSquares}
-    \inf_{z \in \R^{m}} \norm[]{Vz - y}.
+    \inf_{\bfz \in \R^{m}} \norm[]{A\bfz - \bfy}.
 \end{equation}
 It is further known that, in case of a full--rank matrix \(V\), the unique 
 solution to \Cref{eq:leastSquares} is given by 
 \begin{equation}\label{eq:ls_solution_moore_penrose_inverse}
-	z_* = \left(V^\top V\right)^{-1} V^\top y \in \R^m.
+	\bfz_* = \left(A^\top A\right)^{-1} A^\top \bfy \in \R^m.
 \end{equation}
-In our specific case of polynomial interpolation, \(V\) is the Vandermonde 
+In our specific case of polynomial interpolation, \(A\) is the Vandermonde 
 matrix, consisting of basis polynomials \(b_1, b_2, \dots, b_m\) evaluated at 
 the $n$ different sampled points \(x_1, x_2, \dots, x_n\) in \(D \subseteq 
 \R^d\) and \(\bfy\) is the vector of function values sampled from the unknown 
@@ -270,13 +270,15 @@ the approximation problem \[
 can analytically be expressed as \[
     p_* \from D \to \R,\quad t \mapsto \sum_{j=1}^m z_{*_{j}} b_j(t)
 \]
-where \(z_* = \left(z_{*_j}\right)_{j=1}^m\) is given by 
+where \(\bfz_* = \left(z_{*_j}\right)_{j=1}^m\) is given by 
 \Cref{eq:ls_solution_moore_penrose_inverse}.
 For the later implementation, we choose the basis polynomials \(b_j\) as the \(j\)--th weighted Chebyshev polynomial \Cref{chebyshev_polynomials}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theoretical Guarantees}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% TODO: Eventuell diesen Abschnitt an ein Banachraum Setting anpassen, wie in https://arxiv.org/pdf/2401.02220.
 
 The notation in the following is borrowed from \cite{Ullrich_2020}.
 In this section we introduce a formal setting to the former considerations. That is, we consider a Hilbert space \(H\) of real-valued functions on a set \(D\) such that point evaluation \(\delta_x: f \mapsto \int_D f\ \d \delta_x = f(x)\)
@@ -481,7 +483,7 @@ the different distributions for each function class
  the performance of each algorithm based on multiple realizations. 
 % TODO: Describe the Tabular in more detail and also the distribution images.
 % TODO: Also mention the distribution of the errors.
-The results are also depicted in the following tables and figures.
+The results are also depicted in the following tables and figures.\footnote{For a concise overview on our data, we did decide to not depict results for coarse resolutions and dimensions. The reader is invited to try out our implementation for such cases himself.}
 
 
 % TODO: Make plots and tables here
