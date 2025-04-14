@@ -173,7 +173,7 @@ The question arises, how one may reduce the complexity of exact interpolation on
 \begin{equation}\label{Smolyak}
     \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d \Delta_{j_k} = \cA(q-1, d)+\sum_{\norm[1]{\bfj}=q} \bigotimes_{k=1}^d \Delta_{j_k}
 \end{equation}
-with \(\cA_{d-1, d} = 0\) and \(d \leq q\) and \(\bfj\), \(\cI\) as before. Evidently, only a relatively small number of knots, through the restriction \(\norm[1]{\bfj} \leq q\), is needed. Hence \(q\) can be thought of as a resolution parameter. By this form, one only needs to assess the function values at the \emph{sparse grid} \[
+with \(\cA(q, d) = 0,\, q < d\) and \(\bfj\), \(\cI\) as before. Evidently, only a relatively small number of knots, through the restriction \(\norm[1]{\bfj} \leq q\), is needed. To be precise, \(\cO(n (\log n)^{d-1})\) points are needed. Hence \(q\) can be thought of as a resolution parameter. By this form, one only needs to assess the function values at the \emph{sparse grid} \[
 	H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times \cdots \times \XX_{j_d}
 \]
 where the number of nodes in a given direction can never be \emph{large} for all directions simultaneously. Hence, given that \(\XX_j \subset \XX_{j+1}\), one may write the interpolator given by Smolyak's construction as \[
