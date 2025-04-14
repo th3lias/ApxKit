@@ -45,27 +45,15 @@
 \numberwithin{equation}{section}
 
 \include{macros}
-
-% %%%%%%%%%%%%% %
-% General TODOs %
-% TODO: Cite Barthelmann, Ritter, Novak in the beginning
-% TODO: Bold notation for vectors???
-% TODO: Check for present tense (this should be the goal)?!´
-% TODO: Cite Numpy or actually Scipy?
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
 
 \begin{document}
-\title{Least Squares and Smolyak's Algorithm} % TODO: Add small title in 
-%[]-Brackets
+\title{Least Squares and Smolyak's Algorithm}
 
 
-% With the following definition of the authors, we don't have the unnecessary 
-%extra comma before "And Mario 
-% Ullrich"
 \author{Jakob Eggl, Elias Mindlberger and Mario Ullrich}
 \date{\today}
 \keywords{Polynomial interpolation, Sparse-Grids, Least-Squares, Smolyak} % 
-%TODO: Add or Adapt Keywords
-
 
 %\author{Jakob Eggl}
 %\address{Institute of Analysis, Johannes Kepler University Linz, Austria.}
@@ -88,10 +76,7 @@ dimensional settings using some of the most popular algorithms available. We
 compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using 
 random data. We empirically confirm that interpolation using LSQ performs 
 equally as good on smooth and better on non-smooth functions if SA is given 
-\(n\) and LSQ is given \(2 \cdot n\) points.\newline
-Code available at: 
-\url{https://github.com/th3lias/NumericalExperiments}
-% TODO: Make repository public or maybe change owner
+\(n\) and LSQ is given \(2 \cdot n\) points.
 \end{abstract}
 
 \maketitle
@@ -101,25 +86,27 @@ Code available at:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Smolyak's Algorithm on Sparse Grids has been of high theoretical and practical 
-interest for a long time. % TODO: Make this longer
+
+Smolyak's algorithm on Sparse Grids has been of high theoretical and practical 
+interest for a long time \cite{BarthelmannHighDim_2000,smolyak1963,Coleman_SmoylakGithub_2013,JuddSmolyak_2014}. In \cite{Krieg_2020}, it was recently found that Smolyak's algorithm is \emph{not} optimal in the sampling numbers
+\[
+    e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
+    \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
+\]
+disproving conjecture 5.26 in \cite{Dung_Temlyakov_Ullrich_2018}. We extend upon these theoretical findings with an empirical study comparing the performance of Smolyak's algorithm and Least Squares on simple function recovery problems on the unit cube. Our implementation is available at \url{https://github.com/th3lias/NumericalExperiments}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Notation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO: Probably rewrite a bit
-
 We denote the indexset containing all indices $i\in \Z$ 
 where $m\leq i\leq n$ for $m\leq n$ with \(\indexset[m]{n}\). For the set of 
-polynomials \(p \from V \to W\) of maximal 
-degree \(N\) and sets \(V, W \subseteq \C^K,\ K \in \N\) we use the notation 
-\(p \in \pols[N]{V, W}\). \jakob{I mean this is the general notation but do we 
-even have polynomials that map to $\C^K$.}
-We use \(f \propto g\) for functions \(f, g\) to denote \(f = 
-c g\) for a constant \(c \in \R\) and \(f \lesssim g\) to denote \(f \leq c 
-g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\), 
+polynomials \(p\) from \(D \subseteq \C^K,\, K \in \N\) to the field \(\F\) of maximal 
+degree \(N\) we use the notation 
+\(p \in \pols[N]{V, \F}\).
+We use \(f \lesssim g\) to denote \(f \leq c 
+g\) for functions \(f, g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\), 
 i.e.\ \(B(X) \defn \set{x \in X: \norm[X]{x} \leq 1}\). With \(X^\star\) we 
 denote the space of linear, bounded functionals on \(X\), i.e. \(X^\star \defn 
 \set{x^\star\from X \to \R \mid x^\star \text{ is linear and bounded}}\).
@@ -174,6 +161,7 @@ one gets the closed form
     \end{cases}
 \end{equation}
 In this case, one achieves an evaluation time of \(\cO((n+1)^d)\).
+Hence, in this construction, one cannot get around this bottleneck.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -243,257 +231,56 @@ Moreover, for the Sobolev--Hilbert space \(H_w^k\) with \begin{equation}
 with \(\inner{f}{b_\ell}\) being the \(\ell\)--th Fourier coefficient, one obtains \[
 	\norm[0]{f-\cA(q, d)(f)} \leq c_{d, k} n^{-k} \left(\log n\right)^{(k+1)(d-1)}\norm[k]{f}.
 \]
-Here, \(L^2_w\) is the weighted \(L^2\) the Chebyshev weight \((1-x^2)^{-1/2}\). In that case, it is well known that the Chebyshev polynomials form an orthonormal basis.
-
+Here, \(L^2_w\) is the \(L^2\) weighted by the Chebyshev weight \begin{equation}\label{chebyshev_weight}
+	\left(1-x^2\right)^{-1/2}.
+\end{equation}
+In that case, it is well known that the Chebyshev polynomials
+\begin{equation}\label{chebyshev_polynomials}
+	q_n(x) \defn \cos(n \arccos(x)).
+\end{equation}
+form an orthonormal basis.
 \newpage
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Smolyak's Algorithm}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% TODO[jakob]: We need citations here
-Smolyak's Algorithm is determinstic and can be used in various settings. These include but are not limited to
-\begin{enumerate}
-    \item function interpolation,
-    \item numerical integration,
-    \item solving ODEs and PDEs,
-    \item \(\cdots\)
-\end{enumerate}
-\subsection*{Interpolation in one dimension}
-In the onedimensional setting it is well known that for a given function 
-$f\from\R\to\R$ and a point collection \(\ZZ 
-\defn \set{z_n}_{n=0}^N \subseteq \R\), containing of $N+1$ different points, 
-there exists an interpolating polynomial $i\in\pols[N]{\R,\R}$ such that for 
-all $j\in\indexset[0]{N}$ we have $i(z_j) = f(z_j)$.
-To find the polynomial \(i\), one can, among other available methods, choose to 
-perform Lagrange Interpolation which yields an explicit construction of the form
-\begin{equation}\label{eq:lagrangeInterpolation}
-    \mathcal{I}\left(\FF\right)(x) = \sum_{n=0}^N f(z_n) \ell_n(x)\quad \text{ 
-    s.t. }\quad \ell_n(x) \defn \prod_{\substack{j = 0\\j \neq n}}^N 
-    \frac{x-z_j}{z_n-z_j}
-\end{equation}
-where \(\FF \defn \set{\left[z_n, f\left(z_n\right)\right]}_{n=0}^{N}\). We set 
-\(i \defn \cI(\FF)\). Note that \(\cI\) is a mapping from data, which may be 
-seen as arranged in a \(2 \times N\) matrix, to an \(N\)-degree polynomial. 
-Thus \(\cI\from \R^{2 \times N} \to \pols[N]{\R,\R}\), since each basis 
-function \(\ell_n(x)\) is a polynomial of degree \(N\). Therefore, if \(f \in 
-\pols[N]{\R, \R}\), one obtains \(i = f\). Moreover, \(i\) is interpolating 
-since \(\ell_n(z_j) = \delta_{n}(j)\). \newline
-
-% TODO: Cite the problems? There are surely papers, where those problems were 
-%addressed
-% TODO: (3) is almost saying the same as (2)
-Even though \Cref{eq:lagrangeInterpolation} has nice theoretical properties, 
-it is suboptimal for practical settings due to the following facts. (1) If a 
-node \(z_n\) is close to a node \(z_j\) such that \(j \neq n\), computing the 
-product \(\ell_n(x)\) becomes numerically unstable. (2) The addition of new 
-data \(\left(z, f(z)\right)\) requires to recalculate all basis functions again 
-in \(\cO(N^2)\) time. (3) To compute \(i(x)\) in this form requires 
-computational complexity of \(\cO(N^2)\). This does not mean that one has to 
-abandon Lagrange Interpolation at once. We may write 
-\Cref{eq:lagrangeInterpolation} in a much more stable way as
-\begin{equation}\label{eq:barycentricLagrange}
-    i(x) \defn \cI(\FF)(x) = \frac{\sum_{n=0}^N \frac{w_n}{x-z_n} f(z_n)}{\sum_{n=0}^N \frac{w_n}{x-z_n}}
-\end{equation}
-for \(w_n \in \R : n \in \indexset[0]{N}\). If the weights \(w_n\) are known, 
-computing 
-\(i(x)\) in this form admits a complexity of \(\cO(N)\). Luckily, the weights 
-have a closed-form, analytic solution for many deterministic point sets used in 
-practice and are hence considered to be computable in \(\cO(1)\) time. Thus, 
-adding a new data pair \((z, f(z))\) requires total complexity of \(\cO(N)\) 
-for the recomputation of said weights. The general identity
- \[
-    w_n = \frac{1}{\ell'(x_n)}
-\]
-always holds. A survey on the \emph{barycentric} form of Lagrange interpolation can be found in \cite{Berut_2004}. To specify the above, consider the set of \emph{equidistant} 
-nodes \(\set{z_n \defn 2/n}_{n=0}^{N} \subset [-1, 1]\). Then 
-\begin{equation}\label{eq:weightsEquidistant}
-    w_n = {\left(-1\right)}^n \binom{N}{n}.
-\end{equation}
-For large \(N\), \Cref{eq:weightsEquidistant} is problematic since weights 
-\(w_i, w_j: i \neq j\) now may vary by factors as large as 
-\(\cO\left(2^N\right)\). This means that interpolation in equispaced points is 
-susceptible to the \emph{Runge phenomenon}. For this interpolation problem to 
-be well posed one should use point sets with asymptotic density \(\rho(x) 
-\propto 1/\sqrt{1-x^2}\). This is called the \emph{Chebyshev} density.\newline 
-Many point sets admit this asymptotic density, for 
-example the Chebyshev points of the first kind are given as the roots of the 
-$n+1$-th Chebyshev polynomial and thus given by
-% TODO: Note that they're defined differently if we only need n points. 
-%TODO: We would have \cos \frac{(2k+1)\pi}{2n} for that
-\begin{equation}\label{eq:chebyPts1}
-    \ZZ_C^{(1)}(N) \defn 
-    \set{\cos \frac{\left(2n+1\right) \pi}{2N+2} \mid n \in 
-    \indexset[0]{N}}.
-\end{equation}
-
-
-\subsection*{Interpolation in \(d\) dimensions} In principle, one may just 
-\emph{extend} one dimensional interpolation rules to dimension \(d\) by 
-forming the tensor product of all interpolation rules. To specify, take the one 
-dimensional algorithm
-% TODO: Notation passt nicht ganz zu vorher zusammen. 1d Lagrange hatte Punkte 
-% TODO: x_i mit i=0,...,n. Hier haben wir 1-m(N)
-\begin{equation}\label{eq:general1dInterpolation}
-    \cI^{(N)}(\FF(N))(x) = \sum_{n = 1}^{m(N)} b_{n}(x) f(z_n)
-\end{equation}
-% TODO: Allow m\from\N_0\to\N_0 or do we need >0?
-such that \(\cI^{(N)}(\FF(N))\) is interpolating on the data \(\FF(N) \defn 
-\set{\left[z_n, f\left(z_n\right)\right]}_{n=1}^{m(N)}\) with basis functions 
-\(b_n \in C[0, 1]\) by having \(b_n(z_j) = \delta_n(j)\). Note that 
-$m\from\N_0\to\N_0$ is a common abstraction for the number of points used to 
-interpolate a given function. In the case of special interpolation methods or 
-their corresponding underlying point set, $m$ will be specified.\newline
-To obtain a set of $d$-dimensional point sets from $d$ such one-dimensional 
-rules like \Cref{eq:chebyPts1} or \Cref{eq:chebyPts2}, one uses the usual 
-cartesian product % TODO: I don't think we get all combinations out of this 
-%formula, therefore I adapted it a bit
-%\begin{equation}\label{eq:cartProduct}
-%    \ZZ(N, d) \defn \ZZ(N_1) \times \cdots \times \ZZ(N_d) \defn 
-%    \bigcup_{j=1}^{d} \bigcup_{n_j=1}^{m(N_j)} \set{\left(z_{n_1}, \dots, 
-%    z_{n_d}\right)}
-%\end{equation}
-\begin{equation}\label{eq:cartProduct}
-	\ZZ(N, d) \defn \ZZ(N_1) \times \cdots \times \ZZ(N_d) \defn 
-	\bigcup_{n_1=1}^{m(N_1)} \cdots \bigcup_{n_d=1}^{m(N_d)} 
-	\set{\left(z_{n_1}^{(1)}, \dots, z_{n_d}^{(d)}\right)}
-\end{equation}
-% Here again: Is N\in\N_0^d or \in \N^d?
-where $z_j^{(i)}$ denotes the $j$-th point of the $i$-th rule and \(N \defn 
-\left(N_1, \dots, N_d\right) \in \N_0^d\) and $z_n\defn (z_{n_1}, \ldots, 
-z_{n_d})$ as the usual notation for multi-indices. Using the 
-tensor product formula, one obtains the very general expression
-\begin{equation}\label{eq:tensorProdInterp}
-    {\left( \cI^{(N_1)} \otimes \cdots \otimes \cI^{(N_d)} \right)}(\FF)
-    = \sum_{n_1 = 1}^{m(N_1)} \cdots \sum_{n_d = 1}^{m(N_d)} \left( b_{n_1} 
-    \otimes \cdots \otimes b_{n_d} \right) f(z_{n})
-\end{equation}
-where \(\FF \defn \bigcup_{j=1}^d \FF(N_j)\).  % TODO: This is wrong. If we 
-%would only take the union, we still have 1d points. We need the cartesian 
-%product somehow
-In this case, the tensor product 
-interpolation is a mapping of the form
-\begin{equation}\label{eq:tensorProdInterpMappingSpecification}
-    \bigotimes_{j=1}^d \cI^{(N_j)}\from \R^{d \times \left(\prod_{j=1}^d 
-    m(N_j) \right)} \to \pols[\left(\max \set{m(N_j)} \right)]{\R^d, \R}.
-\end{equation}
-We denote \(\cI^{(N)} \defn \bigotimes_{j=1}^d \cI^{(N_j)}\). If the basis functions \(b_n\) are scalar-valued, their tensor product is just
-\begin{equation}\label{eq:tensorProdFunc}
-    \left( \bigotimes_{n=1}^d b_n \right)(x_1, \dots, x_d) \defn \prod_{n \in [d]} b_n(x_n).
-\end{equation}
-% TODO: New Section? Or at least mention what Smolyak is
-In Smolyak's Algorithm, the function \(m\from \N_ \to \N_0\) is used as a 
-growth 
-rule specifying how many points are to be used by the interpolant. 
-Specifically, we will use a doubling rule such that
-\[
-    m(n) \defn \begin{cases}
-        2^{n-1}+1 &n \geq 2\\
-        1 &\text{else}.
-    \end{cases}
-\]
-Clearly, the usual representation of the Lagrange polynomial 
-\Cref{eq:lagrangeInterpolation} fits this framework. For the barycentric form, 
-see \cite{Berut_2004}, one obtains the \(d\)-variate interpolation
-
-% TODO: We have never defined when a point se is admissible. (No point twice 
-%etc.)
-If a rule yielding admissible point sets, like Chebyshev's rules 
-\Cref{eq:chebyPts1} or \Cref{eq:chebyPts2}, is available, the only thing 
-left to do is to specify how many nodes $m(N_j)$ to pick in each 
-dimension. If this number is large simultaneously for all dimensions,
-\Cref{eq:tensorProdInterp} becomes intractable very quickly. Smolyak's 
-algorithm defines a resolution-like number \(q \in \N\) to specify how 
-close-meshed points should be picked. It proceeds by taking all multi-indices 
-\(N\) with \(1\)-norm less equal to \(q\) and specifies to interpolate 
-with the algorithm % TODO: Cite "Smolyak" or is this already "common" knowledge?
-\begin{equation}\label{eq:smolyak}
-    \cA(q, d)\left(\XX\right) \defn \sum_{\norm[1]{N} \leq q} \cI^{(N)}(\XX(N)).
-\end{equation}
-Note that, with this construction \(q \geq d\) is necessary. The set \(\XX\) in 
-this case is % TODO: Again wrong because taking the union of subsets of \R 
-% TODO: is still 1d
-\begin{equation}\label{eq:indexGrid}
-    \XX(N) \defn \bigcup_{n \in [d]} \FF(N_n)
-\end{equation}
-All points used by this algorithm are then
-\begin{equation}\label{eq:sparseGrid}
-    \XX \defn \XX^{\leq}(q) \defn \bigcup_{\norm[1]{N} \leq q} \XX(N).
-\end{equation}
-% TODO: When is a point set "nice"?
-% TODO: Again, \N_0 instead of \N
-We call \(\XX\) a \emph{sparse grid}. We use \(\XX^{=}(q)\) for denoting the 
-corresponding set replaced with the rule that it takes all vectors \(N_0\in\N^d 
-\) with \(\norm[1]{N} = q\). In case the point set is nice, for example for 
-Chebyshev points, one obtains a \emph{nesting} of sparse grids for increasing 
-fineness scales: \(\XX^{\leq}(q) \subset \XX^{\leq}(q+1)\). This construction 
-has the advantage that in the case of applying this algorithm on a computer, 
-storing whole grid $\XX$ in the memory is not necessary. It is enough to use 
-the refinements of each level-increase \(q \mapsto q+1\) and interpolate at 
-each such level separately, each time discarding the 
-old values. We may thus define the difference operator
-\begin{equation}\label{eq:differenceOp}
-    \Delta^{(q)} \defn \left( \bigotimes_{\norm[1]{N}=q+1} \cI^{(N)} \right) - \left( \bigotimes_{\norm[1]{N} = q} \cI^{(N)} \right)
-\end{equation}
-Now, Smolyak's algorithm can be written as
-\begin{equation}\label{eq:SmolyakWithDifferences1}
-    \cA(q, d) \defn \sum_{\norm[1]{N} \leq q} \Delta^{(q)}(\XX(N))
-\end{equation}
-or equivalently
-\begin{equation}\label{eq:SmolyakWithDifferences2}
-    \cA(q, d) = \cA(q-1, d) + \sum_{\norm[1]{N}=q} \cI^{(N)}(\XX(N))
-\end{equation}
-with \(\cI^{(0)} = 0\).
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Least Squares}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% TODO: Bad notation, as we are using $^\star$ for the optimal solution and
-% TODO: We are using $^\star$ for the functionals
 
 Contrary to the construction of exactly interpolating approximants in the case 
 of Smolyak's algorithm, Least Squares is a conceptually simpler algorithm. We 
 are given the overdetermined system \[
     Vz = y
 \]
-where \(V \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(z \in \C^{m}\) with the smallest error
+where \(V \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(z \in \R^{m}\) with the smallest error
 \begin{equation}\label{eq:leastSquares}
     \inf_{z \in \R^{m}} \norm[]{Vz - y}.
 \end{equation}
 It is further known that, in case of a full--rank matrix \(V\), the unique 
 solution to \Cref{eq:leastSquares} is given by 
 \begin{equation}\label{eq:ls_solution_moore_penrose_inverse}
-	z^\star = \left(V^\top V\right)^{-1} V^\top y \in \R^m.
+	z_* = \left(V^\top V\right)^{-1} V^\top y \in \R^m.
 \end{equation}
-    
-% TODO: Describe that we are using Chebyshev Polynomials, i.e. the exact same 
-% polynomials as Smolyak
 In our specific case of polynomial interpolation, \(V\) is the Vandermonde 
 matrix, consisting of basis polynomials \(b_1, b_2, \dots, b_m\) evaluated at 
-the $n$ different sampled points \(x_1, x_2, \dots, x_n\) in \(\Omega \subseteq 
-\R^d\) and \(y\) is the vector of function values sampled from the unknown 
-function \(f\from \Omega \to \R\), i.e.\ \(y = \left(f(x_j)\right)_{j=1}^n\). 
+the $n$ different sampled points \(x_1, x_2, \dots, x_n\) in \(D \subseteq 
+\R^d\) and \(\bfy\) is the vector of function values sampled from the unknown 
+function \(f\from D \to \R\), i.e.\ \(\bfy = \left(f(\bfx_j)\right)_{j=1}^n\). 
 As for such points, the Vandermonde matrix is never singular, the solution to 
 the approximation problem \[
     \inf_{p} \norm[]{f-p}
 \]
 can analytically be expressed as \[
-    p^\star\from \Omega \to \R, t \mapsto \sum_{j=1}^m z_j^\star b_j(t)
+    p_* \from D \to \R,\quad t \mapsto \sum_{j=1}^m z_{*_{j}} b_j(t)
 \]
-where \(z^\star = \left(z_j\star\right)_{j=1}^m\) is given by 
+where \(z_* = \left(z_{*_j}\right)_{j=1}^m\) is given by 
 \Cref{eq:ls_solution_moore_penrose_inverse}.
+For the later implementation, we choose the basis polynomials \(b_j\) as the \(j\)--th weighted Chebyshev polynomial \Cref{chebyshev_polynomials}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theoretical Guarantees}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The notation in the following is borrowed from \cite{Ullrich_2020}.
-In this section we introduce a formal setting to the former considerations. That is, we consider a Hilbert space \(H\) of real-valued functions on a set \(D\) such that point evaluation \[
-    \delta_x: f \mapsto \int_D f\ \d \delta_x = f(x)
-\]
+In this section we introduce a formal setting to the former considerations. That is, we consider a Hilbert space \(H\) of real-valued functions on a set \(D\) such that point evaluation \(\delta_x: f \mapsto \int_D f\ \d \delta_x = f(x)\)
 is a bounded, linear functional on \(H\).
-%TODO: Mention >>Weighted<< Least Squares?
 The general formulation of Least Squares allows for a broad class of recovery 
 problems. In our specific case, the function recovery of real--valued functions 
 on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a 
@@ -508,7 +295,7 @@ and \(x_1, \dots, x_n \in D\). Whenever \(f \in V_k\), then, of course, \(f = A_
 \begin{equation}\label{eq:worstCaseError}
     e\left(A_{n,k}, H\right) \defn \sup_{f \in B(H)} \norm[L_2]{f - A_{n,k}(f)},
 \end{equation}
-we denote the worst case error of \(A_{n,k}\), where we measure the error of the reconstruction in the space \(L_2 \defn L_2(D, \Sigma, \mu)\) of square integrable functions on \(D\) with respect to the measure \(\mu\), such that \(H\) is embedded into \(L_2\). In light of this, the \(n\)--th minimal error is denoted by \[
+we denote the worst case error of \(A_{n,k}\), where we measure the error of the reconstruction in the space \(L_2 \defn L_2(D, \Sigma, \mu)\) of square integrable functions on \(D\) with respect to the measure \(\mu\), such that \(H\) is embedded into \(L_2\). In light of this, the \(n\)--th minimal error (also called \(n\)--th sampling number) is denoted by \[
     e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
     \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
 \]
@@ -554,6 +341,7 @@ approximation numbers on the Sobolev space of dominating mixed smoothness,
     &\defn \set{f \in L_2\left(\T^d\right) : \norm[H]{f}^2 \defn \sum_{m \in 
     \N_0^d} \prod_{j=1}^d (1+\abs{m_j}^{2s}) \inner{f}{b_m}^2_{L_2} < \infty}
 \end{align*}
+with \(\T^d \cong [0, 1)^d\) 
 where \(b_m \defn \otimes_{j=1}^d b_{m_j}^{(1)}\) and \(m = (m_1, \dots, m_d)\) with \begin{align*}
     b_{2m}^{(1)} &\defn \sqrt{2}\cos(2\pi m x)\\
     b_{2m-1}^{(1)} &\defn \sqrt{2}\sin(2\pi m x)
@@ -574,80 +362,75 @@ much better relative number of points used for LSQ function recovery vs. SA
 recovery than guaranteed in this section, i.e. better constants than explicitly 
 known before. It remains an open problem to rigorously improve upon the 
 constants in \Cref{eq:conclusio}.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimental Findings}\label{sec:experimentalFindings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TODO: Add what computer and software we used etc. Also how much RAM was used
 % TODO: And also, how long it took.
-% TODO: Mention, that we use the chebyshev polynomials here as our basis!
-% TODO: Mention, that we used a seed for deterministic randomness
-% TODO: Least Squares groß oder klein?
-% TODO: Sparse Grid groß oder klein?
-% TODO: Mention Implementation details (Tasmanian) and self-implementation
-% TODO: Mention lstsq as a Lapack method, because otherwise performance is bad
 
 For assessing the performance of the Least Squares algorithms in comparison to 
 the Sparse Grid alternative, we use the following $12$ families of test 
 functions from \cite{Simulationlib_2013}, each defined of the $d$-dimensional 
 unit-cube $[0,1]^d$.
-% TODO: Should we use a slightly different notation with inner products etc. ?
-% TODO: Or should we stick to the original notation?
-% TODO: Mention, that c is difficulty and w is a shift?
-\begin{align*}
-	\begin{array}{l l}
-		\text{1. Continuous:} & f_1(x) = \exp\left( - 
-		\displaystyle\sum_{i=1}^{d} c_i \abs{x_i - w_i} \right) \\[12pt]
-		\text{2. Corner Peak:} & f_2(x) = \left( 1 + 
-		\displaystyle\sum_{i=1}^{d} c_i x_i 
-		\right)^{-(d+1)} \\[12pt]
-		\text{3. Discontinuous:} & f_3(x) = 
-		\begin{cases}
-			0, & \text{if } x_1 > w_1 \text{ or } x_2 > w_2, \\
-			\exp\left( \displaystyle\sum_{i=1}^{d} c_i x_i \right), & 
-			\text{otherwise}
-		\end{cases} \\[12pt]
-		\text{4. Gaussian:} & f_4(x) = \exp\left( - 
-		\displaystyle\sum_{i=1}^{d} c_i^2 (x_i 
-		- w_i)^2 \right) \\[12pt]
-		\text{5. Oscillatory:} & f_5(x) = \cos\left( 2\pi w_1 + 
-		\displaystyle\sum_{i=1}^{d} c_i x_i \right) \\[12pt]
-		\text{6. Product Peak:} & f_6(x) = \displaystyle\prod_{i=1}^{d} 
-		\left( c_i^{-2} + (x_i - w_i)^2 \right)^{-1} \\[12pt]
-		\text{7. G-Function:} & f_7(x) = \displaystyle\prod_{i=1}^{d} 
-		\frac{\abs{4x_i-2-w_i}+c_i}{1+c_i}
-				\\[12pt]
-		\text{8. Morokoff \& Calfisch 1:} & f_8(x) = 
-		\displaystyle\left(1+1/d\right)^d  
-		\prod_{i=1}^{d}\left(c_ix_i+w_i\right)^{1/d}
-		\\[12pt]
-		\text{9. Morokoff \& Calfisch 2:} & \displaystyle f_9(x) = 
-		\frac{1}{\left(d-0.5\right)^d} 
-		\prod_{i=1}^{d}\left(d-c_ix_i+w_i\right)
-		\\[12pt]
-		\text{10. Roos \& Arnold:} & f_{10}(x) = \displaystyle \prod_{i=1}^{d} 
-		\abs{4c_ix_i-2-w_i}
-		\\[12pt]
-		\text{11. Bratley:} & f_{11}(x) = \displaystyle 
-		\sum_{d=1}^{d}(-1)^{i}\prod_{j=1}^{d} \left(c_ix_i-w_i\right)
-		\\[12pt]
-		\text{12. Zhou:} & f_{12}(x) = \displaystyle \frac{10^d}{2} 
-		\left[\phi\left(x-\frac13\right)+\phi\left(x-\frac23\right)\right] 
-		\\[12pt]
-		& \text{with }\phi(x) = \displaystyle 
-		\frac{10}{\left(2\pi\right)^{d/2}} 
-		\exp 
-		\left(-\frac{1}{2}\norm[2]{c\left(x-w\right)}^2\right)
-	\end{array}
-\end{align*}
+
+{
+	\allowdisplaybreaks[4]
+	\begin{align*}
+		\begin{array}{l l}
+			\text{1. Continuous:} & f_1(x) = \exp\left( - 
+			\sum_{i=1}^{d} c_i \abs{x_i - w_i} \right) \\[12pt]
+			\text{2. Corner Peak:} & f_2(x) = \left( 1 + 
+			\sum_{i=1}^{d} c_i x_i 
+			\right)^{-(d+1)} \\[12pt]
+			\text{3. Discontinuous:} & f_3(x) = 
+			\begin{cases}
+				0, &x_1 > w_1 \lor x_2 > w_2, \\
+				\exp\left( \sum_{i=1}^{d} c_i x_i \right), & 
+				\text{else}
+			\end{cases} \\[12pt]
+			\text{4. Gaussian:} & f_4(x) = \exp\left( - 
+			\sum_{i=1}^{d} c_i^2 (x_i 
+			- w_i)^2 \right) \\[12pt]
+			\text{5. Oscillatory:} & f_5(x) = \cos\left( 2\pi w_1 + 
+			\sum_{i=1}^{d} c_i x_i \right) \\[12pt]
+			\text{6. Product Peak:} & f_6(x) = \prod_{i=1}^{d} 
+			\left( c_i^{-2} + (x_i - w_i)^2 \right)^{-1} \\[12pt]
+			\text{7. G-Function:} & f_7(x) = \prod_{i=1}^{d}
+			\frac{\abs{4x_i-2-w_i}+c_i}{1+c_i}
+					\\[12pt]
+			\text{8. Morokoff \& Calfisch 1:} & f_8(x) = 
+			\left(1+1/d\right)^d  
+			\prod_{i=1}^{d}\left(c_ix_i+w_i\right)^{1/d}
+			\\[12pt]
+			\text{9. Morokoff \& Calfisch 2:} & f_9(x) = 
+			\frac{1}{\left(d-0.5\right)^d} 
+			\prod_{i=1}^{d}\left(d-c_ix_i+w_i\right)
+			\\[12pt]
+			\text{10. Roos \& Arnold:} & f_{10}(x) = \prod_{i=1}^{d} 
+			\abs{4c_ix_i-2-w_i}
+			\\[12pt]
+			\text{11. Bratley:} & f_{11}(x) = 
+			\sum_{d=1}^{d}(-1)^{i}\prod_{j=1}^{d} \left(c_ix_i-w_i\right)
+			\\[12pt]
+			\text{12. Zhou:} & f_{12}(x) = \frac{10^d}{2} 
+			\left[\phi\left(x-\frac13\right)+\phi\left(x-\frac23\right)\right] 
+			\\[12pt]
+			& \text{with }\phi(x) = 
+			\frac{10}{\left(2\pi\right)^{d/2}} 
+			\exp \left(-\frac{1}{2}\norm[2]{c\left(x-w\right)}^2\right)
+		\end{array}
+	\end{align*}
+}
 Note that the first $6$ function classes are also known as the \emph{Genz 
 Integrand Families} and were introduced by Genz in \cite{GenzTesting_1984, 
 GenzPackage_1987}. In comparison to the original definition in 
 \cite{Simulationlib_2013}, we also introduce the parameters $c$ and $w$ in 
 each class by making something like an affine-linear transformation of the 
 input $x$. 
-This allows for testing multiple realizations of these functions. 
+This allows for testing multiple realizations of these functions.
+
+\subsection{Implementation Details}
 
 Generating a function from a specific family is done 
 by sampling the random vectors $c, w \in\R^d$. In our experiments, we sample 
@@ -660,38 +443,28 @@ rescale $c$ afterwards such that $\norm[1]{c}=d$.
 	the other families are well-defined for any sampled $c,w\in\R^d$.
 \end{remark}
 
-In the following experiments, we compare the Smolyak algorithm with two 
+In the following experiments, we compare Smolyak's algorithm with two 
 realizations of the \emph{weighted} Least Squares algorithm. In the first 
 realization we use random points that are uniformly distributed in $[0,1]^d$, 
-and we don't reweight those point. In the second realization we sample the 
-points from $(1-x^2)^{1/2}$, which is often referred as the 
-\emph{Chebyshev Density} or \emph{Chebyshev Weight} and we use the value of 
-this exact density at each point as the basis for the weight calculation. 
-All 3 algorithms have the same basis functions, which are established from the 
-application of the Smolyak algorithm. 
-% TODO: Make a more detailed description of the Smolyak algorithm.
-All Algorithms are tested for all families of functions with multiple $>10$ 
+and we don't reweigh those points. In the second realization we sample the 
+points from $w(x) = (1-x^2)^{1/2}$, as in \ref{chebyshev_weight} and we use the value of 
+this density at each point as the basis for the weight calculation.
+For reproducibility, we used seeding in our random number generation.
+For actually finding the least--squares solution we employ Numpy \cite{HarrisNumpy_2020} with it's \textrm{lstsq} method which uses the \textrm{gelsd} driver from the standard linear algebra package Lapack \cite{lapack99} in the backend.
+Other drivers are a possible choice but did not meet our performance-- and numerical precision requirements.
+All 3 algorithms use the same basis functions \Cref{chebyshev_polynomials} which, as mentioned, form an ONB for \(L^2_w\). For the implementation of Smolyak's algorithm we employ the standard library Tasmanian with it's Python frontend \cite{stoyanov2015tasmanian,stoyanov2016dynamically,stoyanov2018adaptive,morrow2019method,doecode_6305}.
+All Algorithms are tested for all families of functions with multiple (more than \(10\)) 
 realizations and for all dimensions $d\in \indexset[2]{10}$. In each dimension, 
-the fineness scale $q\in\N$ was varied. Note that $q>d$. Depending on $d$ 
+the resolution $q\in\N$ was varied. Note that $q>d$. Depending on $d$ 
 smaller or larger values for $q$ were possible because of computational 
 bottlenecks based on the exponential increase in the used points, see also 
-\cite{BurkardtCounting_2014} for a overview on the number of points in a sparse 
+\cite{BurkardtCounting_2014} for an overview on the number of points in a sparse 
 grid. Both Least Squares algorithms enjoyed twice the amount of points, 
-compared to the Smolyak algorithm, sampled in their respective distributions.
+compared to Smolyak's algorithm, sampled in their respective distributions.
 
-% TODO:
-\begin{itemize}
-	\item Least Squares Implementation: \cite{HarrisNumpy_2020} using the 
-	\emph{lstsq}-method
-	\item Smolyak Implementation: \cite{TasmanianLibrary_2013} or 
-	\cite{JuddSmolyak_2014} with \cite{Coleman_SmoylakGithub_2013}
-\end{itemize}
-
-For assessing the quality of the interpolants, we generated $n$ random points 
+For assessing the quality of the interpolants, we again generated $n$ random points 
 $x_1, \ldots, x_n$ distributed uniformly in $[0,1]^d$, where $n$ is the number 
 of points in the Sparse Grid. Afterwards we compute the error quantities
-% TODO: Maybe use other notation of algorithms here to have it consistent
-	% TODO: For example least squares should now also be called "A_j(q,d)..."
 \begin{align*} 
 	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
 	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
@@ -707,7 +480,6 @@ the different distributions for each function class
 \Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
  the performance of each algorithm based on multiple realizations. 
 % TODO: Describe the Tabular in more detail and also the distribution images.
-
 % TODO: Also mention the distribution of the errors.
 The results are also depicted in the following tables and figures.
 

@@ -1,12 +1,11 @@
 # Fdb version 3
-["biber main"] 1744617771 "main.bcf" "main.bbl" "main" 1744617977
-  "main.bcf" 1744617976 110395 80a90b91ac4b16c1ff8ce0a610378a65 "lualatex"
-  "references.bib" 1744617686 8371 a56cd5ea7711fb4ec6473621a2eadc10 ""
+["biber main"] 1744622283 "main.bcf" "main.bbl" "main" 1744623204
+  "main.bcf" 1744623204 111117 d05cc2b8eb3db49cbfe5f439f6521f7a "lualatex"
+  "references.bib" 1744621878 9904 db4571a0da14cca69ed3b522f41502ca ""
   (generated)
   "main.bbl"
   "main.blg"
-["lualatex"] 1744617975 "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" "main.pdf" "main" 1744617977
-  "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmmono10-regular.luc" 1744359424 77648 635edc0fb9f622fbc9be2006018b3690 ""
+["lualatex"] 1744623202 "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" "main.pdf" "main" 1744623204
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmmono12-regular.luc" 1744359425 77587 aad0b5807126f513a2c5ddfb65429272 ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bolditalic.luc" 1736710264 132310 78a22badfac703885efb3b2ee276c3b5 ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-italic.luc" 1717617482 132135 71f2fa0b92a94353459a44bd8839f4ef ""
@@ -22,7 +21,7 @@
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman9-regular.luc" 1744359424 123771 cd1c7cd2e9d8c2ef676e901ce59a5b48 ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmromancaps10-regular.luc" 1744359424 116074 e6ec77a3379a4124ba8bd432b0a23c6f ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/names/luaotfload-names.luc" 1717617201 1697365 4f085dac61336ced07cb830340f7fcf1 ""
-  "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" 1744617975 41940 8b03f47a93793be57c729af8c2412b8a ""
+  "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" 1744623202 30771 bb2025e9deba2392c358f8bec3f23d1a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -70,7 +69,6 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1248133631 32587 1788b0c1c5b39540c96f5e42ccd6dae8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1248133631 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
-  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb" 1248133631 30273 87a352d78b6810ae5cfdc68d2fb827b2 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb" 1248133631 31764 459c573c03a4949a528c2cc7f557e217 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1248133631 34694 ad62b13721ee8eda1dcc8993c8bd7041 ""
   "/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1461363279 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -262,7 +260,6 @@
   "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/luaotfload-tounicode.lua" 1621631105 7528 8f7850323417188eef5197d4e420bd34 ""
   "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/luaotfload-unicode.lua" 1621631105 7589 5bc464447c3f5b154d8368904044d654 ""
   "/usr/share/texlive/texmf-dist/tex/luatex/luaotfload/luaotfload.lua" 1621631105 13788 7d84439d2254ecfafc462aa76f790a5d ""
-  "/usr/share/texmf/fonts/opentype/public/lm/lmmono10-regular.otf" 1254938640 64684 15a2082c8e31f411875a86ea2d29a0ee ""
   "/usr/share/texmf/fonts/opentype/public/lm/lmmono12-regular.otf" 1254938640 63012 5db69ad3c177ae338e5504d80d9e9eb6 ""
   "/usr/share/texmf/fonts/opentype/public/lm/lmroman10-bolditalic.otf" 1254938640 118204 71070e299cf063366237473420b0fea8 ""
   "/usr/share/texmf/fonts/opentype/public/lm/lmroman10-italic.otf" 1254938640 118828 4d461c73423fe2666dad2ff0dfc3ca68 ""
@@ -280,12 +277,12 @@
   "figures/oscillatory/realization2_dim5_scale4.pdf" 1744356932 26926 dd3913106d787d2d234811ff6c7ba530 ""
   "figures/oscillatory/realization3_dim5_scale4.pdf" 1744356932 26833 0b9b147f41fefa6c226b3ddca345f792 ""
   "figures/zhou/distro_dim5_scale4.pdf" 1744356932 26698 1d9622479a9aa9748169251c4e47a19c ""
-  "macros.tex" 1744617686 3696 3af94ee8d285a6406967285868e0051c ""
-  "main.aux" 1744617976 13641 998e7f9485881e3b15a521942e8d9dcd "lualatex"
-  "main.bbl" 1744617771 38105 703c7de46b46c79845fa526aac4af868 "biber main"
-  "main.out" 1744617976 2409 eeb4481e5fc94ea5a85857d4b8331d3a "lualatex"
-  "main.run.xml" 1744617976 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
-  "main.tex" 1744617975 41940 8b03f47a93793be57c729af8c2412b8a ""
+  "macros.tex" 1744621364 3724 ae7c86fb0b80237a8d53a13bf4ae4c4d ""
+  "main.aux" 1744623204 12097 beaa28e106a02d94cb04e3d30e6f2b26 "lualatex"
+  "main.bbl" 1744622284 46029 8b3c8121f631ef2dc38e7a5d1bf9f1e6 "biber main"
+  "main.out" 1744623204 2027 4f1e83a159f74ff2b99945f23a664b24 "lualatex"
+  "main.run.xml" 1744623204 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
+  "main.tex" 1744623202 30771 bb2025e9deba2392c358f8bec3f23d1a ""
   (generated)
   "main.aux"
   "main.bcf"

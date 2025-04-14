@@ -19,6 +19,86 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global}
+    \entry{lapack99}{book}{}
+      \name{author}{11}{}{%
+        {{hash=8cba83e791465574e1085826657adab7}{%
+           family={Anderson},
+           familyi={A\bibinitperiod},
+           given={E.},
+           giveni={E\bibinitperiod}}}%
+        {{hash=c6671f91bba6616eeaa975ace4ac0de8}{%
+           family={Bai},
+           familyi={B\bibinitperiod},
+           given={Z.},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=efee25c328dd5246af3a3ef26e3de477}{%
+           family={Bischof},
+           familyi={B\bibinitperiod},
+           given={C.},
+           giveni={C\bibinitperiod}}}%
+        {{hash=7529500183652f5eb2391ea6831bba5b}{%
+           family={Blackford},
+           familyi={B\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=741d7be4495e11c18687096559758381}{%
+           family={Demmel},
+           familyi={D\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=18742b90e3db0845d437c9a24211230c}{%
+           family={Dongarra},
+           familyi={D\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=f2fac19f84a774d87ea63cac67dc88e9}{%
+           family={Du\bibnamedelima Croz},
+           familyi={D\bibinitperiod\bibinitdelim C\bibinitperiod},
+           given={J.},
+           giveni={J\bibinitperiod}}}%
+        {{hash=c39f7dabd95a216ddc46272a22b9812f}{%
+           family={Greenbaum},
+           familyi={G\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=76b15f8a14d342cc007e425c735f56ee}{%
+           family={Hammarling},
+           familyi={H\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=25c54dfcce8681ef750ddd2967a9167a}{%
+           family={McKenney},
+           familyi={M\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=afcb742dac822425df98667835aabc46}{%
+           family={Sorensen},
+           familyi={S\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Philadelphia, PA}%
+      }
+      \list{publisher}{2}{%
+        {Society for Industrial}%
+        {Applied Mathematics}%
+      }
+      \strng{namehash}{97cb8baeaf7c5786d5e30808844feeb3}
+      \strng{fullhash}{e82ae32933094b4c4cae7e957ed3d47a}
+      \strng{bibnamehash}{97cb8baeaf7c5786d5e30808844feeb3}
+      \strng{authorbibnamehash}{97cb8baeaf7c5786d5e30808844feeb3}
+      \strng{authornamehash}{97cb8baeaf7c5786d5e30808844feeb3}
+      \strng{authorfullhash}{e82ae32933094b4c4cae7e957ed3d47a}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{edition}{Third}
+      \field{isbn}{0-89871-447-8 (paperback)}
+      \field{title}{{LAPACK} Users' Guide}
+      \field{year}{1999}
+    \endentry
     \entry{BarthelmannHighDim_2000}{article}{}
       \name{author}{3}{}{%
         {{hash=43ada668475c4133c15f2467be6a7c9a}{%
@@ -244,7 +324,7 @@
       \field{labeltitlesource}{title}
       \field{issn}{1588-273X}
       \field{journaltitle}{Analysis Mathematica}
-      \field{month}{6}
+      \field{month}{06}
       \field{number}{2}
       \field{title}{On asymptotics and estimates for the uniform norms of the Lagrange interpolation polynomials corresponding to the Chebyshev nodal points}
       \field{volume}{9}
@@ -681,6 +761,33 @@
       \field{title}{Lectures on Elementary Mathematics. On the employment of curves in the solution of problems}
       \field{year}{1901}
     \endentry
+    \entry{morrow2019method}{article}{}
+      \name{author}{2}{}{%
+        {{hash=9b519becc352977032edc320d267710e}{%
+           family={Morrow},
+           familyi={M\bibinitperiod},
+           given={Zack},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=32c2db792e557edfc9a38532824df259}{%
+           family={Stoyanov},
+           familyi={S\bibinitperiod},
+           given={Miroslav},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{b5a7224dd8b2a54191276606ac62acf3}
+      \strng{fullhash}{b5a7224dd8b2a54191276606ac62acf3}
+      \strng{bibnamehash}{b5a7224dd8b2a54191276606ac62acf3}
+      \strng{authorbibnamehash}{b5a7224dd8b2a54191276606ac62acf3}
+      \strng{authornamehash}{b5a7224dd8b2a54191276606ac62acf3}
+      \strng{authorfullhash}{b5a7224dd8b2a54191276606ac62acf3}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1908.10672}
+      \field{title}{A Method for Dimensionally Adaptive Sparse Trigonometric Interpolation of Periodic Functions}
+      \field{year}{2019}
+    \endentry
     \entry{novakRitter1996}{article}{}
       \name{author}{2}{}{%
         {{hash=b921f8d0f55cbd9ffb8bc589460082f9}{%
@@ -741,7 +848,65 @@
       \field{pages}{1042\bibrangedash 1045}
       \range{pages}{4}
     \endentry
-    \entry{TasmanianLibrary_2013}{misc}{}
+    \entry{stoyanov2015tasmanian}{report}{}
+      \name{author}{1}{}{%
+        {{hash=953c34994710770e5252e225d6b5aac8}{%
+           family={Stoyanov},
+           familyi={S\bibinitperiod},
+           given={M},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Oak Ridge National Laboratory}%
+      }
+      \list{location}{1}{%
+        {One Bethel Valley Road, Oak Ridge, TN}%
+      }
+      \strng{namehash}{953c34994710770e5252e225d6b5aac8}
+      \strng{fullhash}{953c34994710770e5252e225d6b5aac8}
+      \strng{bibnamehash}{953c34994710770e5252e225d6b5aac8}
+      \strng{authorbibnamehash}{953c34994710770e5252e225d6b5aac8}
+      \strng{authornamehash}{953c34994710770e5252e225d6b5aac8}
+      \strng{authorfullhash}{953c34994710770e5252e225d6b5aac8}
+      \field{extraname}{1}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{number}{ORNL/TM-2015/596}
+      \field{title}{User Manual: TASMANIAN Sparse Grids}
+      \field{type}{techreport}
+      \field{year}{2015}
+    \endentry
+    \entry{stoyanov2018adaptive}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=32c2db792e557edfc9a38532824df259}{%
+           family={Stoyanov},
+           familyi={S\bibinitperiod},
+           given={Miroslav},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{32c2db792e557edfc9a38532824df259}
+      \strng{fullhash}{32c2db792e557edfc9a38532824df259}
+      \strng{bibnamehash}{32c2db792e557edfc9a38532824df259}
+      \strng{authorbibnamehash}{32c2db792e557edfc9a38532824df259}
+      \strng{authornamehash}{32c2db792e557edfc9a38532824df259}
+      \strng{authorfullhash}{32c2db792e557edfc9a38532824df259}
+      \field{extraname}{2}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Sparse Grids and Applications-Miami 2016}
+      \field{title}{Adaptive Sparse Grid Construction in a Context of Local Anisotropy and Multiple Hierarchical Parents}
+      \field{year}{2018}
+      \field{pages}{175\bibrangedash 199}
+      \range{pages}{25}
+    \endentry
+    \entry{doecode_6305}{misc}{}
       \name{author}{4}{}{%
         {{hash=32c2db792e557edfc9a38532824df259}{%
            family={Stoyanov},
@@ -786,6 +951,40 @@
       \verb{url}
       \verb https://github.com/ORNL/Tasmanian
       \endverb
+    \endentry
+    \entry{stoyanov2016dynamically}{article}{}
+      \name{author}{2}{}{%
+        {{hash=9b2d486d3092bb7ea8a682553b61c758}{%
+           family={Stoyanov},
+           familyi={S\bibinitperiod},
+           given={Miroslav\bibnamedelima K},
+           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=79110b5f6b715bccb12eebce3160f14e}{%
+           family={Webster},
+           familyi={W\bibinitperiod},
+           given={Clayton\bibnamedelima G},
+           giveni={C\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{26e8bca2aa9e9965de20983000a4f073}
+      \strng{fullhash}{26e8bca2aa9e9965de20983000a4f073}
+      \strng{bibnamehash}{26e8bca2aa9e9965de20983000a4f073}
+      \strng{authorbibnamehash}{26e8bca2aa9e9965de20983000a4f073}
+      \strng{authornamehash}{26e8bca2aa9e9965de20983000a4f073}
+      \strng{authorfullhash}{26e8bca2aa9e9965de20983000a4f073}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computers \& Mathematics with Applications}
+      \field{number}{11}
+      \field{title}{A dynamically adaptive sparse grids method for quasi-optimal interpolation of multidimensional functions}
+      \field{volume}{71}
+      \field{year}{2016}
+      \field{pages}{2449\bibrangedash 2465}
+      \range{pages}{17}
     \endentry
     \entry{Simulationlib_2013}{misc}{}
       \name{author}{2}{}{%

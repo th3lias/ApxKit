@@ -409,9 +409,9 @@ OUTPUT main.pdf
 INPUT ./main.out
 OUTPUT main.out
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmromancaps10-regular.luc
-INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmmono10-regular.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-italic.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-bold.luc
+INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-italic.luc
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
@@ -430,7 +430,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
-INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bolditalic.luc
+INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmmono12-regular.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-regular.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman6-regular.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman9-regular.luc
@@ -438,7 +438,6 @@ INPUT /var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm
-INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman12-italic.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman17-regular.luc
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr17.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr17.tfm
@@ -473,6 +472,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx5.tfm
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman8-italic.luc
 INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman7-italic.luc
+INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bolditalic.luc
 INPUT ./figures/oscillatory/realization1_dim5_scale4.pdf
 INPUT ./figures/oscillatory/realization1_dim5_scale4.pdf
 INPUT ./figures/oscillatory/realization1_dim5_scale4.pdf
@@ -490,7 +490,6 @@ INPUT ./figures/morokoff_calfisch1/distro_dim5_scale4.pdf
 INPUT ./figures/zhou/distro_dim5_scale4.pdf
 INPUT ./figures/zhou/distro_dim5_scale4.pdf
 INPUT ./figures/zhou/distro_dim5_scale4.pdf
-INPUT /home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmmono12-regular.luc
 INPUT ./main.aux
 INPUT ./main.out
 INPUT ./main.run.xml
@@ -498,7 +497,6 @@ OUTPUT main.run.xml
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
-INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb
