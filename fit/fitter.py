@@ -1,7 +1,7 @@
 from function.f import Function
 from function.model.model import Model
 from grid.grid.grid import Grid
-from typing import List
+from typing import List, Union
 
 
 class Fitter:
@@ -13,16 +13,18 @@ class Fitter:
     def __init__(self, dim: int):
         self.dim = dim
 
-    def fit(self, f: Function, grid: Grid) -> Model:
+    def fit(self, f: Function, grid: Grid, **kwargs) -> Model:
         """
             Fits the function on a given grid of points.
         """
         raise NotImplementedError("The method `fit` must be implemented by the subclass.")
 
-    def is_fittable(self, f: List[Function]) -> bool:
+    def is_fittable(self, f: Union[Function, List[Function]]) -> bool:
         """
             Checks if the model is able to compute an approximation for the given function.
         """
+        if isinstance(f, Function):
+            f = [f]
         for function in f:
             if function.dim != self.dim:
                 return False
