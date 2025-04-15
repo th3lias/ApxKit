@@ -48,8 +48,6 @@ class Interpolator:
                           b_idx: Union[List[Tuple[int]], None] = None) -> np.ndarray:
         """Builds smolyak polynomial basis"""
 
-        # start_time = time.time()
-
         if self._b_idx is None and b_idx is None:
             self._idx = self._smolyak_idx()
             self._b_idx = self._poly_idx(self._idx)
