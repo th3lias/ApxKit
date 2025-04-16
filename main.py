@@ -32,7 +32,7 @@ def main_method(folder_name: Union[str, None] = None):
 
     store_indices = True
 
-    smolyak_method_type = InterpolationMethod.STANDARD
+    smolyak_method_type = InterpolationMethod.TASMANIAN
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
     least_squares_basis_type = BasisType.CHEBYSHEV
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
