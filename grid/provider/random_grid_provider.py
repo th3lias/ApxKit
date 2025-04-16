@@ -13,7 +13,7 @@ from utils.utils import calculate_num_points
 class RandomGridProvider(GridProvider):
     def __init__(self, input_dim: int, output_dim: int = 1, lower_bound: float = 0., upper_bound: float = 1.,
                  seed: int = None, rule: RandomGridRule = RandomGridRule.UNIFORM, multiplier_fun: Callable = lambda x: x):
-        super().__init__(input_dim, output_dim, lower_bound, upper_bound)
+        super(RandomGridProvider, self).__init__(input_dim, output_dim, lower_bound, upper_bound)
         self.seed = seed if seed else None
         self.rng = np.random.default_rng(seed=self.seed)
         self.rule = rule

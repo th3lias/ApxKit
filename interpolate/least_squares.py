@@ -78,7 +78,7 @@ class LeastSquaresInterpolator(Interpolator):
             return self._build_poly_basis(grid, b_idx)
 
         elif basis_type == BasisType.REGULAR:
-            print(DeprecationWarning("This will not be supported in the near future"))
+            print(DeprecationWarning("This will not be supported in the near future")) # TODO: remove this
             degree = find_degree(self.scale, self.dim)
 
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
