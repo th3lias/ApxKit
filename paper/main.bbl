@@ -640,35 +640,35 @@
     \endentry
     \entry{klimke2004}{article}{}
       \name{author}{3}{}{%
-        {{hash=b10a66cffcf588674c19a4bc907eed2a}{%
-           family={KLIMKE},
+        {{hash=0abd5b5c27de37de8016bc4bb008cf41}{%
+           family={Klimke},
            familyi={K\bibinitperiod},
-           given={ANDREAS},
+           given={Andreas},
            giveni={A\bibinitperiod}}}%
-        {{hash=853f266dbde76844eabaac6706bb913c}{%
-           family={WILLNER},
+        {{hash=86f3b574956f6683d5c37e8e3933af13}{%
+           family={Willner},
            familyi={W\bibinitperiod},
-           given={KAI},
+           given={Kai},
            giveni={K\bibinitperiod}}}%
-        {{hash=8b2231eb156e8a8fd60ff6651defd113}{%
-           family={WOHLMUTH},
+        {{hash=ff659f9cbfa672f6303dca180f5930d2}{%
+           family={Wolmuth},
            familyi={W\bibinitperiod},
-           given={BARBARA},
+           given={Barbara},
            giveni={B\bibinitperiod}}}%
       }
-      \strng{namehash}{4ef0f2ec91799326d323a3e9c3096420}
-      \strng{fullhash}{4ef0f2ec91799326d323a3e9c3096420}
-      \strng{bibnamehash}{4ef0f2ec91799326d323a3e9c3096420}
-      \strng{authorbibnamehash}{4ef0f2ec91799326d323a3e9c3096420}
-      \strng{authornamehash}{4ef0f2ec91799326d323a3e9c3096420}
-      \strng{authorfullhash}{4ef0f2ec91799326d323a3e9c3096420}
+      \strng{namehash}{f124c3d5de727705a1b827b8f607705d}
+      \strng{fullhash}{f124c3d5de727705a1b827b8f607705d}
+      \strng{bibnamehash}{f124c3d5de727705a1b827b8f607705d}
+      \strng{authorbibnamehash}{f124c3d5de727705a1b827b8f607705d}
+      \strng{authornamehash}{f124c3d5de727705a1b827b8f607705d}
+      \strng{authorfullhash}{f124c3d5de727705a1b827b8f607705d}
       \field{sortinit}{K}
       \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{International Journal of Uncertainty, Fuzziness and Knowledge-Based Systems}
       \field{number}{06}
-      \field{title}{UNCERTAINTY MODELING USING FUZZY ARITHMETIC BASED ON SPARSE GRIDS: APPLICATIONS TO DYNAMIC SYSTEMS}
+      \field{title}{Uncertainty Modeling using Fuzzy Arithmetic based on Sparse Grids: Applications to Dynamic Systems}
       \field{volume}{12}
       \field{year}{2004}
       \field{pages}{745\bibrangedash 759}
