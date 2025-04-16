@@ -1,3 +1,8 @@
+% Magic Comments
+% !TeX spellcheck = en_GB
+% !TeX encoding = utf8
+% !TeX program = pdflatex
+
 \documentclass[12pt, oneside]{amsart}
 
 \usepackage{amssymb}
@@ -92,7 +97,7 @@ interest for a long time \cite{BarthelmannHighDim_2000,smolyak1963,Coleman_Smoyl
 \[
     e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
     \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
-\]
+\] % TODO: Where was this found -> cite
 disproving conjecture 5.26 in \cite{Dung_Temlyakov_Ullrich_2018}. We extend upon these theoretical findings with an empirical study comparing the performance of Smolyak's algorithm and Least Squares on simple function recovery problems on the unit cube. Our implementation is available at \url{https://github.com/th3lias/NumericalExperiments}.
 
 
@@ -106,23 +111,37 @@ polynomials \(p\) from \(D \subseteq \C^K,\, K \in \N\) to the field \(\F\) of m
 degree \(N\) we use the notation 
 \(p \in \pols[N]{V, \F}\).
 We use \(f \lesssim g\) to denote \(f \leq c 
-g\) for functions \(f, g\). With \(B(X)\) we denote the closed unit ball of a normed space \(X\), 
+g\) for functions \(f, g\). With \(B(X)\) we denote the closed unit ball of a 
+normed space \(X\), % TODO: Do we really need to explain what B(X) is in the 
+% TODO: following
 i.e.\ \(B(X) \defn \set{x \in X: \norm[X]{x} \leq 1}\). With \(X^\star\) we 
 denote the space of linear, bounded functionals on \(X\), i.e. \(X^\star \defn 
 \set{x^\star\from X \to \R \mid x^\star \text{ is linear and bounded}}\).
+% TODO: Or just: With X^\star we denote the dual space
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interpolation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Given \(i \in \N\) and distinct data points \(\XX_i \defn \set{x_{i, 0}, \dots, x_{i, n}} \subseteq D \subseteq \R\), function values \(\YY_i \defn \set{y_{i, 0}, \dots, y_{i, n}} = \set{f(x_{i, 0}), \dots, f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact that there exists a polynomial \(\cI(\ZZ_i)\) of degree \(n\) such that \[
+Given \(i \in \N\) and distinct data points \(\XX_i \defn \set{x_{i, 0}, \dots, 
+x_{i, n}} \subseteq D \subseteq \R\) \jakob{$D_i$ here?}, function values 
+\(\YY_i \defn \set{y_{i, 0}, \dots, y_{i, n}} = \set{f(x_{i, 0}), \dots, 
+f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact that 
+there exists a polynomial \(\cI(\ZZ_i)\) of degree \(n\) such that \[
     \cI(\ZZ_i) = y_{i, j},\quad j \in \indexset[0]{n}.
 \]
 for \(\ZZ_i \defn (\XX_i, \YY_i)\)
 We then call \(\cI(\ZZ_i)\) an \emph{interpolating} polynomial. It can be written down explicitly as \begin{equation}\label{interpolating_polynomial}
     \cI(\ZZ_i) = \sum_{j=0}^n y_{i, j} \ell_{i, j}
 \end{equation}
-for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single dimension, the formula for this basis is, quite intuitively, \(\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, m}}{x_{i, j}-x_{i, m}}\) \cite{waring1779, lagrange1901}. We call \(\cI\) the \emph{Lagrange interpolator}.
+for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single 
+dimension, the formula for this basis is
+\[
+\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, 
+m}}{x_{i, j}-x_{i, m}},
+\]
+see \cite{waring1779, lagrange1901}. We call \(\cI\) the 
+\emph{Lagrange interpolator}.
 
 Suppose now we have \(d\) point sets \(\XX_i\). By taking the full cartesian product of point sets \[
     \XX \defn \bigtimes_{i=1}^d \XX_i,
@@ -161,7 +180,9 @@ one gets the closed form
     \end{cases}
 \end{equation}
 In this case, one achieves an evaluation time of \(\cO((n+1)^d)\).
-Hence, in this construction, one cannot get around this bottleneck.
+Hence, in this construction, one cannot get around this bottleneck. 
+\jakob{Here, equation \cref{eq:chebyPts2} and \cref{eq:weightsChebyshev} are 
+the same point set. This is probably wrong.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -169,7 +190,14 @@ Hence, in this construction, one cannot get around this bottleneck.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The following description follows \cite{BarthelmannHighDim_2000}.
-The question arises, how one may reduce the complexity of exact interpolation on grids. The central idea of sparse grids is to \emph{not} take the full tensor product of one dimensional point sets but restrict the number of simultaneously large directions. To that end, take a variable number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, \dots, x_{N(j), j}}\) and \(\cI_j\) the corresponding one--dimensional interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then Smolyak's algorithm is given in a simple recursive manner
+The question arises, how one may reduce the complexity of exact interpolation 
+on grids. The central idea of sparse grids is to \emph{not} take the full 
+tensor product of one dimensional point sets but restrict the number of 
+simultaneously \jakob{equally?} large directions. To that end, take a variable 
+number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, 
+\dots, x_{N(j), j}}\) and \(\cI_j\) the corresponding one--dimensional 
+interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then 
+Smolyak's algorithm is given in a simple recursive manner
 \begin{equation}\label{Smolyak}
     \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d \Delta_{j_k} = \cA(q-1, d)+\sum_{\norm[1]{\bfj}=q} \bigotimes_{k=1}^d \Delta_{j_k}
 \end{equation}
@@ -185,7 +213,13 @@ The number of knots \(N(j)\) used for each one--dimensional interpolation rule \
 \]
 
 \subsection{Polynomial Exactness}
-Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 1]^d\) for interpolation of unkowns instead of a general domain \(D\). In this case, Smolyak's algorithm is well known to exactly reproduce functions on certain polynomial spaces given that the rules \(\cI_j\) are exact on nested spaces \(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
+Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 
+1]^d\) \jakob{We have $[0,1]^d$. It appears multiple times, therefore I didn't 
+want to erase it everywhere now.} for interpolation of unknowns instead of a 
+general domain \(D\). In this 
+case, Smolyak's algorithm is well known to exactly reproduce functions on 
+certain polynomial spaces given that the rules \(\cI_j\) are exact on nested 
+spaces \(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
 \begin{lem}
 	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) and assume \[
 		V_1 \subset V_2 \subset V_3 \subset \dots,
@@ -194,7 +228,9 @@ Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 1
 		\sum_{\norm[1]{j}=q} V_{j_1} \otimes \cdots \otimes V_{j_d}
 	\]
 \end{lem}
-\cite{BarthelmannHighDim_2000} showed the following.
+\cite{BarthelmannHighDim_2000} showed the following. \jakob{Maybe cite 
+\cite{BarthelmannHighDim_2000} directly in the lemma environment. I.e. 
+begin{lem}[cf. \cite{BarthelmannHighDim_2000}]}
 \begin{lem}
 	\(\cA(q, d)\) is exact on \[
 		E(q, d) \defn \sum_{\norm[1]{\bfj} = q} \pols[m_{j_1}-1]{\R, \R} \otimes \cdots \otimes \pols[m_{j_d}-1]{\R, \R}
@@ -243,7 +279,7 @@ In that case, it is well known that the Chebyshev polynomials
 	T_n(x) \defn \cos(n \arccos(x)).
 \end{equation}
 form an orthonormal basis.
-\newpage
+\newpage % TODO: Maybe no new page?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Least Squares}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -458,7 +494,11 @@ this density at each point as the basis for the weight calculation.
 For reproducibility, we used seeding in our random number generation.
 For actually finding the least--squares solution we employ Numpy \cite{HarrisNumpy_2020} with it's \textrm{lstsq} method which uses the \textrm{gelsd} driver from the standard linear algebra package Lapack \cite{lapack99} in the backend.
 Other drivers are a possible choice but did not meet our performance-- and numerical precision requirements.
-All 3 algorithms use the same basis functions \Cref{chebyshev_polynomials} which, as mentioned, form an ONB for \(L^2_w\). For the implementation of Smolyak's algorithm we employ the standard library Tasmanian with it's Python frontend \cite{stoyanov2015tasmanian,stoyanov2016dynamically,stoyanov2018adaptive,morrow2019method,doecode_6305}.
+All 3 algorithms use the same basis functions \Cref{chebyshev_polynomials} 
+which, as mentioned, form an ONB for \(L^2_w\). For the implementation of 
+Smolyak's algorithm we employ the standard library Tasmanian \jakob{And/Or 
+self-implementation based on the other paper} with it's Python frontend 
+\cite{stoyanov2015tasmanian,stoyanov2016dynamically,stoyanov2018adaptive,morrow2019method,doecode_6305}.
 All Algorithms are tested for all families of functions with multiple (more than \(10\)) 
 realizations and for all dimensions $d\in \indexset[2]{10}$. In each dimension, 
 the resolution $q\in\N$ was varied. Note that $q>d$. Depending on $d$ 
@@ -481,7 +521,7 @@ for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform},
 \text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
 functions. Those quantities are now depicted in 
 \Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
-Additionally, \Cref{tab:dim1_results} summarizes in combination with 
+Additionally, \Cref{tab:dim2_results} and \Cref{tab:scale3_results} summarize in combination with 
 the different distributions for each function class 
 \Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
  the performance of each algorithm based on multiple realizations. 
@@ -549,7 +589,23 @@ character we used before for the description of Smolyak.}
 	\label{fig:zhou_distribution_dim5_scale4}
 \end{figure}
 
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim2}
+	\end{adjustbox}
+	\caption{Caption}
+	\label{tab:dim2_results}
+\end{table}
 
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/scale3}
+	\end{adjustbox}
+	\caption{Caption}
+	\label{tab:scale3_results}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}\label{sec:conclusion}
