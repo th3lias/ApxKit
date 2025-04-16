@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bcf:controlfile version="3.11" bltxversion="3.20" xmlns:bcf="https://sourceforge.net/projects/biblatex">
+<bcf:controlfile version="3.8" bltxversion="3.17" xmlns:bcf="https://sourceforge.net/projects/biblatex">
   <!-- BIBER OPTIONS -->
   <bcf:options component="biber" type="global">
     <bcf:option type="singlevalued">
@@ -37,11 +37,6 @@
     <bcf:option type="singlevalued">
       <bcf:key>alphaothers</bcf:key>
       <bcf:value>+</bcf:value>
-    </bcf:option>
-    <bcf:option type="multivalued">
-      <bcf:key>extradatecontext</bcf:key>
-      <bcf:value order="1">labelname</bcf:value>
-      <bcf:value order="2">labeltitle</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>labelalpha</bcf:key>
@@ -140,10 +135,6 @@
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>nosortothers</bcf:key>
-      <bcf:value>0</bcf:value>
-    </bcf:option>
-    <bcf:option type="singlevalued">
-      <bcf:key>pluralothers</bcf:key>
       <bcf:value>0</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
@@ -281,11 +272,6 @@
   </bcf:options>
   <!-- online -->
   <bcf:options component="biblatex" type="online">
-    <bcf:option type="multivalued">
-      <bcf:key>extradatecontext</bcf:key>
-      <bcf:value order="1">labelname</bcf:value>
-      <bcf:value order="2">labeltitle</bcf:value>
-    </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>labelalpha</bcf:key>
       <bcf:value>0</bcf:value>
@@ -386,11 +372,11 @@
       <bcf:value>0</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
-      <bcf:key>skipbiblist</bcf:key>
+      <bcf:key>skiplab</bcf:key>
       <bcf:value>0</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
-      <bcf:key>skiplab</bcf:key>
+      <bcf:key>skipbiblist</bcf:key>
       <bcf:value>0</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
@@ -502,11 +488,9 @@
     <bcf:option datatype="xml">inheritance</bcf:option>
     <bcf:option datatype="xml">translit</bcf:option>
     <bcf:option datatype="xml">uniquenametemplate</bcf:option>
-    <bcf:option datatype="xml">namehashtemplate</bcf:option>
     <bcf:option datatype="xml">sortingnamekeytemplate</bcf:option>
     <bcf:option datatype="xml">sortingtemplate</bcf:option>
     <bcf:option datatype="xml">extradatespec</bcf:option>
-    <bcf:option datatype="xml">extradatecontext</bcf:option>
     <bcf:option datatype="xml">labelnamespec</bcf:option>
     <bcf:option datatype="xml">labeltitlespec</bcf:option>
     <bcf:option datatype="xml">labeldatespec</bcf:option>
@@ -615,7 +599,6 @@
     <bcf:option datatype="boolean">labeltitle</bcf:option>
     <bcf:option datatype="boolean">labeltitleyear</bcf:option>
     <bcf:option datatype="boolean">labeldateparts</bcf:option>
-    <bcf:option datatype="boolean">pluralothers</bcf:option>
     <bcf:option datatype="boolean">nohashothers</bcf:option>
     <bcf:option datatype="boolean">nosortothers</bcf:option>
     <bcf:option datatype="boolean">noroman</bcf:option>
@@ -732,7 +715,6 @@
     <bcf:option datatype="xml">translit</bcf:option>
     <bcf:option datatype="xml">sortexclusion</bcf:option>
     <bcf:option datatype="xml">sortinclusion</bcf:option>
-    <bcf:option datatype="xml">extradatecontext</bcf:option>
     <bcf:option datatype="xml">labelnamespec</bcf:option>
     <bcf:option datatype="xml">labeltitlespec</bcf:option>
     <bcf:option datatype="xml">labeldatespec</bcf:option>
@@ -751,10 +733,9 @@
   </bcf:optionscope>
   <bcf:optionscope type="ENTRY">
     <bcf:option datatype="string">noinherit</bcf:option>
-    <bcf:option datatype="string" backendin="sortingnamekeytemplatename,uniquenametemplatename,labelalphanametemplatename,namehashtemplatename">nametemplates</bcf:option>
+    <bcf:option datatype="string" backendin="sortingnamekeytemplatename,uniquenametemplatename,labelalphanametemplatename">nametemplates</bcf:option>
     <bcf:option datatype="string" backendout="1">labelalphanametemplatename</bcf:option>
     <bcf:option datatype="string" backendout="1">uniquenametemplatename</bcf:option>
-    <bcf:option datatype="string" backendout="1">namehashtemplatename</bcf:option>
     <bcf:option datatype="string" backendout="1">sortingnamekeytemplatename</bcf:option>
     <bcf:option datatype="string">presort</bcf:option>
     <bcf:option datatype="string" backendout="1">indexing</bcf:option>
@@ -832,10 +813,9 @@
     <bcf:option datatype="integer" backendout="1">minalphanames</bcf:option>
   </bcf:optionscope>
   <bcf:optionscope type="NAMELIST">
-    <bcf:option datatype="string" backendin="sortingnamekeytemplatename,uniquenametemplatename,labelalphanametemplatename,namehashtemplatename">nametemplates</bcf:option>
+    <bcf:option datatype="string" backendin="sortingnamekeytemplatename,uniquenametemplatename,labelalphanametemplatename">nametemplates</bcf:option>
     <bcf:option datatype="string" backendout="1">labelalphanametemplatename</bcf:option>
     <bcf:option datatype="string" backendout="1">uniquenametemplatename</bcf:option>
-    <bcf:option datatype="string" backendout="1">namehashtemplatename</bcf:option>
     <bcf:option datatype="string" backendout="1">sortingnamekeytemplatename</bcf:option>
     <bcf:option datatype="string">uniquelist</bcf:option>
     <bcf:option datatype="string">uniquename</bcf:option>
@@ -849,10 +829,9 @@
     <bcf:option datatype="boolean" backendout="1">useprefix</bcf:option>
   </bcf:optionscope>
   <bcf:optionscope type="NAME">
-    <bcf:option datatype="string" backendin="sortingnamekeytemplatename,uniquenametemplatename,labelalphanametemplatename,namehashtemplatename">nametemplates</bcf:option>
+    <bcf:option datatype="string" backendin="sortingnamekeytemplatename,uniquenametemplatename,labelalphanametemplatename">nametemplates</bcf:option>
     <bcf:option datatype="string" backendout="1">labelalphanametemplatename</bcf:option>
     <bcf:option datatype="string" backendout="1">uniquenametemplatename</bcf:option>
-    <bcf:option datatype="string" backendout="1">namehashtemplatename</bcf:option>
     <bcf:option datatype="string" backendout="1">sortingnamekeytemplatename</bcf:option>
     <bcf:option datatype="string">uniquename</bcf:option>
     <bcf:option datatype="boolean" backendout="1">familyinits</bcf:option>
@@ -1066,15 +1045,8 @@
     <bcf:namepart order="2" base="1">family</bcf:namepart>
     <bcf:namepart order="3">given</bcf:namepart>
   </bcf:uniquenametemplate>
-  <!-- NAME HASH TEMPLATES -->
-  <bcf:namehashtemplate name="global">
-    <bcf:namepart order="1" hashscope="full">family</bcf:namepart>
-    <bcf:namepart order="2" hashscope="full">given</bcf:namepart>
-    <bcf:namepart order="3" hashscope="full">prefix</bcf:namepart>
-    <bcf:namepart order="4" hashscope="full">suffix</bcf:namepart>
-  </bcf:namehashtemplate>
   <!-- SORTING NAME KEY TEMPLATES -->
-  <bcf:sortingnamekeytemplate name="global" visibility="sort">
+  <bcf:sortingnamekeytemplate name="global">
     <bcf:keypart order="1">
       <bcf:part type="namepart" order="1" use="1">prefix</bcf:part>
       <bcf:part type="namepart" order="2">family</bcf:part>
@@ -2372,25 +2344,78 @@
   <!-- CITATION DATA -->
   <!-- SECTION 0 -->
   <bcf:bibdata section="0">
-    <bcf:datasource type="file" datatype="bibtex" glob="false">bibliography.bib</bcf:datasource>
+    <bcf:datasource type="file" datatype="bibtex" glob="false">references.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1" intorder="1">Berut_2004</bcf:citekey>
-    <bcf:citekey order="2" intorder="1">Berut_2004</bcf:citekey>
-    <bcf:citekey order="3" intorder="1">Ullrich_2020</bcf:citekey>
-    <bcf:citekey order="4" intorder="1">Krieg_2020</bcf:citekey>
-    <bcf:citekey order="5" intorder="1">Ullrich_2020</bcf:citekey>
-    <bcf:citekey order="6" intorder="1">Dung_Temlyakov_Ullrich_2018</bcf:citekey>
-    <bcf:citekey order="7" intorder="1">Simulationlib_2013</bcf:citekey>
-    <bcf:citekey order="8" intorder="1">GenzTesting_1984</bcf:citekey>
-    <bcf:citekey order="8" intorder="2">GenzPackage_1987</bcf:citekey>
-    <bcf:citekey order="9" intorder="1">Simulationlib_2013</bcf:citekey>
-    <bcf:citekey order="10" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
-    <bcf:citekey order="11" intorder="1">BurkardtCounting_2014</bcf:citekey>
-    <bcf:citekey order="12" intorder="1">HarrisNumpy_2020</bcf:citekey>
-    <bcf:citekey order="13" intorder="1">TasmanianLibrary_2013</bcf:citekey>
-    <bcf:citekey order="14" intorder="1">JuddSmolyak_2014</bcf:citekey>
-    <bcf:citekey order="15" intorder="1">Coleman_SmoylakGithub_2013</bcf:citekey>
+    <bcf:citekey order="1">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="1">smolyak1963</bcf:citekey>
+    <bcf:citekey order="1">Coleman_SmoylakGithub_2013</bcf:citekey>
+    <bcf:citekey order="1">JuddSmolyak_2014</bcf:citekey>
+    <bcf:citekey order="2">Krieg_2020</bcf:citekey>
+    <bcf:citekey order="3">Dung_Temlyakov_Ullrich_2018</bcf:citekey>
+    <bcf:citekey order="4">waring1779</bcf:citekey>
+    <bcf:citekey order="4">lagrange1901</bcf:citekey>
+    <bcf:citekey order="5">klimke2004</bcf:citekey>
+    <bcf:citekey order="6">Berut_2004</bcf:citekey>
+    <bcf:citekey order="7">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="8">DELVOS198299</bcf:citekey>
+    <bcf:citekey order="9">novakRitter1996</bcf:citekey>
+    <bcf:citekey order="10">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="11">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="12">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="13">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="14">zeller1966</bcf:citekey>
+    <bcf:citekey order="15">Dzjadyk1983</bcf:citekey>
+    <bcf:citekey order="16">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="17">smolyak1963</bcf:citekey>
+    <bcf:citekey order="17">temlyakov1986</bcf:citekey>
+    <bcf:citekey order="17">WASILKOWSKI19951</bcf:citekey>
+    <bcf:citekey order="18">Ullrich_2020</bcf:citekey>
+    <bcf:citekey order="19">Krieg_2020</bcf:citekey>
+    <bcf:citekey order="20">Ullrich_2020</bcf:citekey>
+    <bcf:citekey order="21">Dung_Temlyakov_Ullrich_2018</bcf:citekey>
+    <bcf:citekey order="22">Simulationlib_2013</bcf:citekey>
+    <bcf:citekey order="23">GenzTesting_1984</bcf:citekey>
+    <bcf:citekey order="23">GenzPackage_1987</bcf:citekey>
+    <bcf:citekey order="24">Simulationlib_2013</bcf:citekey>
+    <bcf:citekey order="25">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="26">HarrisNumpy_2020</bcf:citekey>
+    <bcf:citekey order="27">lapack99</bcf:citekey>
+    <bcf:citekey order="28">stoyanov2015tasmanian</bcf:citekey>
+    <bcf:citekey order="28">stoyanov2016dynamically</bcf:citekey>
+    <bcf:citekey order="28">stoyanov2018adaptive</bcf:citekey>
+    <bcf:citekey order="28">morrow2019method</bcf:citekey>
+    <bcf:citekey order="28">doecode_6305</bcf:citekey>
+    <bcf:citekey order="29">BurkardtCounting_2014</bcf:citekey>
+    <bcf:citekey order="0" nocite="1">*</bcf:citekey>
+    <bcf:citekey order="30">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="31">smolyak1963</bcf:citekey>
+    <bcf:citekey order="32">Coleman_SmoylakGithub_2013</bcf:citekey>
+    <bcf:citekey order="33">JuddSmolyak_2014</bcf:citekey>
+    <bcf:citekey order="34">Krieg_2020</bcf:citekey>
+    <bcf:citekey order="35">Dung_Temlyakov_Ullrich_2018</bcf:citekey>
+    <bcf:citekey order="36">waring1779</bcf:citekey>
+    <bcf:citekey order="37">lagrange1901</bcf:citekey>
+    <bcf:citekey order="38">klimke2004</bcf:citekey>
+    <bcf:citekey order="39">Berut_2004</bcf:citekey>
+    <bcf:citekey order="40">DELVOS198299</bcf:citekey>
+    <bcf:citekey order="41">novakRitter1996</bcf:citekey>
+    <bcf:citekey order="42">zeller1966</bcf:citekey>
+    <bcf:citekey order="43">Dzjadyk1983</bcf:citekey>
+    <bcf:citekey order="44">temlyakov1986</bcf:citekey>
+    <bcf:citekey order="45">WASILKOWSKI19951</bcf:citekey>
+    <bcf:citekey order="46">Ullrich_2020</bcf:citekey>
+    <bcf:citekey order="47">Simulationlib_2013</bcf:citekey>
+    <bcf:citekey order="48">GenzTesting_1984</bcf:citekey>
+    <bcf:citekey order="49">GenzPackage_1987</bcf:citekey>
+    <bcf:citekey order="50">HarrisNumpy_2020</bcf:citekey>
+    <bcf:citekey order="51">lapack99</bcf:citekey>
+    <bcf:citekey order="52">stoyanov2015tasmanian</bcf:citekey>
+    <bcf:citekey order="53">stoyanov2016dynamically</bcf:citekey>
+    <bcf:citekey order="54">stoyanov2018adaptive</bcf:citekey>
+    <bcf:citekey order="55">morrow2019method</bcf:citekey>
+    <bcf:citekey order="56">doecode_6305</bcf:citekey>
+    <bcf:citekey order="57">BurkardtCounting_2014</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">
@@ -2423,13 +2448,12 @@
   </bcf:sortingtemplate>
   <!-- DATALISTS -->
   <bcf:datalist section="0"
-                name="nty/global//global/global/global"
+                name="nty/global//global/global"
                 type="entry"
                 sortingtemplatename="nty"
                 sortingnamekeytemplatename="global"
                 labelprefix=""
                 uniquenametemplatename="global"
-                labelalphanametemplatename="global"
-                namehashtemplatename="global">
+                labelalphanametemplatename="global">
   </bcf:datalist>
 </bcf:controlfile>
