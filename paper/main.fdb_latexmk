@@ -1,11 +1,11 @@
 # Fdb version 3
-["biber main"] 1744784982 "main.bcf" "main.bbl" "main" 1744784997
-  "main.bcf" 1744784997 111249 f57a11a218c78d9878e201f521f4e4b1 "lualatex"
+["biber main"] 1744784982 "main.bcf" "main.bbl" "main" 1744785366
+  "main.bcf" 1744785366 111249 f57a11a218c78d9878e201f521f4e4b1 "lualatex"
   "references.bib" 1744784931 9954 04f3c3c9173662ec5de930010e9768df ""
   (generated)
   "main.bbl"
   "main.blg"
-["lualatex"] 1744784995 "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" "main.pdf" "main" 1744784997
+["lualatex"] 1744785363 "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" "main.pdf" "main" 1744785366
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmmono12-regular.luc" 1744359425 77587 aad0b5807126f513a2c5ddfb65429272 ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bold.luc" 1717617200 124213 a3bd0e7906af025b007d0cfb6e758f8b ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bolditalic.luc" 1736710264 132310 78a22badfac703885efb3b2ee276c3b5 ""
@@ -22,7 +22,7 @@
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmroman9-regular.luc" 1744359424 123771 cd1c7cd2e9d8c2ef676e901ce59a5b48 ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/fonts/otl/lmromancaps10-regular.luc" 1744359424 116074 e6ec77a3379a4124ba8bd432b0a23c6f ""
   "/home/th3lias/.texlive2021/texmf-var/luatex-cache/generic/names/luaotfload-names.luc" 1717617201 1697365 4f085dac61336ced07cb830340f7fcf1 ""
-  "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" 1744784992 32189 be391182eb9432c4c696bdd99971df00 ""
+  "/home/th3lias/workspace/NumericalExperiments1/paper/main.tex" 1744785363 32152 ebe549d297902a0c15f8fb8dbd2f660f ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1246382020 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -280,11 +280,11 @@
   "figures/oscillatory/realization3_dim5_scale4.pdf" 1744356932 26833 0b9b147f41fefa6c226b3ddca345f792 ""
   "figures/zhou/distro_dim5_scale4.pdf" 1744356932 26698 1d9622479a9aa9748169251c4e47a19c ""
   "macros.tex" 1744784915 3724 ae7c86fb0b80237a8d53a13bf4ae4c4d ""
-  "main.aux" 1744784997 12749 4c4b46899a6834f1ec6d3e084ce53fea "lualatex"
+  "main.aux" 1744785366 12749 4c4b46899a6834f1ec6d3e084ce53fea "lualatex"
   "main.bbl" 1744784983 46028 3d9d831cc0e584cd68dc1b49f33fba2a "biber main"
-  "main.out" 1744784997 2027 4f1e83a159f74ff2b99945f23a664b24 "lualatex"
-  "main.run.xml" 1744784997 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
-  "main.tex" 1744784992 32189 be391182eb9432c4c696bdd99971df00 ""
+  "main.out" 1744785366 2027 4f1e83a159f74ff2b99945f23a664b24 "lualatex"
+  "main.run.xml" 1744785366 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
+  "main.tex" 1744785363 32152 ebe549d297902a0c15f8fb8dbd2f660f ""
   "tables/dim2.tex" 1744784931 7351 4e8796a7e5d6695ef20f62eed562a3a3 ""
   "tables/scale3.tex" 1744784931 6195 7900f434e2e58b5fac62ba75aea99871 ""
   (generated)
