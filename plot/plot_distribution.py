@@ -47,6 +47,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 n_points_ls = []
                 n_points_sy = []
 
+                n_functions_list = []
+
                 for index, grid in enumerate(grid_types):
 
                     data_grid_type = data_dim[data_dim['grid_type'] == str(grid)].copy()
@@ -79,6 +81,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
                     for scale in scales:
                         scale_data = data_grid_type[data_grid_type['scale'] == scale].copy()
+
+                        n_functions_list.append(len(scale_data))
 
                         if grid == "SPARSE":
                             n_points_sy.append(scale_data['n_samples'].iloc[0])
@@ -146,12 +150,13 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
 
                 for ax in axs:
-                    ax.set_xlabel('scale ($q-d$)\npoints Smolyak\npoints Least Squares')
+                    ax.set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
                     ax.set_xticks(scales)  # Ensure ticks correspond to original scales
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
+
 
                 if not only_maximum:
                     axs[0].set_ylabel('estimated uniform error')
@@ -160,8 +165,10 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     axs[0].set_ylabel('estimated max uniform error')
                     axs[1].set_ylabel('estimated max mean squared error')
 
-                # Adjust layout and show the plot
+                # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
+                plt.figtext(0.06, 0.95, f"$n={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                            horizontalalignment='left', color='gray')
 
                 if save:
                     if only_maximum:
@@ -222,6 +229,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                 n_points_ls = []
                 n_points_sy = []
 
+                n_functions_list = []
+
                 for index, grid in enumerate(grid_types):
 
                     data_grid_type = data_scale[data_scale['grid_type'] == str(grid)].copy()
@@ -254,6 +263,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
                     for dim in dims:
                         dim_data = data_grid_type[data_grid_type['dim'] == dim].copy()
+
+                        n_functions_list.append(len(dim_data))
 
                         if grid == "SPARSE":
                             n_points_sy.append(dim_data['n_samples'].iloc[0])
@@ -331,8 +342,10 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     axs[0].set_ylabel('estimated max uniform error')
                     axs[1].set_ylabel('estimated max mean squared error')
 
-                # Adjust layout and show the plot
+                # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
+                plt.figtext(0.06, 0.95, f"$n\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                            horizontalalignment='left', color='gray')
 
                 if save:
                     if only_maximum:
@@ -354,8 +367,12 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 if __name__ == '__main__':
     plottype = "boxplot"
 
-    folder_name = os.path.join("..", "results", "09_04_2025_19_15_53")
-    filename = os.path.join(folder_name, "results_numerical_experiments.csv")
+    folder_name = os.path.join("..", "results")
+    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
 
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
+
+    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")
