@@ -552,8 +552,8 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
                     if scale_index == 0:
                         if grid_index == 0:
-                            output[fun_name] += r"\multirow{3}{*}{\thead[l]{\textbf{Dim $" + str(
-                                dim_name) + r"$}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                            output[fun_name] += r"\multirow{3}{*}{\thead[l]{\textbf{Dim " + str(
+                                dim_name) + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[fun_name] += r" & "
                         output[fun_name] += method_name
@@ -562,23 +562,10 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
                     if len(scale_df) == 0:
                         if skip_mean_error:
-                            output[fun_name] += (
-                                    r" & "
-                                    + ""
-                                    + r" & "
-                                    + ""
-                            )
+                            output[fun_name] += (r" & " + "" + r" & " + "")
                         else:
                             output[fun_name] += (
-                                    r" & "
-                                    + ""
-                                    + r" & "
-                                    + ""
-                                    + r" & "
-                                    + ""
-                                    + r" & "
-                                    + ""
-                            )
+                                    r" & " + "" + r" & " + "" + r" & " + "" + r" & " + "")
                     else:
                         ell_2_error = scale_df['ell_2_error']
                         ell_infty_error = scale_df['ell_infty_error']
