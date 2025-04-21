@@ -40,16 +40,16 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
     abbreviation_dict = {
         "BRATLEY": "Bratley",
-        "CONTINUOUS": "Cont.",
-        "CORNER_PEAK": "Corn. Peak",
-        "DISCONTINUOUS": "Disc.",
-        "G_FUNCTION": "G-Func.",
-        "GAUSSIAN": "Gauss.",
-        "MOROKOFF_CALFISCH_1": "Mor. Cal. 1",
-        "MOROKOFF_CALFISCH_2": "Mor. Cal. 2",
-        "OSCILLATORY": "Oscill.",
-        "PRODUCT_PEAK": "Prod. Peak",
-        "ROOS_ARNOLD": "Roos Arn.",
+        "CONTINUOUS": "Continuous",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discontinuous",
+        "G_FUNCTION": "G-Function",
+        "GAUSSIAN": "Gaussian",
+        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
+        "OSCILLATORY": "Oscillatory",
+        "PRODUCT_PEAK": "Product Peak",
+        "ROOS_ARNOLD": "Roos Arnold",
         "ZHOU": "Zhou"
     }
 
@@ -113,7 +113,8 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                         output[dim_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
         output[dim_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
-        for fun_name, fun_df in dim_df.groupby('f_name'):
+        dfg = dim_df.groupby('f_name')
+        for fun_index, (fun_name, fun_df) in enumerate(dfg):
             min_values = {}
 
             n_functions_list = []
@@ -170,7 +171,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
                     if scale_index == 0:
                         if grid_index == 0:
-                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[
+                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
                                 str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[dim_name] += r" & "
@@ -209,7 +210,9 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                         )
 
                 output[dim_name] += r"\\" + "\n"
-            output[dim_name] += r"\bottomrule" + "\n"
+            if not fun_index == len(dfg) - 1:
+                output[dim_name] += r"\midrule" + "\n"
+        output[dim_name] += r"\bottomrule" + "\n"
         output[dim_name] += r"\end{tabular}" + "\n"
 
     for dim_name, table in output.items():
@@ -236,16 +239,16 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
     abbreviation_dict = {
         "BRATLEY": "Bratley",
-        "CONTINUOUS": "Cont.",
-        "CORNER_PEAK": "Corn. Peak",
-        "DISCONTINUOUS": "Disc.",
-        "G_FUNCTION": "G-Func.",
-        "GAUSSIAN": "Gauss.",
-        "MOROKOFF_CALFISCH_1": "Mor. Cal. 1",
-        "MOROKOFF_CALFISCH_2": "Mor. Cal. 2",
-        "OSCILLATORY": "Oscill.",
-        "PRODUCT_PEAK": "Prod. Peak",
-        "ROOS_ARNOLD": "Roos Arn.",
+        "CONTINUOUS": "Continuous",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discontinuous",
+        "G_FUNCTION": "G-Function",
+        "GAUSSIAN": "Gaussian",
+        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
+        "OSCILLATORY": "Oscillatory",
+        "PRODUCT_PEAK": "Product Peak",
+        "ROOS_ARNOLD": "Roos Arnold",
         "ZHOU": "Zhou"
     }
 
@@ -305,7 +308,8 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                         output[scale_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
         output[scale_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
-        for fun_name, fun_df in scale_df.groupby('f_name'):
+        dfg = scale_df.groupby('f_name')
+        for fun_index, (fun_name, fun_df) in enumerate(dfg):
             min_values = {}
 
             n_functions_list = []
@@ -357,7 +361,7 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
                     if dim_index == 0:
                         if grid_index == 0:
-                            output[scale_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[
+                            output[scale_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
                                 str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[scale_name] += r" & "
@@ -394,8 +398,9 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                         )
 
                 output[scale_name] += r"\\" + "\n"
-
-            output[scale_name] += r"\bottomrule" + "\n"
+            if not fun_index == len(dfg)-1:
+                output[scale_name] += r"\midrule" + "\n"
+        output[scale_name] += r"\bottomrule" + "\n"
         output[scale_name] += r"\end{tabular}" + "\n"
 
     for scale_name, table in output.items():
@@ -490,7 +495,8 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                         output[fun_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
         output[fun_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
-        for dim_name, dim_df in fun_df.groupby('dim'):
+        dfg = fun_df.groupby('dim')
+        for dim_index, (dim_name, dim_df) in enumerate(dfg):
             min_values = {}
 
             n_functions_list = []
@@ -600,8 +606,13 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                             )
 
                 output[fun_name] += r"\\" + "\n"
-            output[fun_name] += r"\bottomrule" + "\n"
+            if not dim_index == len(dfg)-1:
+                output[fun_name] += r"\midrule" + "\n"
+        output[fun_name] += r"\bottomrule" + "\n"
         output[fun_name] += r"\end{tabular}" + "\n"
+
+        # remove last occurence of midrule
+
 
     for fun_name, table in output.items():
         with open(os.path.join(output_folder, f"{fun_name}.tex"), "w") as f:
@@ -625,8 +636,8 @@ if __name__ == '__main__':
     ignore_dim = None
     ignore_scale = None
 
-    # generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
-    # generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=ignore_dim)
-    # generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
+    generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
+    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=ignore_dim)
+    generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
 
     raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")
