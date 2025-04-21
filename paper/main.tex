@@ -606,7 +606,7 @@ To ensure reproducibility, we initialized our random number generation with a
 fixed seed.
 For actually finding the least--squares solution we utilize Scipy 
 \cite{Virtanen_Scipy} with their \textrm{lstsq} method which uses the 
-\textrm{gelsd} driver from the standard linear algebra package Lapack 
+\textrm{gelsy} driver from the standard linear algebra package Lapack 
 \cite{lapack99} in the backend.
 Other drivers or for example the standard \emph{solve}-method from Numpy 
 (\cite{HarrisNumpy_2020}) are a possible choice but did not meet our 
