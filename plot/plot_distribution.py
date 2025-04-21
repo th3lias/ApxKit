@@ -108,13 +108,13 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whis=[0, 100],
                                                whiskerprops=dict(color=c), capprops=dict(color=c),
-                                               medianprops=dict(color='black'))
+                                               medianprops=dict(color=c))
                                 axs[1].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
                                                showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whis=[0, 100],
                                                whiskerprops=dict(color=c), capprops=dict(color=c),
-                                               medianprops=dict(color='black'))
+                                               medianprops=dict(color=c))
 
                             elif plot_type == "errorbar":
                                 max_ellinf = scale_data['ell_infty_error'].max()
@@ -285,11 +285,11 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                                 axs[0].boxplot(dim_data['ell_2_error'], positions=[dim + offset], showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
-                                               medianprops=dict(color='black'))
+                                               medianprops=dict(color=c))
                                 axs[1].boxplot(dim_data['ell_infty_error'], positions=[dim + offset], showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
-                                               medianprops=dict(color='black'))
+                                               medianprops=dict(color=c))
 
 
 
