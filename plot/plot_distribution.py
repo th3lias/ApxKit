@@ -56,7 +56,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     if grid == "SPARSE":
                         method = "Smolyak"
                     elif grid == "UNIFORM" or grid == "CHEBYSHEV":
-                        method = "Least_Sqares"
+                        method = "Least_Squares"
                     else:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
@@ -238,7 +238,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     if grid == "SPARSE":
                         method = "Smolyak"
                     elif grid == "UNIFORM" or grid == "CHEBYSHEV":
-                        method = "Least_Sqares"
+                        method = "Least_Squares"
                     else:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
