@@ -49,10 +49,12 @@
 \newcommand{\FF}{\ensuremath{\mathbf{F}}}
 \newcommand{\XX}{\ensuremath{\mathbf{X}}}
 \newcommand{\YY}{\ensuremath{\mathbf{Y}}}
+\newcommand{\bfc}{\ensuremath{\mathbf{c}}}
 \newcommand{\bfj}{\ensuremath{\mathbf{j}}}
 \newcommand{\bfx}{\ensuremath{\mathbf{x}}}
-\newcommand{\bfz}{\ensuremath{\mathbf{z}}}
 \newcommand{\bfy}{\ensuremath{\mathbf{y}}}
+\newcommand{\bfz}{\ensuremath{\mathbf{z}}}
+
 \newcommand{\bfom}{\ensuremath{\mathbf{\omega}}}
 \newcommand{\bfw}{\ensuremath{\mathbf{w}}}
 
@@ -152,4 +154,22 @@
 
 
 \newcommand*{\StandardCaptionDimTable}[2]{Visualization of the results for 
-fixed dim (dim = $#1$) and various scale tested for $n=#2$ realizations.}
+dim = $#1$ and various scales tested with $n=#2$ realizations for each function 
+class. Best algorithm per function class, dimension and scale is depicted bold.}
+
+\newcommand*{\StandardCaptionFunctionTable}[1]{Visualization of the results for 
+function class \emph{#1} for various dimensions and scales, tested with $n$ 
+realizations. Best algorithm per dimension and scale is depicted bold.}
+
+\newcommand*{\StandardCaptionDimFigureMax}[3]{Visualization of the results for 
+dim = $#1$ and various scales tested with $n=#2$ realizations for function 
+class \emph{#3}. Left plot shows the estimated max mean squared error and the 
+right one shows the estimated max uniform error.}
+
+\newcommand*{\StandardCaptionDimFigureBoxplot}[3]{Visualization of the results 
+for dim = $#1$ and various scales tested with $n=#2$ realizations 
+for function class \emph{#3}. Left plot shows the estimated distribution of the 
+mean squared error and the right one shows the estimated distribution of the 
+uniform error via boxplots. The lines connect the average error for each 
+algorithm and the boxplot depicts the min and max error (whiskers) and the 
+quartiles.}

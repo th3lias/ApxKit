@@ -49,11 +49,13 @@ natbib=true]{biblatex}
 
 \numberwithin{equation}{section}
 
-\include{macros}
+\input{macros}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
 
 % TODO: Use geometry package to have more space?
 % TODO: Tables' size can be increased when setting the width in the adjustbox
+% TODO: Not sure at some points with boldface letters
+% TODO: Search for ?? at the end to ensure no wrong references
 
 \begin{document}
 \title{Least Squares and Smolyak's Algorithm}
@@ -80,14 +82,12 @@ natbib=true]{biblatex}
 
 \begin{abstract}
 	We present novel, large-scale experiments for polynomial interpolation in 
-	high 
-	dimensional settings using some of the most popular algorithms available. 
-	We 
-	compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) 
-	using 
-	random data. We empirically confirm that interpolation using LSQ performs 
-	equally as good on smooth and better on non-smooth functions if SA is given 
-	\(n\) and LSQ is given \(2 \cdot n\) points.
+	high dimensional settings using some of the most popular algorithms 
+	available. 
+	We compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LS) 
+	using random data. We empirically confirm that interpolation using LS 
+	performs equally as good on smooth and better on non-smooth functions if SA 
+	is given \(n\) and LS is given \(2 \cdot n\) points.
 \end{abstract}
 
 \maketitle
@@ -105,7 +105,8 @@ interest for a long time
 \emph{not} optimal in the sampling numbers
 \[
 e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
-		\in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
+		\in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(\bfx_i) 
+		\phi_i}
 \]
 disproving conjecture 5.26 in \cite{Dung_Temlyakov_Ullrich_2018}. We extend 
 upon these theoretical findings with an empirical study comparing the 
@@ -128,7 +129,9 @@ We use \(f \lesssim g\) to denote \(f \leq c
 g\) for functions \(f, g\). With \(B(X)\) we denote the closed unit ball of a 
 normed space \(X\). With \(X^\star\) we denote the topological dual space of 
 \(X\).
+
 \newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interpolation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -149,8 +152,8 @@ written down explicitly as \begin{equation}\label{interpolating_polynomial}
 for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single 
 dimension, the formula for this basis is
 \[
-\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, 
-		m}}{x_{i, j}-x_{i, m}},
+\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} 
+\frac{w-x_{i, m}}{x_{i, j}-x_{i, m}},
 \]
 see \cite{waring1779, lagrange1901}. We call \(\cI\) the 
 \emph{Lagrange interpolator}.
@@ -170,7 +173,7 @@ i.e. \begin{equation}\label{multivariateLagrange}
 	\frac{w_i - x_{i, k}}{x_{i, j_i} - x_{i, k}}
 \end{equation}
 and the sum now ranges over all multiindices \(\bfj = (j_1, \dots, j_d) \in 
-\N_0^d\) with \(\bfj \in \set{0, 1, \dots, n}^d\). We denote 
+\indexset[0]{n}^d\). We denote 
 \begin{equation}\label{eq:interpolantdD}
 	\cI(\ZZ) \defn \sum_{j_1 = 0}^n \cdots \sum_{j_d = 0}^n y_{j_1, \dots, j_d} 
 	\ell_{j_1, \dots, j_d}
@@ -192,7 +195,7 @@ barycentric form
 \end{equation}
 where
 \begin{equation}\label{eq:barycentricBasis}
-	\ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-x_{j_k}} \mid k \in 
+	\ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-x_{j_k}}, \qquad k \in 
 	\indexset[1]{d}.
 \end{equation}
 with \(x_{j_k}\) being the \(j_k\)--th entry of \(\bfx\). \(m_{j_k}\) are the 
@@ -237,8 +240,10 @@ tensor product of one dimensional point sets but restrict the number of
 simultaneously large directions. To that end, take a variable 
 number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, 
 	\dots, x_{N(j), j}}\) and \(\cI_j\) the corresponding one--dimensional 
-interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then 
-Smolyak's algorithm is given in a simple recursive manner
+interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). 
+\jakob{N(j) is not defined yet. It gets mentioned before subsection 4.1 
+(Polynomial Exactness)} Then Smolyak's algorithm is given in a simple recursive 
+manner
 \begin{equation}\label{Smolyak}
 	\cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d 
 	\Delta_{j_k} = \cA(q-1, d)+\sum_{\norm[1]{\bfj}=q} \bigotimes_{k=1}^d 
@@ -247,7 +252,9 @@ Smolyak's algorithm is given in a simple recursive manner
 with \(\cA(q, d) = 0,\, q < d\) and \(\bfj\), \(\cI\) as before. Evidently, 
 only a relatively small number of knots, through the restriction 
 \(\norm[1]{\bfj} \leq q\), is needed. To be precise, \(\cO(n (\log n)^{d-1})\) 
-points are needed. Hence \(q\) can be thought of as a resolution parameter. By 
+points are needed. Hence \(q\) \jakob{Mention \emph{scale?} as $q-d$ or do we 
+only mention it in the section of the experimental results?} can be thought of 
+as a resolution parameter. By 
 this form, one only needs to assess the function values at the \emph{sparse 
 grid} \[
 H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times 
@@ -270,12 +277,11 @@ N(1) = 1,\quad N(j) = 2^{j-1}+1,\, j > 1.
 \subsection{Polynomial Exactness}
 Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 
 1]^d\) \jakob{We have $[0,1]^d$. It appears multiple times, therefore I didn't 
-	want to erase it everywhere now.} for interpolation of unknowns instead of 
-	a 
-general domain \(D\). In this 
-case, Smolyak's algorithm is well known to exactly reproduce functions on 
-certain polynomial spaces given that the rules \(\cI_j\) are exact on nested 
-spaces \(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
+want to change it everywhere now. But we need to change that!} for 
+interpolation of unknowns instead of a general domain \(D\). In this case, 
+Smolyak's algorithm is well known to exactly reproduce functions on certain 
+polynomial spaces given that the rules \(\cI_j\) are exact on nested spaces 
+\(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
 \begin{lem}
 	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) 
 	and assume \[
@@ -396,7 +402,7 @@ For the later implementation, we choose the basis polynomials \(b_j\) as the
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TODO: Eventuell diesen Abschnitt an ein Banachraum Setting anpassen, wie in 
-%https://arxiv.org/pdf/2401.02220.
+	% https://arxiv.org/pdf/2401.02220.
 
 The notation in the following is borrowed from \cite{Ullrich_2020}.
 In this section we introduce a formal setting to the former considerations. 
@@ -499,22 +505,24 @@ deterministic construction of the point sets used for reconstruction being
 unknown, random i.i.d. points suffice for a reconstruction error that is on the 
 order of optimal points, with probability tending to \(1\). We verify this by 
 our experimental findings, presented in \Cref{sec:experimentalFindings} with a 
-much better relative number of points used for LSQ function recovery vs. SA 
+much better relative number of points used for LS function recovery vs. SA 
 recovery than guaranteed in this section, i.e. better constants than explicitly 
 known before. It remains an open problem to rigorously improve upon the 
 constants in \Cref{eq:conclusio}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimental Findings}\label{sec:experimentalFindings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO: Add what computer and software we used etc. Also how much RAM was used
-% TODO: And also, how long it took.
+% TODO: Should we add at some point, how long it took
+% TODO: Mention details of the cluster -> usually mentioned somewhere in such 
+	% papers
 
 For assessing the performance of the Least Squares algorithms in comparison to 
 the Sparse Grid alternative, we use the following $12$ families of test 
 functions from \cite{Simulationlib_2013}, each defined of the $d$-dimensional 
 unit-cube $[0,1]^d$.
-
+\jakob{boldface here in the formulas for $c,w,x$?}
 {
 	\allowdisplaybreaks[4]
 	\begin{align*}
@@ -564,24 +572,25 @@ unit-cube $[0,1]^d$.
 	\end{align*}
 }
 Note that the first $6$ function classes are also known as the \emph{Genz 
-	Integrand Families} and were introduced by Genz in \cite{GenzTesting_1984, 
-	GenzPackage_1987}. In comparison to the original definition in 
-\cite{Simulationlib_2013}, we also introduce the parameters $c$ and $w$ in 
-each class by making something like an affine-linear transformation of the 
-input $x$. 
-This allows for testing multiple realizations of these functions.
+Integrand Families} and were introduced by Genz in \cite{GenzTesting_1984, 
+GenzPackage_1987}. Unlike the original definition in 
+\cite{Simulationlib_2013}, we extend some function classes by introducing the 
+parameters $\bfc$ and $\bfw$ which make something like an affine-linear 
+transformation of the input $\bfx$. 
+This allows for testing multiple realizations of these classes.
 
 \subsection{Implementation Details}
 
 Generating a function from a specific family is done 
-by sampling the random vectors $c, w \in\R^d$. In our experiments, we sample 
-each entry of $c$ and $w$ from a uniform distribution $\mathcal{U}(0,1)$ and 
-rescale $c$ afterwards such that $\norm[1]{c}=d$.
+by sampling the random vectors $\bfc, \bfw \in\R^d$. In our experiments, we 
+sample each entry of $\bfc$ and $\bfw$ from a uniform distribution 
+$\mathcal{U}(0,1)$ and rescale $\bfc$ afterwards such that $\norm[1]{\bfc}=d$.
 
 \begin{remark}
 	In \cite{BarthelmannHighDim_2000}, experiments were performed for the Genz 
 	families, defined on $[-1,1]^d$. We use $[0,1]^d$ as this ensures that also 
-	the other families are well-defined for any sampled $c,w\in\R^d$.
+	the other families are well-defined for any sampled (and possibly rescaled) 
+	$\bfc,\bfw\in\mathcal{U}(0,1)^d$ that .
 \end{remark}
 
 In the following experiments, we compare Smolyak's algorithm with two 
@@ -591,152 +600,313 @@ and we don't reweigh those points. In the second realization we sample the
 points from $w(x) = (1-x^2)^{1/2}$, as in \ref{chebyshev_weight} and we use the 
 value of 
 this density at each point as the basis for the weight calculation.
-For reproducibility, we used seeding in our random number generation.
+We call the first realization \emph{Least Squares Uniform} (LS-Uniform) and the 
+second one \emph{Least Squares-Chebyshev} (LS-Chebyshev). 
+To ensure reproducibility, we initialized our random number generation with a 
+fixed seed.
 For actually finding the least--squares solution we utilize Scipy 
-\cite{Virtanen_Scipy} or Numpy \cite{HarrisNumpy_2020} with their 
-\textrm{lstsq} method which uses the \textrm{gelsd} driver from the standard 
-linear algebra package Lapack \cite{lapack99} in the backend.
-Other drivers are a possible choice but did not meet our performance-- and 
-numerical precision requirements.
+\cite{Virtanen_Scipy} with their \textrm{lstsq} method which uses the 
+\textrm{gelsd} driver from the standard linear algebra package Lapack 
+\cite{lapack99} in the backend.
+Other drivers or for example the standard \emph{solve}-method from Numpy 
+(\cite{HarrisNumpy_2020}) are a possible choice but did not meet our 
+performance-- and numerical precision requirements.
 All 3 algorithms use the same basis functions \Cref{chebyshev_polynomials} 
-which, as mentioned, form an ONB for \(L^2_w\). For the implementation of 
-Smolyak's algorithm we employ the standard library Tasmanian \jakob{And/Or 
-	self-implementation based on the other paper} with it's Python frontend 
+which, as mentioned, form an ONB for \(L^2_w\). The implementation thereof is 
+based on the implementation in \cite{JuddSmolyak_2014}. For the implementation 
+of Smolyak's algorithm we employ the standard library Tasmanian with it's 
+Python frontend 
 \cite{stoyanov2015tasmanian,stoyanov2016dynamically,stoyanov2018adaptive,morrow2019method,doecode_6305}.
-All Algorithms are tested for all families of functions with multiple (more 
-than \(10\)) 
-realizations and for all dimensions $d\in \indexset[2]{10}$. In each dimension, 
-the resolution $q\in\N$ was varied. Note that $q>d$. Depending on $d$ 
-smaller or larger values for $q$ were possible because of computational 
-bottlenecks based on the exponential increase in the used points, see also 
-\cite{BurkardtCounting_2014} for an overview on the number of points in a 
-sparse 
-grid. Both Least Squares algorithms enjoyed twice the amount of points, 
-compared to Smolyak's algorithm, sampled in their respective distributions.
+All algorithms are tested for all families of functions with multiple (\(\geq 
+10\)) realizations and for all dimensions $d\in \indexset[2]{10}$. In 
+each dimension, the resolution $q\in\N$ was varied. In our experiments, the 
+resolution parameter is usually denoted by \emph{scale}, which is just $q-d$, 
+since $q>d$. Depending on $d$ smaller or larger values for the scale were 
+possible because of computational bottlenecks based on the exponential increase 
+in the used points, see also \cite{BurkardtCounting_2014} for an overview on 
+the number of points in a sparse grid. Both Least Squares algorithms enjoyed 
+twice the amount of points, compared to Smolyak's algorithm, sampled in their 
+respective distributions.
 
-For assessing the quality of the interpolants, we again generated $n$ random 
-points 
-$x_1, \ldots, x_n$ distributed uniformly in $[0,1]^d$, where $n$ is the number 
-of points in the Sparse Grid. Afterwards we compute the error quantities
-\begin{align*} 
-	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
-	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
-	e_{\ell_\infty}(A_j,q,f) &\defn \max_{i\in\indexset{n}} 
-	\abs{f(x_i)-\left(A_j(q,d)(f)\right)(x_i)}
-\end{align*}
-for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform}, 
-	\text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
-functions. Those quantities are now depicted in 
-\Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
-Additionally, \Cref{tab:dim2_results} and \Cref{tab:scale3_results} summarize 
-in combination with 
-the different distributions for each function class 
-\Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
-the performance of each algorithm based on multiple realizations. 
-% TODO: Describe the Tabular in more detail and also the distribution images.
-% TODO: Also mention the distribution of the errors.
-The results are also depicted in the following tables and figures.\footnote{For 
-a concise overview on our data, we did decide to not depict results for coarse 
-resolutions and dimensions. The reader is invited to try out our implementation 
-for such cases himself.}
+For assessing the quality of the interpolants, we again generate $n$ random 
+points $\bfx_1, \ldots, \bfx_n$ distributed uniformly in $[0,1]^d$, where $n$ 
+is the number of points in the Sparse Grid at the specific scale which serve as 
+our testing points. For each function from our function classes for a fixed 
+dimension and at each scale, we calculate 
+the \emph{uniform error} and the \emph{mean squared error} by comparing the 
+true function values and the values from our interpolant at those specific 
+points.
+
+The distribution, emerged by collecting all function realizations for each 
+function class, is now depicted in 
+\Crefrange{fig:continuous_dim9}{fig:zhou_dim10} for specific 
+function classes and dimensions. For more detailed results, we want to refer to 
+\Crefrange{tab:dim2_results}{tab:dim10_results}, showcasing the exact errors 
+for all three algorithms and different scales for each dimension.
+
+\jakob{Should we also show something for fixed scale and varying dimension? 
+$\rightarrow$ If yes, add pictures and also mention them here before.}
+
+\Crefrange{tab:continuous_results}{tab:zhou_results} showcase the interpolation 
+capabilities of those 3 algorithms for each function class and various scales 
+and dimensions. 
 
 
-% TODO: Make plots and tables here
 
 
-\newpage
-
-\jakob{Reference to the formulas 
-	above, i.e. which formula is Least Squares? Section 5?}
-
-\jakob{Write something about the setting in which we tested the functions. 
-	Maybe this can and should be combined with all the previous stuff. I.e. 
-	talk 
-	about the error metrics. Tell them which formulas were used for each 
-	algorithm. 
-	Some implementation details. Then refer to the figures and also to 
-	important 
-	tables. Tell them, what scale means (Probably need to adapt the notation of 
-	the 
-	images, i.e. use $q$ and not scale). Maybe adapt notation to $q$ or 
-	whichever 
-	character we used before for the description of Smolyak.}
-
-\jakob{We used $n$ points for the test set (random). Also for least squares 
-which was fitted with $2n$ points.}
-\jakob{Mention the abbreviations in the tables.}
+In most of the experiments, at least one of the Least Squares methods 
+performs beneficial compared to Smolyak's Algorithm. \jakob{Add few more 
+sentences, however full conclusion on the next section.}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion}\label{sec:conclusion}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Afterwards we 
+%compute the error quantities \jakob{TODO: Rename those quantities. Especially 
+%$A_n$ is usually something different.}
+%\begin{align*} 
+%	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
+%	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
+%	e_{\ell_\infty}(A_j,q,f) &\defn \max_{i\in\indexset{n}} 
+%	\abs{f(x_i)-\left(A_j(q,d)(f)\right)(x_i)}
+%\end{align*}
+%for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform}, 
+%	\text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
+%functions. 
 
-% TODO: Write that down
-Ideas
-\begin{itemize}
-	\item Same (or usually not a worse---mostly better) order of decay
-	\item $2n$ points seem to suffice compared to the number of the paper
-	\item In some cases, Least Squares outperforms Smolyak a lot
-	\item Tasmainian: Sometimes bad performance: Bad implementation or maybe 
-	sometimes Smolyak really bad (Mario: Approximation of the $0$-Function). 
-	People 
-	might not be aware of the fact that the approximation quality might be 
-	extra-poor
-	\item Write that np.linalg.solve was inaccurate $\rightarrow$ That's why we 
-	used lstsq
-\end{itemize}
+%Those quantities are now depicted in 
+%\Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
+%Additionally, \Cref{tab:dim2_results} and \Cref{tab:scale3_results} summarize 
+%in combination with 
+%the different distributions for each function class 
+%\Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
+%the performance of each algorithm based on multiple realizations. 
+
+%The results are also depicted in the following tables and 
+%figures.\footnote{For 
+%a concise overview on our data, we decided to not depict results for coarse 
+%resolutions and dimensions. The reader is invited to try out our 
+%implementation 
+%for such cases himself.}
+
 
 \newpage
 
-\section{Results (Delete Later)}
+\jakob{Decide whether to use boxplots or max error distribution}
+\jakob{Decide which plots we want to keep}
+\jakob{Decide whether we want to have fixed scale plots as well}
+\jakob{For those plots that we to keep, add more text in the captions}
 
-%% TODO: The following is just a test, to see whether the imports works
-%\begin{figure}[H]
-%	\centering
-%	
-%\includegraphics[width=\linewidth]{figures/oscillatory/realization1_dim5_scale4.pdf}
-%	\caption{Caption}
-%	\label{fig:Osc_1_dim5_scale4}
-%\end{figure}
-%
-%\begin{figure}[H]
-%	\centering
-%	
-%\includegraphics[width=\linewidth]{figures/oscillatory/realization2_dim5_scale4.pdf}
-%	\caption{Caption}
-%	\label{fig:Osc_2_dim5_scale4}
-%\end{figure}
-%
-%\begin{figure}[H]
-%	\centering
-%	
-%\includegraphics[width=\linewidth]{figures/oscillatory/realization3_dim5_scale4.pdf}
-%	\caption{Caption}
-%	\label{fig:Osc_3_dim5_scale4}
-%\end{figure}
-%
-%\begin{figure}[H]
-%	\centering
-%	
-%\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
-%	\caption{Caption}
-%	\label{fig:morokoff_calfisch1_distribution_dim5_scale4}
-%\end{figure}
-%
-%\begin{figure}[H]
-%	\centering
-%	
-%\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
-%	\caption{Caption}
-%	\label{fig:morokoff_calfisch2_distribution_dim5_scale4}
-%\end{figure}
-%
-%\begin{figure}[H] % TODO: Still with boxplot -> Maybe change
-%	\centering
-%	\includegraphics[width=\linewidth]{figures/zhou/distro_dim5_scale4.pdf}
-%	\caption{Caption}
-%	\label{fig:zhou_distribution_dim5_scale4}
-%\end{figure}
+% Continuous
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/continuous/dim9/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{9}{25}{Continuous}}
+	\label{fig:continuous_dim9}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/continuous/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Continuous}}
+	\label{fig:continuous_dim10}
+\end{figure}
+
+% Corner Peak
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/corner_peak/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Corner Peak}}
+	\label{fig:corner_peak_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/corner_peak/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Corner Peak}}
+	\label{fig:conrer_peak_dim10}
+\end{figure}
+
+% Discontinuous
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/discontinuous/dim8/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{8}{25}{Discontinuous}}
+	\label{fig:discontinuous_dim8}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/discontinuous/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Corner Peak}}
+	\label{fig:discontinuous_dim10}
+\end{figure}
+
+% Gaussian
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/gaussian/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Gaussian}}
+	\label{fig:gaussian_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/gaussian/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Gaussian}}
+	\label{fig:gaussian_dim10}
+\end{figure}
+
+% Oscillatory
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/dim6/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{6}{25}{Oscillatory}}
+	\label{fig:oscillatory_dim6}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Oscillatory}}
+	\label{fig:oscillatory_dim10}
+\end{figure}
+
+% Product Peak
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/product_peak/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Product-Peak}}
+	\label{fig:product_peak_dim10}
+\end{figure}
+
+% G-Function
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/g_function/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{G-Function}}
+	\label{fig:g_function_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/g_function/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{G-Function}}
+	\label{fig:g_function_dim10}
+\end{figure}
+
+% Morokoff Calfisch 1
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Morokoff Calfisch 1}}
+	\label{fig:morokoff_calfisch1_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Morokoff Calfisch 1}}
+	\label{fig:morokoff_calfisch1_dim10}
+\end{figure}
+
+% Morokoff Calfisch 2
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch2/dim6/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{6}{25}{Morokoff Calfisch 2}}
+	\label{fig:morokoff_calfisch2_dim6}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch2/dim9/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{9}{25}{Morokoff Calfisch 2}}
+	\label{fig:morokoff_calfisch2_dim9}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch2/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Morokoff Calfisch 2}}
+	\label{fig:morokoff_calfisch2_dim10}
+\end{figure}
+
+% Roos Arnold
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/roos_arnold/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Roos Arnold}}
+	\label{fig:roos_arnold_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/roos_arnold/dim8/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{8}{25}{Roos Arnold}}
+	\label{fig:roos_arnold_dim8}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/roos_arnold/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Roos Arnold}}
+	\label{fig:roos_arnold_dim10}
+\end{figure}
+
+% Bratley
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/bratley/dim6/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{6}{25}{Bratley}}
+	\label{fig:bratley_dim6}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/bratley/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Bratley}}
+	\label{fig:bratley_dim10}
+\end{figure}
+
+% Zhou
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Zhou}}
+	\label{fig:zhou_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/dim7/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{7}{20}{Zhou}}
+	\label{fig:zhou_dim7}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Zhou}}
+	\label{fig:zhou_dim10}
+\end{figure}
+
+
+%%% TABLES %%%
+
+\jakob{Add more detailed description mentioning whether Smolyak or Least 
+Squares is preferable.}
+
 
 \begin{table}[H]
 	\centering
@@ -819,104 +989,229 @@ Ideas
 	\label{tab:dim10_results}
 \end{table}
 
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale1}
-	\end{adjustbox}
-	\caption{Scale 1}
-	\label{tab:scale1_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale2}
-	\end{adjustbox}
-	\caption{Scale 2}
-	\label{tab:scale2_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale3}
-	\end{adjustbox}
-	\caption{Scale 3}
-	\label{tab:scale3_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale4}
-	\end{adjustbox}
-	\caption{Scale 4}
-	\label{tab:scale4_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale5}
-	\end{adjustbox}
-	\caption{Scale 5}
-	\label{tab:scale5_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale6}
-	\end{adjustbox}
-	\caption{Scale 6}
-	\label{tab:scale6_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale7}
-	\end{adjustbox}
-	\caption{Scale 7}
-	\label{tab:scale7_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale8}
-	\end{adjustbox}
-	\caption{Scale 8}
-	\label{tab:scale8_results}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale9}
-	\end{adjustbox}
-	\caption{Scale 9}
-	\label{tab:scale9_results}
-\end{table}
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale1}
+%	\end{adjustbox}
+%	\caption{Scale 1}
+%	\label{tab:scale1_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale2}
+%	\end{adjustbox}
+%	\caption{Scale 2}
+%	\label{tab:scale2_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale3}
+%	\end{adjustbox}
+%	\caption{Scale 3}
+%	\label{tab:scale3_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale4}
+%	\end{adjustbox}
+%	\caption{Scale 4}
+%	\label{tab:scale4_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale5}
+%	\end{adjustbox}
+%	\caption{Scale 5}
+%	\label{tab:scale5_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale6}
+%	\end{adjustbox}
+%	\caption{Scale 6}
+%	\label{tab:scale6_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale7}
+%	\end{adjustbox}
+%	\caption{Scale 7}
+%	\label{tab:scale7_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale8}
+%	\end{adjustbox}
+%	\caption{Scale 8}
+%	\label{tab:scale8_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale9}
+%	\end{adjustbox}
+%	\caption{Scale 9}
+%	\label{tab:scale9_results}
+%\end{table}
 
 \newpage
+
+\jakob{Add more detailed description mentioning whether Smolyak or Least 
+Squares is preferable.}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/CONTINUOUS}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Continuous}}
+	\label{tab:continuous_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/CORNER_PEAK}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Corner Peak}}
+	\label{tab:cornerpeak_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/DISCONTINUOUS}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Discontinuous}}
+	\label{tab:discontinuous_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/GAUSSIAN}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Gaussian}}
+	\label{tab:gaussian_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/OSCILLATORY}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Oscillatory}}
+	\label{tab:oscillatory_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/PRODUCT_PEAK}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Product Peak}}
+	\label{tab:productpeak_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/G_FUNCTION}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{G-Function}}
+	\label{tab:gfunction_results}
+\end{table}
 
 \begin{table}[H]
 	\centering
 	\begin{adjustbox}{width=\linewidth}
 		\input{tables/MOROKOFF_CALFISCH_1}
 	\end{adjustbox}
-	\caption{MK1}
-	\label{tab:mk1_results}
+	\caption{\StandardCaptionFunctionTable{Morokoff Calfisch 1}}
+	\label{tab:morokoffcalfisch1_results}
 \end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/MOROKOFF_CALFISCH_2}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Morokoff Calfisch 2}}
+	\label{tab:morokoffcalfisch2_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/ROOS_ARNOLD}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Roos Arnold}}
+	\label{tab:roosarnold_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/BRATLEY}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Bratley}}
+	\label{tab:bratley_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/ZHOU}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Zhou}}
+	\label{tab:zhou_results}
+\end{table}
+
+\jakob{As soon as the pictures are fixed, align them properly!}
 
 \newpage
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}\label{sec:conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\jakob{Needs to be formalized}
+
+Ideas
+\begin{itemize}
+	\item Same (or usually not a worse---mostly better) order of decay
+	\item $2n$ points seem to suffice compared to the number of the paper
+	\item In some cases, Least Squares outperforms Smolyak a lot
+	\item Tasmainian: Sometimes bad performance: Bad implementation or maybe 
+	sometimes Smolyak really bad (Mario: Approximation of the $0$-Function). 
+	People 
+	might not be aware of the fact that the approximation quality might be 
+	extra-poor
+	\item Write that np.linalg.solve was inaccurate $\rightarrow$ That's why we 
+	used lstsq
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\jakob{What to write here?}
 
 % TODO: Maybe thank the Algebra Institute and RICAM for borrowing their cluster.
 % TODO: Maybe thank other mathematicians for some comments and discussions 
@@ -931,7 +1226,7 @@ Ideas
 \nocite{*}
 \printbibliography
 
-\bigskip
+\vspace{\fill}
 
 \noindent
 % TODO: Mention the institue, and if yes, which one?
