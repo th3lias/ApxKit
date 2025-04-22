@@ -40,16 +40,16 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
     abbreviation_dict = {
         "BRATLEY": "Bratley",
-        "CONTINUOUS": "Cont.",
-        "CORNER_PEAK": "Corn. Peak",
-        "DISCONTINUOUS": "Disc.",
-        "G_FUNCTION": "G-Func.",
-        "GAUSSIAN": "Gauss.",
-        "MOROKOFF_CALFISCH_1": "Mor. Cal. 1",
-        "MOROKOFF_CALFISCH_2": "Mor. Cal. 2",
-        "OSCILLATORY": "Oscill.",
-        "PRODUCT_PEAK": "Prod. Peak",
-        "ROOS_ARNOLD": "Roos Arn.",
+        "CONTINUOUS": "Continuous",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discontinuous",
+        "G_FUNCTION": "G-Function",
+        "GAUSSIAN": "Gaussian",
+        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
+        "OSCILLATORY": "Oscillatory",
+        "PRODUCT_PEAK": "Product Peak",
+        "ROOS_ARNOLD": "Roos Arnold",
         "ZHOU": "Zhou"
     }
 
@@ -113,8 +113,12 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                         output[dim_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
         output[dim_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
-        for fun_name, fun_df in dim_df.groupby('f_name'):
+        dfg = dim_df.groupby('f_name')
+        for fun_index, (fun_name, fun_df) in enumerate(dfg):
             min_values = {}
+
+            n_functions_list = []
+
             for i, scale in enumerate(scales):
                 scale_df = fun_df[fun_df['scale'] == scale]
 
@@ -126,6 +130,9 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                     ell_infty_mean = []
 
                 for method_name, method_df in scale_df.groupby('grid_type', sort=False):
+
+                    n_functions_list.append(len(method_df))
+
                     ell_2_max.append(method_df['ell_2_error'].max())
                     ell_infty_max.append(method_df['ell_infty_error'].max())
 
@@ -153,8 +160,6 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
                 for scale_index, (scale_name, scale_df) in enumerate(grid_df.groupby('scale')):
 
-                    n_functions = len(scale_df)
-
                     if grid_name == 'CHEBYSHEV':
                         method_name = "LS-Chebyshev"
                     elif grid_name == 'UNIFORM':
@@ -166,8 +171,8 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
                     if scale_index == 0:
                         if grid_index == 0:
-                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$n=" + str(n_functions) + r"$}} & "
+                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
+                                str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[dim_name] += r" & "
                         output[dim_name] += method_name
@@ -205,7 +210,9 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                         )
 
                 output[dim_name] += r"\\" + "\n"
-            output[dim_name] += r"\bottomrule" + "\n"
+            if not fun_index == len(dfg) - 1:
+                output[dim_name] += r"\midrule" + "\n"
+        output[dim_name] += r"\bottomrule" + "\n"
         output[dim_name] += r"\end{tabular}" + "\n"
 
     for dim_name, table in output.items():
@@ -232,16 +239,16 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
     abbreviation_dict = {
         "BRATLEY": "Bratley",
-        "CONTINUOUS": "Cont.",
-        "CORNER_PEAK": "Corn. Peak",
-        "DISCONTINUOUS": "Disc.",
-        "G_FUNCTION": "G-Func.",
-        "GAUSSIAN": "Gauss.",
-        "MOROKOFF_CALFISCH_1": "Mor. Cal. 1",
-        "MOROKOFF_CALFISCH_2": "Mor. Cal. 2",
-        "OSCILLATORY": "Oscill.",
-        "PRODUCT_PEAK": "Prod. Peak",
-        "ROOS_ARNOLD": "Roos Arn.",
+        "CONTINUOUS": "Continuous",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discontinuous",
+        "G_FUNCTION": "G-Function",
+        "GAUSSIAN": "Gaussian",
+        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
+        "OSCILLATORY": "Oscillatory",
+        "PRODUCT_PEAK": "Product Peak",
+        "ROOS_ARNOLD": "Roos Arnold",
         "ZHOU": "Zhou"
     }
 
@@ -301,8 +308,11 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                         output[scale_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
         output[scale_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
-        for fun_name, fun_df in scale_df.groupby('f_name'):
+        dfg = scale_df.groupby('f_name')
+        for fun_index, (fun_name, fun_df) in enumerate(dfg):
             min_values = {}
+
+            n_functions_list = []
 
             for dim in dims:
                 dim_df = fun_df[fun_df['dim'] == dim]
@@ -314,6 +324,9 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                     ell_infty_mean = []
 
                 for method_name, method_df in dim_df.groupby('grid_type', sort=False):
+
+                    n_functions_list.append(len(method_df))
+
                     ell_2_max.append(method_df['ell_2_error'].max())
                     ell_infty_max.append(method_df['ell_infty_error'].max())
                     if not skip_mean_error:
@@ -337,8 +350,6 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
                 for dim_index, (dim, dim_df) in enumerate(grid_df.groupby('dim')):
 
-                    n_functions = len(dim_df)
-
                     if grid_name == 'CHEBYSHEV':
                         method_name = "LS-Chebyshev"
                     elif grid_name == 'UNIFORM':
@@ -350,8 +361,8 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
                     if dim_index == 0:
                         if grid_index == 0:
-                            output[scale_name] += r"\multirow{3}{*}{\thead[l]{\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$n=" + str(n_functions) + r"$}} & "
+                            output[scale_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
+                                str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[scale_name] += r" & "
                         output[scale_name] += method_name
@@ -387,8 +398,9 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                         )
 
                 output[scale_name] += r"\\" + "\n"
-
-            output[scale_name] += r"\bottomrule" + "\n"
+            if not fun_index == len(dfg)-1:
+                output[scale_name] += r"\midrule" + "\n"
+        output[scale_name] += r"\bottomrule" + "\n"
         output[scale_name] += r"\end{tabular}" + "\n"
 
     for scale_name, table in output.items():
@@ -397,25 +409,235 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
         print("Exported table for scale", scale_name, "to", os.path.join(output_folder, f"scale{scale_name}.tex"))
 
 
+def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
+                             skip_scale: Union[List, None] = None):
+    r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
+
+        In the LaTeX File, the table can be printed via
+        \begin{table}[htbp]
+            \label{tab:dim4_results}
+            \centering
+            \begin{adjustbox}{width=\linewidth}
+                \input{>>TEX-FILE-PATH<<}
+            \end{adjustbox}
+            \vspace{0.1cm}
+            \caption{Test\label{tab:dim4_results}}
+        \end{table}
+
+        For that all the following packages are needed
+        % Packages for the tabulars
+        \usepackage{booktabs}
+        \usepackage{array}
+        \usepackage{adjustbox}
+        \usepackage{multirow}
+        \usepackage{makecell}
+
+        Additionally, we need the following commands
+        % Command for the first entry in a row
+        \newcommand{\first}[1]{\textbf{#1}}
+    """
+
+    output = dict()
+
+    errors = [r'\ell_2', r'\ell_\infty']
+    error_reductions = ['max']
+
+    if not skip_mean_error:
+        error_reductions.insert(0, 'mean')
+
+    no_error_combinations = len(errors) * len(error_reductions)
+
+    results = pd.read_csv(results_csv_path, sep=',', header=0, decimal='.')
+
+    for fun_name, fun_df in results.groupby('f_name'):
+
+        if skip_scale is None:
+            skip_scale = list()
+
+        # get scales
+        scales = sorted(fun_df['scale'].unique())
+        scales = [s for s in scales if s not in skip_scale]
+
+        right_text = ("|" + ("r" * no_error_combinations)) * len(scales)
+
+        output[fun_name] = f"% Created with Python on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}" + "\n"
+        output[
+            fun_name] += f"% {results_csv_path}, function = {fun_name}, scales = {[int(s) for s in scales]}" + "\n"
+        output[fun_name] += r"\begin{tabular}{ll" + right_text + r"|}" + "\n"
+
+        # add header
+        output[fun_name] += r" &  "
+        for i, scale in enumerate(scales):
+            if i == 0:
+                output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
+                    no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
+            else:
+                output[fun_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
+        output[fun_name] += r"\\" + "\n"
+
+        output[fun_name] += r" &  "
+        for i, scale in enumerate(scales):
+            for j, error_reduction in enumerate(error_reductions):
+                if i == 0 and j == 0:
+                    output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
+                        error_reduction) + r"}"
+                else:
+                    output[fun_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
+        output[fun_name] += r"\\" + "\n"
+
+        output[fun_name] += r" &  "
+        for i, scale in enumerate(scales):
+            for j, error_reduction in enumerate(error_reductions):
+                for k, error in enumerate(errors):
+                    if i == 0 and j == 0 and k == 0:
+                        output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{1}{c}{$" + error + r"$}"
+                    else:
+                        output[fun_name] += r" & \multicolumn{1}{c}{$" + error + r"$}"
+        output[fun_name] += r"\\" + "\n" + r"\toprule" + "\n"
+
+        dfg = fun_df.groupby('dim')
+        for dim_index, (dim_name, dim_df) in enumerate(dfg):
+            min_values = {}
+
+            n_functions_list = []
+
+            for i, scale in enumerate(scales):
+                scale_df = dim_df[dim_df['scale'] == scale]
+
+                if len(scale_df) == 0:  # No experiment for this scale
+                    ell_2_max = [42]  # dummy value
+                    ell_infty_max = [42]  # dummy value
+                    ell_2_mean = [42]  # dummy value
+                    ell_infty_mean = [42]  # dummy value
+
+                else:
+                    ell_2_max = []
+                    ell_infty_max = []
+
+                    if not skip_mean_error:
+                        ell_2_mean = []
+                        ell_infty_mean = []
+
+                    for method_name, method_df in scale_df.groupby('grid_type', sort=False):
+
+                        n_functions_list.append(len(method_df))
+
+                        ell_2_max.append(method_df['ell_2_error'].max())
+                        ell_infty_max.append(method_df['ell_infty_error'].max())
+
+                        if not skip_mean_error:
+                            ell_2_mean.append(method_df['ell_2_error'].mean())
+                            ell_infty_mean.append(method_df['ell_infty_error'].mean())
+
+                min_values[str(scale)] = {
+                    'ell_2_max': min(ell_2_max),
+                    'ell_infty_max': min(ell_infty_max),
+                }
+
+                if not skip_mean_error:
+                    min_values[str(scale)] = {
+                        'ell_2_max': min(ell_2_max),
+                        'ell_infty_max': min(ell_infty_max),
+                        'ell_2_mean': min(ell_2_mean),
+                        'ell_infty_mean': min(ell_infty_mean),
+                    }
+
+            for grid_index, (grid_name, grid_df) in enumerate(dim_df.groupby('grid_type', sort=False)):
+
+                for scale_index, scale_name in enumerate(scales):
+                    scale_df = grid_df[grid_df['scale'] == scale_name]
+
+                    if grid_name == 'CHEBYSHEV':
+                        method_name = "LS-Chebyshev"
+                    elif grid_name == 'UNIFORM':
+                        method_name = "LS-Uniform"
+                    elif grid_name == 'SPARSE':
+                        method_name = 'Smolyak'
+                    else:
+                        raise ValueError(f"Can't handle grid: {grid_name}")
+
+                    if scale_index == 0:
+                        if grid_index == 0:
+                            output[fun_name] += r"\multirow{3}{*}{\thead[l]{\textbf{Dim " + str(
+                                dim_name) + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                        else:
+                            output[fun_name] += r" & "
+                        output[fun_name] += method_name
+                    else:
+                        output[fun_name] += r" "
+
+                    if len(scale_df) == 0:
+                        if skip_mean_error:
+                            output[fun_name] += (r" & " + "" + r" & " + "")
+                        else:
+                            output[fun_name] += (
+                                    r" & " + "" + r" & " + "" + r" & " + "" + r" & " + "")
+                    else:
+                        ell_2_error = scale_df['ell_2_error']
+                        ell_infty_error = scale_df['ell_infty_error']
+
+                        ell_infty_max = ell_infty_error.max()
+                        ell_2_max = ell_2_error.max()
+
+                        if not skip_mean_error:
+                            ell_infty_mean = ell_infty_error.mean()
+                            ell_2_mean = ell_2_error.mean()
+
+                        if skip_mean_error:
+                            output[fun_name] += (
+                                    r" & "
+                                    + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
+                                    + r" & "
+                                    + highlight_matching_value(ell_infty_max,
+                                                               min_values[str(scale_name)]['ell_infty_max'])
+                            )
+                        else:
+                            output[fun_name] += (
+                                    r" & "
+                                    + highlight_matching_value(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
+                                    + r" & "
+                                    + highlight_matching_value(ell_infty_mean,
+                                                               min_values[str(scale_name)]['ell_infty_mean'])
+                                    + r" & "
+                                    + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
+                                    + r" & "
+                                    + highlight_matching_value(ell_infty_max,
+                                                               min_values[str(scale_name)]['ell_infty_max'])
+                            )
+
+                output[fun_name] += r"\\" + "\n"
+            if not dim_index == len(dfg)-1:
+                output[fun_name] += r"\midrule" + "\n"
+        output[fun_name] += r"\bottomrule" + "\n"
+        output[fun_name] += r"\end{tabular}" + "\n"
+
+        # remove last occurence of midrule
+
+
+    for fun_name, table in output.items():
+        with open(os.path.join(output_folder, f"{fun_name}.tex"), "w") as f:
+            f.write(table)
+        print("Exported table for ", fun_name, "to", os.path.join(output_folder, f"{fun_name}.tex"))
+
+
 if __name__ == '__main__':
-    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\09_04_2025_19_15_53\results_numerical_experiments.csv"
+    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\combined_results_numerical_experiments.csv"
     output_folder = os.path.join("..", "paper", "tables")
 
-    skip_mean = True
     ignore_scale = {
         "2": [1, 3, 8],
         "3": [9, 4, 2]
     }
-
-    generate_table_fixed_dim(input_path, output_folder, skip_mean_error=skip_mean, skip_scale=ignore_scale)
-
-    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\09_04_2025_22_08_52\results_numerical_experiments.csv"
-    output_folder = os.path.join("..", "paper", "tables")
-
-    skip_mean = True
     ignore_dim = {
         "2": [1, 3, 8],
         "3": [9, 4, 2]
     }
 
-    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=skip_mean, skip_dim=ignore_dim)
+    ignore_dim = None
+    ignore_scale = None
+
+    generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
+    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=ignore_dim)
+    generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
+
+    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")

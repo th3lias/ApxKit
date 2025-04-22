@@ -66,7 +66,8 @@ class ExperimentExecutor:
         np.random.seed(self.seed)
 
         print(
-            f"Starting dimension {self.dim_list}, scale {self.scale_list} experiments with cpu {platform.processor()} and "
+            f"Starting dimension {self.dim_list}, scale {self.scale_list} n_functions={n_functions_parallel} "
+            f"experiments with cpu {platform.processor()} and "
             f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
         print(f"Results will be stored in {self.results_path}")
         print("_" * 75)

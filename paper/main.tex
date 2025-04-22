@@ -7,12 +7,12 @@
 
 \usepackage{amssymb}
 \usepackage[
-    style=numeric-comp,
-    backend=biber,
-    sorting=nty,
-    doi=false,
-    isbn=false, 
-    natbib=true]{biblatex}
+style=numeric-comp,
+backend=biber,
+sorting=nty,
+doi=false,
+isbn=false, 
+natbib=true]{biblatex}
 \addbibresource{references.bib}
 \emergencystretch=1em
 
@@ -49,12 +49,16 @@
 
 \numberwithin{equation}{section}
 
-\include{macros}
+\input{macros}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %
+
+% TODO: Use geometry package to have more space?
+% TODO: Tables' size can be increased when setting the width in the adjustbox
+% TODO: Not sure at some points with boldface letters
+% TODO: Search for ?? at the end to ensure no wrong references
 
 \begin{document}
 \title{Least Squares and Smolyak's Algorithm}
-
 
 \author{Jakob Eggl, Elias Mindlberger and Mario Ullrich}
 \date{\today}
@@ -76,12 +80,13 @@
 
 
 \begin{abstract}
-We present novel, large-scale experiments for polynomial interpolation in high 
-dimensional settings using some of the most popular algorithms available. We 
-compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LSQ) using 
-random data. We empirically confirm that interpolation using LSQ performs 
-equally as good on smooth and better on non-smooth functions if SA is given 
-\(n\) and LSQ is given \(2 \cdot n\) points.
+	We present novel, large-scale experiments for polynomial interpolation in 
+	high dimensional settings using some of the most popular algorithms 
+	available. 
+	We compare Smolyak's Algorithm (SA) on sparse grids and Least Squares (LS) 
+	using random data. We empirically confirm that interpolation using LS 
+	performs equally as good on smooth and better on non-smooth functions if SA 
+	is given \(n\) and LS is given \(2 \cdot n\) points.
 \end{abstract}
 
 \maketitle
@@ -93,12 +98,20 @@ equally as good on smooth and better on non-smooth functions if SA is given
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Smolyak's algorithm on Sparse Grids has been of high theoretical and practical 
-interest for a long time \cite{BarthelmannHighDim_2000,smolyak1963,Coleman_SmoylakGithub_2013,JuddSmolyak_2014}. In \cite{Krieg_2020}, it was recently found that Smolyak's algorithm is \emph{not} optimal in the sampling numbers
+interest for a long time 
+\cite{BarthelmannHighDim_2000,smolyak1963,Coleman_SmoylakGithub_2013,JuddSmolyak_2014}.
+ In \cite{Krieg_2020}, it was recently found that Smolyak's algorithm is 
+\emph{not} optimal in the sampling numbers
 \[
-    e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
-    \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
+e_n(H) \defn \inf_{\substack{\bfx_1, \dots, \bfx_n \in D \\ \phi_1, \dots, \phi_n 
+		\in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(\bfx_i) 
+		\phi_i}
 \]
-disproving conjecture 5.26 in \cite{Dung_Temlyakov_Ullrich_2018}. We extend upon these theoretical findings with an empirical study comparing the performance of Smolyak's algorithm and Least Squares on simple function recovery problems on the unit cube. Our implementation is available at \url{https://github.com/th3lias/NumericalExperiments}.
+disproving conjecture 5.26 in \cite{Dung_Temlyakov_Ullrich_2018}. We extend 
+upon these theoretical findings with an empirical study comparing the 
+performance of Smolyak's algorithm and Least Squares on simple function 
+recovery problems on the unit cube. Our implementation is available at 
+\url{https://github.com/th3lias/NumericalExperiments}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,78 +120,100 @@ disproving conjecture 5.26 in \cite{Dung_Temlyakov_Ullrich_2018}. We extend upon
 
 We denote the indexset containing all indices $i\in \Z$ 
 where $m\leq i\leq n$ for $m\leq n$ with \(\indexset[m]{n}\). For the set of 
-polynomials \(p\) from \(D \subseteq \C^K,\, K \in \N\) to the field \(\F\) of maximal 
+polynomials \(p\) from \(D \subseteq \C^K,\, K \in \N\) to the field \(\F\) of F
+maximal 
 degree \(N\) we use the notation 
 \(p \in \pols[N]{V, \F}\).
 We use \(f \lesssim g\) to denote \(f \leq c 
 g\) for functions \(f, g\). With \(B(X)\) we denote the closed unit ball of a 
-normed space \(X\). With \(X^\star\) we denote the topological dual space of \(X\).
+normed space \(X\). With \(X^\star\) we denote the topological dual space of 
+\(X\).
+
 \newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Interpolation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Given \(i \in \N\) and distinct data points \(\XX_i \defn \set{x_{i, 0}, \dots, 
-x_{i, n}} \subseteq D \subseteq \R\) \jakob{$D_i$ here?}, function values 
+	x_{i, n}} \subseteq D_i \subseteq \R\), function values 
 \(\YY_i \defn \set{y_{i, 0}, \dots, y_{i, n}} = \set{f(x_{i, 0}), \dots, 
-f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact that 
+	f(x_{i, n})} \subseteq \R\) for \(f: D_i \to \R\), it is a well known fact 
+	that 
 there exists a polynomial \(\cI(\ZZ_i)\) of degree \(n\) such that \[
-    \cI(\ZZ_i) = y_{i, j},\quad j \in \indexset[0]{n}.
+\cI(\ZZ_i) = y_{i, j},\quad j \in \indexset[0]{n}.
 \]
 for \(\ZZ_i \defn (\XX_i, \YY_i)\)
-We then call \(\cI(\ZZ_i)\) an \emph{interpolating} polynomial. It can be written down explicitly as \begin{equation}\label{interpolating_polynomial}
-    \cI(\ZZ_i) = \sum_{j=0}^n y_{i, j} \ell_{i, j}
+We then call \(\cI(\ZZ_i)\) an \emph{interpolating} polynomial. It can be 
+written down explicitly as \begin{equation}\label{interpolating_polynomial}
+	\cI(\ZZ_i) = \sum_{j=0}^n y_{i, j} \ell_{i, j}
 \end{equation}
 for basis functions \(\ell_{i, j} \in \pols[n]{\R, \R}\). Moreover, in a single 
 dimension, the formula for this basis is
 \[
-\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} \frac{w-x_{i, 
-m}}{x_{i, j}-x_{i, m}},
+\ell_{i, j}(w) = \prod_{m \in \indexset[0]{n} \setminus \set{j}} 
+\frac{w-x_{i, m}}{x_{i, j}-x_{i, m}},
 \]
 see \cite{waring1779, lagrange1901}. We call \(\cI\) the 
 \emph{Lagrange interpolator}.
 
-Suppose now we have \(d\) point sets \(\XX_i\). By taking the full cartesian product of point sets \[
-    \XX \defn \bigtimes_{i=1}^d \XX_i,
-\] we may identify our grid by \(\XX = \set{\bfx_\bfj}_{\bfj}\) with \(\bfj \in \set{0,1,\dots,n}^d\) and suppose we have according function evaluations \(\YY \defn \set{y_\bfj}_\bfj = \set{f(\bfx_\bfj)}_\bfj\) for \(f: D \to \R\), \(D \subseteq \R^d\). Let \(\ZZ \defn (\XX, \YY)\). Then, we may construct an interpolating polynomial as in \cref{interpolating_polynomial}. Indeed, the general formula stays the same but we take tensor product of basis functions, i.e. \begin{equation}\label{multivariateLagrange}
-    \ell_\bfj(\bfw) = \bigotimes_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d \prod_{\substack{k=0 \\ k \neq j_i}}^n \frac{w_i - x_{i, k}}{x_{i, j_i} - x_{i, k}}
+Suppose now we have \(d\) point sets \(\XX_i\). By taking the full cartesian 
+product of point sets \[
+\XX \defn \bigtimes_{i=1}^d \XX_i,
+\] we may identify our grid by \(\XX = \set{\bfx_\bfj}_{\bfj}\) with \(\bfj \in 
+\set{0,1,\dots,n}^d\) and suppose we have according function evaluations \(\YY 
+\defn \set{y_\bfj}_\bfj = \set{f(\bfx_\bfj)}_\bfj\) for \(f: D \to \R\), \(D 
+\subseteq \R^d\). Let \(\ZZ \defn (\XX, \YY)\). Then, we may construct an 
+interpolating polynomial as in \cref{interpolating_polynomial}. Indeed, the 
+general formula stays the same but we take tensor product of basis functions, 
+i.e. \begin{equation}\label{multivariateLagrange}
+	\ell_\bfj(\bfw) = \bigotimes_{i=1}^d \ell_{j_i}(w_i) = \prod_{i=1}^d 
+	\ell_{j_i}(w_i) = \prod_{i=1}^d \prod_{\substack{k=0 \\ k \neq j_i}}^n 
+	\frac{w_i - x_{i, k}}{x_{i, j_i} - x_{i, k}}
 \end{equation}
-and the sum now ranges over all multiindices \(\bfj = (j_1, \dots, j_d) \in \N_0^d\) with \(\bfj \in \set{0, 1, \dots, n}^d\). We denote \begin{equation}\label{eq:interpolantdD}
-	\cI(\ZZ) \defn \sum_{j_1 = 0}^n \cdots \sum_{j_d = 0}^n y_{j_1, \dots, j_d} \ell_{j_1, \dots, j_d}
+and the sum now ranges over all multiindices \(\bfj = (j_1, \dots, j_d) \in 
+\indexset[0]{n}^d\). We denote 
+\begin{equation}\label{eq:interpolantdD}
+	\cI(\ZZ) \defn \sum_{j_1 = 0}^n \cdots \sum_{j_d = 0}^n y_{j_1, \dots, j_d} 
+	\ell_{j_1, \dots, j_d}
 \end{equation}
 for the interpolant on \(\R^d\).
-Formula \ref{multivariateLagrange} is not a great choice for performing calculations on hardware. Leaving the storage of \((n+1)^d\) grid points aside, for computing one evaluation of the map \(\bfw \mapsto \cI(\ZZ)(\bfw)\), one must compute the sum of \((n+1)^d\) terms, where in each summand, the evaluation of \(d\) basis functions is computed, each of which is a product of \(n\) terms. This evaluation is thus as costly as \(\cO((n+1)^d d n)\). One can counter the costly computation of the interpolating polynomial at a given point by reformulating the above (numerically instable) Lagrange interpolator in it's barycentric form
+Formula \ref{multivariateLagrange} is not a great choice for performing 
+calculations on hardware. Leaving the storage of \((n+1)^d\) grid points aside, 
+for computing one evaluation of the map \(\bfw \mapsto \cI(\ZZ)(\bfw)\), one 
+must compute the sum of \((n+1)^d\) terms, where in each summand, the 
+evaluation of \(d\) basis functions is computed, each of which is a product of 
+\(n\) terms. This evaluation is thus as costly as \(\cO((n+1)^d d n)\). One can 
+counter the costly computation of the interpolating polynomial at a given point 
+by reformulating the above (numerically instable) Lagrange interpolator in it's 
+barycentric form
 \begin{equation}\label{eq:multivarBarycentric}
-    \cI(\ZZ)(\bfw) = \frac{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d) y_\bfj}{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d)}
+	\cI(\ZZ)(\bfw) = \frac{\sum_{j_1=0}^{n} \ell^{(1)}_{j_1}(w_1) \cdots 
+	\sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d) y_\bfj}{\sum_{j_1=0}^{n} 
+	\ell^{(1)}_{j_1}(w_1) \cdots \sum_{j_d=0}^{n} \ell^{(d)}_{j_d}(w_d)}
 \end{equation}
 where
 \begin{equation}\label{eq:barycentricBasis}
-    \ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-x_{j_k}} \mid k \in \indexset[1]{d}.
+	\ell^{(k)}_{j_k}(w) \defn \frac{m_{j_k}}{w-x_{j_k}}, \qquad k \in 
+	\indexset[1]{d}.
 \end{equation}
-with \(x_{j_k}\) being the \(j_k\)--th entry of \(\bfx\). \(m_{j_k}\) are the \emph{barycentric} weights which can be computed in \(\cO(n^2)\) time for general point distributions but admit \(\cO(1)\) computation for well--known and widely used point sets \cite{klimke2004}. For example, due to \cite{Berut_2004},
-\begin{equation}\label{barycentric_weights_chebyshev}
-    m_{0} = \frac{1}{2},\quad m_{l} = (-1)^l,\, l \in \indexset[1]{n-1},\quad m_n = \frac{1}{2}(-1)^n
-\end{equation}
-for the \emph{Chebyshev Gauss-Lobatto} (or just Chebyshev extrema), in which \begin{equation}\label{ChebyshevGaussLobatto}
-    x_l \defn x_{l,n} \defn - \cos\frac{l \pi}{n},\, l \in \indexset[0]{n}.
-\end{equation}
-
-Similarly, for the \emph{Chebyshev points of the second kind}
+with \(x_{j_k}\) being the \(j_k\)--th entry of \(\bfx\). \(m_{j_k}\) are the 
+\emph{barycentric} weights which can be computed in \(\cO(n^2)\) time for 
+general point distributions but admit \(\cO(1)\) computation for well--known 
+and widely used point sets \cite{klimke2004}. For example, due to 
+\cite{Berut_2004}, for the \emph{Chebyshev points of the second kind}
 \begin{equation}\label{eq:chebyPts2}
-    x_l = x_{l, n} = \cos \frac{l \pi}{n},\, l \in \indexset[0]{n}
+	x_l = x_{l, n} = \cos \frac{l \pi}{n},\, l \in \indexset[0]{n}
 \end{equation}
 one gets the closed form
 \begin{equation}\label{eq:weightsChebyshev}
-    m_l = {\left(-1\right)}^l \cdot \begin{cases}
-        1/2 &l \in \set{0, n}\\
-        1 &\text{else.}
-    \end{cases}
+	m_l = {\left(-1\right)}^l \cdot \begin{cases}
+		1/2 &l \in \set{0, n}\\
+		1 &\text{else.}
+	\end{cases}
 \end{equation}
 In this case, one achieves an evaluation time of \(\cO((n+1)^d)\).
 Hence, in this construction, one cannot get around this bottleneck. 
-\jakob{Here, equation \cref{eq:chebyPts2} and \cref{eq:weightsChebyshev} are 
-the same point set. This is probably wrong.}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Smolyak's Algorithm \& Sparse Grids}
@@ -188,85 +223,114 @@ The following description follows \cite{BarthelmannHighDim_2000}.
 The question arises, how one may reduce the complexity of exact interpolation 
 on grids. The central idea of sparse grids is to \emph{not} take the full 
 tensor product of one dimensional point sets but restrict the number of 
-simultaneously \jakob{equally?} large directions. To that end, take a variable 
-number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, 
-\dots, x_{N(j), j}}\) and \(\cI_j\) the corresponding one--dimensional 
-interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then 
-Smolyak's algorithm is given in a simple recursive manner
+simultaneously large directions. To that end, take a variable 
+number of points in each direction, i.e.\ let \(N(j)\) specify how many points are used for the index \(j\) and let \(\XX_j \defn \set{x_{1, j}, \dots, x_{N(j), j}}\) and \(\cI_j\) be the corresponding one--dimensional 
+interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then Smolyak's algorithm is given in a simple recursive 
+manner
 \begin{equation}\label{Smolyak}
-    \cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d \Delta_{j_k} = \cA(q-1, d)+\sum_{\norm[1]{\bfj}=q} \bigotimes_{k=1}^d \Delta_{j_k}
+	\cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d 
+	\Delta_{j_k} = \cA(q-1, d)+\sum_{\norm[1]{\bfj}=q} \bigotimes_{k=1}^d 
+	\Delta_{j_k}
 \end{equation}
-with \(\cA(q, d) = 0,\, q < d\) and \(\bfj\), \(\cI\) as before. Evidently, only a relatively small number of knots, through the restriction \(\norm[1]{\bfj} \leq q\), is needed. To be precise, \(\cO(n (\log n)^{d-1})\) points are needed. Hence \(q\) can be thought of as a resolution parameter. By this form, one only needs to assess the function values at the \emph{sparse grid} \[
-	H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times \cdots \times \XX_{j_d}
+with \(\cA(q, d) = 0,\, q < d\) and \(\bfj\), \(\cI\) as before. Evidently, 
+only a relatively small number of knots, through the restriction 
+\(\norm[1]{\bfj} \leq q\), is needed. To be precise, \(\cO(n (\log n)^{d-1})\) 
+points are needed. Hence \(q\) can be thought of 
+as a resolution parameter. In the implementation, we will refer to \(q-d\) as the scale parameter. By 
+this form, one only needs to assess the function values at the \emph{sparse 
+grid} \[
+H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times 
+\cdots \times \XX_{j_d}
 \]
-where the number of nodes in a given direction can never be \emph{large} for all directions simultaneously. Hence, given that \(\XX_j \subset \XX_{j+1}\), one may write the interpolator given by Smolyak's construction as \[
-	\cA(q, d)(f) = \sum_{\norm[1]{\bfj} \leq q} f(\bfx_\bfj) \ell_\bfj,
+where the number of nodes in a given direction can never be \emph{large} for 
+all directions simultaneously. Hence, given that \(\XX_j \subset \XX_{j+1}\), 
+one may write the interpolator given by Smolyak's construction as \[
+\cA(q, d)(f) = \sum_{\norm[1]{\bfj} \leq q} f(\bfx_\bfj) \ell_\bfj,
 \]
 which is familiar from before.
-The number of knots \(N(j)\) used for each one--dimensional interpolation rule \(\cI_j\) remains to be specified. In order to obtain nested points, i.e. \(\XX_j \subset \XX_{j+1}\) and thus \(H(q, d) \subset H(q+1,d)\) together with collocation rules such as \cref{ChebyshevGaussLobatto} or \cref{eq:chebyPts2} it is usual to choose a doubling rule, i.e. \[
-	N(1) = 1,\quad N(j) = 2^{j-1}+1,\, j > 1.
+The number of knots \(N(j)\) used for each one--dimensional interpolation rule 
+\(\cI_j\) remains to be specified. In order to obtain nested points, i.e. 
+\(\XX_j \subset \XX_{j+1}\) and thus \(H(q, d) \subset H(q+1,d)\) together with 
+collocation rules such as \cref{eq:chebyPts2} 
+it is usual to choose a doubling rule, i.e. \[
+N(1) = 1,\quad N(j) = 2^{j-1}+1,\, j > 1.
 \]
 
 \subsection{Polynomial Exactness}
 Without loss of generality, we restrict ourselves to the symmetric cube \([-1, 
 1]^d\) \jakob{We have $[0,1]^d$. It appears multiple times, therefore I didn't 
-want to erase it everywhere now.} for interpolation of unknowns instead of a 
-general domain \(D\). In this 
-case, Smolyak's algorithm is well known to exactly reproduce functions on 
-certain polynomial spaces given that the rules \(\cI_j\) are exact on nested 
-spaces \(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
-\begin{lem}
-	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) and assume \[
-		V_1 \subset V_2 \subset V_3 \subset \dots,
+want to change it everywhere now. But we need to change that!} for 
+interpolation of unknowns instead of a general domain \(D\). In this case, 
+Smolyak's algorithm is well known to exactly reproduce functions on certain 
+polynomial spaces given that the rules \(\cI_j\) are exact on nested spaces 
+\(V_j\).
+\begin{lem}[\cite{DELVOS198299,novakRitter1996}]
+	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) 
+	and assume \[
+	V_1 \subset V_2 \subset V_3 \subset \dots,
 	\]
 	then \(\cA(q, d)\) is exact on \[
-		\sum_{\norm[1]{j}=q} V_{j_1} \otimes \cdots \otimes V_{j_d}
+	\sum_{\norm[1]{j}=q} V_{j_1} \otimes \cdots \otimes V_{j_d}
 	\]
 \end{lem}
-\cite{BarthelmannHighDim_2000} showed the following. \jakob{Maybe cite 
-\cite{BarthelmannHighDim_2000} directly in the lemma environment. I.e. 
-begin{lem}[cf. \cite{BarthelmannHighDim_2000}]}
-\begin{lem}
+Moreover, we can exactly specify the spaces on which Smolyak's algorithm is exact.
+\begin{lem}[\cite{BarthelmannHighDim_2000}]
 	\(\cA(q, d)\) is exact on \[
-		E(q, d) \defn \sum_{\norm[1]{\bfj} = q} \pols[m_{j_1}-1]{\R, \R} \otimes \cdots \otimes \pols[m_{j_d}-1]{\R, \R}
+	E(q, d) \defn \sum_{\norm[1]{\bfj} = q} \pols[m_{j_1}-1]{\R, \R} \otimes 
+	\cdots \otimes \pols[m_{j_d}-1]{\R, \R}
 	\]
 	and \(\cA(d+k, d)\) is exact for all polynomials of degree \(k\).
 \end{lem}
-Indeed, the following also follows from \cite{BarthelmannHighDim_2000}. Note that we now abuse the notation from \ref{interpolating_polynomial} by writing \(\cI(\ZZ) \revdefn \cI(f, \XX) \revdefn \cI(f)\).
+Indeed, the following also follows from \cite{BarthelmannHighDim_2000}. Note 
+that we now abuse the notation from \ref{interpolating_polynomial} by writing 
+\(\cI(\ZZ) \revdefn \cI(f, \XX) \revdefn \cI(f)\).
 \begin{lem}
-	Assume \(\XX_1 \subset \XX_2 \subset \dots\) and \(\cI_j(f)(x) = f(x)\) for every \(f \in C([-1, 1])\) and every \(x \in \XX_j\). Then \[
-		\cA(q, d)(f)(x) = f(x)
+	Assume \(\XX_1 \subset \XX_2 \subset \dots\) and \(\cI_j(f)(x) = f(x)\) for 
+	every \(f \in C([-1, 1])\) and every \(x \in \XX_j\). Then \[
+	\cA(q, d)(f)(x) = f(x)
 	\]
 	for every \(f \in C([-1, 1]^d)\) and \(x \in H(q, d)\).
 \end{lem}
 
 \subsection{Error Bounds}
-Since the interpolation operator \(\cI_j\) as defined before is exact on \(\pols[N(j)-1]{\R, \R}\) one concludes \[
-	\norm[\infty]{f - \cI_j(f)} \leq \err_{N(j)-1}(f)(1+\Lambda_{N(j)})
+Since the interpolation operator \(\cI_j\) as defined before is exact on 
+\(\pols[N(j)-1]{\R, \R}\) one concludes \[
+\norm[\infty]{f - \cI_j(f)} \leq \err_{N(j)-1}(f)(1+\Lambda_{N(j)})
 \]
-where \(\err_n\) is the error of the best approximation by \(p \in \pols[n]{\R, \R}\), \(\Lambda_n\) is the Lebesgue constant for the point set in \Cref{ChebyshevGaussLobatto} and \(n \geq 2\), in which case it is known that \[
-	\Lambda_n \leq \frac{2}{\pi} \log(n-1)+1,
+where \(\err_n\) is the error of the best approximation by \(p \in \pols[n]{\R, 
+\R}\), \(\Lambda_n\) is the Lebesgue constant for the point set in 
+\Cref{eq:chebyPts2} and \(n \geq 2\), in which case it is known that \[
+\Lambda_n \leq \frac{2}{\pi} \log(n-1)+1,
 \]
-see for example \cite{zeller1966} and \cite{Dzjadyk1983}. The following bounds can be found in \cite{BarthelmannHighDim_2000} and is well known since \cite{smolyak1963, temlyakov1986, WASILKOWSKI19951}.
+see for example \cite{zeller1966} and \cite{Dzjadyk1983}. The following bounds 
+can be found in \cite{BarthelmannHighDim_2000} and is well known since 
+\cite{smolyak1963, temlyakov1986, WASILKOWSKI19951}.
 
 \begin{lem}
 	For the space
 	\[
-		F_d^k \defn \set{f: [-1, 1]^d \to \R \mid D^\alpha f \text{ continuous if } \alpha_i \leq k \text{ for all } i}
+	F_d^k \defn \set{f: [-1, 1]^d \to \R \mid D^\alpha f \text{ continuous if } 
+	\alpha_i \leq k \text{ for all } i}
 	\]
 	the error of \(\cA(q, d)\) can be bounded as \[
-		\norm[\op]{I_d - \cA(q, d)} \leq c_{d,k} n^{-k} \left(\log n\right)^{(k+2)(d-1)+1}
+	\norm[\op]{I_d - \cA(q, d)} \leq c_{d,k} n^{-k} \left(\log 
+	n\right)^{(k+2)(d-1)+1}
 	\]
-	where \(I_d\) is the embedding \(F_d^k \hookrightarrow C([-1, 1]^d)\) and \(c_{d, k}\) is a positive constant only dependent on \(d\) and \(k\).
+	where \(I_d\) is the embedding \(F_d^k \hookrightarrow C([-1, 1]^d)\) and 
+	\(c_{d, k}\) is a positive constant only dependent on \(d\) and \(k\).
 \end{lem}
 
 Moreover, for the Sobolev--Hilbert space \(H_w^k\) with \begin{equation}
-	H_w^k \defn \set{f \in L^2_w : \norm[k]{f}^2 = \sum_{\ell \in \N_0} (1+\ell^2)^k \inner{f}{b_\ell}^2 < \infty}
+	H_w^k \defn \set{f \in L^2_w : \norm[k]{f}^2 = \sum_{\ell \in \N_0} 
+	(1+\ell^2)^k \inner{f}{b_\ell}^2 < \infty}
 \end{equation}
-with \(\inner{f}{b_\ell}\) being the \(\ell\)--th Fourier coefficient, one obtains \[
-	\norm[0]{f-\cA(q, d)(f)} \leq c_{d, k} n^{-k} \left(\log n\right)^{(k+1)(d-1)}\norm[k]{f}.
+with \(\inner{f}{b_\ell}\) being the \(\ell\)--th Fourier coefficient, one 
+obtains \[
+\norm[0]{f-\cA(q, d)(f)} \leq c_{d, k} n^{-k} \left(\log 
+n\right)^{(k+1)(d-1)}\norm[k]{f}.
 \]
-Here, \(L^2_w\) is the \(L^2\) weighted by the Chebyshev weight \begin{equation}\label{chebyshev_weight}
+Here, \(L^2_w\) is the \(L^2\) weighted by the Chebyshev weight 
+\begin{equation}\label{chebyshev_weight}
 	\left(1-x^2\right)^{-1/2}.
 \end{equation}
 In that case, it is well known that the Chebyshev polynomials
@@ -282,11 +346,14 @@ form an orthonormal basis.
 Contrary to the construction of exactly interpolating approximants in the case 
 of Smolyak's algorithm, Least Squares is a conceptually simpler algorithm. We 
 are given the overdetermined system \[
-    A\bfz = \bfy
+A\bfz = \bfy
 \]
-where \(A \in \R^{n \times m}\) with \(n > m\). It is well--known that this system may be inconsistent and no exact solution exists. However, one may always pose the optimisation problem solving for \(\bfz \in \R^{m}\) with the smallest error
+where \(A \in \R^{n \times m}\) with \(n > m\). It is well--known that this 
+system may be inconsistent and no exact solution exists. However, one may 
+always pose the optimisation problem solving for \(\bfz \in \R^{m}\) with the 
+smallest error
 \begin{equation}\label{eq:leastSquares}
-    \inf_{\bfz \in \R^{m}} \norm[]{A\bfz - \bfy}.
+	\inf_{\bfz \in \R^{m}} \norm[]{A\bfz - \bfy}.
 \end{equation}
 It is further known that, in case of a full--rank matrix \(V\), the unique 
 solution to \Cref{eq:leastSquares} is given by 
@@ -300,46 +367,60 @@ the $n$ different sampled points \(x_1, x_2, \dots, x_n\) in \(D \subseteq
 function \(f\from D \to \R\), i.e.\ \(\bfy = \left(f(\bfx_j)\right)_{j=1}^n\). 
 As for such points, the Vandermonde matrix is never singular, the solution to 
 the approximation problem \[
-    \inf_{p} \norm[]{f-p}
+\inf_{p} \norm[]{f-p}
 \]
 can analytically be expressed as \[
-    p_* \from D \to \R,\quad t \mapsto \sum_{j=1}^m z_{*_{j}} b_j(t)
+p_* \from D \to \R,\quad t \mapsto \sum_{j=1}^m z_{*_{j}} b_j(t)
 \]
 where \(\bfz_* = \left(z_{*_j}\right)_{j=1}^m\) is given by 
 \Cref{eq:ls_solution_moore_penrose_inverse}.
-For the later implementation, we choose the basis polynomials \(b_j\) as the \(j\)--th weighted Chebyshev polynomial \Cref{chebyshev_polynomials}.
+For the later implementation, we choose the basis polynomials \(b_j\) as the 
+\(j\)--th weighted Chebyshev polynomial \Cref{chebyshev_polynomials}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Theoretical Guarantees}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO: Eventuell diesen Abschnitt an ein Banachraum Setting anpassen, wie in https://arxiv.org/pdf/2401.02220.
+% TODO: Eventuell diesen Abschnitt an ein Banachraum Setting anpassen, wie in 
+	% https://arxiv.org/pdf/2401.02220.
 
 The notation in the following is borrowed from \cite{Ullrich_2020}.
-In this section we introduce a formal setting to the former considerations. That is, we consider a Hilbert space \(H\) of real-valued functions on a set \(D\) such that point evaluation \(\delta_x: f \mapsto \int_D f\ \d \delta_x = f(x)\)
+In this section we introduce a formal setting to the former considerations. 
+That is, we consider a Hilbert space \(H\) of real-valued functions on a set 
+\(D\) such that point evaluation \(\delta_x: f \mapsto \int_D f\ \d \delta_x = 
+f(x)\)
 is a bounded, linear functional on \(H\).
 The general formulation of Least Squares allows for a broad class of recovery 
 problems. In our specific case, the function recovery of real--valued functions 
 on a \(d\)--dimensional (compact) subset \(D\) using basis functions of a 
 \(k\)--dimensional subspace \(V_k \defn \spn \set{b_1, \dots, b_k}\), we 
 consider the specific form of Least Squares, given by\[
-    A_{n, k}(f) \defn \argmin_{g \in V_k} \sum_{i=1}^n \frac{\abs{g(x_i) - f(x_i)}^2}{\varrho_k(x_i)}
+A_{n, k}(f) \defn \argmin_{g \in V_k} \sum_{i=1}^n \frac{\abs{g(x_i) - 
+f(x_i)}^2}{\varrho_k(x_i)}
 \]
 where \[
-    \varrho_k(x) = \frac{1}{2} \left( \frac{1}{k} \sum_{j < k} b_{j+1}(x)^2 + \frac{1}{\sum_{j \geq k} a_j^2} \sum_{j \geq k} a_j^2 b_{j+1}(x)^2 \right)
+\varrho_k(x) = \frac{1}{2} \left( \frac{1}{k} \sum_{j < k} b_{j+1}(x)^2 + 
+\frac{1}{\sum_{j \geq k} a_j^2} \sum_{j \geq k} a_j^2 b_{j+1}(x)^2 \right)
 \]
-and \(x_1, \dots, x_n \in D\). Whenever \(f \in V_k\), then, of course, \(f = A_{n, k}(f)\). With
+and \(x_1, \dots, x_n \in D\). Whenever \(f \in V_k\), then, of course, \(f = 
+A_{n, k}(f)\). With
 \begin{equation}\label{eq:worstCaseError}
-    e\left(A_{n,k}, H\right) \defn \sup_{f \in B(H)} \norm[L_2]{f - A_{n,k}(f)},
+	e\left(A_{n,k}, H\right) \defn \sup_{f \in B(H)} \norm[L_2]{f - A_{n,k}(f)},
 \end{equation}
-we denote the worst case error of \(A_{n,k}\), where we measure the error of the reconstruction in the space \(L_2 \defn L_2(D, \Sigma, \mu)\) of square integrable functions on \(D\) with respect to the measure \(\mu\), such that \(H\) is embedded into \(L_2\). In light of this, the \(n\)--th minimal error (also called \(n\)--th sampling number) is denoted by \[
-    e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
-    \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
+we denote the worst case error of \(A_{n,k}\), where we measure the error of 
+the reconstruction in the space \(L_2 \defn L_2(D, \Sigma, \mu)\) of square 
+integrable functions on \(D\) with respect to the measure \(\mu\), such that 
+\(H\) is embedded into \(L_2\). In light of this, the \(n\)--th minimal error 
+(also called \(n\)--th sampling number) is denoted by \[
+e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
+		\in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(x_i) \phi_i}
 \]
-and can be understood as the worst case error of the optimal algorithm using \(n\) function values. We get the clear inequality \(e_n(H) \leq e(A_{n,k}, H)\) for any point set \(\set{x_1, \dots, x_n}\). With \[
-    a_n(H) \defn \inf_{\substack{h_1^\star, \dots, h_n^\star \in H^\star \\ 
-    \phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - 
-    \sum_{i=1}^n h_i^\star(f) \phi_i}
+and can be understood as the worst case error of the optimal algorithm using 
+\(n\) function values. We get the clear inequality \(e_n(H) \leq e(A_{n,k}, 
+H)\) for any point set \(\set{x_1, \dots, x_n}\). With \[
+a_n(H) \defn \inf_{\substack{h_1^\star, \dots, h_n^\star \in H^\star \\ 
+		\phi_1, \dots, \phi_n \in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - 
+	\sum_{i=1}^n h_i^\star(f) \phi_i}
 \]
 we denote the \(n\)-th approximation number, which is the worst-case error of 
 an optimal algorithm that uses the \(n\) best arbitrary linear and bounded 
@@ -348,45 +429,54 @@ functionals as information about the unknown. This quantity is equal to the
 
 The following is known since \cite{Krieg_2020}.
 \begin{thm}[Krieg--Ullrich]\label{thm:kriegUllrich2020}
-    There exist constants \(C, c > 0\) and a sequence of natural numbers \((k_n)\) with each \(k_n \geq cn/\log(n+1)\) and for any \(n \in \N\) and measure space \((D, \Sigma, \mu)\), and any RKHS \(H\) of real-valued functions on \(D\) embedded into \(L_2(D, \Sigma, \mu)\), we have \[
-        e_n(H) \leq \sqrt{\frac{C}{k_n} \sum_{j \geq k_n} a_j(H)^2}.
-    \]
+	There exist constants \(C, c > 0\) and a sequence of natural numbers 
+	\((k_n)\) with each \(k_n \geq cn/\log(n+1)\) and for any \(n \in \N\) and 
+	measure space \((D, \Sigma, \mu)\), and any RKHS \(H\) of real-valued 
+	functions on \(D\) embedded into \(L_2(D, \Sigma, \mu)\), we have \[
+	e_n(H) \leq \sqrt{\frac{C}{k_n} \sum_{j \geq k_n} a_j(H)^2}.
+	\]
 \end{thm}
 In particular, for 
 \begin{equation}\label{eq:orderOfApproximationNumbers}
-    a_n(H) \lesssim n^{-s} \log^{\alpha + s}(n)
+	a_n(H) \lesssim n^{-s} \log^{\alpha + s}(n)
 \end{equation}
 with \(s > 1/2, \alpha \in \R\), this implies \[
-    e_n(H) \lesssim n^{-s} \log^{\alpha+s}(n).
+e_n(H) \lesssim n^{-s} \log^{\alpha+s}(n).
 \]
 The following follows from \cite{Ullrich_2020}.
 \begin{thm}[Ullrich]
-    Given \(n \geq 2\) and \(c > 0\), let \[
-        k_n \defn \floor*{\frac{n}{2^8 (2+c) \log n}},
-    \]
-    then, for any measure space \((D, \Sigma, \mu)\) and any RKHS \(H\) of real-valued functions on \(D\), embedded into \(L_2(D, \Sigma, \mu)\), it holds that \[
-        e_n\left(A_{n, 2 k_n}, H\right) \leq \sqrt{ \frac{2}{k_n} \sum_{j > k_n} a_j(H)^2 }
-    \]
-    with probability at least \(1-8n^{-c}\).
+	Given \(n \geq 2\) and \(c > 0\), let \[
+	k_n \defn \floor*{\frac{n}{2^8 (2+c) \log n}},
+	\]
+	then, for any measure space \((D, \Sigma, \mu)\) and any RKHS \(H\) of 
+	real-valued functions on \(D\), embedded into \(L_2(D, \Sigma, \mu)\), it 
+	holds that \[
+	e_n\left(A_{n, 2 k_n}, H\right) \leq \sqrt{ \frac{2}{k_n} \sum_{j > k_n} 
+	a_j(H)^2 }
+	\]
+	with probability at least \(1-8n^{-c}\).
 \end{thm}
 
 \subsection*{Examples}
 In particular, \Cref{eq:orderOfApproximationNumbers} is satisfied for the 
 approximation numbers on the Sobolev space of dominating mixed smoothness, 
 \begin{align*}
-    H &\defn H_{\text{mix}}^s\left(\T^d\right)\\
-    &\defn \set{f \in L_2\left(\T^d\right) : \norm[H]{f}^2 \defn \sum_{m \in 
-    \N_0^d} \prod_{j=1}^d (1+\abs{m_j}^{2s}) \inner{f}{b_m}^2_{L_2} < \infty}
+	H &\defn H_{\text{mix}}^s\left(\T^d\right)\\
+	&\defn \set{f \in L_2\left(\T^d\right) : \norm[H]{f}^2 \defn \sum_{m \in 
+			\N_0^d} \prod_{j=1}^d (1+\abs{m_j}^{2s}) \inner{f}{b_m}^2_{L_2} < 
+			\infty}
 \end{align*}
 with \(\T^d \cong [0, 1)^d\) 
-where \(b_m \defn \otimes_{j=1}^d b_{m_j}^{(1)}\) and \(m = (m_1, \dots, m_d)\) with \begin{align*}
-    b_{2m}^{(1)} &\defn \sqrt{2}\cos(2\pi m x)\\
-    b_{2m-1}^{(1)} &\defn \sqrt{2}\sin(2\pi m x)
+where \(b_m \defn \otimes_{j=1}^d b_{m_j}^{(1)}\) and \(m = (m_1, \dots, m_d)\) 
+with \begin{align*}
+	b_{2m}^{(1)} &\defn \sqrt{2}\cos(2\pi m x)\\
+	b_{2m-1}^{(1)} &\defn \sqrt{2}\sin(2\pi m x)
 \end{align*}
 and \(b_0^{(1)} \defn 1\). This satisfies the assumption for \(s > 1/2\). In 
 particular, we can say
 \begin{equation}\label{eq:conclusio}
-    e_n\left( H_{\text{mix}}^s\left(\T^d\right) \right) \lesssim n^{-s}\log^{sd}(n)
+	e_n\left( H_{\text{mix}}^s\left(\T^d\right) \right) \lesssim 
+	n^{-s}\log^{sd}(n)
 \end{equation}
 whenever \(s > 1/2\). This disproves a previously posted conjecture (Conjecture 
 5.26) in \cite{Dung_Temlyakov_Ullrich_2018} and shows that Smolyak's algorithm 
@@ -395,22 +485,24 @@ deterministic construction of the point sets used for reconstruction being
 unknown, random i.i.d. points suffice for a reconstruction error that is on the 
 order of optimal points, with probability tending to \(1\). We verify this by 
 our experimental findings, presented in \Cref{sec:experimentalFindings} with a 
-much better relative number of points used for LSQ function recovery vs. SA 
+much better relative number of points used for LS function recovery vs. SA 
 recovery than guaranteed in this section, i.e. better constants than explicitly 
 known before. It remains an open problem to rigorously improve upon the 
 constants in \Cref{eq:conclusio}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimental Findings}\label{sec:experimentalFindings}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO: Add what computer and software we used etc. Also how much RAM was used
-% TODO: And also, how long it took.
+% TODO: Should we add at some point, how long it took
+% TODO: Mention details of the cluster -> usually mentioned somewhere in such 
+	% papers
 
 For assessing the performance of the Least Squares algorithms in comparison to 
 the Sparse Grid alternative, we use the following $12$ families of test 
 functions from \cite{Simulationlib_2013}, each defined of the $d$-dimensional 
 unit-cube $[0,1]^d$.
-
+\jakob{boldface here in the formulas for $c,w,x$?}
 {
 	\allowdisplaybreaks[4]
 	\begin{align*}
@@ -435,7 +527,7 @@ unit-cube $[0,1]^d$.
 			\left( c_i^{-2} + (x_i - w_i)^2 \right)^{-1} \\[12pt]
 			\text{7. G-Function:} & f_7(x) = \prod_{i=1}^{d}
 			\frac{\abs{4x_i-2-w_i}+c_i}{1+c_i}
-					\\[12pt]
+			\\[12pt]
 			\text{8. Morokoff \& Calfisch 1:} & f_8(x) = 
 			\left(1+1/d\right)^d  
 			\prod_{i=1}^{d}\left(c_ix_i+w_i\right)^{1/d}
@@ -461,172 +553,649 @@ unit-cube $[0,1]^d$.
 }
 Note that the first $6$ function classes are also known as the \emph{Genz 
 Integrand Families} and were introduced by Genz in \cite{GenzTesting_1984, 
-GenzPackage_1987}. In comparison to the original definition in 
-\cite{Simulationlib_2013}, we also introduce the parameters $c$ and $w$ in 
-each class by making something like an affine-linear transformation of the 
-input $x$. 
-This allows for testing multiple realizations of these functions.
+GenzPackage_1987}. Unlike the original definition in 
+\cite{Simulationlib_2013}, we extend some function classes by introducing the 
+parameters $\bfc$ and $\bfw$ which make something like an affine-linear 
+transformation of the input $\bfx$. 
+This allows for testing multiple realizations of these classes.
 
 \subsection{Implementation Details}
 
 Generating a function from a specific family is done 
-by sampling the random vectors $c, w \in\R^d$. In our experiments, we sample 
-each entry of $c$ and $w$ from a uniform distribution $\mathcal{U}(0,1)$ and 
-rescale $c$ afterwards such that $\norm[1]{c}=d$.
+by sampling the random vectors $\bfc, \bfw \in\R^d$. In our experiments, we 
+sample each entry of $\bfc$ and $\bfw$ from a uniform distribution 
+$\mathcal{U}(0,1)$ and rescale $\bfc$ afterwards such that $\norm[1]{\bfc}=d$.
 
 \begin{remark}
 	In \cite{BarthelmannHighDim_2000}, experiments were performed for the Genz 
 	families, defined on $[-1,1]^d$. We use $[0,1]^d$ as this ensures that also 
-	the other families are well-defined for any sampled $c,w\in\R^d$.
+	the other families are well-defined for any sampled (and possibly rescaled) 
+	$\bfc,\bfw\in\mathcal{U}(0,1)^d$ that .
 \end{remark}
 
 In the following experiments, we compare Smolyak's algorithm with two 
 realizations of the \emph{weighted} Least Squares algorithm. In the first 
 realization we use random points that are uniformly distributed in $[0,1]^d$, 
 and we don't reweigh those points. In the second realization we sample the 
-points from $w(x) = (1-x^2)^{1/2}$, as in \ref{chebyshev_weight} and we use the value of 
+points from $w(x) = (1-x^2)^{1/2}$, as in \ref{chebyshev_weight} and we use the 
+value of 
 this density at each point as the basis for the weight calculation.
-For reproducibility, we used seeding in our random number generation.
-For actually finding the least--squares solution we employ Numpy \cite{HarrisNumpy_2020} with it's \textrm{lstsq} method which uses the \textrm{gelsd} driver from the standard linear algebra package Lapack \cite{lapack99} in the backend.
-Other drivers are a possible choice but did not meet our performance-- and numerical precision requirements.
+We call the first realization \emph{Least Squares Uniform} (LS-Uniform) and the 
+second one \emph{Least Squares-Chebyshev} (LS-Chebyshev). 
+To ensure reproducibility, we initialized our random number generation with a 
+fixed seed.
+For actually finding the least--squares solution we utilize Scipy 
+\cite{Virtanen_Scipy} with their \textrm{lstsq} method which uses the 
+\textrm{gelsy} driver from the standard linear algebra package Lapack 
+\cite{lapack99} in the backend.
+Other drivers or for example the standard \emph{solve}-method from Numpy 
+(\cite{HarrisNumpy_2020}) are a possible choice but did not meet our 
+performance-- and numerical precision requirements.
 All 3 algorithms use the same basis functions \Cref{chebyshev_polynomials} 
-which, as mentioned, form an ONB for \(L^2_w\). For the implementation of 
-Smolyak's algorithm we employ the standard library Tasmanian \jakob{And/Or 
-self-implementation based on the other paper} with it's Python frontend 
+which, as mentioned, form an ONB for \(L^2_w\). The implementation thereof is 
+based on the implementation in \cite{JuddSmolyak_2014}. For the implementation 
+of Smolyak's algorithm we employ the standard library Tasmanian with it's 
+Python frontend 
 \cite{stoyanov2015tasmanian,stoyanov2016dynamically,stoyanov2018adaptive,morrow2019method,doecode_6305}.
-All Algorithms are tested for all families of functions with multiple (more than \(10\)) 
-realizations and for all dimensions $d\in \indexset[2]{10}$. In each dimension, 
-the resolution $q\in\N$ was varied. Note that $q>d$. Depending on $d$ 
-smaller or larger values for $q$ were possible because of computational 
-bottlenecks based on the exponential increase in the used points, see also 
-\cite{BurkardtCounting_2014} for an overview on the number of points in a sparse 
-grid. Both Least Squares algorithms enjoyed twice the amount of points, 
-compared to Smolyak's algorithm, sampled in their respective distributions.
+All algorithms are tested for all families of functions with multiple (\(\geq 
+10\)) realizations and for all dimensions $d\in \indexset[2]{10}$. In 
+each dimension, the resolution $q\in\N$ was varied. In our experiments, the 
+resolution parameter is usually denoted by \emph{scale}, which is just $q-d$, 
+since $q>d$. Depending on $d$ smaller or larger values for the scale were 
+possible because of computational bottlenecks based on the exponential increase 
+in the used points, see also \cite{BurkardtCounting_2014} for an overview on 
+the number of points in a sparse grid. Both Least Squares algorithms enjoyed 
+twice the amount of points, compared to Smolyak's algorithm, sampled in their 
+respective distributions.
 
-For assessing the quality of the interpolants, we again generated $n$ random points 
-$x_1, \ldots, x_n$ distributed uniformly in $[0,1]^d$, where $n$ is the number 
-of points in the Sparse Grid. Afterwards we compute the error quantities
-\begin{align*} 
-	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
-	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
-	e_{\ell_\infty}(A_j,q,f) &\defn \max_{i\in\indexset{n}} 
-	\abs{f(x_i)-\left(A_j(q,d)(f)\right)(x_i)}
-\end{align*}
-for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform}, 
-\text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
-functions. Those quantities are now depicted in 
-\Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
-Additionally, \Cref{tab:dim2_results} and \Cref{tab:scale3_results} summarize in combination with 
-the different distributions for each function class 
-\Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
- the performance of each algorithm based on multiple realizations. 
-% TODO: Describe the Tabular in more detail and also the distribution images.
-% TODO: Also mention the distribution of the errors.
-The results are also depicted in the following tables and figures.\footnote{For a concise overview on our data, we did decide to not depict results for coarse resolutions and dimensions. The reader is invited to try out our implementation for such cases himself.}
+For assessing the quality of the interpolants, we again generate $n$ random 
+points $\bfx_1, \ldots, \bfx_n$ distributed uniformly in $[0,1]^d$, where $n$ 
+is the number of points in the Sparse Grid at the specific scale which serve as 
+our testing points. For each function from our function classes for a fixed 
+dimension and at each scale, we calculate 
+the \emph{uniform error} and the \emph{mean squared error} by comparing the 
+true function values and the values from our interpolant at those specific 
+points.
+
+The distribution, emerged by collecting all function realizations for each 
+function class, is now depicted in 
+\Crefrange{fig:continuous_dim9}{fig:zhou_dim10} for specific 
+function classes and dimensions. For more detailed results, we want to refer to 
+\Crefrange{tab:dim2_results}{tab:dim10_results}, showcasing the exact errors 
+for all three algorithms and different scales for each dimension.
+
+\jakob{Should we also show something for fixed scale and varying dimension? 
+$\rightarrow$ If yes, add pictures and also mention them here before.}
+
+\Crefrange{tab:continuous_results}{tab:zhou_results} showcase the interpolation 
+capabilities of those 3 algorithms for each function class and various scales 
+and dimensions. 
 
 
-% TODO: Make plots and tables here
+
+
+In most of the experiments, at least one of the Least Squares methods 
+performs beneficial compared to Smolyak's Algorithm. \jakob{Add few more 
+sentences, however full conclusion on the next section.}
+
+
+%Afterwards we 
+%compute the error quantities \jakob{TODO: Rename those quantities. Especially 
+%$A_n$ is usually something different.}
+%\begin{align*} 
+%	e_{\ell_2}(A_j,q,f) &\defn \left(\frac{1}{n}\sum_{i=1}^{n}
+%	\left(f(x_i)-\left(A_j(q,d)(f)\right)(x_i)\right)^2\right)^{1/2}\\
+%	e_{\ell_\infty}(A_j,q,f) &\defn \max_{i\in\indexset{n}} 
+%	\abs{f(x_i)-\left(A_j(q,d)(f)\right)(x_i)}
+%\end{align*}
+%for all three algorithms $A_j$ with $j=\set{\text{Smolyak}, \text{LS-Uniform}, 
+%	\text{LS-Chebyshev}}$ and for all sampled functions $f$ in each family of 
+%functions. 
+
+%Those quantities are now depicted in 
+%\Crefrange{fig:Osc_1_dim5_scale4}{fig:Osc_3_dim5_scale4} as a function of $q$. 
+%Additionally, \Cref{tab:dim2_results} and \Cref{tab:scale3_results} summarize 
+%in combination with 
+%the different distributions for each function class 
+%\Crefrange{fig:morokoff_calfisch1_distribution_dim5_scale4}{fig:zhou_distribution_dim5_scale4}
+%the performance of each algorithm based on multiple realizations. 
+
+%The results are also depicted in the following tables and 
+%figures.\footnote{For 
+%a concise overview on our data, we decided to not depict results for coarse 
+%resolutions and dimensions. The reader is invited to try out our 
+%implementation 
+%for such cases himself.}
 
 
 \newpage
 
-\jakob{Reference to the formulas 
-above, i.e. which formula is Least Squares? Section 5?}
+\jakob{Decide whether to use boxplots or max error distribution}
+\jakob{Decide which plots we want to keep}
+\jakob{Decide whether we want to have fixed scale plots as well}
+\jakob{For those plots that we to keep, add more text in the captions}
 
-\jakob{Write something about the setting in which we tested the functions. 
-Maybe this can and should be combined with all the previous stuff. I.e. talk 
-about the error metrics. Tell them which formulas were used for each algorithm. 
-Some implementation details. Then refer to the figures and also to important 
-tables. Tell them, what scale means (Probably need to adapt the notation of the 
-images, i.e. use $q$ and not scale). Maybe adapt notation to $q$ or whichever 
-character we used before for the description of Smolyak.}
+% Continuous
 
-% TODO: The following is just a test, to see whether the imports works
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{figures/oscillatory/realization1_dim5_scale4.pdf}
-	\caption{Caption}
-	\label{fig:Osc_1_dim5_scale4}
+	\includegraphics[width=\linewidth]{figures/continuous/dim9/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{9}{25}{Continuous}}
+	\label{fig:continuous_dim9}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{figures/oscillatory/realization2_dim5_scale4.pdf}
-	\caption{Caption}
-	\label{fig:Osc_2_dim5_scale4}
+	\includegraphics[width=\linewidth]{figures/continuous/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Continuous}}
+	\label{fig:continuous_dim10}
 \end{figure}
 
-\begin{figure}[H]
+% Corner Peak
+
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{figures/oscillatory/realization3_dim5_scale4.pdf}
-	\caption{Caption}
-	\label{fig:Osc_3_dim5_scale4}
+	\includegraphics[width=\linewidth]{figures/corner_peak/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Corner Peak}}
+	\label{fig:corner_peak_dim4}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
-	\caption{Caption}
-	\label{fig:morokoff_calfisch1_distribution_dim5_scale4}
+	\includegraphics[width=\linewidth]{figures/corner_peak/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Corner Peak}}
+	\label{fig:conrer_peak_dim10}
 \end{figure}
 
-\begin{figure}[H]
+% Discontinuous
+
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/distro_dim5_scale4.pdf}
-	\caption{Caption}
-	\label{fig:morokoff_calfisch2_distribution_dim5_scale4}
+	\includegraphics[width=\linewidth]{figures/discontinuous/dim8/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{8}{25}{Discontinuous}}
+	\label{fig:discontinuous_dim8}
 \end{figure}
 
-\begin{figure}[H] % TODO: Still with boxplot -> Maybe change
+\begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{figures/zhou/distro_dim5_scale4.pdf}
-	\caption{Caption}
-	\label{fig:zhou_distribution_dim5_scale4}
+	\includegraphics[width=\linewidth]{figures/discontinuous/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Corner Peak}}
+	\label{fig:discontinuous_dim10}
 \end{figure}
+
+% Gaussian
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/gaussian/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Gaussian}}
+	\label{fig:gaussian_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/gaussian/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Gaussian}}
+	\label{fig:gaussian_dim10}
+\end{figure}
+
+% Oscillatory
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/dim6/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{6}{25}{Oscillatory}}
+	\label{fig:oscillatory_dim6}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/oscillatory/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Oscillatory}}
+	\label{fig:oscillatory_dim10}
+\end{figure}
+
+% Product Peak
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/product_peak/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Product-Peak}}
+	\label{fig:product_peak_dim10}
+\end{figure}
+
+% G-Function
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/g_function/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{G-Function}}
+	\label{fig:g_function_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/g_function/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{G-Function}}
+	\label{fig:g_function_dim10}
+\end{figure}
+
+% Morokoff Calfisch 1
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Morokoff Calfisch 1}}
+	\label{fig:morokoff_calfisch1_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch1/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Morokoff Calfisch 1}}
+	\label{fig:morokoff_calfisch1_dim10}
+\end{figure}
+
+% Morokoff Calfisch 2
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch2/dim6/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{6}{25}{Morokoff Calfisch 2}}
+	\label{fig:morokoff_calfisch2_dim6}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch2/dim9/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{9}{25}{Morokoff Calfisch 2}}
+	\label{fig:morokoff_calfisch2_dim9}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/morokoff_calfisch2/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Morokoff Calfisch 2}}
+	\label{fig:morokoff_calfisch2_dim10}
+\end{figure}
+
+% Roos Arnold
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/roos_arnold/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Roos Arnold}}
+	\label{fig:roos_arnold_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/roos_arnold/dim8/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{8}{25}{Roos Arnold}}
+	\label{fig:roos_arnold_dim8}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/roos_arnold/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Roos Arnold}}
+	\label{fig:roos_arnold_dim10}
+\end{figure}
+
+% Bratley
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/bratley/dim6/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{6}{25}{Bratley}}
+	\label{fig:bratley_dim6}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/bratley/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Bratley}}
+	\label{fig:bratley_dim10}
+\end{figure}
+
+% Zhou
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/dim4/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{4}{25}{Zhou}}
+	\label{fig:zhou_dim4}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/dim7/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{7}{20}{Zhou}}
+	\label{fig:zhou_dim7}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/zhou/dim10/max_error_distribution_fixed_dim}
+	\caption{\StandardCaptionDimFigureMax{10}{10}{Zhou}}
+	\label{fig:zhou_dim10}
+\end{figure}
+
+
+%%% TABLES %%%
+
+\jakob{Add more detailed description mentioning whether Smolyak or Least 
+Squares is preferable.}
+
 
 \begin{table}[H]
 	\centering
 	\begin{adjustbox}{width=\linewidth}
 		\input{tables/dim2}
 	\end{adjustbox}
-	\caption{Caption}
+	\caption{\StandardCaptionDimTable{2}{25}}
 	\label{tab:dim2_results}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\begin{adjustbox}{width=\linewidth}
-		\input{tables/scale3}
+		\input{tables/dim3}
 	\end{adjustbox}
-	\caption{Caption}
-	\label{tab:scale3_results}
+	\caption{Dim 3}
+	\label{tab:dim3_results}
 \end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim4}
+	\end{adjustbox}
+	\caption{Dim 4}
+	\label{tab:dim4_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim5}
+	\end{adjustbox}
+	\caption{Dim 5}
+	\label{tab:dim5_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim6}
+	\end{adjustbox}
+	\caption{Dim 6}
+	\label{tab:dim6_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim7}
+	\end{adjustbox}
+	\caption{Dim 7}
+	\label{tab:dim7_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim8}
+	\end{adjustbox}
+	\caption{Dim 8}
+	\label{tab:dim8_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim9}
+	\end{adjustbox}
+	\caption{Dim 9}
+	\label{tab:dim9_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/dim10}
+	\end{adjustbox}
+	\caption{Dim 10}
+	\label{tab:dim10_results}
+\end{table}
+
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale1}
+%	\end{adjustbox}
+%	\caption{Scale 1}
+%	\label{tab:scale1_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale2}
+%	\end{adjustbox}
+%	\caption{Scale 2}
+%	\label{tab:scale2_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale3}
+%	\end{adjustbox}
+%	\caption{Scale 3}
+%	\label{tab:scale3_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale4}
+%	\end{adjustbox}
+%	\caption{Scale 4}
+%	\label{tab:scale4_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale5}
+%	\end{adjustbox}
+%	\caption{Scale 5}
+%	\label{tab:scale5_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale6}
+%	\end{adjustbox}
+%	\caption{Scale 6}
+%	\label{tab:scale6_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale7}
+%	\end{adjustbox}
+%	\caption{Scale 7}
+%	\label{tab:scale7_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale8}
+%	\end{adjustbox}
+%	\caption{Scale 8}
+%	\label{tab:scale8_results}
+%\end{table}
+%
+%\begin{table}[H]
+%	\centering
+%	\begin{adjustbox}{width=\linewidth}
+%		\input{tables/scale9}
+%	\end{adjustbox}
+%	\caption{Scale 9}
+%	\label{tab:scale9_results}
+%\end{table}
+
+\newpage
+
+\jakob{Add more detailed description mentioning whether Smolyak or Least 
+Squares is preferable.}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/CONTINUOUS}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Continuous}}
+	\label{tab:continuous_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/CORNER_PEAK}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Corner Peak}}
+	\label{tab:cornerpeak_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/DISCONTINUOUS}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Discontinuous}}
+	\label{tab:discontinuous_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/GAUSSIAN}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Gaussian}}
+	\label{tab:gaussian_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/OSCILLATORY}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Oscillatory}}
+	\label{tab:oscillatory_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/PRODUCT_PEAK}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Product Peak}}
+	\label{tab:productpeak_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/G_FUNCTION}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{G-Function}}
+	\label{tab:gfunction_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/MOROKOFF_CALFISCH_1}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Morokoff Calfisch 1}}
+	\label{tab:morokoffcalfisch1_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/MOROKOFF_CALFISCH_2}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Morokoff Calfisch 2}}
+	\label{tab:morokoffcalfisch2_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/ROOS_ARNOLD}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Roos Arnold}}
+	\label{tab:roosarnold_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/BRATLEY}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Bratley}}
+	\label{tab:bratley_results}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{adjustbox}{width=\linewidth}
+		\input{tables/ZHOU}
+	\end{adjustbox}
+	\caption{\StandardCaptionFunctionTable{Zhou}}
+	\label{tab:zhou_results}
+\end{table}
+
+\jakob{As soon as the pictures are fixed, align them properly!}
+
+\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}\label{sec:conclusion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% TODO: Write that down
+\jakob{Needs to be formalized}
+
 Ideas
 \begin{itemize}
 	\item Same (or usually not a worse---mostly better) order of decay
 	\item $2n$ points seem to suffice compared to the number of the paper
 	\item In some cases, Least Squares outperforms Smolyak a lot
 	\item Tasmainian: Sometimes bad performance: Bad implementation or maybe 
-	sometimes Smolyak really bad (Mario: Approxing the $0$-Function). People 
+	sometimes Smolyak really bad (Mario: Approximation of the $0$-Function). 
+	People 
 	might not be aware of the fact that the approximation quality might be 
 	extra-poor
-	\item 
+	\item Write that np.linalg.solve was inaccurate $\rightarrow$ That's why we 
+	used lstsq
 \end{itemize}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Acknowledgements}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\jakob{What to write here?}
+
 % TODO: Maybe thank the Algebra Institute and RICAM for borrowing their cluster.
 % TODO: Maybe thank other mathematicians for some comments and discussions 
-	% TODO: (Mario has talked with some people I think)
+% TODO: (Mario has talked with some people I think)
 
 % TODO: Richard Küng and Department for Functional Analysis for job?
 % TODO: 
@@ -637,12 +1206,12 @@ Ideas
 \nocite{*}
 \printbibliography
 
-\bigskip
+\vspace{\fill}
 
 \noindent
 % TODO: Mention the institue, and if yes, which one?
 \address{J.E., Johannes Kepler University Linz; 
-\texttt{jakob.eggl@jku.at}; \\
+	\texttt{jakob.eggl@jku.at}; \\
 	E.M., Johannes Kepler University Linz; 
 	\texttt{elias.mindlberger@jku.at}; \\
 	M.U., Johannes Kepler University Linz; 

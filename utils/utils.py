@@ -407,13 +407,8 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
 
 
 if __name__ == '__main__':
-    # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
+    # path = r"path/to/your/folder"
     # #
     # combine_result_files_to_combined_one(path)
 
-    # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results\30_03_2025_13_47_35\results_numerical_experiments.csv"
-    # old = False
-
-    # reformat_old_file_to_new_one(path, old)
-
-    raise ValueError("This file is not meant to be run directly. Please use the appropriate files.")
+    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")

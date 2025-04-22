@@ -47,6 +47,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 n_points_ls = []
                 n_points_sy = []
 
+                n_functions_list = []
+
                 for index, grid in enumerate(grid_types):
 
                     data_grid_type = data_dim[data_dim['grid_type'] == str(grid)].copy()
@@ -54,7 +56,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     if grid == "SPARSE":
                         method = "Smolyak"
                     elif grid == "UNIFORM" or grid == "CHEBYSHEV":
-                        method = "Least_Sqares"
+                        method = "Least_Squares"
                     else:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
@@ -80,6 +82,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     for scale in scales:
                         scale_data = data_grid_type[data_grid_type['scale'] == scale].copy()
 
+                        n_functions_list.append(len(scale_data))
+
                         if grid == "SPARSE":
                             n_points_sy.append(scale_data['n_samples'].iloc[0])
                         elif grid == "UNIFORM":
@@ -100,43 +104,41 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                         else:
                             if plot_type == "boxplot":
                                 # Boxplots
-                                axs[0].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
+                                axs[0].boxplot(scale_data['ell_2_error'], positions=[scale + offset], showfliers=False,
+                                               widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
+                                               whis=[0, 100],
+                                               whiskerprops=dict(color=c), capprops=dict(color=c),
+                                               medianprops=dict(color=c))
+                                axs[1].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
                                                showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whis=[0, 100],
                                                whiskerprops=dict(color=c), capprops=dict(color=c),
-                                               medianprops=dict(color='black'))
-
-                                axs[1].boxplot(scale_data['ell_2_error'], positions=[scale + offset], showfliers=False,
-                                               widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
-                                               whis=[0, 100],
-                                               whiskerprops=dict(color=c), capprops=dict(color=c),
-                                               medianprops=dict(color='black'))
+                                               medianprops=dict(color=c))
 
                             elif plot_type == "errorbar":
                                 max_ellinf = scale_data['ell_infty_error'].max()
                                 max_ell2 = scale_data['ell_2_error'].max()
 
                                 # Error bars
-                                axs[0].errorbar(scale, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
+                                axs[0].errorbar(scale, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
-                                axs[1].errorbar(scale, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
+                                axs[1].errorbar(scale, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
 
                     if only_maximum:
-                        # Plot max values
-                        axs[0].plot(scales, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[1].plot(scales, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
 
+
                     else:
-                        # Plot mean values
-                        axs[0].plot(scales, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[1].plot(scales, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
 
                     # get the number of points in smolyak for each scale uniquely
@@ -146,7 +148,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
 
                 for ax in axs:
-                    ax.set_xlabel('scale ($q-d$)\npoints Smolyak\npoints Least Squares')
+                    ax.set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -154,14 +156,16 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
 
                 if not only_maximum:
-                    axs[0].set_ylabel('estimated uniform error')
-                    axs[1].set_ylabel('estimated mean squared error')
+                    axs[0].set_ylabel('estimated mean squared error')
+                    axs[1].set_ylabel('estimated uniform error')
                 else:
-                    axs[0].set_ylabel('estimated max uniform error')
-                    axs[1].set_ylabel('estimated max mean squared error')
+                    axs[0].set_ylabel('estimated max mean squared error')
+                    axs[1].set_ylabel('estimated max uniform error')
 
-                # Adjust layout and show the plot
+                # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
+                plt.figtext(0.06, 0.95, f"$n={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                            horizontalalignment='left', color='gray')
 
                 if save:
                     if only_maximum:
@@ -222,6 +226,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                 n_points_ls = []
                 n_points_sy = []
 
+                n_functions_list = []
+
                 for index, grid in enumerate(grid_types):
 
                     data_grid_type = data_scale[data_scale['grid_type'] == str(grid)].copy()
@@ -229,7 +235,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     if grid == "SPARSE":
                         method = "Smolyak"
                     elif grid == "UNIFORM" or grid == "CHEBYSHEV":
-                        method = "Least_Sqares"
+                        method = "Least_Squares"
                     else:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
@@ -255,6 +261,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     for dim in dims:
                         dim_data = data_grid_type[data_grid_type['dim'] == dim].copy()
 
+                        n_functions_list.append(len(dim_data))
+
                         if grid == "SPARSE":
                             n_points_sy.append(dim_data['n_samples'].iloc[0])
                         elif grid == "UNIFORM":
@@ -272,45 +280,44 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                             max_values_ell2.append(dim_data['ell_2_error'].max())
 
                         else:
-
                             if plot_type == "boxplot":
                                 # Boxplots
-                                axs[0].boxplot(dim_data['ell_infty_error'], positions=[dim + offset], showfliers=False,
+                                axs[0].boxplot(dim_data['ell_2_error'], positions=[dim + offset], showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
-                                               medianprops=dict(color='black'))
+                                               medianprops=dict(color=c))
+                                axs[1].boxplot(dim_data['ell_infty_error'], positions=[dim + offset], showfliers=False,
+                                               widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
+                                               whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
+                                               medianprops=dict(color=c))
 
-                                axs[1].boxplot(dim_data['ell_2_error'], positions=[dim + offset], showfliers=False,
-                                               widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
-                                               whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
-                                               medianprops=dict(color='black'))
+
 
                             elif plot_type == "errorbar":
                                 max_ellinf = dim_data['ell_infty_error'].max()
                                 max_ell2 = dim_data['ell_2_error'].max()
 
                                 # Error bars
-                                axs[0].errorbar(dim, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
+                                axs[0].errorbar(dim, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
-                                axs[1].errorbar(dim, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
+                                axs[1].errorbar(dim, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
 
                     if only_maximum:
-                        # Plot max values
-                        axs[0].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+
+                        axs[1].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
+
 
                     else:
-                        axs[0].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[1].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-
-                    # get the number of points in smolyak for each scale uniquely
 
                 pbar.update(1)
 
@@ -325,14 +332,16 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
 
                 if not only_maximum:
-                    axs[0].set_ylabel('estimated uniform error')
-                    axs[1].set_ylabel('estimated mean squared error')
+                    axs[0].set_ylabel('estimated mean squared error')
+                    axs[1].set_ylabel('estimated uniform error')
                 else:
-                    axs[0].set_ylabel('estimated max uniform error')
-                    axs[1].set_ylabel('estimated max mean squared error')
+                    axs[0].set_ylabel('estimated max mean squared error')
+                    axs[1].set_ylabel('estimated max uniform error')
 
-                # Adjust layout and show the plot
+                # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
+                plt.figtext(0.06, 0.95, f"$n\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                            horizontalalignment='left', color='gray')
 
                 if save:
                     if only_maximum:
@@ -354,8 +363,12 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 if __name__ == '__main__':
     plottype = "boxplot"
 
-    folder_name = os.path.join("..", "results", "09_04_2025_19_15_53")
-    filename = os.path.join(folder_name, "results_numerical_experiments.csv")
+    folder_name = os.path.join("..", "results")
+    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
 
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
+    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
+    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
+
+    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")
