@@ -754,6 +754,55 @@
       \verb http://dx.doi.org/10.1007/s10208-020-09481-w
       \endverb
     \endentry
+    \entry{krieg2024samplingprojectionsuniformnorm}{misc}{}{}
+      \name{author}{4}{}{%
+        {{hash=c0b6f2e1df73527d61b8b0d8b81f9424}{%
+           family={Krieg},
+           familyi={K\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod}}}%
+        {{hash=eb89f669e3c670f57ddfed3243d5c4e1}{%
+           family={Pozharska},
+           familyi={P\bibinitperiod},
+           given={Kateryna},
+           giveni={K\bibinitperiod}}}%
+        {{hash=c3bf7b6ce42130c996a85cdfc707454b}{%
+           family={Ullrich},
+           familyi={U\bibinitperiod},
+           given={Mario},
+           giveni={M\bibinitperiod}}}%
+        {{hash=b5b9727377480918670c10b7f7a44a9f}{%
+           family={Ullrich},
+           familyi={U\bibinitperiod},
+           given={Tino},
+           giveni={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{637b8a1d249a802ebdf55ddb4e6b169d}
+      \strng{fullhash}{71510e2b61525054beedcd5b2e084a36}
+      \strng{fullhashraw}{71510e2b61525054beedcd5b2e084a36}
+      \strng{bibnamehash}{637b8a1d249a802ebdf55ddb4e6b169d}
+      \strng{authorbibnamehash}{637b8a1d249a802ebdf55ddb4e6b169d}
+      \strng{authornamehash}{637b8a1d249a802ebdf55ddb4e6b169d}
+      \strng{authorfullhash}{71510e2b61525054beedcd5b2e084a36}
+      \strng{authorfullhashraw}{71510e2b61525054beedcd5b2e084a36}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{math.FA}
+      \field{eprinttype}{arXiv}
+      \field{title}{Sampling projections in the uniform norm}
+      \field{year}{2024}
+      \verb{eprint}
+      \verb 2401.02220
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2401.02220
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2401.02220
+      \endverb
+    \endentry
     \entry{lagrange1901}{article}{}{}
       \name{author}{1}{}{%
         {{hash=2f1b86dc45b8fc797ca1fcda98fa5403}{%

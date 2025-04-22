@@ -378,7 +378,7 @@ For the later implementation, we choose the basis polynomials \(b_j\) as the
 \(j\)--th weighted Chebyshev polynomial \Cref{chebyshev_polynomials}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Error Bounds}
+\subsection{Error Bounds for \(L^2\) recovery}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TODO: Eventuell diesen Abschnitt an ein Banachraum Setting anpassen, wie in 
@@ -489,6 +489,28 @@ much better relative number of points used for LS function recovery vs. SA
 recovery than guaranteed in this section, i.e. better constants than explicitly 
 known before. It remains an open problem to rigorously improve upon the 
 constants in \Cref{eq:conclusio}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Error Bounds for \texorpdfstring{\(L^\infty\)}{} recovery}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Perhaps unexpectedly, least squares using a mean error criterion also performs well in the uniform norm. To be precise, in the following we consider the space of complex, bounded functions \(G\), i.e.\ \(G \defn \set{f: D \to \C \mid \sup_{x \in D} \abs{f(x)} < \infty}\) \(V_n \subset G\) as before. In this case, we \emph{unfix} the point set in question.
+
+\begin{lem}[\cite{krieg2024samplingprojectionsuniformnorm}]
+	There is \(C > 0\) universal such that for \(V_k \subset G\), there exists a point set of cardinality at most \(2k\) with the property that for all \(f \in G\) \[
+		\norm[\infty]{f - A_{2k, k} (f)} \leq C \sqrt{k} \inf_{g \in V_k} \norm[\infty]{f-g}.
+	\]
+\end{lem}
+Moreover, we can deduce the following by assigning a probability measure to \(D\).
+\begin{lem}[\cite{krieg2024samplingprojectionsuniformnorm}]
+	Given \((D, \mu)\) a probability space and \(V_k\) as before, there are points \(x_1, \dots, x_{4k} \in D\) such that for \(f \in G_\mu\) with the space of bounded, measurable functions \(G_\mu\), then for all \(1 \leq p \leq \infty\) we have \[
+		\norm[L^p(\mu)]{f - A_{4k, k}(f)} \lesssim k^{(1/2-1/p)_+} \inf_{g \in V_k} \norm[\infty]{f-g}.
+	\]
+\end{lem}
+Above, the notation \(a_+ \defn \max(0, a),\, a \in \R\) as is usual.
+\begin{remark}
+	As noted earlier, it may be surprising that the same least squares algorithm, namely optimized in the usual \(L^2\) norm, yields good results in different \(L^p\) norms as well.
+\end{remark}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimental Findings}\label{sec:experimentalFindings}

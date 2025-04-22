@@ -1,12 +1,12 @@
 # Fdb version 4
-["biber main"] 1745303833.26014 "main.bcf" "main.bbl" "main" 1745332792.00831 0
-  "main.bcf" 1745332791.82095 111636 b6eeda7c3a7bb2261c76cd904070cabf "lualatex"
-  "references.bib" 1745304475.11186 10986 58c1b1e97826c082cf0e8842ed9b2fe6 ""
+["biber main"] 1745334813.15017 "main.bcf" "main.bbl" "main" 1745335506.86409 0
+  "main.bcf" 1745335506.66414 111826 c237cde57e547c1bd141ef028a2ed1ed "lualatex"
+  "references.bib" 1745333219.60216 11331 6cc554de68b8d0251e2fb3c79384f610 ""
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["lualatex"] 1745332789.35713 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1745332792.00853 0
+["lualatex"] 1745335504.11275 "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" "main.pdf" "main" 1745335506.86432 0
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmmono12-regular.luc" 1744541893.84338 81772 3c7ee58f252b3fad09bb8f8cb378bbcb ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bold.luc" 1745303292.86954 128410 3f752579a721aabb697cb5411c2b5223 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman10-bolditalic.luc" 1744541893.43745 136491 57d9e2a74b597a71db0a3943169a8157 ""
@@ -24,7 +24,7 @@
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmroman9-regular.luc" 1744541893.18433 127960 76b82d68861ba8202eca352d1e6ca2a0 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/fonts/otl/lmromancaps10-regular.luc" 1744541893.28275 120247 547538728e5d8f437131d444b5015426 ""
   "/Users/eliasmindlberger/Library/texlive/2025/texmf-var/luatex-cache/generic/names/luaotfload-names.luc.gz" 1744541892.32591 676339 d4e074ad3f15f513e5368d2c1d573873 ""
-  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1745332786.52778 43814 7750f7dd710981b043b0cfce29ad948a ""
+  "/Users/eliasmindlberger/workspace/NumericalExperiments/paper/main.tex" 1745335504.00149 45492 d827087f143b66b7bd30506236cc73ed ""
   "/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/lm/lmmono12-regular.otf" 1255129361 63012 5db69ad3c177ae338e5504d80d9e9eb6 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.otf" 1255129361 111240 0af0b64d6d3df41bead3f9de314afbd4 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/opentype/public/lm/lmroman10-bolditalic.otf" 1255129361 118204 71070e299cf063366237473420b0fea8 ""
@@ -256,11 +256,11 @@
   "figures/zhou/dim4/max_error_distribution_fixed_dim.pdf" 1745304475.10186 25624 7d52ba06843920324ffc870dfa689ecc ""
   "figures/zhou/dim7/max_error_distribution_fixed_dim.pdf" 1745304475.10209 26374 4773190cfdbb624626e556178d02c9d2 ""
   "macros.tex" 1745304475.10249 5111 b4f381119ac517edae28d2ff73abd2c0 ""
-  "main.aux" 1745332791.8161 32334 4b0d2ca5c1917bbf6bbecd97f48b1801 "lualatex"
-  "main.bbl" 1745304475.10308 57707 0018aa882f86b634c568da3bf58b38d9 "biber main"
-  "main.out" 1745332791.81867 2001 9c2d545c2184a152d8e8d81eb158db37 "lualatex"
-  "main.run.xml" 1745332791.82146 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
-  "main.tex" 1745332786.52778 43814 7750f7dd710981b043b0cfce29ad948a ""
+  "main.aux" 1745335506.65917 32898 fd6d731f3631ddaf69859cabe152e419 "lualatex"
+  "main.bbl" 1745334814.67096 59576 2e853727320acf84933f17bdc10eb644 "biber main"
+  "main.out" 1745335506.66192 2318 93e64d35b30c6faf0b18290042167416 "lualatex"
+  "main.run.xml" 1745335506.66464 2415 9b4b8a471f9c936d8af6eb65dc075104 "lualatex"
+  "main.tex" 1745335504.00149 45492 d827087f143b66b7bd30506236cc73ed ""
   "tables/BRATLEY.tex" 1745304475.11202 8381 37088ad45933227b3a9a5a796cf49dde ""
   "tables/CONTINUOUS.tex" 1745304475.11214 8384 410d0e076aa0b1baa81081abf918769e ""
   "tables/CORNER_PEAK.tex" 1745304475.11225 8385 ff0696af1d35779b02dd18a6335527a8 ""
