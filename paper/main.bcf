@@ -2387,37 +2387,35 @@
     <bcf:citekey order="6" intorder="1">Berut_2004</bcf:citekey>
     <bcf:citekey order="7" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
     <bcf:citekey order="8" intorder="1">DELVOS198299</bcf:citekey>
-    <bcf:citekey order="9" intorder="1">novakRitter1996</bcf:citekey>
+    <bcf:citekey order="8" intorder="2">novakRitter1996</bcf:citekey>
+    <bcf:citekey order="9" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
     <bcf:citekey order="10" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
-    <bcf:citekey order="11" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
-    <bcf:citekey order="12" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="11" intorder="1">zeller1966</bcf:citekey>
+    <bcf:citekey order="12" intorder="1">Dzjadyk1983</bcf:citekey>
     <bcf:citekey order="13" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
-    <bcf:citekey order="14" intorder="1">zeller1966</bcf:citekey>
-    <bcf:citekey order="15" intorder="1">Dzjadyk1983</bcf:citekey>
-    <bcf:citekey order="16" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
-    <bcf:citekey order="17" intorder="1">smolyak1963</bcf:citekey>
-    <bcf:citekey order="17" intorder="2">temlyakov1986</bcf:citekey>
-    <bcf:citekey order="17" intorder="3">WASILKOWSKI19951</bcf:citekey>
-    <bcf:citekey order="18" intorder="1">Ullrich_2020</bcf:citekey>
-    <bcf:citekey order="19" intorder="1">Krieg_2020</bcf:citekey>
-    <bcf:citekey order="20" intorder="1">Ullrich_2020</bcf:citekey>
-    <bcf:citekey order="21" intorder="1">Dung_Temlyakov_Ullrich_2018</bcf:citekey>
-    <bcf:citekey order="22" intorder="1">Simulationlib_2013</bcf:citekey>
-    <bcf:citekey order="23" intorder="1">GenzTesting_1984</bcf:citekey>
-    <bcf:citekey order="23" intorder="2">GenzPackage_1987</bcf:citekey>
-    <bcf:citekey order="24" intorder="1">Simulationlib_2013</bcf:citekey>
-    <bcf:citekey order="25" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
-    <bcf:citekey order="26" intorder="1">Virtanen_Scipy</bcf:citekey>
-    <bcf:citekey order="27" intorder="1">lapack99</bcf:citekey>
-    <bcf:citekey order="28" intorder="1">HarrisNumpy_2020</bcf:citekey>
-    <bcf:citekey order="29" intorder="1">JuddSmolyak_2014</bcf:citekey>
-    <bcf:citekey order="30" intorder="1">stoyanov2015tasmanian</bcf:citekey>
-    <bcf:citekey order="30" intorder="2">stoyanov2016dynamically</bcf:citekey>
-    <bcf:citekey order="30" intorder="3">stoyanov2018adaptive</bcf:citekey>
-    <bcf:citekey order="30" intorder="4">morrow2019method</bcf:citekey>
-    <bcf:citekey order="30" intorder="5">doecode_6305</bcf:citekey>
-    <bcf:citekey order="31" intorder="1">BurkardtCounting_2014</bcf:citekey>
-    <bcf:citekey order="32" intorder="1" nocite="1">*</bcf:citekey>
+    <bcf:citekey order="14" intorder="1">smolyak1963</bcf:citekey>
+    <bcf:citekey order="14" intorder="2">temlyakov1986</bcf:citekey>
+    <bcf:citekey order="14" intorder="3">WASILKOWSKI19951</bcf:citekey>
+    <bcf:citekey order="15" intorder="1">Ullrich_2020</bcf:citekey>
+    <bcf:citekey order="16" intorder="1">Krieg_2020</bcf:citekey>
+    <bcf:citekey order="17" intorder="1">Ullrich_2020</bcf:citekey>
+    <bcf:citekey order="18" intorder="1">Dung_Temlyakov_Ullrich_2018</bcf:citekey>
+    <bcf:citekey order="19" intorder="1">Simulationlib_2013</bcf:citekey>
+    <bcf:citekey order="20" intorder="1">GenzTesting_1984</bcf:citekey>
+    <bcf:citekey order="20" intorder="2">GenzPackage_1987</bcf:citekey>
+    <bcf:citekey order="21" intorder="1">Simulationlib_2013</bcf:citekey>
+    <bcf:citekey order="22" intorder="1">BarthelmannHighDim_2000</bcf:citekey>
+    <bcf:citekey order="23" intorder="1">Virtanen_Scipy</bcf:citekey>
+    <bcf:citekey order="24" intorder="1">lapack99</bcf:citekey>
+    <bcf:citekey order="25" intorder="1">HarrisNumpy_2020</bcf:citekey>
+    <bcf:citekey order="26" intorder="1">JuddSmolyak_2014</bcf:citekey>
+    <bcf:citekey order="27" intorder="1">stoyanov2015tasmanian</bcf:citekey>
+    <bcf:citekey order="27" intorder="2">stoyanov2016dynamically</bcf:citekey>
+    <bcf:citekey order="27" intorder="3">stoyanov2018adaptive</bcf:citekey>
+    <bcf:citekey order="27" intorder="4">morrow2019method</bcf:citekey>
+    <bcf:citekey order="27" intorder="5">doecode_6305</bcf:citekey>
+    <bcf:citekey order="28" intorder="1">BurkardtCounting_2014</bcf:citekey>
+    <bcf:citekey order="29" intorder="1" nocite="1">*</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

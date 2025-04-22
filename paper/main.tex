@@ -60,7 +60,6 @@ natbib=true]{biblatex}
 \begin{document}
 \title{Least Squares and Smolyak's Algorithm}
 
-
 \author{Jakob Eggl, Elias Mindlberger and Mario Ullrich}
 \date{\today}
 \keywords{Polynomial interpolation, Sparse-Grids, Least-Squares, Smolyak} % 
@@ -104,7 +103,7 @@ interest for a long time
  In \cite{Krieg_2020}, it was recently found that Smolyak's algorithm is 
 \emph{not} optimal in the sampling numbers
 \[
-e_n(H) \defn \inf_{\substack{x_1, \dots, x_n \in D \\ \phi_1, \dots, \phi_n 
+e_n(H) \defn \inf_{\substack{\bfx_1, \dots, \bfx_n \in D \\ \phi_1, \dots, \phi_n 
 		\in L_2}} \sup_{f \in B(H)} \norm[L_2]{f - \sum_{i=1}^n f(\bfx_i) 
 		\phi_i}
 \]
@@ -202,17 +201,7 @@ with \(x_{j_k}\) being the \(j_k\)--th entry of \(\bfx\). \(m_{j_k}\) are the
 \emph{barycentric} weights which can be computed in \(\cO(n^2)\) time for 
 general point distributions but admit \(\cO(1)\) computation for well--known 
 and widely used point sets \cite{klimke2004}. For example, due to 
-\cite{Berut_2004},
-\begin{equation}\label{barycentric_weights_chebyshev}
-	m_{0} = \frac{1}{2},\quad m_{l} = (-1)^l,\, l \in \indexset[1]{n-1},\quad 
-	m_n = \frac{1}{2}(-1)^n
-\end{equation}
-for the \emph{Chebyshev Gauss-Lobatto} (or just Chebyshev extrema), in which 
-\begin{equation}\label{ChebyshevGaussLobatto}
-	x_l \defn x_{l,n} \defn - \cos\frac{l \pi}{n},\, l \in \indexset[0]{n}.
-\end{equation}
-
-Similarly, for the \emph{Chebyshev points of the second kind}
+\cite{Berut_2004}, for the \emph{Chebyshev points of the second kind}
 \begin{equation}\label{eq:chebyPts2}
 	x_l = x_{l, n} = \cos \frac{l \pi}{n},\, l \in \indexset[0]{n}
 \end{equation}
@@ -225,9 +214,6 @@ one gets the closed form
 \end{equation}
 In this case, one achieves an evaluation time of \(\cO((n+1)^d)\).
 Hence, in this construction, one cannot get around this bottleneck. 
-\jakob{Here, equation \cref{eq:chebyPts2} and \cref{eq:weightsChebyshev} are 
-	the same point set. This is probably wrong.}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Smolyak's Algorithm \& Sparse Grids}
@@ -238,11 +224,8 @@ The question arises, how one may reduce the complexity of exact interpolation
 on grids. The central idea of sparse grids is to \emph{not} take the full 
 tensor product of one dimensional point sets but restrict the number of 
 simultaneously large directions. To that end, take a variable 
-number of points in each direction, i.e.\ let \(\XX_j \defn \set{x_{1, j}, 
-	\dots, x_{N(j), j}}\) and \(\cI_j\) the corresponding one--dimensional 
-interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). 
-\jakob{N(j) is not defined yet. It gets mentioned before subsection 4.1 
-(Polynomial Exactness)} Then Smolyak's algorithm is given in a simple recursive 
+number of points in each direction, i.e.\ let \(N(j)\) specify how many points are used for the index \(j\) and let \(\XX_j \defn \set{x_{1, j}, \dots, x_{N(j), j}}\) and \(\cI_j\) be the corresponding one--dimensional 
+interpolator with \(\cI_0 \defn 0\), \(\Delta_j \defn \cI_j - \cI_{j-1}\). Then Smolyak's algorithm is given in a simple recursive 
 manner
 \begin{equation}\label{Smolyak}
 	\cA(q, d) \defn \sum_{\norm[1]{\bfj} \leq q} \bigotimes_{k=1}^d 
@@ -252,9 +235,8 @@ manner
 with \(\cA(q, d) = 0,\, q < d\) and \(\bfj\), \(\cI\) as before. Evidently, 
 only a relatively small number of knots, through the restriction 
 \(\norm[1]{\bfj} \leq q\), is needed. To be precise, \(\cO(n (\log n)^{d-1})\) 
-points are needed. Hence \(q\) \jakob{Mention \emph{scale?} as $q-d$ or do we 
-only mention it in the section of the experimental results?} can be thought of 
-as a resolution parameter. By 
+points are needed. Hence \(q\) can be thought of 
+as a resolution parameter. In the implementation, we will refer to \(q-d\) as the scale parameter. By 
 this form, one only needs to assess the function values at the \emph{sparse 
 grid} \[
 H(q, d) \defn \bigcup_{q-d+1 \leq \norm[1]{\bfj} \leq q} \XX_{j_1} \times 
@@ -269,7 +251,7 @@ which is familiar from before.
 The number of knots \(N(j)\) used for each one--dimensional interpolation rule 
 \(\cI_j\) remains to be specified. In order to obtain nested points, i.e. 
 \(\XX_j \subset \XX_{j+1}\) and thus \(H(q, d) \subset H(q+1,d)\) together with 
-collocation rules such as \cref{ChebyshevGaussLobatto} or \cref{eq:chebyPts2} 
+collocation rules such as \cref{eq:chebyPts2} 
 it is usual to choose a doubling rule, i.e. \[
 N(1) = 1,\quad N(j) = 2^{j-1}+1,\, j > 1.
 \]
@@ -281,8 +263,8 @@ want to change it everywhere now. But we need to change that!} for
 interpolation of unknowns instead of a general domain \(D\). In this case, 
 Smolyak's algorithm is well known to exactly reproduce functions on certain 
 polynomial spaces given that the rules \(\cI_j\) are exact on nested spaces 
-\(V_j\), see \cite{DELVOS198299} or \cite{novakRitter1996}.
-\begin{lem}
+\(V_j\).
+\begin{lem}[\cite{DELVOS198299,novakRitter1996}]
 	Assume \(\cI_j\) is exact on the vector space \(V_j \subseteq C([-1, 1])\) 
 	and assume \[
 	V_1 \subset V_2 \subset V_3 \subset \dots,
@@ -291,10 +273,8 @@ polynomial spaces given that the rules \(\cI_j\) are exact on nested spaces
 	\sum_{\norm[1]{j}=q} V_{j_1} \otimes \cdots \otimes V_{j_d}
 	\]
 \end{lem}
-\cite{BarthelmannHighDim_2000} showed the following. \jakob{Maybe cite 
-	\cite{BarthelmannHighDim_2000} directly in the lemma environment. I.e. 
-	begin{lem}[cf. \cite{BarthelmannHighDim_2000}]}
-\begin{lem}
+Moreover, we can exactly specify the spaces on which Smolyak's algorithm is exact.
+\begin{lem}[\cite{BarthelmannHighDim_2000}]
 	\(\cA(q, d)\) is exact on \[
 	E(q, d) \defn \sum_{\norm[1]{\bfj} = q} \pols[m_{j_1}-1]{\R, \R} \otimes 
 	\cdots \otimes \pols[m_{j_d}-1]{\R, \R}
@@ -319,7 +299,7 @@ Since the interpolation operator \(\cI_j\) as defined before is exact on
 \]
 where \(\err_n\) is the error of the best approximation by \(p \in \pols[n]{\R, 
 \R}\), \(\Lambda_n\) is the Lebesgue constant for the point set in 
-\Cref{ChebyshevGaussLobatto} and \(n \geq 2\), in which case it is known that \[
+\Cref{eq:chebyPts2} and \(n \geq 2\), in which case it is known that \[
 \Lambda_n \leq \frac{2}{\pi} \log(n-1)+1,
 \]
 see for example \cite{zeller1966} and \cite{Dzjadyk1983}. The following bounds 
