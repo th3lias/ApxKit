@@ -8,8 +8,7 @@ The toolbox already includes the following methods:
 
 We are actively working on adding more methods and functionality such as testing possibilities for least squares on multi-node clusters and Wavelet bases.
 
-The library is entirely written in [Python](https://www.python.org) and is designed to be modular, allowing users to easily extend its functionality. We tried to keep the code well-documented, and encourage contributions. Generally, we try to follow the [PEP8](https://peps.python.org/pep-0008/) style guide for Python code and an object-oriented approach.
-We welcome any feedback or suggestions for improvements.
+The library is entirely written in [Python](https://www.python.org) and is designed to be modular, allowing users to easily extend its functionality. We tried to keep the code well-documented, and encourage contributions. Generally, we try to follow the [PEP8](https://peps.python.org/pep-0008/) style guide for Python code and an object-oriented approach. We welcome any feedback or suggestions for improvements.
 
 ## Methodologies 🧮
 
@@ -37,20 +36,15 @@ Even though, least squares is an extremely simple algorithm conceptually, it is 
 
 ### Smolyak's Algorithm 🤯🚀
 
-Smolyak's algorithm is a method for constructing high-dimensional polynomial approximations using a sparse grid. The idea is to combine low-dimensional polynomial approximations in a way that reduces the number of points needed in total. This is particularly useful for high-dimensional problems, where the curse of dimensionality makes traditional methods infeasible. For this, consider the standard one-dimensional polynomial __interpolation__
+Smolyak's algorithm is a method for constructing high-dimensional polynomial approximations using a sparse grid. The idea is to combine low-dimensional polynomial approximations in a way that reduces the number of points needed in total. This is particularly useful for high-dimensional problems, where the curse of dimensionality makes traditional methods infeasible. For this, consider the standard one-dimensional polynomial **interpolation**
 $$p = \sum_{i=0}^{n} f(x_i) \ell_i$$
 where $\ell_i$ are the Lagrange basis functions, i.e. $\ell_i(x_j) = \delta_{ij}$. In higher dimensions, we may formulate the interpolating basis $\ell_i$ as
-$$\ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) 
-    = \ell_{i_1}(\xi_1) \cdot \ell_{i_2}(\xi_2) \cdots \ell_{i_d}(\xi_d) 
-    = \prod_{j=1}^{d} \prod_{\substack{k=1 \\ k \neq j}}^{n_j} 
-    \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}$$
+$$\ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) = \ell_{i_1}(\xi_1) \cdot \ell_{i_2}(\xi_2) \cdots \ell_{i_d}(\xi_d) = \prod_{j=1}^{d} \prod_{\substack{k=1 \\ k \neq j}}^{n_j} \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}$$
 where $\xi = (\xi_1, \ldots, \xi_d)$ and $\left( \left( x_j^k \right)_{k=1}^{n_j}\right)_{j=1}^d$ are the points used for interpolation and $i = (i_1, \dots, i_d) \in \mathbb{N}^d$ is a multiindex. There are many different ways to choose the points $x_j^k$. For example, we mostly use Chebyshev points, which are given by
 $$x_j^k = - \cos \left( \frac{\pi (k-1)}{n_j - 1} \right) \quad \text{for } k = 1, \ldots, n_j.$$
 The multiindex $(i_1, \ldots, i_d)$ is used to restrict the polynomial degree in each dimension. In fact, Smolyak's construction upper-bounds the total degree of the polynomial by $n = \sum_{j=1}^{d} i_j \leq q$ for some $q > d$. Hence, $q$ is a resolution parameter (or scale). To make this algorithm efficient, one seeks to use overlapping point sets. This may be achieved by combining a doubling strategy for the number $n_j$, i.e. $n_j = 2^{j-1}+1$ for $j = 2, \dots, d$ and $n_1=1$ and using the Chebyshev points as above. Then, Smolyak's algorithm can be written in a recursive style as
-$$\begin{aligned}
-        A(q, d) &= A(q-1, d) + \sum_{\lVert i \rVert_1 = q} \bigotimes_{j=1}^d \Delta_{i_j}
-    \end{aligned}$$
-where $\Delta_{i_j}$ is the difference operator $\mathcal{I}_{i_j} - \mathcal{I}_{i_j-1}$ and $\mathcal{I}_{i_j}$ is the interpolation operator $\mathcal{I}_{i_j}(f) = \sum_{k=1}^{n_{i_j}} f\left( x^k \right) \ell_{i_j}$ with $\mathcal{I_0=0}$.
+$$A(q, d) = A(q-1, d) + \sum_{\lVert i \rVert_1 = q} \bigotimes_{j=1}^d \Delta_{i_j}$$
+where $\Delta_{i_j}$ is the difference operator $\mathcal{I}_{i_j} - \mathcal{I}_{i_j-1}$ and $\mathcal{I}_{i_j}$ is the interpolation operator $\mathcal{I}_{i_j}(f) = \sum_{k=1}^{n_{i_j}} f\left( x^k \right) \ell_{i_j}$ with $\mathcal{I}_0 = 0$.
 
 There is a large body of literature on Smolyak's algorithm. We refer to
 
@@ -62,7 +56,7 @@ for further information.
 
 ## How to cite 📝
 
-This toolbox was developed as part of a research project at the [Johannes Kepler University Linz](jku.at), Austria, and is intended for educational and research purposes. If you intend to use this toolbox for your own research, please cite the following paper:
+This toolbox was developed as part of a research project at the [Johannes Kepler University Linz](https://www.jku.at), Austria, and is intended for educational and research purposes. If you intend to use this toolbox for your own research, please cite the following paper:
 
 ```bibtex
 @article{EgglMindlbergerUllrich2025,
