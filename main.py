@@ -21,7 +21,7 @@ from plot.plot_function import plot_errors
 
 def main_method(folder_name: Union[str, None] = None):
     dim_list = [8, 9, 10]
-    scale_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    scale_list = [1, 2, 3, 4, 5, 6]
 
     function_types = [FunctionType.PRODUCT_PEAK, FunctionType.ZHOU, FunctionType.OSCILLATORY]
 
