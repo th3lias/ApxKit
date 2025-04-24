@@ -164,7 +164,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
                 # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                plt.figtext(0.06, 0.95, f"$n={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                plt.figtext(0.06, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
                             horizontalalignment='left', color='gray')
 
                 if save:
@@ -340,7 +340,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
                 # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                plt.figtext(0.06, 0.95, f"$n\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                plt.figtext(0.06, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
                             horizontalalignment='left', color='gray')
 
                 if save:

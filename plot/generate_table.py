@@ -172,7 +172,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                     if scale_index == 0:
                         if grid_index == 0:
                             output[dim_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                                str(fun_name)] + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[dim_name] += r" & "
                         output[dim_name] += method_name
@@ -362,7 +362,7 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                     if dim_index == 0:
                         if grid_index == 0:
                             output[scale_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                                str(fun_name)] + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[scale_name] += r" & "
                         output[scale_name] += method_name
@@ -559,7 +559,7 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                     if scale_index == 0:
                         if grid_index == 0:
                             output[fun_name] += r"\multirow{3}{*}{\thead[l]{\textbf{Dim " + str(
-                                dim_name) + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                                dim_name) + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[fun_name] += r" & "
                         output[fun_name] += method_name
