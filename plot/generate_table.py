@@ -93,15 +93,18 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                 output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
         output[dim_name] += r"\\" + "\n"
 
-        output[dim_name] += r" &  "
-        for i, scale in enumerate(scales):
-            for j, error_reduction in enumerate(error_reductions):
-                if i == 0 and j == 0:
-                    output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
-                        error_reduction) + r"}"
-                else:
-                    output[dim_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
-        output[dim_name] += r"\\" + "\n"
+
+        # TODO: Check this
+        if len(error_reductions) > 1:
+            output[dim_name] += r" &  "
+            for i, scale in enumerate(scales): # TODO: If length of error reduction is 1, then we can skip this part
+                for j, error_reduction in enumerate(error_reductions):
+                    if i == 0 and j == 0: # TODO: Here in the if case, we can only append the first part
+                        output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
+                            error_reduction) + r"}"
+                    else:
+                        output[dim_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
+            output[dim_name] += r"\\" + "\n"
 
         output[dim_name] += r" &  "
         for i, scale in enumerate(scales):
