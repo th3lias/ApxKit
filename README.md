@@ -18,7 +18,7 @@ $$\min_{p \in \mathcal{P}^n} \left\lVert f - p \right\rVert$$
 
 for some norm $\left\lVert \cdot \right\rVert$.
 
-### Least Squares 🟧🟩
+### Least Squares 🟩📉
 
 The least squares method is a standard approach for polynomial approximation. In general, least-squares tries to minimise the seminorm $\left\lVert \cdot \right\rVert_X$, defined by
 
@@ -42,7 +42,7 @@ Even though, least squares is an extremely simple algorithm conceptually, it is 
 - [Sampling projections in the uniform norm](https://arxiv.org/abs/2401.02220)
 - [Least Squares Optimization: from Theory to Practice](https://arxiv.org/abs/2002.11051).
 
-### Smolyak's Algorithm 🤯🚀
+### Smolyak's Algorithm 🤯🏎️
 
 Smolyak's algorithm is a method for constructing high-dimensional polynomial approximations using a sparse grid. The idea is to combine low-dimensional polynomial approximations in a way that reduces the number of points needed in total. This is particularly useful for high-dimensional problems, where the curse of dimensionality makes traditional methods infeasible. For this, consider the standard one-dimensional polynomial **interpolation**
 
