@@ -46,16 +46,12 @@ Even though, least squares is an extremely simple algorithm conceptually, it is 
 ### Smolyak's Algorithm 🤯🚀
 
 Smolyak's algorithm is a method for constructing high-dimensional polynomial approximations using a sparse grid. The idea is to combine low-dimensional polynomial approximations in a way that reduces the number of points needed in total. This is particularly useful for high-dimensional problems, where the curse of dimensionality makes traditional methods infeasible. For this, consider the standard one-dimensional polynomial __interpolation__
-$$
-    p = \sum_{i=0}^{n} f(x_i) \ell_i
-$$
+$$p = \sum_{i=0}^{n} f(x_i) \ell_i$$
 where $\ell_i$ are the Lagrange basis functions, i.e. $\ell_i(x_j) = \delta_{ij}$. In higher dimensions, we may formulate the interpolating basis $\ell_i$ as
-$$
-    \ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) 
+$$\ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) 
     = \ell_{i_1}(\xi_1) \cdot \ell_{i_2}(\xi_2) \cdots \ell_{i_d}(\xi_d) 
     = \prod_{j=1}^{d} \prod_{\substack{k=1 \\ k \neq j}}^{n_j} 
-    \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}
-$$
+    \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}$$
 where $\xi = (\xi_1, \ldots, \xi_d)$ and $\left( \left( x_j^k \right)_{k=1}^{n_j}\right)_{j=1}^d$ are the points used for interpolation and $i = (i_1, \dots, i_d) \in \mathbb{N}^d$ is a multiindex. There are many different ways to choose the points $x_j^k$. For example, we mostly use Chebyshev points, which are given by
 $$
     x_j^k = - \cos \left( \frac{\pi (k-1)}{n_j - 1} \right) \quad \text{for } k = 1, \ldots, n_j.
