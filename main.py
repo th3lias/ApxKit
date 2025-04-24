@@ -23,7 +23,7 @@ def main_method(folder_name: Union[str, None] = None):
     dim_list = [2, 3, 4, 5]
     scale_list = [1, 2, 3, 4, 5, 6]
 
-    function_types = [FunctionType.ZHOU]
+    function_types = [FunctionType.PRODUCT_PEAK, FunctionType.ZHOU, FunctionType.OSCILLATORY]
 
     seed = 42
 
