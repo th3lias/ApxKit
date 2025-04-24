@@ -63,10 +63,10 @@ The multiindex $(i_1, \ldots, i_d)$ is used to restrict the polynomial degree in
 $$A(q, d) = A(q-1, d) + \sum_{\lVert i \rVert_1 = q} \bigotimes_{j=1}^d \Delta_{i_j}$$
 
 where $\Delta_{i_j}$ is the difference operator
-$\mathcal{I}_{i_{j}} - \mathcal{I}_{i_{j}-1}$ and $\mathcal{I}_{i_{j}}$
+$I_{i_{j}} - I_{i_{j}-1}$ and $I_{i_{j}}$
 is the interpolation operator
-$\mathcal{I}_{i_{j}}(f) = \sum_{k=1}^{n_{i_j}} f\left( x^k \right) \ell_{i_j}$
-with $\mathcal{I}_0 = 0$.
+$I_{i_{j}}(f) = \sum_{k=1}^{n_{i_j}} f\left( x^k \right) \ell_{i_j}$
+with $I_0 = 0$.
 
 There is a large body of literature on Smolyak's algorithm. We refer to
 
