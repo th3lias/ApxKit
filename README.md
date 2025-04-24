@@ -52,7 +52,9 @@ where $\ell_i$ are the Lagrange basis functions, i.e. $\ell_i(x_j) = \delta_{ij}
 
 $$\ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) = \ell_{i_1}(\xi_1) \cdot \ell_{i_2}(\xi_2) \cdots \ell_{i_d}(\xi_d) = \prod_{j=1}^{d} \prod_{\substack{k=1 \\ k \neq j}}^{n_j} \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}$$
 
-where $\xi = (\xi_1, \ldots, \xi_d)$ and $\left( \left( x_j^k \right)_{k=1}^{n_j}\right)_{j=1}^d$ are the points used for interpolation and $i = (i_1, \dots, i_d) \in \mathbb{N}^d$ is a multiindex. There are many different ways to choose the points $x_j^k$. For example, we mostly use Chebyshev points, which are given by
+where $\xi = (\xi_1, \ldots, \xi_d)$ and
+$\left((x_j^k)_{k=1}^{n_j}\right)_{j=1}^d$
+are the points used for interpolation and $i = (i_1, \dots, i_d) \in \mathbb{N}^d$ is a multiindex. There are many different ways to choose the points $x_j^k$. For example, we mostly use Chebyshev points, which are given by
 
 $$x_j^k = - \cos \left( \frac{\pi (k-1)}{n_j - 1} \right) \quad \text{for } k = 1, \ldots, n_j.$$
 
@@ -60,7 +62,11 @@ The multiindex $(i_1, \ldots, i_d)$ is used to restrict the polynomial degree in
 
 $$A(q, d) = A(q-1, d) + \sum_{\lVert i \rVert_1 = q} \bigotimes_{j=1}^d \Delta_{i_j}$$
 
-where $\Delta_{i_j}$ is the difference operator $\mathcal{I}_{i_j} - \mathcal{I}_{i_j-1}$ and $\mathcal{I}_{i_j}$ is the interpolation operator $\mathcal{I}_{i_j}(f) = \sum_{k=1}^{n_{i_j}} f\left( x^k \right) \ell_{i_j}$ with $\mathcal{I}_0 = 0$.
+where $\Delta_{i_j}$ is the difference operator
+$\mathcal{I}_{i_{j}} - \mathcal{I}_{i_{j}-1}$ and $\mathcal{I}_{i_{j}}$
+is the interpolation operator
+$\mathcal{I}_{i_{j}}(f) = \sum_{k=1}^{n_{i_j}} f\left( x^k \right) \ell_{i_j}$
+with $\mathcal{I}_0 = 0$.
 
 There is a large body of literature on Smolyak's algorithm. We refer to
 
