@@ -20,7 +20,7 @@ for some norm $\left\lVert \cdot \right\rVert$.
 ### Least Squares 🟧🟩
 
 The least squares method is a standard approach for polynomial approximation. In general, least-squares tries to minimise the seminorm $\left\lVert \cdot \right\rVert_X$, defined by
-$$\left\lVert f - p \right\rVert_X^2 = \frac{1}{\# X} \sum_{x \in X} \left\lvert f(x) - p(x)\right\rvert^2.$$
+$$\left\lVert f - p \right\rVert_X^2 = \frac{1}{\lvert X \rvert} \sum_{x \in X} \left\lvert f(x) - p(x)\right\rvert^2.$$
 In this context, $X$ is a (possibly random) set of points in the domain. To actually find the minimising polynomial, we consider the overdetermined linear system
 $$A \cdot z = b$$
 for a matrix $A \in \mathbb{R}^{m \times n}$, a vector $z \in \mathbb{R}^n$ of coefficients and a vector $b \in \mathbb{R}^{m}$ of function values. The matrix $A$ is constructed from the basis functions evaluated at the points in $X$, i.e. $A_{ij} = \phi_j(x_i)$, where $\phi_j$ are the basis functions and $x_i$ are the points in $X$. In our case, various basis functions are implemented. The vector $b$ is given by $b_i = f(x_i)$ and the vector $z$ contains the coefficients of the polynomial in the chosen basis. The system can then be written as
