@@ -43,14 +43,14 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
         "CONTINUOUS": "Continuous",
         "CORNER_PEAK": "Corner Peak",
         "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "G-Function",
+        "G_FUNCTION": "Modified Ridge Product",
         "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_1": "Modified Geometric Mean",
         "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
         "OSCILLATORY": "Oscillatory",
         "PRODUCT_PEAK": "Product Peak",
         "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Zhou"
+        "ZHOU": "Bimodal Gaussian"
     }
 
     output = dict()
@@ -243,14 +243,14 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
         "CONTINUOUS": "Continuous",
         "CORNER_PEAK": "Corner Peak",
         "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "G-Function",
+        "G_FUNCTION": "Modified Ridge Product",
         "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_1": "Modified Geometric Mean",
         "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
         "OSCILLATORY": "Oscillatory",
         "PRODUCT_PEAK": "Product Peak",
         "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Zhou"
+        "ZHOU": "Bimodal Gaussian"
     }
 
     output = dict()
@@ -651,7 +651,7 @@ if __name__ == '__main__':
     # ignore_scale = None
 
     generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
-    # generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=ignore_dim)
+    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=None)
     generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=[1, 2])
 
     raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")

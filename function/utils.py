@@ -5,7 +5,7 @@ def oscillatory(x, d, c, w):
     """
         Oscillatory function.
     """
-    # TODO: Change that such that factor 10 is included in the avg_c later
+    # TODO: Change that such that factor 10 is included in the avg_c later in the code
     return np.cos(10 * np.dot(x, c) + 2 * np.pi * w[0])
 
 
@@ -80,57 +80,7 @@ def bratley(x, d, c, w):
     return np.sum(np.multiply(np.power(-1, np.arange(1, d + 1)), np.cumprod(np.multiply(c, x) - w, axis=1)), axis=1)
 
 
-# TODO: Delete everything that is not needed here
-
 def zhou(x, d, c, w):
-    """
-        Zhou function.
-    """
-
-    x = x.squeeze()
-    if x.ndim == 1:
-        if d != 1:
-            phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
-            phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(
-                -np.sum(np.square(np.multiply(c, (x - 1 + w))), axis=1) / 2)
-            return (10 ** d * 0.5 * (phi_1 + phi_2)).squeeze()
-        else:
-            phi_1 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i - w[0]))) / 2) for i in x]
-            phi_2 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i - 1 + w[0]))) / 2) for i in x]
-            return np.array([5 * (phi_1[i] + phi_2[i]) for i in range(len(x))])
-    elif x.ndim == 2:
-        phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
-        phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - 1 + w))), axis=1) / 2)
-        return (10 ** d * 0.5 * (phi_1 + phi_2)).squeeze()
-    else:
-        raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
-
-
-def zhou_new(x, d, c, w):
-    """
-        Zhou function.
-    """
-
-    x = x.squeeze()
-    if x.ndim == 1:
-        if d != 1:
-            phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
-            phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(
-                -np.sum(np.square(np.multiply(c, (x + w))), axis=1) / 2)
-            return (phi_1 + phi_2).squeeze()
-        else:
-            phi_1 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i - w[0]))) / 2) for i in x]
-            phi_2 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i + w[0]))) / 2) for i in x]
-            return np.array([(phi_1[i] + phi_2[i]) for i in range(len(x))])
-    elif x.ndim == 2:
-        phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
-        phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x + w))), axis=1) / 2)
-        return (phi_1 + phi_2).squeeze()
-    else:
-        raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
-
-
-def zhou_new_new(x, d, c, w):
     """
         Zhou function.
     """

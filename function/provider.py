@@ -17,7 +17,7 @@ class ParametrizedFunctionProvider:
             raise ValueError("function_type must be of type FunctionType.")
         match function_type:
             case FunctionType.OSCILLATORY:
-                exe = lambda x: oscillatory(x, d, c, w) # TODO: Highly illegal
+                exe = lambda x: oscillatory(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Oscillatory")
             case FunctionType.PRODUCT_PEAK:
                 exe = lambda x: product_peak(x, d, c, w)
@@ -28,7 +28,6 @@ class ParametrizedFunctionProvider:
             case FunctionType.GAUSSIAN:
                 exe = lambda x: gaussian(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Gaussian")
-                pass
             case FunctionType.CONTINUOUS:
                 exe = lambda x: continuous(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Continuous")
@@ -78,5 +77,5 @@ class ParametrizedFunctionProvider:
                     c = 10 * np.ones(d)
                 if w is None:
                     w = 1 / 3 * np.ones(d)
-                exe = lambda x: zhou_new_new(x, d, c, w) # TODO [jakob]: Check that
+                exe = lambda x: zhou(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Zhou")
