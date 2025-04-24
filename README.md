@@ -50,7 +50,7 @@ $$p = \sum_{i=0}^{n} f(x_i) \ell_i$$
 
 where $\ell_i$ are the Lagrange basis functions, i.e. $\ell_i(x_j) = \delta_{ij}$. In higher dimensions, we may formulate the interpolating basis $\ell_i$ as
 
-$$\ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) = \ell_{i_1}(\xi_1) \cdot \ell_{i_2}(\xi_2) \cdots \ell_{i_d}(\xi_d) = \prod_{j=1}^{d} \prod_{\substack{k=1 \\ k \neq j}}^{n_j} \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}$$
+$$\ell_i(\xi) = \bigotimes_{j=1}^{d} \ell_{i_j}(\xi_j) = \ell_{i_1}(\xi_1) \cdot \ell_{i_2}(\xi_2) \cdots \ell_{i_d}(\xi_d) = \prod_{j=1}^{d} \prod_{\substack{k=1 \\ k \neq i_j}}^{n_j} \frac{\xi_j - x_j^k}{x_j^{i_j} - x_j^k}$$
 
 where $\xi = (\xi_1, \ldots, \xi_d)$ and
 $\{x_j^k \mid 1 \leq k \leq n_j,\ 1 \leq j \leq d\}$
