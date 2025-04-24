@@ -5,7 +5,8 @@ def oscillatory(x, d, c, w):
     """
         Oscillatory function.
     """
-    return np.cos(np.dot(x, c) + 2 * np.pi * w[0])
+    # TODO: Change that such that factor 10 is included in the avg_c later
+    return np.cos(10 * np.dot(x, c) + 2 * np.pi * w[0])
 
 
 def product_peak(x, d, c, w):
@@ -79,7 +80,7 @@ def bratley(x, d, c, w):
     return np.sum(np.multiply(np.power(-1, np.arange(1, d + 1)), np.cumprod(np.multiply(c, x) - w, axis=1)), axis=1)
 
 
-# TODO: Delete everything that is not needed
+# TODO: Delete everything that is not needed here
 
 def zhou(x, d, c, w):
     """

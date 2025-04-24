@@ -71,10 +71,12 @@ f4 = FP().get_function(FunctionType.GAUSSIAN, d=2, c=np.array([1, 1]), w=np.arra
 f5 = FP().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([-0.5, 0]), w=np.array([0, 0]))
 f6 = FP().get_function(FunctionType.MOROKOFF_CALFISCH_1, d=2, c=np.array([1, 1]), w=np.array([0, 0]))
 f7 = FP().get_function(FunctionType.OSCILLATORY, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-f8 = FP().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([5,5]), w=np.array([0.5, 0.5]))
+f8 = FP().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
 f9 = FP().get_function(FunctionType.ZHOU, d=2, c=np.array([1, 1]), w=np.array([0.35, 0.65]))
 
 functions = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
 captions = [f.name for f in functions]
 
 plot_multiple_r2_to_r_functions_with_captions(functions, captions=captions)
+
+# TODO: Make a own method for this and make a main method with RunTime Error

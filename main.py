@@ -20,8 +20,8 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2, 3, 4, 5]
-    scale_list = [1, 2, 3, 4, 5, 6]
+    dim_list = [8, 9, 10]
+    scale_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
     function_types = [FunctionType.PRODUCT_PEAK, FunctionType.ZHOU, FunctionType.OSCILLATORY]
 
@@ -51,9 +51,9 @@ def main_method(folder_name: Union[str, None] = None):
     folder_name = os.path.dirname(ex.results_path)
 
     # Plot distribution
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
     # save all images in the results folder
