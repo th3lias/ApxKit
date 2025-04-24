@@ -8,8 +8,7 @@ The toolbox already includes the following methods:
 
 We are actively working on adding more methods and functionality such as testing possibilities for least squares on multi-node clusters and Wavelet bases.
 
-The library is entirely written in [Python](https://www.python.org) and is designed to be modular, allowing users to easily extend it's functionality. We tried to keep the code well-documented, and encourage contributions. Generally, we try to follow the [PEP8](https://peps.python.org/pep-0008/) style guide for Python code and an object-oriented approach.
-
+The library is entirely written in [Python](https://www.python.org) and is designed to be modular, allowing users to easily extend its functionality. We tried to keep the code well-documented, and encourage contributions. Generally, we try to follow the [PEP8](https://peps.python.org/pep-0008/) style guide for Python code and an object-oriented approach.
 We welcome any feedback or suggestions for improvements.
 
 ## Methodologies 🧮
