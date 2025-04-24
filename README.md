@@ -12,7 +12,7 @@ The library is entirely written in [Python](https://www.python.org) and is desig
 
 ## Methodologies 🧮
 
-As mentioned above, the toolbox currently includes some standard methods for polynomial approximation. Here, we briefly want to give an overview on our implementation. In the following, we consider the problem of approximating a function $f$ on the unit cube $[0,1]^d$ or $[-1,1]^d$. The approximation is given by a polynomial of degree $n$, i.e. $p_* \in P^n$, which solves the problem
+As mentioned above, the toolbox currently includes some standard methods for polynomial approximation. Here, we briefly want to give an overview on our implementation. In the following, we consider the problem of approximating a function $f$ on the unit cube $[0,1]^d$ or $[-1,1]^d$. The approximation is given by a polynomial of degree $n$, i.e. $p_\star \in P^n$, which solves the problem
 $$\min_{p \in P^n} \left\lVert f - p \right\rVert$$
 for some norm $\left\lVert \cdot \right\rVert$.
 
@@ -23,8 +23,8 @@ $$\left\lVert f - p \right\rVert_X^2 = \frac{1}{\lvert X \rvert} \sum_{x \in X} 
 In this context, $X$ is a (possibly random) set of points in the domain. To actually find the minimising polynomial, we consider the overdetermined linear system
 $$A \cdot z = b$$
 for a matrix $A \in \mathbb{R}^{m \times n}$, a vector $z \in \mathbb{R}^n$ of coefficients and a vector $b \in \mathbb{R}^{m}$ of function values. The matrix $A$ is constructed from the basis functions evaluated at the points in $X$, i.e. $A_{ij} = \phi_j(x_i)$, where $\phi_j$ are the basis functions and $x_i$ are the points in $X$. In our case, various basis functions are implemented. The vector $b$ is given by $b_i = f(x_i)$ and the vector $z$ contains the coefficients of the polynomial in the chosen basis. The system can then be written as
-$$p_{*} = \sum_{j=0}^{n} z_{*_j} \phi_j$$
-where $z_{{*}_j}$ is the least-squares solution to above's system.
+$$p_{\star} = \sum_{j=0}^{n} z_{\star_j} \phi_j$$
+where $z_{\star_j}$ is the least-squares solution to above's system.
 
 To actually compute the solution to the above system (in a numerically stable way) there exist various methods such as QR decomposition or Singular Value Decomposition (SVD). In our implementation, we use [Scipy](https://scipy.org)'s [lstsq](https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.lstsq.html) method which uses [Lapack](https://www.netlib.org/lapack/)'s [gelsy](https://www.netlib.org/lapack/explore-html/dc/d8b/group__gelsy.html) driver in the backend.
 
