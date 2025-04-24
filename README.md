@@ -29,7 +29,7 @@ In this context, $X$ is a (possibly random) set of points in the domain. To actu
 $$
     A \cdot z = b
 $$
-for a matrix $A \in \mathbb{R}^{m \times n}$, a vector $z \in \mathbb{R}^n$ of coefficients and a vector $b \in \R^{m}$ of function values. The matrix $A$ is constructed from the basis functions evaluated at the points in $X$, i.e. $A_{ij} = \phi_j(x_i)$, where $\phi_j$ are the basis functions and $x_i$ are the points in $X$. In our case, various basis functions are implemented. The vector $b$ is given by $b_i = f(x_i)$ and the vector $z$ contains the coefficients of the polynomial in the chosen basis. The system can then be written as
+for a matrix $A \in \mathbb{R}^{m \times n}$, a vector $z \in \mathbb{R}^n$ of coefficients and a vector $b \in \mathbb{R}^{m}$ of function values. The matrix $A$ is constructed from the basis functions evaluated at the points in $X$, i.e. $A_{ij} = \phi_j(x_i)$, where $\phi_j$ are the basis functions and $x_i$ are the points in $X$. In our case, various basis functions are implemented. The vector $b$ is given by $b_i = f(x_i)$ and the vector $z$ contains the coefficients of the polynomial in the chosen basis. The system can then be written as
 $$
     p_* = \sum_{j=0}^{n} z_{*_j} \phi_j
 $$
