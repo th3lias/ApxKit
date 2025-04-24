@@ -94,7 +94,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
         output[dim_name] += r"\\" + "\n"
 
 
-        # TODO: Check this
+        # TODO: Check this. If it workds, do it in all three methods!
         if len(error_reductions) > 1:
             output[dim_name] += r" &  "
             for i, scale in enumerate(scales): # TODO: If length of error reduction is 1, then we can skip this part
