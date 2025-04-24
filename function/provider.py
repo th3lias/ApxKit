@@ -5,7 +5,7 @@ from typing import Union
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
 from function.utils import oscillatory, product_peak, corner_peak, gaussian, continuous, discountinuous_1d, \
-    discountinuous_nd, g_function, morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou
+    discountinuous_nd, g_function, morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, zhou_new
 
 
 class ParametrizedFunctionProvider:
@@ -78,5 +78,5 @@ class ParametrizedFunctionProvider:
                     c = 10 * np.ones(d)
                 if w is None:
                     w = 1 / 3 * np.ones(d)
-                exe = lambda x: zhou(x, d, c, w)
+                exe = lambda x: zhou_new(x, d, c, w) # TODO [jakob]: Check that
                 return ParametrizedFunction(exe, d, c, w, name="Zhou")

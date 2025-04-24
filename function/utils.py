@@ -48,7 +48,6 @@ def g_function(x, d, c, w):
     """
         G-function.
     """
-    # Based on https://www.sfu.ca/~ssurjano/gfunc.html we have c_i given by (i-2)/2 -> we make it variable however
     return np.prod(np.divide(np.abs(4 * x - 2 - w) + c, 1 + c), axis=1)
 
 
@@ -100,5 +99,28 @@ def zhou(x, d, c, w):
         phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
         phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - 1 + w))), axis=1) / 2)
         return (10 ** d * 0.5 * (phi_1 + phi_2)).squeeze()
+    else:
+        raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+
+def zhou_new(x, d, c, w):
+    """
+        Zhou function.
+    """
+
+    x = x.squeeze()
+    if x.ndim == 1:
+        if d != 1:
+            phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
+            phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(
+                -np.sum(np.square(np.multiply(c, (x + w))), axis=1) / 2)
+            return (phi_1 + phi_2).squeeze()
+        else:
+            phi_1 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i - w[0]))) / 2) for i in x]
+            phi_2 = [(2 * np.pi) ** (-1 / 2) * np.exp(-np.sum(np.square(c[0] * (i + w[0]))) / 2) for i in x]
+            return np.array([(phi_1[i] + phi_2[i]) for i in range(len(x))])
+    elif x.ndim == 2:
+        phi_1 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x - w))), axis=1) / 2)
+        phi_2 = (2 * np.pi) ** (-d / 2) * np.exp(-np.sum(np.square(np.multiply(c, (x + w))), axis=1) / 2)
+        return (phi_1 + phi_2).squeeze()
     else:
         raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")

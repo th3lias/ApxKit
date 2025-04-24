@@ -398,6 +398,11 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
     if data_frames:
         combined_df = pd.concat(data_frames, ignore_index=True)
         try:
+
+            # Remove all rows that contain MOROKOFF_CALFISCH_2, ROOS_ARNOLD, BRATLEY
+            # TODO: Remove this in the final version
+            combined_df = combined_df[~combined_df['f_name'].isin(['MOROKOFF_CALFISCH_2', 'ROOS_ARNOLD', 'BRATLEY'])]
+
             combined_df.to_csv(output_file_path, index=False)
             print(f"Combined CSV file saved to {output_file_path}")
         except Exception as e:
@@ -407,8 +412,11 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
 
 
 if __name__ == '__main__':
+    # TODO: Remove this info
+
     # path = r"path/to/your/folder"
-    # #
-    # combine_result_files_to_combined_one(path)
+    path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
+
+    combine_result_files_to_combined_one(path)
 
     raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")

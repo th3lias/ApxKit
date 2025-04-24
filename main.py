@@ -20,13 +20,10 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [2]
-    scale_list = [1, 2, 3, 4, 5, 6, 7]
+    dim_list = [2, 3, 4, 5]
+    scale_list = [1, 2, 3, 4, 5, 6]
 
-    function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
-                      FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,
-                      FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
-                      FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
+    function_types = [FunctionType.ZHOU]
 
     seed = 42
 
@@ -55,18 +52,18 @@ def main_method(folder_name: Union[str, None] = None):
 
     # Plot distribution
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
-    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
     # save all images in the results folder
-    total_iterations = len(dim_list) * len(function_types)
-    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-        for dim in dim_list:
-            for fun_type in function_types:
-                plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
-                            same_axis_both_plots=True, latex=True)
-                pbar.update(1)
+    # total_iterations = len(dim_list) * len(function_types)
+    # with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+    #     for dim in dim_list:
+    #         for fun_type in function_types:
+    #             plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
+    #                         same_axis_both_plots=True, latex=True)
+    #             pbar.update(1)
 
 
 if __name__ == '__main__':
