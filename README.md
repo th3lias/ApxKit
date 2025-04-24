@@ -86,3 +86,9 @@ This toolbox was developed as part of a research project at the [Johannes Kepler
   year={2025}
 }
 ```
+
+If you have questions, feedback or want to reach out for any other reason, please contact us at
+
+    jakob (dot) eggl (at) jku (dot) at,
+    elias (dot) mindlberger (at) jku (dot) at,
+    mario (dot) ullrich (at) jku (dot) at.
