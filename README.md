@@ -12,9 +12,9 @@ The library is entirely written in [Python](https://www.python.org) and is desig
 
 ## Methodologies 🧮
 
-As mentioned above, the toolbox currently includes some standard methods for polynomial approximation. Here, we briefly want to give an overview on our implementation. In the following, we consider the problem of approximating a function $f$ on the unit cube $[0,1]^d$ or $[-1,1]^d$. The approximation is given by a polynomial of degree $n$, i.e. $p_\star \in P^n$, which solves the problem
+As mentioned above, the toolbox currently includes some standard methods for polynomial approximation. Here, we briefly want to give an overview on our implementation. In the following, we consider the problem of approximating a function $f$ on the unit cube $[0,1]^d$ or $[-1,1]^d$. The approximation is given by a polynomial of degree $n$, i.e. $p_\star \in \mathcal{P}^n$, which solves the problem
 
-$$\min_{p \in P^n} \left\lVert f - p \right\rVert$$
+$$\min_{p \in \mathcal{P}^n} \left\lVert f - p \right\rVert$$
 
 for some norm $\left\lVert \cdot \right\rVert$.
 
@@ -78,7 +78,7 @@ for further information.
 
 ## How to cite 📝
 
-This toolbox was developed as part of a research project at the [Johannes Kepler University Linz](https://www.jku.at), Austria, and is intended for educational and research purposes. If you intend to use this toolbox for your own research, please cite the following paper:
+This toolbox was developed as part of a research project at the [Johannes Kepler University Linz](https://www.jku.at/en), Austria, and is intended for educational and research purposes. If you intend to use this toolbox for your own research, please cite the following paper:
 
 ```bibtex
 @article{EgglMindlbergerUllrich2025,
