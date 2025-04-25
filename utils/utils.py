@@ -9,6 +9,7 @@ from typing import Callable, Union, List
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import ast
 
 from grid.grid.grid import Grid
 
@@ -330,7 +331,7 @@ def find_degree(scale: int, dimension: int):
 
     return degree
 
-
+@DeprecationWarning
 def reformat_old_file_to_new_one(path: str, old: bool) -> None:
     df = pd.read_csv(path, header=0, decimal='.', sep=',')
 
@@ -340,7 +341,6 @@ def reformat_old_file_to_new_one(path: str, old: bool) -> None:
                         "scale", "seed", "f_name", "ell_2_error", "ell_infty_error", "cpu", "datetime", "needed_time"]
 
     if old:
-        # TODO: do this with the 3 files from the server (30.03, 31.03, 02.04)
         # reorder the columns
         df.drop(columns=['cpu'], inplace=True)
         df = df[new_column_order]
@@ -411,10 +411,9 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
         print("No files found to combine.")
 
 
-import pandas as pd
-import ast
 
-# TODO: Do this for the server results from 24.04.2025
+
+# TODO: Do this for the server results from 24.04.2025 and delete the method afterwards
 def scale_c_and_sum_c_for_oscillatory(csv_path, factor, output_path):
     # Read the CSV file into a DataFrame
     df = pd.read_csv(csv_path)

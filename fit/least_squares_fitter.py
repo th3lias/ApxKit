@@ -33,8 +33,8 @@ class LeastSquaresFitter(Fitter):
         assert self.basis_f is not None, "The basis function is not set."
         vandermonde = self.basis_f(grid.grid, grid.grid, **kwargs)
         y = f(grid.grid)
-        result, _, _, _ = scipy.linalg.lstsq(vandermonde,
-                                             y)  # TODO: Either make it variable or remove all other possibilities of method selection as soon as we only keep lstsq with GELSY driver
+        # TODO: Either make it variable or remove all other possibilities of method selection as soon as we only keep lstsq with GELSY driver
+        result, _, _, _ = scipy.linalg.lstsq(vandermonde, y)
         model = LeastSquaresModel(f=f, dim=grid.input_dim, upper=grid.upper_bound, lower=grid.lower_bound)
         model.set_solution(result)
         model.set_grid(grid.grid)

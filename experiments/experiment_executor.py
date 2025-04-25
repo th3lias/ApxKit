@@ -24,7 +24,7 @@ class ExperimentExecutor:
         Runs the experiments, where Smolyak and Least Squares are compared
     """
 
-    def __init__(self, dim_list: list[int], scale_list: list[int], smoylak_method: InterpolationMethod,
+    def __init__(self, dim_scale_dict: dict[int, List[int]], smoylak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
                  path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL,
                  store_indices: bool = True):
@@ -35,8 +35,7 @@ class ExperimentExecutor:
         else:
             self.results_path = path
 
-        self.dim_list = dim_list
-        self.scale_list = scale_list
+        self.dim_scale_dictionary = dim_scale_dict
         self.smolyak_method = smoylak_method
         self.least_squares_method = least_squares_method
         self.seed = seed
@@ -66,7 +65,7 @@ class ExperimentExecutor:
         np.random.seed(self.seed)
 
         print(
-            f"Starting dimension {self.dim_list}, scale {self.scale_list} n_functions={n_functions_parallel} "
+            f"Starting dimension/scale {self.dim_scale_dictionary} n_functions={n_functions_parallel} "
             f"experiments with cpu {platform.processor()} and "
             f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
         print(f"Results will be stored in {self.results_path}")
@@ -74,9 +73,15 @@ class ExperimentExecutor:
         print("")
 
         time.sleep(1)
-        total_iterations = len(self.dim_list) * len(self.scale_list) * 3  # 3 methods (LS_Unif, LS_Cheby, Smolyak)
+
+        n_iterations = 0
+
+        for scales in self.dim_scale_dictionary.values():
+            n_iterations += len(scales)
+
+        total_iterations = n_iterations * 3  # 3 methods (LS_Unif, LS_Cheby, Smolyak)
         progress_bar = tqdm(total=total_iterations, desc="Initializing", unit="iteration")
-        for dim in self.dim_list:
+        for dim in self.dim_scale_dictionary.keys():
 
             sparse_grid_provider = RuleGridProvider(input_dim=dim, lower_bound=0.0, upper_bound=1.0,
                                                     output_dim=len(function_types) * n_functions_parallel,
@@ -95,7 +100,7 @@ class ExperimentExecutor:
             # Calculates the functions, their names, cs and ws and stores them on class--level
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
 
-            for scale in self.scale_list:
+            for scale in self.dim_scale_dictionary.get(dim):
 
                 # Training Grids
                 if sparse_grid is None:
