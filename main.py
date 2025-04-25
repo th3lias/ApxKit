@@ -20,14 +20,27 @@ from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
-    dim_list = [8, 9, 10]
+    dim_list = [2, 3]
     scale_list = [1, 2, 3, 4, 5, 6]
 
     function_types = [FunctionType.PRODUCT_PEAK, FunctionType.ZHOU, FunctionType.OSCILLATORY]
 
     seed = 42
 
+    average_c = {
+        FunctionType.CONTINUOUS: 1.0,
+        FunctionType.CORNER_PEAK: 1.0,
+        FunctionType.DISCONTINUOUS: 1.0,
+        FunctionType.GAUSSIAN: 1.0,
+        FunctionType.G_FUNCTION: 1.0,
+        FunctionType.OSCILLATORY: 10.0,
+        FunctionType.MOROKOFF_CALFISCH_1: 1.0,
+        FunctionType.PRODUCT_PEAK: 1.0,
+        FunctionType.ZHOU: 1.0
+    }
+
     average_c = 1.0
+
     multiplier_fun = lambda x: 2 * x
     n_fun_parallel = 25
 

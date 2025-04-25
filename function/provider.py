@@ -5,7 +5,7 @@ from typing import Union
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
 from function.utils import oscillatory, product_peak, corner_peak, gaussian, continuous, discountinuous_1d, \
-    discountinuous_nd, g_function, morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, zhou_new, zhou_new_new
+    discountinuous_nd, g_function, morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou
 
 
 class ParametrizedFunctionProvider:

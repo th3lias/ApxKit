@@ -58,7 +58,7 @@ class ExperimentExecutor:
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
 
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
-                            avg_c: float = 1.0, ls_multiplier_fun: Callable = lambda x: 2 * x, ):
+                            avg_c: Union[float, dict], ls_multiplier_fun: Callable = lambda x: 2 * x, ):
         """
             Execute a series of comparisons with the given function types.
         """
@@ -190,7 +190,8 @@ class ExperimentExecutor:
                          needed_time=round(needed_time, 3))
 
     def _get_functions(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
-                       dim: int, avg_c: float) -> (List[Function], List[np.ndarray], List[np.ndarray], List[str]):
+                       dim: int, avg_c: Union[float, dict]) -> (List[Function], List[np.ndarray], List[np.ndarray],
+                                                                List[str]):
         """
             Get a list of functions of the given types and dimension.
         """
@@ -205,9 +206,14 @@ class ExperimentExecutor:
         f_names = list()
 
         for fun_type in function_types:
+            if isinstance(avg_c, dict):
+                avg_c_fun = avg_c[fun_type]
+            else:
+                avg_c_fun = avg_c
+
             for i in range(n_functions_parallel):
                 # get c and w
-                c, w = self._get_c_and_w(avg_c, dim)
+                c, w = self._get_c_and_w(avg_c_fun, dim)
                 function = ParametrizedFunctionProvider.get_function(fun_type, dim, c=c, w=w)
                 cs.append(c)
                 ws.append(w)
