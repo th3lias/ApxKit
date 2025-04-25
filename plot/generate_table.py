@@ -627,9 +627,8 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 
 if __name__ == '__main__':
-    # TODO: Change output folder. It should not be in "paper", as this folder does not exists anymore
     input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\combined_results_numerical_experiments.csv"
-    output_folder = os.path.join("..", "paper", "tables")
+    output_folder = os.path.join("..", "results", "tables")
 
     ignore_scale = {
         "2": [1, 2],

@@ -5,7 +5,6 @@ def oscillatory(x, d, c, w):
     """
         Oscillatory function.
     """
-    # TODO: Change that such that factor 10 is included in the avg_c later in the code
     return np.cos(10 * np.dot(x, c) + 2 * np.pi * w[0])
 
 

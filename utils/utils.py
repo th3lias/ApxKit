@@ -411,12 +411,40 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
         print("No files found to combine.")
 
 
+import pandas as pd
+import ast
+
+# TODO: Do this for the server results from 24.04.2025
+def scale_c_and_sum_c_for_oscillatory(csv_path, factor, output_path):
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(csv_path)
+
+    # Identify rows where f_name is "OSCILLATORY"
+    mask = df['f_name'] == "OSCILLATORY"
+
+    # Process only those rows
+    df.loc[mask, 'c'] = df.loc[mask, 'c'].apply(lambda x: [round(val * factor, 5) for val in ast.literal_eval(x)])
+    df.loc[mask, 'sum_c'] = round(df.loc[mask, 'sum_c'] * factor, 5)
+
+    # Convert 'c' back to string for saving
+    df['c'] = df['c'].apply(str)
+
+    # Save to the specified output CSV file
+    df.to_csv(output_path, index=False)
+
+    print(f"Saved scaled data (only for OSCILLATORY) to: {output_path}")
+
+
 if __name__ == '__main__':
     # TODO: Remove this info
 
-    # path = r"path/to/your/folder"
-    path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
+    path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\25_04_2025_11_33_10\results_numerical_experiments.csv"
 
-    combine_result_files_to_combined_one(path)
+    scale_c_and_sum_c_for_oscillatory(csv_path=path, factor=10, output_path=path.replace(".csv", "_scaled.csv"))
+
+    # path = r"path/to/your/folder"
+    # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
+
+    # combine_result_files_to_combined_one(path)
 
     raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")
