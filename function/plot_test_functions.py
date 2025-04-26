@@ -19,7 +19,7 @@ def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1
 
     fig = plt.figure(figsize=(15, 15))
 
-    captions = [f.name for f in functions]
+    captions = [f.name for f in funcs]
 
     for i, func in enumerate(funcs):
         z_flat = func(points)
