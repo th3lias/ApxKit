@@ -7,6 +7,7 @@ class Function(Callable):
     """
         This is a wrapper for callables which represents functions from R^m to R^n.
     """
+
     def __init__(self, f: Callable, dim: int, upper: float = 1.0, lower: float = 0.0, name: str = "unknown"):
         """
             This is a wrapper for callables which represents functions from R^m to R^n.

@@ -13,7 +13,7 @@ class Fitter:
     def __init__(self, dim: int):
         self.dim = dim
 
-    def fit(self, f: Function, grid: Grid, **kwargs) -> Model:
+    def fit(self, f: Union[Function, List[Function]], grid: Grid, **kwargs) -> Model:
         """
             Fits the function on a given grid of points.
         """

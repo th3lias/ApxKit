@@ -12,7 +12,8 @@ from utils.utils import calculate_num_points
 
 class RandomGridProvider(GridProvider):
     def __init__(self, input_dim: int, output_dim: int = 1, lower_bound: float = 0., upper_bound: float = 1.,
-                 seed: int = None, rule: RandomGridRule = RandomGridRule.UNIFORM, multiplier_fun: Callable = lambda x: x):
+                 seed: int = None, rule: RandomGridRule = RandomGridRule.UNIFORM,
+                 multiplier_fun: Callable = lambda x: x):
         super(RandomGridProvider, self).__init__(input_dim, output_dim, lower_bound, upper_bound)
         self.seed = seed if seed else None
         self.rng = np.random.default_rng(seed=self.seed)
@@ -27,6 +28,8 @@ class RandomGridProvider(GridProvider):
         elif self.rule == RandomGridRule.CHEBYSHEV:
             return RandomGrid(self.input_dim, self.output_dim, scale, self._generate_chebyshev(n_points),
                               rule=self.rule, seed=self.seed)
+        else:
+            raise ValueError(f"Unknown rule type {self.rule}")
 
     def increase_scale(self, current_grid: Grid, delta: int = 1, keep_old_pts: bool = True) -> Grid:
         target_no_points = int(self.multiplier_fun(
@@ -49,6 +52,8 @@ class RandomGridProvider(GridProvider):
                 del current_grid
                 return Grid(self.input_dim, self.output_dim, old_scale + delta,
                             self._generate_chebyshev(target_no_points), rule=self.rule)
+        else:
+            raise ValueError(f"Unknown rule type {self.rule}")
 
     def _generate_uniform(self, num_points: int):
         return self.rng.uniform(low=self.lower_bound, high=self.upper_bound, size=(num_points, self.input_dim))

@@ -5,7 +5,7 @@ from function.f import Function
 from function.model.least_squares_model import LeastSquaresModel
 from grid.grid.random_grid import RandomGrid
 from typing import Union, List, Callable
-from fit.basis_f import grid_basis_idw, grid_basis_gaussian, compute_epsilon, evaluate_gaussian_rbf
+from fit.basis_f import grid_basis_gaussian, compute_epsilon, evaluate_gaussian_rbf
 
 from grid.provider.random_grid_provider import RandomGridProvider
 

@@ -1,8 +1,8 @@
 from typing import Union, List, Tuple
 
 import numpy as np
-import scipy
 from sklearn.preprocessing import PolynomialFeatures
+from scipy.linalg import lstsq, lu
 
 from fit import BasisType
 from function import Function
@@ -11,9 +11,6 @@ from grid.rule.random_grid_rule import RandomGridRule
 from interpolate.interpolator import Interpolator
 from fit.method.least_squares_method import LeastSquaresMethod
 from utils.utils import find_degree
-from scipy.linalg import lstsq
-
-from scipy.linalg import lu
 
 
 class LeastSquaresInterpolator(Interpolator):
@@ -78,11 +75,15 @@ class LeastSquaresInterpolator(Interpolator):
             return self._build_poly_basis(grid, b_idx)
 
         elif basis_type == BasisType.REGULAR:
-            print(DeprecationWarning("This will not be supported in the near future")) # TODO: remove this
+            print(
+                DeprecationWarning("This will not be supported in the near future"))  # TODO: remove this or remove elif
             degree = find_degree(self.scale, self.dim)
 
             poly = PolynomialFeatures(degree=degree, include_bias=self.include_bias)
             return poly.fit_transform(grid)
+
+        else:
+            raise ValueError(f"Unexpected basis type {basis_type}")
 
     def _approximate_exact(self, y: np.ndarray):
         """

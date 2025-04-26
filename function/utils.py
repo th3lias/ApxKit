@@ -36,12 +36,14 @@ def continuous(x, d, c, w):
     return np.exp(-np.sum(np.multiply(c, np.abs(x - w)), axis=1))
 
 
-def discountinuous_1d(x, d, c, w):
-    return np.array([0 if i > w[0] else np.exp(c[0] * i) for i in x])
-
-
-def discountinuous_nd(x, d, c, w):
-    return np.array([0 if i[0] > w[0] or i[1] > w[1] else np.exp(np.inner(i, c)) for i in x])
+def discontinuous(x, d, c, w):
+    """
+        Discontinuous function.
+    """
+    if d == 1:
+        return np.array([0 if i > w[0] else np.exp(c[0] * i) for i in x])
+    else:
+        return np.array([0 if i[0] > w[0] or i[1] > w[1] else np.exp(np.inner(i, c)) for i in x])
 
 
 def g_function(x, d, c, w):
@@ -81,22 +83,17 @@ def bratley(x, d, c, w):
 
 def zhou(x, d, c, w):
     """
-        Zhou function.
+    Zhou function.
     """
+    x = np.squeeze(x)
 
-    x = x.squeeze()
-    if x.ndim == 1:
-        if d != 1:
-            phi_1 = np.exp(-np.sum(np.square(np.multiply(10 * c, (x - w))), axis=1) / 2)
-            phi_2 = np.exp(-np.sum(np.square(np.multiply(c, (x + w - 1))), axis=1) / 2)
-            return (phi_1 + phi_2).squeeze()
-        else:
-            phi_1 = [np.exp(-np.sum(np.square(10 * c[0] * (i - w[0]))) / 2) for i in x]
-            phi_2 = [np.exp(-np.sum(np.square(10 * c[0] * (i + w[0] - 1))) / 2) for i in x]
-            return np.array([(phi_1[i] + phi_2[i]) for i in range(len(x))])
-    elif x.ndim == 2:
-        phi_1 = np.exp(-np.sum(np.square(np.multiply(10 * c, (x - w))), axis=1) / 2)
-        phi_2 = np.exp(-np.sum(np.square(np.multiply(10 * c, (x + w - 1))), axis=1) / 2)
-        return (phi_1 + phi_2).squeeze()
-    else:
-        raise ValueError(f"Cannot handle an array with number of dimension ={x.ndim}")
+    if x.ndim not in (1, 2):
+        raise ValueError(f"Cannot handle an array with number of dimensions = {x.ndim}")
+
+    if d == 1 and x.ndim == 1:
+        x = x[:, np.newaxis]
+
+    phi_1 = np.exp(-0.5 * np.sum((10 * c * (x - w)) ** 2, axis=-1))
+    phi_2 = np.exp(-0.5 * np.sum((10 * c * (x + w - 1)) ** 2, axis=-1))
+
+    return (phi_1 + phi_2).squeeze()

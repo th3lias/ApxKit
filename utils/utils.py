@@ -16,7 +16,7 @@ from grid.grid.grid import Grid
 
 def l2_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[float, np.ndarray]:
     """
-    Calculates the L_2 error estimate by comparing the true function values and the approximated function values by
+    Calculates the ell_2 error estimate by comparing the true function values and the approximated function values by
     calculating the mean-squared absolute difference
     :param y: true function values
     :param y_hat: approximated function values
@@ -47,7 +47,7 @@ def max_error_function_values(y: np.ndarray, y_hat: np.ndarray) -> Union[float, 
 
 def l2_error(f: Callable, f_hat: Callable, grid: np.ndarray) -> float:
     """
-    Calculates the L_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
+    Calculates the ell_2 error estimate by comparing the true function and the approximation f_hat on a test grid by
     calculating the mean-squared absolute difference
     :param f: function that should be approximated
     :param f_hat: approximation of the function
@@ -185,46 +185,6 @@ def _remove_almost_identical_rows(arr: np.ndarray, tol=1e-8):
     return np.array(unique_rows)
 
 
-def plot_error_vs_scale(results: dict, scale_range: range, name: str) -> None:
-    """
-    Plot the results of the experiments by plotting the errors vs the scale (proportional to number of samples)
-    :param results: dictionary containing the results
-    :param scale_range: range of scales
-    :param name: name of the experiment
-    :return:
-    """
-
-    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-
-    smolyak_max_diff = [results['smolyak'][scale]['max_diff'] for scale in scale_range]
-    least_squares_max_diff = [results['least_squares'][scale]['max_diff'] for scale in scale_range]
-
-    smolyak_ell_2 = [results['smolyak'][scale]['ell_2'] for scale in scale_range]
-    least_squares_ell_2 = [results['least_squares'][scale]['ell_2'] for scale in scale_range]
-
-    axs[0].plot(scale_range, smolyak_max_diff, label='Smolyak')
-    axs[0].plot(scale_range, least_squares_max_diff, label='Least Squares')
-    axs[0].set_xticks(scale_range)
-    axs[0].set_title('Max (Abs) Error')
-    axs[0].set_xlabel('Scale')
-    axs[0].set_ylabel('Max Error')
-    axs[0].set_yscale('log')
-    axs[0].legend()
-
-    axs[1].plot(scale_range, smolyak_ell_2, label='Smolyak')
-    axs[1].plot(scale_range, least_squares_ell_2, label='Least Squares')
-    axs[1].set_xticks(scale_range)
-    axs[1].set_title('L2 Error')
-    axs[1].set_xlabel('Scale')
-    axs[1].set_ylabel('L2 Error')
-    axs[1].set_yscale('log')
-    axs[1].legend()
-
-    fig.suptitle(name)
-    plt.tight_layout()
-    plt.show()
-
-
 def sample(dim: int | tuple[int], low: float = 0., high: float = 1.):
     return np.random.uniform(low=low, high=high, size=dim)
 
@@ -331,14 +291,14 @@ def find_degree(scale: int, dimension: int):
 
     return degree
 
+
 @DeprecationWarning
+# TODO: Delte asap
 def reformat_old_file_to_new_one(path: str, old: bool) -> None:
     df = pd.read_csv(path, header=0, decimal='.', sep=',')
 
     new_column_order = ["dim", "scale", "method", "w", "c", "sum_c", "grid_type", "basis_type", "method_type",
                         "n_samples", "seed", "f_name", "ell_2_error", "ell_infty_error", "datetime", "needed_time"]
-    old_column_order = ["dim", "method", "w", "c", "sum_c", "grid_type", "basis_type", "method_type", "n_samples",
-                        "scale", "seed", "f_name", "ell_2_error", "ell_infty_error", "cpu", "datetime", "needed_time"]
 
     if old:
         # reorder the columns
@@ -400,7 +360,7 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
         try:
 
             # Remove all rows that contain MOROKOFF_CALFISCH_2, ROOS_ARNOLD, BRATLEY
-            # TODO: Remove this in the final version
+            # TODO: Remove this next line in the final version
             combined_df = combined_df[~combined_df['f_name'].isin(['MOROKOFF_CALFISCH_2', 'ROOS_ARNOLD', 'BRATLEY'])]
 
             combined_df.to_csv(output_file_path, index=False)
@@ -409,8 +369,6 @@ def combine_result_files_to_combined_one(folder_path: str, output_file_path: str
             print(f"Could not save the combined file: {e}")
     else:
         print("No files found to combine.")
-
-
 
 
 # TODO: Do this for the server results from 24.04.2025 and delete the method afterwards
@@ -435,15 +393,12 @@ def scale_c_and_sum_c_for_oscillatory(csv_path, factor, output_path):
 
 
 if __name__ == '__main__':
-    # TODO: Remove this info
+    # TODO: Remove this main method
 
-    path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\25_04_2025_11_33_10\results_numerical_experiments.csv"
+    path = "path/to/your/results_numerical_experiments.csv"
 
     scale_c_and_sum_c_for_oscillatory(csv_path=path, factor=10, output_path=path.replace(".csv", "_scaled.csv"))
 
     # path = r"path/to/your/folder"
-    # path = r"C:\Users\jakob\OneDrive - Johannes Kepler Universität Linz\Studium\JKU\cur_sem\_Student_Assistant\Assistance_Mario\SS24\Forschung\backup_results"
 
     # combine_result_files_to_combined_one(path)
-
-    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")

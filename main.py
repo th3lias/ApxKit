@@ -1,7 +1,4 @@
-# TODO: Search everywhere in the repo for personal stuff, as this is not supposed to be on Github.
-# TODO: Examples are paths or other things named with "Elias" or "Jakob"
 # TODO: Check for spelling and grammar errors
-# TODO: Add a "raise RunTimeError" everywhere in methods that are not supposed to be run as a "standalone" method
 
 import argparse
 import os
@@ -30,6 +27,11 @@ def main_method(folder_name: Union[str, None] = None):
         8: [1, 2, 3, 4, 5, 6],
         9: [1, 2, 3, 4, 5, 6],
         10: [1, 2, 3, 4, 5, 6],
+    }
+
+    dim_scale_dict = {
+        2: [1, 2, 3],
+        3: [2, 3]
     }
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
@@ -72,16 +74,16 @@ def main_method(folder_name: Union[str, None] = None):
 
     folder_name = os.path.dirname(ex.results_path)
 
-    # Plot distribution
+    # Plot error distribution
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
-    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
-    # save all images in the results folder
+    # Plot errors for each function
     total_iterations = 0
-    for scales in dim_scale_dict.values():
-        total_iterations += len(scales)
+    for _ in dim_scale_dict.values():
+        total_iterations += 1
     total_iterations *= len(function_types)
     with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
         for dim in dim_scale_dict.keys():

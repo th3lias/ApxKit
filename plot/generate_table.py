@@ -627,7 +627,7 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 
 if __name__ == '__main__':
-    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\combined_results_numerical_experiments.csv"
+    input_path = "path/to/your/results_numerical_experiments.csv"
     output_folder = os.path.join("..", "results", "tables")
 
     ignore_scale = {
@@ -652,5 +652,3 @@ if __name__ == '__main__':
     generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
     generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=None)
     generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=[1, 2])
-
-    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")

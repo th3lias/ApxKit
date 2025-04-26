@@ -29,7 +29,7 @@ def plot_errors(dimension, seed: int, function_type: FunctionType, scales: List[
     :param save: Specifies whether the images should be saved. If False, the images are shown.
     :param save_path: Path where the images should be saved. If None, a default path will be used.
     :param same_axis_both_plots: Determines whether the same y-axis should be used for both error-plots
-    :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
+    :param latex: Specifies whether the output should be additionally exported in a pdf format (Only used if save is True)
 
     """
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
                       FunctionType.G_FUNCTION, FunctionType.MOROKOFF_CALFISCH_1, FunctionType.MOROKOFF_CALFISCH_2,
                       FunctionType.ROOS_ARNOLD, FunctionType.BRATLEY, FunctionType.ZHOU]
 
-    folder_name = os.path.join("..", "results", "31_03_2025_07_17_20")
+    folder_name = "path/to/folder/that/contains/results_numerical_experiments.csv"
 
     # save all images in results folder
     total_iterations = len(dim_list) * len(function_types)
@@ -176,10 +176,3 @@ if __name__ == '__main__':
                 plot_errors(dim, seed, fun_type, scale_list, multiplier_fun, save=True, folder_name=folder_name,
                             same_axis_both_plots=True, latex=True)
                 pbar.update(1)
-
-    plottype = "boxplot"
-
-    folder_name = os.path.join("..", "results", "1_1_1")
-    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
-
-    plot_all_errors(filename, save=True, latex=True, plot_type=plottype)

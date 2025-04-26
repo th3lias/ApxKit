@@ -21,7 +21,6 @@ class RuleGrid(Grid):
             self.needed_points = self.grid.getNeededPoints()
         return self.needed_points
 
-
     def load_needed_values(self, llf_vals: np.ndarray) -> None:
         """Wrapper function for the loadNeededValues method of the TasmanianSparseGrid object."""
         self.grid.loadNeededValues(llf_vals)

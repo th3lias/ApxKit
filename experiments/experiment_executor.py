@@ -24,7 +24,7 @@ class ExperimentExecutor:
         Runs the experiments, where Smolyak and Least Squares are compared
     """
 
-    def __init__(self, dim_scale_dict: dict[int, List[int]], smoylak_method: InterpolationMethod,
+    def __init__(self, dim_scale_dict: dict[int, List[int]], smolyak_method: InterpolationMethod,
                  least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
                  path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL,
                  store_indices: bool = True):
@@ -36,7 +36,7 @@ class ExperimentExecutor:
             self.results_path = path
 
         self.dim_scale_dictionary = dim_scale_dict
-        self.smolyak_method = smoylak_method
+        self.smolyak_method = smolyak_method
         self.least_squares_method = least_squares_method
         self.seed = seed
         self.least_squares_basis_type = ls_basis_type
