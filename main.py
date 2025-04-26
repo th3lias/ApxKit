@@ -27,11 +27,6 @@ def main_method(folder_name: Union[str, None] = None):
         10: [1, 2, 3, 4, 5, 6],
     }
 
-    dim_scale_dict = {
-        2: [1, 2, 3],
-        3: [2, 3]
-    }
-
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
                       FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK]
