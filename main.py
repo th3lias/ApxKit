@@ -1,5 +1,3 @@
-# TODO: Check for spelling and grammar errors
-
 import argparse
 import os
 from typing import Union
