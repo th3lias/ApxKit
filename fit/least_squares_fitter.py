@@ -5,7 +5,7 @@ from function.f import Function
 from function.model.least_squares_model import LeastSquaresModel
 from grid.grid.random_grid import RandomGrid
 from typing import Union, List, Callable
-from fit.basis_f import grid_basis_idw, grid_basis_gaussian, compute_epsilon, evaluate_gaussian_rbf
+from fit.basis_f import grid_basis_gaussian, compute_epsilon, evaluate_gaussian_rbf
 
 from grid.provider.random_grid_provider import RandomGridProvider
 
@@ -33,8 +33,8 @@ class LeastSquaresFitter(Fitter):
         assert self.basis_f is not None, "The basis function is not set."
         vandermonde = self.basis_f(grid.grid, grid.grid, **kwargs)
         y = f(grid.grid)
-        result, _, _, _ = scipy.linalg.lstsq(vandermonde,
-                                             y)  # TODO: Either make it variable or remove all other possibilities of method selection as soon as we only keep lstsq with GELSY driver
+        # TODO: Either make it variable or remove all other possibilities of method selection as soon as we only keep lstsq with GELSY driver
+        result, _, _, _ = scipy.linalg.lstsq(vandermonde, y)
         model = LeastSquaresModel(f=f, dim=grid.input_dim, upper=grid.upper_bound, lower=grid.lower_bound)
         model.set_solution(result)
         model.set_grid(grid.grid)

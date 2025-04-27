@@ -11,7 +11,7 @@ class SmolyakFitter(Fitter):
     def __init__(self, input_dim: int):
         super(SmolyakFitter, self).__init__(dim=input_dim)
 
-    def fit(self, f: Union[Function, List[Function]], grid: RuleGrid) -> SmolyakModel:
+    def fit(self, f: Union[Function, List[Function]], grid: RuleGrid, **kwargs) -> SmolyakModel:
         """
             f is a function or a list of such functions that takes a numpy array of shape (n, d) as input and returns a
             numpy array of shape (n, 1) as output. The input array contains n points in the d-dimensional input space.
@@ -33,5 +33,5 @@ class SmolyakFitter(Fitter):
         :param grid: RuleGrid
         :return: function values
         """
-
-        return np.hstack([func(grid.get_needed_points()).reshape(-1, 1) for func in f])
+        x = grid.get_needed_points()
+        return np.hstack([func(x).reshape(-1, 1) for func in f])

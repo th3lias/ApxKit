@@ -1,5 +1,4 @@
 from typing import Callable
-
 import numpy as np
 
 from function.f import Function
@@ -9,6 +8,7 @@ class ParametrizedFunction(Function):
     """
         Callable wrapper with parameters c and w.
     """
+
     def __init__(self, f: Callable, dim: int, w: np.ndarray, c: np.ndarray, upper: float = 1.0, lower: float = 0.0,
                  name: str = "unknown"):
         super(ParametrizedFunction, self).__init__(f, dim, upper, lower, name)

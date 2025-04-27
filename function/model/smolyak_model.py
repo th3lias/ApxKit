@@ -5,8 +5,10 @@ from TasmanianSG import TasmanianSparseGrid
 
 from function.model.model import Model
 
+
 class SmolyakModel(Model):
-    def __init__(self, f: Union[Callable, List[Callable]], dim: int, upper: float, lower: float, tasmanian: TasmanianSparseGrid = None,
+    def __init__(self, f: Union[Callable, List[Callable]], dim: int, upper: float, lower: float,
+                 tasmanian: TasmanianSparseGrid = None,
                  fitted: bool = False):
         """
             In this case, the SmolyakModel contains a 'tasmanian: TasmanianSparseGrid' parameter, which persists

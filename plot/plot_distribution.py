@@ -11,10 +11,10 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
         The ell2 and the max error are plotted.
 
         :param file_name: csv-filename in which the results are stored
-        :plot_type: Either boxplot or errorbar
+        :param plot_type: Either boxplot or errorbar
         :param box_plot_width: width of the boxplots that are drawn
         :param save: Specifies whether the images should be saved. If False, the images are shown.
-        :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
+        :param latex: Specifies whether the output should be additionally exported in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
     """
 
@@ -164,7 +164,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
                 # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                plt.figtext(0.06, 0.95, f"$n={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                plt.figtext(0.06, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
                             horizontalalignment='left', color='gray')
 
                 if save:
@@ -190,7 +190,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
         The ell2 and the max error are plotted.
 
         :param file_name: csv-filename in which the results are stored
-        :plot_type: Either boxplot or errorbar
+        :param plot_type: Either boxplot or errorbar
         :param box_plot_width: width of the boxplots that are drawn
         :param save: Specifies whether the images should be saved. If False, the images are shown.
         :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
@@ -340,7 +340,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
                 # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                plt.figtext(0.06, 0.95, f"$n\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                plt.figtext(0.06, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
                             horizontalalignment='left', color='gray')
 
                 if save:
@@ -364,11 +364,9 @@ if __name__ == '__main__':
     plottype = "boxplot"
 
     folder_name = os.path.join("..", "results")
-    filename = os.path.join(folder_name, "combined_results_numerical_experiments.csv")
+    filename = "path/to/your/results_numerical_experiments.csv"  # os.path.join(folder_name, "combined_results_numerical_experiments.csv")
 
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
-    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
-    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
-
-    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=True)

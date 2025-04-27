@@ -43,14 +43,14 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
         "CONTINUOUS": "Continuous",
         "CORNER_PEAK": "Corner Peak",
         "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "G-Function",
+        "G_FUNCTION": "Modified Ridge Product",
         "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_1": "Modified Geometric Mean",
         "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
         "OSCILLATORY": "Oscillatory",
         "PRODUCT_PEAK": "Product Peak",
         "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Zhou"
+        "ZHOU": "Bimodal Gaussian"
     }
 
     output = dict()
@@ -79,8 +79,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
         right_text = ("|" + ("r" * no_error_combinations)) * len(scales)
 
         output[dim_name] = f"% Created with Python on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}" + "\n"
-        output[
-            dim_name] += f"% {results_csv_path}, dim={dim_name}, scales = {[int(s) for s in scales]}" + "\n"
+        output[dim_name] += f"% {results_csv_path}, dim={dim_name}, scales = {[int(s) for s in scales]}" + "\n"
         output[dim_name] += r"\begin{tabular}{ll" + right_text + r"|}" + "\n"
 
         # add header
@@ -93,15 +92,17 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                 output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
         output[dim_name] += r"\\" + "\n"
 
-        output[dim_name] += r" &  "
-        for i, scale in enumerate(scales):
-            for j, error_reduction in enumerate(error_reductions):
-                if i == 0 and j == 0:
-                    output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
-                        error_reduction) + r"}"
-                else:
-                    output[dim_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
-        output[dim_name] += r"\\" + "\n"
+        if len(error_reductions) > 1:
+            output[dim_name] += r" &  "
+            for i, scale in enumerate(scales):
+                for j, error_reduction in enumerate(error_reductions):
+                    if i == 0 and j == 0:
+                        output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
+                            len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
+                    else:
+                        output[dim_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
+                            error_reduction) + r"}"
+            output[dim_name] += r"\\" + "\n"
 
         output[dim_name] += r" &  "
         for i, scale in enumerate(scales):
@@ -172,7 +173,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                     if scale_index == 0:
                         if grid_index == 0:
                             output[dim_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                                str(fun_name)] + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[dim_name] += r" & "
                         output[dim_name] += method_name
@@ -242,14 +243,14 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
         "CONTINUOUS": "Continuous",
         "CORNER_PEAK": "Corner Peak",
         "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "G-Function",
+        "G_FUNCTION": "Modified Ridge Product",
         "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Morokoff Calfisch 1",
+        "MOROKOFF_CALFISCH_1": "Modified Geometric Mean",
         "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
         "OSCILLATORY": "Oscillatory",
         "PRODUCT_PEAK": "Product Peak",
         "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Zhou"
+        "ZHOU": "Bimodal Gaussian"
     }
 
     output = dict()
@@ -268,6 +269,7 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
             skip_dim = dict()
 
         skip_dims_for_scale = skip_dim.get(str(scale_name), [])
+
         dims = sorted(scale_df['dim'].unique())
         dims = [d for d in dims if d not in skip_dims_for_scale]
 
@@ -287,16 +289,18 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                 output[scale_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Dim" + str(dim) + r"}"
         output[scale_name] += r"\\" + "\n"
 
-        output[scale_name] += r" &  "
-        for i in range(len(dims)):
-            for j, error_reduction in enumerate(error_reductions):
-                if i == 0 and j == 0:
-                    output[scale_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
-                        error_reduction) + r"}"
-                else:
-                    output[scale_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
-                        error_reduction) + r"}"
-        output[scale_name] += r"\\" + "\n"
+        if len(error_reductions) > 1:
+            output[scale_name] += r" &  "
+            for i in range(len(dims)):
+                for j, error_reduction in enumerate(error_reductions):
+                    if i == 0 and j == 0:
+                        output[scale_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
+                            len(errors)) + r"}{c}{" + str(
+                            error_reduction) + r"}"
+                    else:
+                        output[scale_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
+                            error_reduction) + r"}"
+            output[scale_name] += r"\\" + "\n"
 
         output[scale_name] += r" &  "
         for i in range(len(dims)):
@@ -362,7 +366,7 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                     if dim_index == 0:
                         if grid_index == 0:
                             output[scale_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                                str(fun_name)] + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[scale_name] += r" & "
                         output[scale_name] += method_name
@@ -398,7 +402,7 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                         )
 
                 output[scale_name] += r"\\" + "\n"
-            if not fun_index == len(dfg)-1:
+            if not fun_index == len(dfg) - 1:
                 output[scale_name] += r"\midrule" + "\n"
         output[scale_name] += r"\bottomrule" + "\n"
         output[scale_name] += r"\end{tabular}" + "\n"
@@ -475,15 +479,18 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                 output[fun_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
         output[fun_name] += r"\\" + "\n"
 
-        output[fun_name] += r" &  "
-        for i, scale in enumerate(scales):
-            for j, error_reduction in enumerate(error_reductions):
-                if i == 0 and j == 0:
-                    output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
-                        error_reduction) + r"}"
-                else:
-                    output[fun_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(error_reduction) + r"}"
-        output[fun_name] += r"\\" + "\n"
+        if len(error_reductions) > 1:
+            output[fun_name] += r" &  "
+            for i, scale in enumerate(scales):
+                for j, error_reduction in enumerate(error_reductions):
+                    if i == 0 and j == 0:
+                        output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
+                            len(errors)) + r"}{c}{" + str(
+                            error_reduction) + r"}"
+                    else:
+                        output[fun_name] += r" & \multicolumn{" + str(len(errors)) + r"}{c}{" + str(
+                            error_reduction) + r"}"
+            output[fun_name] += r"\\" + "\n"
 
         output[fun_name] += r" &  "
         for i, scale in enumerate(scales):
@@ -559,7 +566,7 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                     if scale_index == 0:
                         if grid_index == 0:
                             output[fun_name] += r"\multirow{3}{*}{\thead[l]{\textbf{Dim " + str(
-                                dim_name) + r"}\\" + r"$n=" + str(min(n_functions_list)) + r"$}} & "
+                                dim_name) + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
                         else:
                             output[fun_name] += r" & "
                         output[fun_name] += method_name
@@ -606,13 +613,12 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                             )
 
                 output[fun_name] += r"\\" + "\n"
-            if not dim_index == len(dfg)-1:
+            if not dim_index == len(dfg) - 1:
                 output[fun_name] += r"\midrule" + "\n"
         output[fun_name] += r"\bottomrule" + "\n"
         output[fun_name] += r"\end{tabular}" + "\n"
 
         # remove last occurence of midrule
-
 
     for fun_name, table in output.items():
         with open(os.path.join(output_folder, f"{fun_name}.tex"), "w") as f:
@@ -621,23 +627,28 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 
 if __name__ == '__main__':
-    input_path = r"C:\Users\jakob\Documents\Repos\NumericalExperiments\results\combined_results_numerical_experiments.csv"
-    output_folder = os.path.join("..", "paper", "tables")
+    input_path = "path/to/your/results_numerical_experiments.csv"
+    output_folder = os.path.join("..", "results", "tables")
 
     ignore_scale = {
-        "2": [1, 3, 8],
-        "3": [9, 4, 2]
+        "2": [1, 2],
+        "3": [1, 2],
+        "4": [1, 2],
+        "5": [1, 2],
+        "6": [1, 2],
+        "7": [1, 2],
+        "8": [1, 2],
+        "9": [1, 2],
+        "10": [1, 2],
     }
-    ignore_dim = {
-        "2": [1, 3, 8],
-        "3": [9, 4, 2]
-    }
+    # ignore_dim = {
+    #     "2": [1, 3, 8],
+    #     "3": [9, 4, 2]
+    # }
 
-    ignore_dim = None
-    ignore_scale = None
+    # ignore_dim = None
+    # ignore_scale = None
 
     generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
-    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=ignore_dim)
-    generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
-
-    raise RuntimeError("This file is not meant to be run directly. Please use the appropriate files.")
+    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=None)
+    generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=[1, 2])
