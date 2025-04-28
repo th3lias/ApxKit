@@ -93,7 +93,7 @@ def zhou(x, d, c, w):
     if d == 1 and x.ndim == 1:
         x = x[:, np.newaxis]
 
-    phi_1 = np.exp(-0.5 * np.sum((10 * c * (x - w)) ** 2, axis=-1))
-    phi_2 = np.exp(-0.5 * np.sum((10 * c * (x + w - 1)) ** 2, axis=-1))
+    phi_1 = np.exp(- np.sum((c * (x - w)) ** 2, axis=-1))
+    phi_2 = np.exp(- np.sum((c * (x + w - 1)) ** 2, axis=-1))
 
     return (phi_1 + phi_2).squeeze()
