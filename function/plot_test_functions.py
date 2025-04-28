@@ -5,7 +5,7 @@ from function import ParametrizedFunctionProvider as provider
 from function import FunctionType
 
 
-def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1), resolution=150,
+def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1), resolution=250,
                                                   translation_dict: dict = None):
     """
     Plots multiple f: R^2 -> R functions in a 3x3 grid with captions under each plot.
@@ -25,7 +25,7 @@ def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1
         z_flat = func(points)
         z = z_flat.reshape(resolution, resolution)
         ax = fig.add_subplot(3, 3, i + 1, projection='3d')
-        ax.plot_surface(grid_x, grid_y, z, cmap='jet', edgecolor='k', linewidth=0.3)
+        ax.plot_surface(grid_x, grid_y, z, cmap='jet')
 
         ax.set_xlabel('$x_1$')
         ax.set_ylabel('$x_2$')
@@ -51,8 +51,8 @@ if __name__ == '__main__':
     f3 = provider().get_function(FunctionType.CORNER_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f4 = provider().get_function(FunctionType.DISCONTINUOUS, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f5 = provider().get_function(FunctionType.GAUSSIAN, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f6 = provider().get_function(FunctionType.MOROKOFF_CALFISCH_1, d=2, c=np.array([1, 1]), w=np.array([0, 0]))
-    f7 = provider().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([-0.5, 0]), w=np.array([0, 0]))
+    f6 = provider().get_function(FunctionType.MOROKOFF_CALFISCH_1, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f7 = provider().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f8 = provider().get_function(FunctionType.OSCILLATORY, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f9 = provider().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
 
