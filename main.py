@@ -31,6 +31,8 @@ def main_method(folder_name: Union[str, None] = None):
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
                       FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK]
 
+    function_types = [FunctionType.GAUSSIAN, FunctionType.ZHOU, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK]
+
     seed = 42
 
     average_c = {
@@ -39,14 +41,14 @@ def main_method(folder_name: Union[str, None] = None):
         FunctionType.DISCONTINUOUS: 1.0,
         FunctionType.GAUSSIAN: 1.0,
         FunctionType.G_FUNCTION: 1.0,
-        FunctionType.OSCILLATORY: 10.0,
+        FunctionType.OSCILLATORY: 1.0,
         FunctionType.MOROKOFF_CALFISCH_1: 1.0,
         FunctionType.PRODUCT_PEAK: 1.0,
         FunctionType.ZHOU: 1.0
     }
 
     multiplier_fun = lambda x: 2 * x
-    n_fun_parallel = 25
+    n_fun_parallel = 10
 
     store_indices = True
 
@@ -70,21 +72,21 @@ def main_method(folder_name: Union[str, None] = None):
     # Plot error distribution
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
-    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
     # Plot errors for each function
-    total_iterations = 0
-    for _ in dim_scale_dict.values():
-        total_iterations += 1
-    total_iterations *= len(function_types)
-    with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-        for dim in dim_scale_dict.keys():
-            for fun_type in function_types:
-                plot_errors(dim, seed, fun_type, dim_scale_dict.get(dim), multiplier_fun, save=True,
-                            folder_name=folder_name,
-                            same_axis_both_plots=True, latex=True)
-                pbar.update(1)
+    # total_iterations = 0
+    # for _ in dim_scale_dict.values():
+    #     total_iterations += 1
+    # total_iterations *= len(function_types)
+    # with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
+    #     for dim in dim_scale_dict.keys():
+    #         for fun_type in function_types:
+    #             plot_errors(dim, seed, fun_type, dim_scale_dict.get(dim), multiplier_fun, save=True,
+    #                         folder_name=folder_name,
+    #                         same_axis_both_plots=True, latex=True)
+    #             pbar.update(1)
 
 
 if __name__ == '__main__':
