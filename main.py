@@ -65,8 +65,6 @@ def main_method(folder_name: Union[str, None] = None):
                             path=path, store_indices=store_indices)
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
-    folder_name = os.path.dirname(ex.results_path)
-
     # Plot error distribution
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
@@ -74,6 +72,7 @@ def main_method(folder_name: Union[str, None] = None):
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
     # Plot errors for each function
+    # folder_name = os.path.dirname(ex.results_path)
     # total_iterations = 0
     # for _ in dim_scale_dict.values():
     #     total_iterations += 1

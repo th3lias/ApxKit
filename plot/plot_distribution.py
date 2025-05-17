@@ -364,7 +364,9 @@ if __name__ == '__main__':
     plottype = "boxplot"
 
     folder_name = os.path.join("..", "results")
-    filename = "path/to/your/results_numerical_experiments.csv"  # os.path.join(folder_name, "combined_results_numerical_experiments.csv")
+    filename = "path/to/your/results_numerical_experiments.csv"
+    filename = os.path.join(folder_name, "results_numerical_experiments.csv")
+
 
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type=plottype, only_maximum=False)
