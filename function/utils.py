@@ -5,7 +5,7 @@ def oscillatory(x, d, c, w):
     """
         Oscillatory function.
     """
-    return np.cos(10 * np.dot(x, c) + 2 * np.pi * w[0])
+    return np.cos(3 * np.dot(x, c) + 2 * np.pi * w[0])
 
 
 def product_peak(x, d, c, w):
@@ -26,7 +26,7 @@ def gaussian(x, d, c, w):
     """
         Gaussian function.
     """
-    return np.exp(-np.sum(np.square(np.multiply(c, x - w)), axis=1))
+    return np.exp(-25 * np.sum(np.square(np.multiply(c, x - w)), axis=1))
 
 
 def continuous(x, d, c, w):
@@ -93,7 +93,7 @@ def zhou(x, d, c, w):
     if d == 1 and x.ndim == 1:
         x = x[:, np.newaxis]
 
-    phi_1 = np.exp(-0.5 * np.sum((10 * c * (x - w)) ** 2, axis=-1))
-    phi_2 = np.exp(-0.5 * np.sum((10 * c * (x + w - 1)) ** 2, axis=-1))
+    phi_1 = np.exp(-25 * np.sum((c * (x - w)) ** 2, axis=-1))
+    phi_2 = np.exp(-25 * np.sum((c * (x + w - 1)) ** 2, axis=-1))
 
     return (phi_1 + phi_2).squeeze()

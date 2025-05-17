@@ -628,7 +628,8 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 if __name__ == '__main__':
     input_path = "path/to/your/results_numerical_experiments.csv"
-    output_folder = os.path.join("..", "results", "tables")
+    output_folder = os.path.join("..", "results", "final_results", "tables")
+    os.makedirs(output_folder, exist_ok=True)
 
     ignore_scale = {
         "2": [1, 2],

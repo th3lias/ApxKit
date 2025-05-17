@@ -1,0 +1,43 @@
+% Created with Python on 2025-05-17 17:15:15
+% ../results/results_numerical_experiments.csv, scale=9, dims = [2, 3, 4]
+\begin{tabular}{ll|rr|rr|rr|}
+ &   \multicolumn{1}{c}{} & \multicolumn{2}{c}{Dim2} & \multicolumn{2}{c}{Dim3} & \multicolumn{2}{c}{Dim4}\\
+ &   \multicolumn{1}{c}{} & \multicolumn{1}{c}{$\ell_2$} & \multicolumn{1}{c}{$\ell_\infty$} & \multicolumn{1}{c}{$\ell_2$} & \multicolumn{1}{c}{$\ell_\infty$} & \multicolumn{1}{c}{$\ell_2$} & \multicolumn{1}{c}{$\ell_\infty$}\\
+\toprule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Continuous}\\$Q=25$}} & Smolyak & \first{7.01e-05} & \first{1.22e-03}  & \first{1.04e-04} & \first{3.40e-03}  & 1.76e-04 & \first{4.97e-03}\\
+ & LS-Uniform & 7.67e+00 & 4.39e+02  & 9.36e-03 & 8.41e-01  & 6.25e-04 & 9.32e-02\\
+ & LS-Chebyshev & 1.06e-04 & 2.05e-03  & 1.24e-04 & 3.79e-03  & \first{1.51e-04} & 9.79e-03\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Corner Peak}\\$Q=25$}} & Smolyak & \first{8.06e-16} & \first{6.22e-15}  & 4.08e-08 & 3.12e-07  & 2.16e-05 & 3.04e-04\\
+ & LS-Uniform & 1.38e-11 & 7.92e-10  & 2.51e-07 & 1.69e-05  & \first{2.87e-06} & 2.53e-04\\
+ & LS-Chebyshev & 1.89e-15 & 2.48e-14  & \first{2.12e-08} & \first{1.34e-07}  & 5.95e-06 & \first{4.72e-05}\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Discontinuous}\\$Q=25$}} & Smolyak & 1.67e-01 & 3.31e+00  & 4.37e-01 & 9.66e+00  & \first{7.32e-01} & 2.60e+01\\
+ & LS-Uniform & 7.90e+03 & 4.49e+05  & 3.39e+01 & 2.76e+03  & 3.06e+00 & 3.47e+02\\
+ & LS-Chebyshev & \first{1.54e-01} & \first{2.96e+00}  & \first{3.12e-01} & \first{6.23e+00}  & 7.34e-01 & \first{1.85e+01}\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Gaussian}\\$Q=10$}} & Smolyak & 3.82e-10 & 1.72e-09  & 5.15e-04 & 4.81e-03  & 2.89e-03 & 5.70e-02\\
+ & LS-Uniform & 1.93e-05 & 1.11e-03  & 6.13e-03 & 5.70e-01  & 6.43e-03 & 5.36e-01\\
+ & LS-Chebyshev & \first{2.62e-10} & \first{1.55e-09}  & \first{2.27e-04} & \first{1.93e-03}  & \first{1.57e-03} & \first{2.36e-02}\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Modified Ridge Product}\\$Q=25$}} & Smolyak & \first{2.77e-04} & \first{6.82e-03}  & \first{1.07e-03} & 2.43e-02  & 2.51e-03 & \first{4.81e-02}\\
+ & LS-Uniform & 3.54e+01 & 2.01e+03  & 5.58e-02 & 4.08e+00  & 7.67e-03 & 9.26e-01\\
+ & LS-Chebyshev & 3.63e-04 & 9.36e-03  & 1.13e-03 & \first{2.29e-02}  & \first{1.99e-03} & 5.20e-02\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Modified Geometric Mean}\\$Q=25$}} & Smolyak & \first{1.21e-14} & \first{6.17e-14}  & \first{5.05e-12} & \first{4.40e-11}  & \first{6.67e-07} & \first{1.55e-05}\\
+ & LS-Uniform & 1.09e-09 & 6.19e-08  & 6.25e-11 & 4.44e-09  & 9.31e-07 & 7.79e-05\\
+ & LS-Chebyshev & 4.23e-13 & 1.88e-12  & 7.53e-12 & 5.78e-11  & 2.71e-06 & 1.61e-05\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Oscillatory}\\$Q=10$}} & Smolyak & 3.59e-15 & 1.90e-14  & 1.54e-11 & 7.56e-11  & 4.60e-07 & 2.88e-06\\
+ & LS-Uniform & 5.73e-11 & 3.29e-09  & 1.75e-10 & 1.43e-08  & 2.46e-07 & 1.53e-05\\
+ & LS-Chebyshev & \first{1.61e-15} & \first{1.59e-14}  & \first{7.14e-12} & \first{4.81e-11}  & \first{1.51e-07} & \first{1.07e-06}\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Product Peak}\\$Q=10$}} & Smolyak & 3.56e-15 & 1.93e-14  & 2.92e-12 & 1.61e-11  & 1.39e-09 & 8.86e-09\\
+ & LS-Uniform & 3.09e-11 & 1.77e-09  & 2.86e-11 & 1.95e-09  & 6.83e-10 & 4.08e-08\\
+ & LS-Chebyshev & \first{1.55e-15} & \first{1.59e-14}  & \first{1.40e-12} & \first{9.12e-12}  & \first{4.10e-10} & \first{3.40e-09}\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Bimodal Gaussian}\\$Q=10$}} & Smolyak & 1.42e-09 & 5.33e-09  & 4.12e-04 & 3.23e-03  & 5.36e-03 & 8.42e-02\\
+ & LS-Uniform & 8.62e-05 & 4.97e-03  & 8.27e-03 & 8.26e-01  & 7.05e-03 & 6.83e-01\\
+ & LS-Chebyshev & \first{8.92e-10} & \first{4.06e-09}  & \first{1.77e-04} & \first{1.57e-03}  & \first{2.05e-03} & \first{3.84e-02}\\
+\bottomrule
+\end{tabular}

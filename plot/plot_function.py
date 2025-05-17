@@ -158,8 +158,8 @@ if __name__ == '__main__':
     seed = 42
 
     results_path = None
-    dim_list = [4]
-    scale_list = [1, 2, 3, 4, 5, 6]
+    dim_list = [2]
+    scale_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     multiplier_fun = lambda x: 2 * x
     function_types = [FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.CORNER_PEAK,
                       FunctionType.GAUSSIAN, FunctionType.CONTINUOUS, FunctionType.DISCONTINUOUS,

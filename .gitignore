@@ -249,7 +249,14 @@ indices/
 logs/
 
 # results folder
-results/
+# Ignore everything in the results folder
+/results/*
+
+# Except the final_results folder
+!results/final_results/
+
+# And its contents
+!results/final_results/**
 
 # run configurations
 .run/
