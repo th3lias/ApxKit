@@ -31,8 +31,6 @@ def main_method(folder_name: Union[str, None] = None):
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
                       FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK]
 
-    function_types = [FunctionType.GAUSSIAN, FunctionType.ZHOU, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK]
-
     seed = 42
 
     average_c = {
