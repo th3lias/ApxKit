@@ -77,7 +77,7 @@ There is a large body of literature on Smolyak's algorithm. We refer to
 for further information.
 
 ## How to install 🛠
-️In order to run the software, you need Python \(\geq 3.10\) (we use 3.10) and the packages from requirements-X.txt, depending on your operating system. For running the implementation of Smolyak, we refer to the instructions on the [Tasmanian Github Page](https://ornl.github.io/TASMANIAN/rolling/md_Doxygen_Installation.html). This also needs the C++ build tools. If you are on windows, you can use the [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools). For MacOS, you may use the Xcode command line tools or [Homebrew](https://formulae.brew.sh/formula/llvm). For Linux, you may use your distribution's compiler package (e.g. `build-essential`).
+️In order to run the software, you need Python $\geq 3.10$ (we use 3.10) and the packages from requirements-X.txt, depending on your operating system. For running the implementation of Smolyak, we refer to the instructions on the [Tasmanian Github Page](https://ornl.github.io/TASMANIAN/rolling/md_Doxygen_Installation.html). This also needs the C++ build tools. If you are on windows, you can use the [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools). For MacOS, you may use the Xcode command line tools or [Homebrew](https://formulae.brew.sh/formula/llvm). For Linux, you may use your distribution's compiler package (e.g. `build-essential`).
 
 
 ## How to cite 📝
