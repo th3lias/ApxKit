@@ -37,7 +37,7 @@ def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1
         if caption in translation_dict:
             caption = translation_dict[caption] if translation_dict else caption
 
-        ax.text2D(0.5, -0.1, caption, transform=ax.transAxes, ha='center', fontsize=10)
+        ax.text2D(0.5, -0.1, caption, transform=ax.transAxes, ha='center', fontsize=15)
 
     plt.tight_layout()
     plt.savefig('function_visualization.pdf')
