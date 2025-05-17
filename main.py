@@ -2,8 +2,6 @@ import argparse
 import os
 from typing import Union
 
-from tqdm import tqdm
-
 from experiments.experiment_executor import ExperimentExecutor
 from fit import BasisType
 from fit.method.interpolation_method import InterpolationMethod
@@ -11,7 +9,6 @@ from fit.method.least_squares_method import LeastSquaresMethod
 from function.type import FunctionType
 from grid import TasmanianGridType
 from plot.plot_distribution import plot_all_errors_fixed_dim, plot_all_errors_fixed_scale
-from plot.plot_function import plot_errors
 
 
 def main_method(folder_name: Union[str, None] = None):
@@ -70,20 +67,6 @@ def main_method(folder_name: Union[str, None] = None):
     plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
-
-    # Plot errors for each function
-    # folder_name = os.path.dirname(ex.results_path)
-    # total_iterations = 0
-    # for _ in dim_scale_dict.values():
-    #     total_iterations += 1
-    # total_iterations *= len(function_types)
-    # with tqdm(total=total_iterations, desc="Plotting the results") as pbar:
-    #     for dim in dim_scale_dict.keys():
-    #         for fun_type in function_types:
-    #             plot_errors(dim, seed, fun_type, dim_scale_dict.get(dim), multiplier_fun, save=True,
-    #                         folder_name=folder_name,
-    #                         same_axis_both_plots=True, latex=True)
-    #             pbar.update(1)
 
 
 if __name__ == '__main__':
