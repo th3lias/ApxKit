@@ -44,7 +44,7 @@ def main_method(folder_name: Union[str, None] = None):
     }
 
     multiplier_fun = lambda x: 2 * x
-    n_fun_parallel = 1
+    n_fun_parallel = 10
 
     store_indices = True
 
