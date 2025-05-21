@@ -212,6 +212,8 @@ class ExperimentExecutor:
 
         for fun_type in function_types:
             if isinstance(avg_c, dict):
+                if fun_type not in avg_c:
+                    raise ValueError(f"Function type {fun_type} not in average c dictionary")
                 avg_c_fun = avg_c[fun_type]
             else:
                 avg_c_fun = avg_c

@@ -97,3 +97,11 @@ def zhou(x, d, c, w):
     phi_2 = np.exp(-25 * np.sum((c * (x + w - 1)) ** 2, axis=-1))
 
     return (phi_1 + phi_2).squeeze()
+
+
+def noise(x, d, c, w):
+    """
+        Imitates the 0-function.
+    """
+    small_gaussian_noise = np.random.normal(0, 1e-7, x.shape[0])
+    return small_gaussian_noise

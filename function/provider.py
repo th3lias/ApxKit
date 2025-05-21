@@ -4,7 +4,7 @@ from typing import Union
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
 from function.utils import oscillatory, product_peak, corner_peak, gaussian, continuous, discontinuous, g_function, \
-    morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou
+    morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, noise
 
 
 class ParametrizedFunctionProvider:
@@ -50,5 +50,8 @@ class ParametrizedFunctionProvider:
             case FunctionType.ZHOU:
                 exe = lambda x: zhou(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Zhou")
+            case FunctionType.NOISE:
+                exe = lambda x: noise(x, d, c, w)
+                return ParametrizedFunction(exe, d, c, w, name="Noise")
             case _:
                 raise ValueError(f"Unknown Function type {function_type}")
