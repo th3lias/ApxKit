@@ -361,7 +361,6 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
 
 if __name__ == '__main__':
-
     filename = "path/to/your/results_numerical_experiments.csv"
 
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
