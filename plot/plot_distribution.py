@@ -5,7 +5,8 @@ from tqdm import tqdm
 
 
 def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
-                              save: bool = False, latex: bool = False, only_maximum: bool = False):
+                              save: bool = False, latex: bool = False, only_maximum: bool = False,
+                              orientation: str = "horizontal"):
     """
         Creates distribution plots for each function class at a certain dimension
         The ell2 and the max error are plotted.
@@ -16,10 +17,14 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
         :param save: Specifies whether the images should be saved. If False, the images are shown.
         :param latex: Specifies whether the output should be additionally exported in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
+        :param orientation: The orientation of the plots, either "horizontal" or "vertical"
     """
 
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
+
+    if orientation not in ["horizontal", "vertical"]:
+        raise ValueError(f"The orientation {orientation} is not supported! Use 'horizontal' or 'vertical'!")
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
@@ -40,7 +45,10 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
             for dim in dimensions:
                 data_dim = data_f_type[data_f_type['dim'] == dim].copy()
                 # Create the figure with two subplots
-                fig, axs = plt.subplots(1, 2, figsize=(14, 7), sharey=True)
+                n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
+                figsize = (14, 7) if orientation == "horizontal" else (7, 14)
+                share_x, share_y = (False, True) if orientation == "horizontal" else (False, False)
+                fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
                 scales = sorted(data_dim['scale'].unique())
 
@@ -163,9 +171,14 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     axs[1].set_ylabel('estimated max uniform error')
 
                 # Adjust the layout and show the plot
-                plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                plt.figtext(0.06, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                            horizontalalignment='left', color='gray')
+                if orientation == "horizontal":
+                    plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
+                    plt.figtext(0.06, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                                horizontalalignment='left', color='gray')
+                else:
+                    plt.tight_layout()
+                    plt.figtext(0.12, 0.51, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                                horizontalalignment='left', color='gray')
 
                 if save:
                     if only_maximum:
@@ -184,7 +197,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
 
 def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
-                                save: bool = False, latex: bool = False, only_maximum: bool = False):
+                                save: bool = False, latex: bool = False, only_maximum: bool = False,
+                                orientation: str = "horizontal"):
     """
         Creates distribution plots for each function class at a certain scale
         The ell2 and the max error are plotted.
@@ -195,10 +209,14 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
         :param save: Specifies whether the images should be saved. If False, the images are shown.
         :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
+        :param orientation: The orientation of the plots, either "horizontal" or "vertical"
     """
 
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
+
+    if orientation not in ["horizontal", "vertical"]:
+        raise ValueError(f"The orientation {orientation} is not supported! Use 'horizontal' or 'vertical'!")
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
@@ -219,7 +237,10 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
             for scale in scales:
                 data_scale = data_f_type[data_f_type['scale'] == scale].copy()
                 # Create the figure with two subplots
-                fig, axs = plt.subplots(1, 2, figsize=(14, 7), sharey=True)
+                n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
+                figsize = (14, 7) if orientation == "horizontal" else (7, 14)
+                share_x, share_y = (False, True) if orientation == "horizontal" else (False, False)
+                fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
                 dims = sorted(data_scale['dim'].unique())
 
@@ -339,9 +360,14 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     axs[1].set_ylabel('estimated max uniform error')
 
                 # Adjust the layout and show the plot
-                plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                plt.figtext(0.06, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                            horizontalalignment='left', color='gray')
+                if orientation == "horizontal":
+                    plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
+                    plt.figtext(0.06, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                                horizontalalignment='left', color='gray')
+                else:
+                    plt.tight_layout()
+                    plt.figtext(0.12, 0.51, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                                horizontalalignment='left', color='gray')
 
                 if save:
                     if only_maximum:
@@ -363,7 +389,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_dim(filename, save=True, latex=False, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_scale(filename, save=True, latex=False, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=False, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=False, plot_type="boxplot", only_maximum=True)
