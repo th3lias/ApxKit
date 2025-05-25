@@ -258,5 +258,8 @@ logs/
 # And its contents
 !results/final_results/**
 
+# Ignore the pdf images
+results/final_results/**/*.pdf
+
 # run configurations
 .run/
