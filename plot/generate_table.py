@@ -55,11 +55,13 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
     output = dict()
 
-    errors = [r'\ell_2', r'\ell_\infty']
     error_reductions = ['max']
 
     if not skip_mean_error:
         error_reductions.insert(0, 'mean')
+        errors = [r'e_{\rm mean}', r'e_{\rm max}']
+    else:
+        errors = [r'e_{\rm mean}^{\rm wc}', r'e_{\rm max}^{\rm wc}']
 
     no_error_combinations = len(errors) * len(error_reductions)
 
@@ -255,10 +257,13 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
     output = dict()
 
-    errors = [r'\ell_2', r'\ell_\infty']
     error_reductions = ['max']
+
     if not skip_mean_error:
         error_reductions.insert(0, 'mean')
+        errors = [r'e_{\rm mean}', r'e_{\rm max}']
+    else:
+        errors = [r'e_{\rm mean}^{\rm wc}', r'e_{\rm max}^{\rm wc}']
 
     no_error_combinations = len(errors) * len(error_reductions)
     results = pd.read_csv(results_csv_path, sep=',', header=0, decimal='.')
@@ -443,11 +448,13 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
     output = dict()
 
-    errors = [r'\ell_2', r'\ell_\infty']
     error_reductions = ['max']
 
     if not skip_mean_error:
         error_reductions.insert(0, 'mean')
+        errors = [r'e_{\rm mean}', r'e_{\rm max}']
+    else:
+        errors = [r'e_{\rm mean}^{\rm wc}', r'e_{\rm max}^{\rm wc}']
 
     no_error_combinations = len(errors) * len(error_reductions)
 
@@ -642,10 +649,6 @@ if __name__ == '__main__':
         "9": [1, 2],
         "10": [1, 2],
     }
-    # ignore_dim = {
-    #     "2": [1, 3, 8],
-    #     "3": [9, 4, 2]
-    # }
 
     # ignore_dim = None
     # ignore_scale = None
