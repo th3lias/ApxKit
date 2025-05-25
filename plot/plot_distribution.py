@@ -47,7 +47,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 # Create the figure with two subplots
                 n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
                 figsize = (14, 7) if orientation == "horizontal" else (7, 14)
-                share_x, share_y = (False, True) if orientation == "horizontal" else (False, False)
+                share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
                 scales = sorted(data_dim['scale'].unique())
@@ -240,7 +240,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                 # Create the figure with two subplots
                 n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
                 figsize = (14, 7) if orientation == "horizontal" else (7, 14)
-                share_x, share_y = (False, True) if orientation == "horizontal" else (False, False)
+                share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
                 dims = sorted(data_scale['dim'].unique())
@@ -390,6 +390,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
+    filename= os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
 
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
