@@ -164,11 +164,11 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
 
                 if not only_maximum:
-                    axs[0].set_ylabel('estimated mean squared error')
-                    axs[1].set_ylabel('estimated uniform error')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}$')
+                    axs[1].set_ylabel('$e_{\mathrm{max}}$')
                 else:
-                    axs[0].set_ylabel('estimated max mean squared error')
-                    axs[1].set_ylabel('estimated max uniform error')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$')
+                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$')
 
                 # Adjust the layout and show the plot
                 if orientation == "horizontal":
@@ -181,12 +181,13 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                                 horizontalalignment='left', color='gray')
 
                 if save:
+                    appendix = "_vert" if orientation == "vertical" else ""
                     if only_maximum:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
-                                                 'max_error_distribution_fixed_dim.png')
+                                                 f'max_error_distribution_fixed_dim{appendix}.png')
                     else:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
-                                                 'error_distribution_fixed_dim.png')
+                                                 f'error_distribution_fixed_dim{appendix}.png')
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
                     if latex:
@@ -353,11 +354,11 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
 
                 if not only_maximum:
-                    axs[0].set_ylabel('estimated mean squared error')
-                    axs[1].set_ylabel('estimated uniform error')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}$')
+                    axs[1].set_ylabel('$e_{\mathrm{max}}$')
                 else:
-                    axs[0].set_ylabel('estimated max mean squared error')
-                    axs[1].set_ylabel('estimated max uniform error')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$')
+                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$')
 
                 # Adjust the layout and show the plot
                 if orientation == "horizontal":
@@ -370,12 +371,13 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                                 horizontalalignment='left', color='gray')
 
                 if save:
+                    appendix = "_vert" if orientation == "vertical" else ""
                     if only_maximum:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                                 'max_error_distribution_fixed_scale.png')
+                                                 f'max_error_distribution_fixed_scale{appendix}.png')
                     else:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                                 'error_distribution_fixed_scale.png')
+                                                 f'error_distribution_fixed_scale{appendix}.png')
 
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
@@ -388,8 +390,9 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
+    filename = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
 
-    plot_all_errors_fixed_dim(filename, save=True, latex=False, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_scale(filename, save=True, latex=False, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_dim(filename, save=True, latex=False, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=False, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False, orientation="vertical")
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False, orientation="vertical")
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, orientation="vertical")
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, orientation="vertical")
