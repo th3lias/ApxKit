@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
                               save: bool = False, latex: bool = False, only_maximum: bool = False,
-                              orientation: str = "horizontal"):
+                              orientation: str = "horizontal", skip_scale_one_distribution: bool = True):
     """
         Creates distribution plots for each function class at a certain dimension
         The ell2 and the max error are plotted.
@@ -18,6 +18,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
         :param latex: Specifies whether the output should be additionally exported in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
         :param orientation: The orientation of the plots, either "horizontal" or "vertical"
+        :param skip_scale_one_distribution: If True, the first boxplot is skipped.
     """
 
     if plot_type not in ["boxplot", "errorbar"]:
@@ -75,7 +76,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
                     # Define an offset based on the index
                     offset = (index - len(
-                        grid_types) / 2) * box_plot_width * 0.95  # Spread out boxplots slightly
+                        grid_types) / 2) * box_plot_width * 1.1  # Spread out boxplots slightly
 
                     # Get a color and marker for the current method-grid combination
                     c = colors[index % len(colors)]
@@ -112,29 +113,31 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                         else:
                             if plot_type == "boxplot":
                                 # Boxplots
-                                axs[0].boxplot(scale_data['ell_2_error'], positions=[scale + offset], showfliers=False,
-                                               widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
-                                               whis=[0, 100],
-                                               whiskerprops=dict(color=c), capprops=dict(color=c),
-                                               medianprops=dict(color=c))
-                                axs[1].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
-                                               showfliers=False,
-                                               widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
-                                               whis=[0, 100],
-                                               whiskerprops=dict(color=c), capprops=dict(color=c),
-                                               medianprops=dict(color=c))
+                                if not (skip_scale_one_distribution and scale == 1):
+                                    axs[0].boxplot(scale_data['ell_2_error'], positions=[scale + offset],
+                                                   showfliers=False, widths=box_plot_width,
+                                                   boxprops=dict(color=c, linestyle='--'), whis=[0, 100],
+                                                   whiskerprops=dict(color=c), capprops=dict(color=c),
+                                                   medianprops=dict(color=c))
+                                    axs[1].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
+                                                   showfliers=False,
+                                                   widths=box_plot_width,
+                                                   boxprops=dict(color=c, linestyle='--'), whis=[0, 100],
+                                                   whiskerprops=dict(color=c), capprops=dict(color=c),
+                                                   medianprops=dict(color=c))
 
                             elif plot_type == "errorbar":
                                 max_ellinf = scale_data['ell_infty_error'].max()
                                 max_ell2 = scale_data['ell_2_error'].max()
 
                                 # Error bars
-                                axs[0].errorbar(scale, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
-                                                fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
-                                                elinewidth=1.5)
-                                axs[1].errorbar(scale, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
-                                                fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
-                                                elinewidth=1.5)
+                                if not (skip_scale_one_distribution and scale == 1):
+                                    axs[0].errorbar(scale, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
+                                                    fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7,
+                                                    ecolor=c, elinewidth=1.5)
+                                    axs[1].errorbar(scale, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
+                                                    fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7,
+                                                    ecolor=c, elinewidth=1.5)
 
                     if only_maximum:
                         axs[0].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
@@ -268,7 +271,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
                     # Define an offset based on the index
                     offset = (index - len(
-                        grid_types) / 2) * box_plot_width * 0.95  # Spread out boxplots slightly
+                        grid_types) / 2) * box_plot_width * 1.1  # Spread out boxplots slightly
 
                     # Get a color and marker for the current method-grid combination
                     c = colors[index % len(colors)]
@@ -390,6 +393,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
+    filename = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
 
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
