@@ -165,13 +165,15 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     ax.grid(False)
                     ax.set_xticks(scales)  # Ensure ticks correspond to original scales
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
+                    ax.tick_params(axis='x', labelsize=12)
+                    ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}$')
-                    axs[1].set_ylabel('$e_{\mathrm{max}}$')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
                 else:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$')
-                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
 
                 # Adjust the layout and show the plot
                 if orientation == "horizontal":
@@ -355,13 +357,15 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     ax.grid(False)
                     ax.set_xticks(dims)  # Ensure ticks correspond to original scales
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
+                    ax.tick_params(axis='x', labelsize=12)
+                    ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}$')
-                    axs[1].set_ylabel('$e_{\mathrm{max}}$')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
                 else:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$')
-                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$')
+                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
 
                 # Adjust the layout and show the plot
                 if orientation == "horizontal":
@@ -393,7 +397,6 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
-    filename = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
 
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
