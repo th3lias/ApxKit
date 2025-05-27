@@ -152,7 +152,6 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                         axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
 
-
                     # get the number of points in smolyak for each scale uniquely
 
                 pbar.update(1)
@@ -335,7 +334,6 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
 
-
                     if only_maximum:
                         axs[0].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
@@ -351,7 +349,6 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                         axs[1].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
 
-
                 pbar.update(1)
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
@@ -364,6 +361,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
                     if sparse_ticks:
                         tick_indices = [i for i, dim in enumerate(dims) if i % 10 == 0]
+                        tick_indices.append(len(dims) - 1)  # Ensure the last tick is included
                         tick_dims = [dims[i] for i in tick_indices]
                         tick_labels = [xticklabels[i] for i in tick_indices]
                     else:
