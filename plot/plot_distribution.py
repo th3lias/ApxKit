@@ -204,7 +204,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
 def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
                                 save: bool = False, latex: bool = False, only_maximum: bool = False,
-                                orientation: str = "horizontal"):
+                                sparse_ticks: bool = False, orientation: str = "horizontal"):
     """
         Creates distribution plots for each function class at a certain scale
         The ell2 and the max error are plotted.
@@ -215,6 +215,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
         :param save: Specifies whether the images should be saved. If False, the images are shown.
         :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
+        :param sparse_ticks: If True, the x-ticks are only shown for some dimensions
         :param orientation: The orientation of the plots, either "horizontal" or "vertical"
     """
 
@@ -355,8 +356,17 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
-                    ax.set_xticks(dims)  # Ensure ticks correspond to original scales
-                    ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
+
+                    if sparse_ticks:
+                        tick_indices = [i for i, dim in enumerate(dims) if i % 10 == 0]
+                        tick_dims = [dims[i] for i in tick_indices]
+                        tick_labels = [xticklabels[i] for i in tick_indices]
+                    else:
+                        tick_dims = dims
+                        tick_labels = xticklabels
+
+                    ax.set_xticks(tick_dims)
+                    ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
                     ax.tick_params(axis='y', labelsize=12)
 
