@@ -47,7 +47,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 data_dim = data_f_type[data_f_type['dim'] == dim].copy()
                 # Create the figure with two subplots
                 n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
-                figsize = (14, 7) if orientation == "horizontal" else (7, 14)
+                figsize = (16, 7) if orientation == "horizontal" else (7, 16)
                 share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
@@ -114,14 +114,14 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                             if plot_type == "boxplot":
                                 # Boxplots
                                 if not (skip_scale_one_distribution and scale == 1):
-                                    axs[0].boxplot(scale_data['ell_2_error'], positions=[scale + offset],
-                                                   showfliers=False, widths=box_plot_width,
+                                    axs[0].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
+                                                   showfliers=False,
+                                                   widths=box_plot_width,
                                                    boxprops=dict(color=c, linestyle='--'), whis=[0, 100],
                                                    whiskerprops=dict(color=c), capprops=dict(color=c),
                                                    medianprops=dict(color=c))
-                                    axs[1].boxplot(scale_data['ell_infty_error'], positions=[scale + offset],
-                                                   showfliers=False,
-                                                   widths=box_plot_width,
+                                    axs[1].boxplot(scale_data['ell_2_error'], positions=[scale + offset],
+                                                   showfliers=False, widths=box_plot_width,
                                                    boxprops=dict(color=c, linestyle='--'), whis=[0, 100],
                                                    whiskerprops=dict(color=c), capprops=dict(color=c),
                                                    medianprops=dict(color=c))
@@ -132,25 +132,26 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
                                 # Error bars
                                 if not (skip_scale_one_distribution and scale == 1):
-                                    axs[0].errorbar(scale, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
+                                    axs[0].errorbar(scale, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
                                                     fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7,
                                                     ecolor=c, elinewidth=1.5)
-                                    axs[1].errorbar(scale, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
+                                    axs[1].errorbar(scale, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
                                                     fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7,
                                                     ecolor=c, elinewidth=1.5)
 
                     if only_maximum:
-                        axs[0].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(scales, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(scales, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[1].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
 
 
                     else:
-                        axs[0].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(scales, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(scales, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
+
 
                     # get the number of points in smolyak for each scale uniquely
 
@@ -169,11 +170,11 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}$', fontsize=18)
-                    axs[1].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
+                    axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{mean}}$', fontsize=18)
                 else:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
-                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
+                    axs[0].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
                 # Adjust the layout and show the plot
                 if orientation == "horizontal":
@@ -245,7 +246,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                 data_scale = data_f_type[data_f_type['scale'] == scale].copy()
                 # Create the figure with two subplots
                 n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
-                figsize = (14, 7) if orientation == "horizontal" else (7, 14)
+                figsize = (16, 7) if orientation == "horizontal" else (7, 16)
                 share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
@@ -310,14 +311,15 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                         else:
                             if plot_type == "boxplot":
                                 # Boxplots
-                                axs[0].boxplot(dim_data['ell_2_error'], positions=[dim + offset], showfliers=False,
+                                axs[0].boxplot(dim_data['ell_infty_error'], positions=[dim + offset], showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
                                                medianprops=dict(color=c))
-                                axs[1].boxplot(dim_data['ell_infty_error'], positions=[dim + offset], showfliers=False,
+                                axs[1].boxplot(dim_data['ell_2_error'], positions=[dim + offset], showfliers=False,
                                                widths=box_plot_width, boxprops=dict(color=c, linestyle='--'),
                                                whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
                                                medianprops=dict(color=c))
+
 
 
 
@@ -326,26 +328,29 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                                 max_ell2 = dim_data['ell_2_error'].max()
 
                                 # Error bars
-                                axs[0].errorbar(dim, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
+                                axs[0].errorbar(dim, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
-                                axs[1].errorbar(dim, mean_ellinf, yerr=[[0], [max_ellinf - mean_ellinf]],
+                                axs[1].errorbar(dim, mean_ell2, yerr=[[0], [max_ell2 - mean_ell2]],
                                                 fmt=marker, color=c, capsize=5, linestyle='None', alpha=0.7, ecolor=c,
                                                 elinewidth=1.5)
+
 
                     if only_maximum:
-                        axs[0].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                                    linestyle='-')
+                        axs[1].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
 
-                        axs[1].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+
 
 
                     else:
-                        axs[0].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[0].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-                        axs[1].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
+                        axs[1].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
+
 
                 pbar.update(1)
 
@@ -371,11 +376,11 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}$', fontsize=18)
-                    axs[1].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
+                    axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{mean}}$', fontsize=18)
                 else:
-                    axs[0].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
-                    axs[1].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
+                    axs[0].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
+                    axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
                 # Adjust the layout and show the plot
                 if orientation == "horizontal":
