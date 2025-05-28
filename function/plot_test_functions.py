@@ -64,8 +64,8 @@ if __name__ == '__main__':
         "Corner Peak": "Corner Peak",
         "Discontinuous": "Discontinuous",
         "Gaussian": "Gaussian",
-        "G Function": "Modified Ridge Product",
-        "Morokoff Calfisch 1": "Modified Geometric Mean",
+        "G Function": "Ridge Product",
+        "Morokoff Calfisch 1": "Geometric Mean",
         "Oscillatory": "Oscillatory",
         "Product Peak": "Product Peak",
         "Zhou": "Bimodal Gaussian"

@@ -23,6 +23,21 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
 
+    abbreviation_dict = {
+        "BRATLEY": "Bratley",
+        "CONTINUOUS": "Continuous",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discontinuous",
+        "G_FUNCTION": "Ridge Product",
+        "GAUSSIAN": "Gaussian",
+        "MOROKOFF_CALFISCH_1": "Geometric Mean",
+        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
+        "OSCILLATORY": "Oscillatory",
+        "PRODUCT_PEAK": "Product Peak",
+        "ROOS_ARNOLD": "Roos Arnold",
+        "ZHOU": "Bimodal Gaussian"
+    }
+
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
     prop_cycle = plt.rcParams['axes.prop_cycle']
@@ -211,6 +226,21 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
+
+    abbreviation_dict = {
+        "BRATLEY": "Bratley",
+        "CONTINUOUS": "Continuous",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discontinuous",
+        "G_FUNCTION": "Ridge Product",
+        "GAUSSIAN": "Gaussian",
+        "MOROKOFF_CALFISCH_1": "Geometric Mean",
+        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
+        "OSCILLATORY": "Oscillatory",
+        "PRODUCT_PEAK": "Product Peak",
+        "ROOS_ARNOLD": "Roos Arnold",
+        "ZHOU": "Bimodal Gaussian"
+    }
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
