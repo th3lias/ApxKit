@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
                               save: bool = False, latex: bool = False, only_maximum: bool = False,
-                              orientation: str = "horizontal", skip_scale_one_distribution: bool = True):
+                              skip_scale_one_distribution: bool = True):
     """
         Creates distribution plots for each function class at a certain dimension
         The ell2 and the max error are plotted.
@@ -17,15 +17,11 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
         :param save: Specifies whether the images should be saved. If False, the images are shown.
         :param latex: Specifies whether the output should be additionally exported in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
-        :param orientation: The orientation of the plots, either "horizontal" or "vertical"
         :param skip_scale_one_distribution: If True, the first boxplot is skipped.
     """
 
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
-
-    if orientation not in ["horizontal", "vertical"]:
-        raise ValueError(f"The orientation {orientation} is not supported! Use 'horizontal' or 'vertical'!")
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
@@ -46,8 +42,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
             for dim in dimensions:
                 data_dim = data_f_type[data_f_type['dim'] == dim].copy()
                 # Create the figure with two subplots
-                n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
-                figsize = (16, 7) if orientation == "horizontal" else (7, 16)
+                n_rows, n_cols = (1, 2)
+                figsize = (16, 6)
                 share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
@@ -157,9 +153,10 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 pbar.update(1)
 
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
+                axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
 
                 for ax in axs:
-                    ax.set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
+                    ax.xaxis.set_label_coords(-0.11, -0.025)
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -176,23 +173,17 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
                 # Adjust the layout and show the plot
-                if orientation == "horizontal":
-                    plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                    plt.figtext(0.06, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                                horizontalalignment='left', color='gray')
-                else:
-                    plt.tight_layout()
-                    plt.figtext(0.12, 0.51, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                                horizontalalignment='left', color='gray')
+                plt.tight_layout(rect=(0.035, 0.03, 1.0, 0.95))
+                plt.figtext(0.095, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                            horizontalalignment='left', color='gray')
 
                 if save:
-                    appendix = "_vert" if orientation == "vertical" else ""
                     if only_maximum:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
-                                                 f'max_error_distribution_fixed_dim{appendix}.png')
+                                                 f'max_error_distribution_fixed_dim.png')
                     else:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'dim{dim}',
-                                                 f'error_distribution_fixed_dim{appendix}.png')
+                                                 f'error_distribution_fixed_dim.png')
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
                     if latex:
@@ -204,7 +195,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
 
 def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
                                 save: bool = False, latex: bool = False, only_maximum: bool = False,
-                                sparse_ticks: bool = False, orientation: str = "horizontal"):
+                                sparse_ticks: bool = False):
     """
         Creates distribution plots for each function class at a certain scale
         The ell2 and the max error are plotted.
@@ -216,14 +207,10 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
         :param latex: Specifies whether the output should be additionally exportet in a pdf format (Only used if save is True)
         :param only_maximum: If True, only the maximum error is plotted
         :param sparse_ticks: If True, the x-ticks are only shown for some dimensions
-        :param orientation: The orientation of the plots, either "horizontal" or "vertical"
     """
 
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
-
-    if orientation not in ["horizontal", "vertical"]:
-        raise ValueError(f"The orientation {orientation} is not supported! Use 'horizontal' or 'vertical'!")
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
@@ -244,8 +231,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
             for scale in scales:
                 data_scale = data_f_type[data_f_type['scale'] == scale].copy()
                 # Create the figure with two subplots
-                n_rows, n_cols = (1, 2) if orientation == "horizontal" else (2, 1)
-                figsize = (16, 7) if orientation == "horizontal" else (7, 16)
+                n_rows, n_cols = (1, 2)
+                figsize = (16, 7)
                 share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
@@ -352,9 +339,10 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                 pbar.update(1)
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
+                axs[0].set_xlabel('dim \npoints Smolyak\npoints Least Squares')
 
                 for ax in axs:
-                    ax.set_xlabel('dim \npoints Smolyak\npoints Least Squares')
+                    ax.xaxis.set_label_coords(-0.11, -0.025)
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -381,23 +369,17 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                     axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
                 # Adjust the layout and show the plot
-                if orientation == "horizontal":
-                    plt.tight_layout(rect=(0.0, 0.03, 1.0, 0.95))
-                    plt.figtext(0.06, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                                horizontalalignment='left', color='gray')
-                else:
-                    plt.tight_layout()
-                    plt.figtext(0.12, 0.51, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                                horizontalalignment='left', color='gray')
+                plt.tight_layout(rect=(0.035, 0.03, 1.0, 0.95))
+                plt.figtext(0.095, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
+                            horizontalalignment='left', color='gray')
 
                 if save:
-                    appendix = "_vert" if orientation == "vertical" else ""
                     if only_maximum:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                                 f'max_error_distribution_fixed_scale{appendix}.png')
+                                                 f'max_error_distribution_fixed_scale.png')
                     else:
                         save_path = os.path.join(os.path.dirname(file_name), "figures", f_type, f'scale{scale}',
-                                                 f'error_distribution_fixed_scale{appendix}.png')
+                                                 f'error_distribution_fixed_scale.png')
 
                     os.makedirs(os.path.dirname(save_path), exist_ok=True)
                     plt.savefig(save_path)
