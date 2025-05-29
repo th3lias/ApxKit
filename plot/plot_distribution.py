@@ -1,10 +1,13 @@
+import time
+
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
+def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, plot_type: str = "boxplot",
+                              box_plot_width: float = 0.15,
                               save: bool = False, latex: bool = False, only_maximum: bool = False,
                               skip_scale_one_distribution: bool = True):
     """
@@ -12,6 +15,7 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
         The ell2 and the max error are plotted.
 
         :param file_name: csv-filename in which the results are stored
+        :param abbreviation_dict: Dictionary to abbreviate function names in the plots
         :param plot_type: Either boxplot or errorbar
         :param box_plot_width: width of the boxplots that are drawn
         :param save: Specifies whether the images should be saved. If False, the images are shown.
@@ -23,20 +27,18 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
 
-    abbreviation_dict = {
-        "BRATLEY": "Bratley",
-        "CONTINUOUS": "Continuous",
-        "CORNER_PEAK": "Corner Peak",
-        "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "Ridge Product",
-        "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Geometric Mean",
-        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
-        "OSCILLATORY": "Oscillatory",
-        "PRODUCT_PEAK": "Product Peak",
-        "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Bimodal Gaussian"
-    }
+    if abbreviation_dict is None:
+        abbreviation_dict = {
+            "CONTINUOUS": "Continuous",
+            "CORNER_PEAK": "Corner Peak",
+            "DISCONTINUOUS": "Discontinuous",
+            "G_FUNCTION": "Ridge Product",
+            "GAUSSIAN": "Gaussian",
+            "MOROKOFF_CALFISCH_1": "Geometric Mean",
+            "OSCILLATORY": "Oscillatory",
+            "PRODUCT_PEAK": "Product Peak",
+            "ZHOU": "Bimodal Gaussian"
+        }
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
@@ -168,10 +170,12 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 pbar.update(1)
 
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
-                axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
+                # axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
+                axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares', fontsize=12,
+                                  linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(-0.11, -0.025)
+                    ax.xaxis.set_label_coords(1.125, -0.02)
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -187,10 +191,11 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                     axs[0].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
                     axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
-                # Adjust the layout and show the plot
-                plt.tight_layout(rect=(0.035, 0.03, 1.0, 0.95))
-                plt.figtext(0.095, 0.95, f"$Q={min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                            horizontalalignment='left', color='gray')
+                plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
+                plt.subplots_adjust(wspace=0.25)
+
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $d={dim}$, $Q={min(n_functions_list)}$", fontsize=16,
+                             fontweight='bold', x=0.525)
 
                 if save:
                     if only_maximum:
@@ -208,7 +213,8 @@ def plot_all_errors_fixed_dim(file_name: str, plot_type: str = "boxplot", box_pl
                 plt.close()
 
 
-def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_plot_width: float = 0.15,
+def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, plot_type: str = "boxplot",
+                                box_plot_width: float = 0.15,
                                 save: bool = False, latex: bool = False, only_maximum: bool = False,
                                 sparse_ticks: bool = False):
     """
@@ -216,6 +222,7 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
         The ell2 and the max error are plotted.
 
         :param file_name: csv-filename in which the results are stored
+        :param abbreviation_dict: Dictionary to abbreviate function names in the plots
         :param plot_type: Either boxplot or errorbar
         :param box_plot_width: width of the boxplots that are drawn
         :param save: Specifies whether the images should be saved. If False, the images are shown.
@@ -227,20 +234,18 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
     if plot_type not in ["boxplot", "errorbar"]:
         raise ValueError(f"The plotting-type {plot_type} is not supported! Use 'boxplot' or 'errorbar'!")
 
-    abbreviation_dict = {
-        "BRATLEY": "Bratley",
-        "CONTINUOUS": "Continuous",
-        "CORNER_PEAK": "Corner Peak",
-        "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "Ridge Product",
-        "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Geometric Mean",
-        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
-        "OSCILLATORY": "Oscillatory",
-        "PRODUCT_PEAK": "Product Peak",
-        "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Bimodal Gaussian"
-    }
+    if abbreviation_dict is None:
+        abbreviation_dict = {
+            "CONTINUOUS": "Continuous",
+            "CORNER_PEAK": "Corner Peak",
+            "DISCONTINUOUS": "Discontinuous",
+            "G_FUNCTION": "Ridge Product",
+            "GAUSSIAN": "Gaussian",
+            "MOROKOFF_CALFISCH_1": "Geometric Mean",
+            "OSCILLATORY": "Oscillatory",
+            "PRODUCT_PEAK": "Product Peak",
+            "ZHOU": "Bimodal Gaussian"
+        }
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
 
@@ -336,9 +341,6 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                                                whiskerprops=dict(color=c), capprops=dict(color=c), whis=[0, 100],
                                                medianprops=dict(color=c))
 
-
-
-
                             elif plot_type == "errorbar":
                                 max_ellinf = dim_data['ell_infty_error'].max()
                                 max_ell2 = dim_data['ell_2_error'].max()
@@ -356,9 +358,6 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
                                     linestyle='-')
                         axs[1].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-')
-
-
-
 
                     else:
                         axs[0].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
@@ -400,8 +399,9 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
                 # Adjust the layout and show the plot
                 plt.tight_layout(rect=(0.035, 0.03, 1.0, 0.95))
-                plt.figtext(0.095, 0.95, f"$Q\geq {min(n_functions_list)}$", fontsize=8, verticalalignment='top',
-                            horizontalalignment='left', color='gray')
+
+                plt.title(f"{abbreviation_dict[f_type]} $d={dim}$, Q={min(n_functions_list)}", fontsize=16,
+                          fontweight='bold')
 
                 if save:
                     if only_maximum:
@@ -422,6 +422,8 @@ def plot_all_errors_fixed_scale(file_name: str, plot_type: str = "boxplot", box_
 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
+
+    filename = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
 
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
