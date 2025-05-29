@@ -53,9 +53,9 @@ if __name__ == '__main__':
     f4 = provider().get_function(FunctionType.DISCONTINUOUS, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f5 = provider().get_function(FunctionType.GAUSSIAN, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f6 = provider().get_function(FunctionType.MOROKOFF_CALFISCH_1, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f7 = provider().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f8 = provider().get_function(FunctionType.OSCILLATORY, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f9 = provider().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f7 = provider().get_function(FunctionType.OSCILLATORY, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f8 = provider().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f9 = provider().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
 
     functions = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
 
