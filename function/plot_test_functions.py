@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -6,7 +8,7 @@ from function import FunctionType
 
 
 def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1), resolution=250,
-                                                  translation_dict: dict = None):
+                                                  translation_dict: dict = None, save_folder: str = None):
     """
     Plots multiple f: R^2 -> R functions in a 3x3 grid with captions under each plot.
     """
@@ -41,7 +43,14 @@ def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1
         ax.text2D(0.5, -0.1, caption, transform=ax.transAxes, ha='center', fontsize=20, fontweight='bold')
 
     plt.tight_layout()
-    plt.savefig('function_visualization.pdf')
+
+    if save_folder is None:
+        save_folder = ""
+    else:
+        os.makedirs(save_folder, exist_ok=True)
+
+    path = os.path.join(save_folder, 'function_visualization.pdf')
+    plt.savefig(path)
     plt.show()
     plt.close()
 
@@ -71,4 +80,6 @@ if __name__ == '__main__':
         "Zhou": "Bimodal Gaussian"
     }
 
-    plot_multiple_r2_to_r_functions_with_captions(functions, translation_dict=translation_dict)
+    save_folder = os.path.join("..", "results", "final_results", "figures")
+
+    plot_multiple_r2_to_r_functions_with_captions(functions, translation_dict=translation_dict, save_folder=save_folder)
