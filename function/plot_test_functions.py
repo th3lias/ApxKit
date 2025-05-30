@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -6,7 +7,7 @@ from function import FunctionType
 
 
 def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1), resolution=250,
-                                                  translation_dict: dict = None):
+                                                  translation_dict: dict = None, save_folder: str = None):
     """
     Plots multiple f: R^2 -> R functions in a 3x3 grid with captions under each plot.
     """
@@ -37,10 +38,18 @@ def plot_multiple_r2_to_r_functions_with_captions(funcs, xlim=(0, 1), ylim=(0, 1
         if caption in translation_dict:
             caption = translation_dict[caption] if translation_dict else caption
 
-        ax.text2D(0.5, -0.1, caption, transform=ax.transAxes, ha='center', fontsize=15)
+        # make text bold
+        ax.text2D(0.5, -0.1, caption, transform=ax.transAxes, ha='center', fontsize=20, fontweight='bold')
 
     plt.tight_layout()
-    plt.savefig('function_visualization.pdf')
+
+    if save_folder is None:
+        save_folder = ""
+    else:
+        os.makedirs(save_folder, exist_ok=True)
+
+    path = os.path.join(save_folder, 'function_visualization.pdf')
+    plt.savefig(path)
     plt.show()
     plt.close()
 
@@ -52,9 +61,9 @@ if __name__ == '__main__':
     f4 = provider().get_function(FunctionType.DISCONTINUOUS, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f5 = provider().get_function(FunctionType.GAUSSIAN, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
     f6 = provider().get_function(FunctionType.MOROKOFF_CALFISCH_1, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f7 = provider().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f8 = provider().get_function(FunctionType.OSCILLATORY, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
-    f9 = provider().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f7 = provider().get_function(FunctionType.OSCILLATORY, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f8 = provider().get_function(FunctionType.PRODUCT_PEAK, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
+    f9 = provider().get_function(FunctionType.G_FUNCTION, d=2, c=np.array([1, 1]), w=np.array([0.5, 0.5]))
 
     functions = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
 
@@ -63,11 +72,13 @@ if __name__ == '__main__':
         "Corner Peak": "Corner Peak",
         "Discontinuous": "Discontinuous",
         "Gaussian": "Gaussian",
-        "G Function": "Modified Ridge Product",
-        "Morokoff Calfisch 1": "Modified Geometric Mean",
+        "G Function": "Ridge Product",
+        "Morokoff Calfisch 1": "Geometric Mean",
         "Oscillatory": "Oscillatory",
         "Product Peak": "Product Peak",
         "Zhou": "Bimodal Gaussian"
     }
 
-    plot_multiple_r2_to_r_functions_with_captions(functions, translation_dict=translation_dict)
+    save_folder = os.path.join("..", "results", "final_results", "figures")
+
+    plot_multiple_r2_to_r_functions_with_captions(functions, translation_dict=translation_dict, save_folder=save_folder)

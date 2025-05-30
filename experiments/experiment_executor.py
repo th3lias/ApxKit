@@ -128,7 +128,10 @@ class ExperimentExecutor:
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
 
                 for i, function in enumerate(self.functions):
-                    self.y_test[i] = function(self.test_grid.grid)
+                    if function.name == "Noise":
+                        self.y_test[i] = np.zeros(shape=(n_points,), dtype=np.float64)  # we test it against f=0
+                    else:
+                        self.y_test[i] = function(self.test_grid.grid)
 
                 # Smolyak
                 progress_bar.set_description(f"Experiment: Dim:{dim},Scale:{scale},"
@@ -184,8 +187,8 @@ class ExperimentExecutor:
         ls = LeastSquaresInterpolator(include_bias=True, basis_type=self.least_squares_basis_type, grid=grid,
                                       method=self.least_squares_method, store_indices=self.store_indices)
         ls.fit(self.functions)
-        y_test_hat_cheby_uniform = ls.interpolate(self.test_grid)
-        ls_ell_2, ls_ell_infty = self._calc_error(y_test_hat_cheby_uniform)
+        y_test_hat = ls.interpolate(self.test_grid)
+        ls_ell_2, ls_ell_infty = self._calc_error(y_test_hat)
         end_time = time.time()
         needed_time = end_time - start_time
         cur_datetime = datetime.datetime.now()
@@ -212,6 +215,8 @@ class ExperimentExecutor:
 
         for fun_type in function_types:
             if isinstance(avg_c, dict):
+                if fun_type not in avg_c:
+                    raise ValueError(f"Function type {fun_type} not in average c dictionary")
                 avg_c_fun = avg_c[fun_type]
             else:
                 avg_c_fun = avg_c

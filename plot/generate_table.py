@@ -10,8 +10,8 @@ def highlight_matching_value(value, min_value):
     return r"\first{" + f"{value:.2e}" + r"}" if np.isclose(value, min_value, atol=1e-17) else f"{value:.2e}"
 
 
-def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
-                             skip_scale: Union[Dict, None] = None):
+def generate_table_fixed_dim(results_csv_path: str, output_folder: str, abbreviation_dict: dict,
+                             skip_mean_error: bool = False, skip_scale: Union[Dict, None] = None):
     r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via
@@ -38,32 +38,24 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
         \newcommand{\first}[1]{\textbf{#1}}
     """
 
-    abbreviation_dict = {
-        "BRATLEY": "Bratley",
-        "CONTINUOUS": "Continuous",
-        "CORNER_PEAK": "Corner Peak",
-        "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "Modified Ridge Product",
-        "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Modified Geometric Mean",
-        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
-        "OSCILLATORY": "Oscillatory",
-        "PRODUCT_PEAK": "Product Peak",
-        "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Bimodal Gaussian"
-    }
+    os.makedirs(output_folder, exist_ok=True)
 
     output = dict()
 
-    errors = [r'\ell_2', r'\ell_\infty']
     error_reductions = ['max']
 
     if not skip_mean_error:
-        error_reductions.insert(0, 'mean')
+        error_reductions.append('mean')
+        errors = [r'e_{\rm max}', r'e_{\rm mean}']
+    else:
+        errors = [r'e_{\rm max}^{\rm wc}', r'e_{\rm mean}^{\rm wc}']
 
     no_error_combinations = len(errors) * len(error_reductions)
 
     results = pd.read_csv(results_csv_path, sep=',', header=0, decimal='.')
+
+    # replace the function name by their abbreviation
+    results['f_name'] = results['f_name'].replace(abbreviation_dict)
 
     for dim_name, dim_df in results.groupby('dim'):
 
@@ -172,8 +164,8 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
 
                     if scale_index == 0:
                         if grid_index == 0:
-                            output[dim_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
+                            output[dim_name] += (r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + str(fun_name)
+                                                 + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & ")
                         else:
                             output[dim_name] += r" & "
                         output[dim_name] += method_name
@@ -193,21 +185,21 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
                     if skip_mean_error:
                         output[dim_name] += (
                                 r" & "
-                                + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
-                                + r" & "
                                 + highlight_matching_value(ell_infty_max, min_values[str(scale_name)]['ell_infty_max'])
+                                + r" & "
+                                + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
                         )
                     else:
                         output[dim_name] += (
                                 r" & "
-                                + highlight_matching_value(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
+                                + highlight_matching_value(ell_infty_max, min_values[str(scale_name)]['ell_infty_max'])
+                                + r" & "
+                                + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
                                 + r" & "
                                 + highlight_matching_value(ell_infty_mean,
                                                            min_values[str(scale_name)]['ell_infty_mean'])
                                 + r" & "
-                                + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
-                                + r" & "
-                                + highlight_matching_value(ell_infty_max, min_values[str(scale_name)]['ell_infty_max'])
+                                + highlight_matching_value(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
                         )
 
                 output[dim_name] += r"\\" + "\n"
@@ -222,8 +214,8 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, skip_mea
         print("Exported table for dim", dim_name, "to", os.path.join(output_folder, f"dim{dim_name}.tex"))
 
 
-def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
-                               skip_dim: Union[Dict, None] = None):
+def generate_table_fixed_scale(results_csv_path: str, output_folder: str, abbreviation_dict: dict,
+                               skip_mean_error: bool = False, skip_dim: Union[Dict, None] = None):
     r""" Creates a tex file for each scale in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via
@@ -238,30 +230,23 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
         \end{table}
     """
 
-    abbreviation_dict = {
-        "BRATLEY": "Bratley",
-        "CONTINUOUS": "Continuous",
-        "CORNER_PEAK": "Corner Peak",
-        "DISCONTINUOUS": "Discontinuous",
-        "G_FUNCTION": "Modified Ridge Product",
-        "GAUSSIAN": "Gaussian",
-        "MOROKOFF_CALFISCH_1": "Modified Geometric Mean",
-        "MOROKOFF_CALFISCH_2": "Morokoff Calfisch 2",
-        "OSCILLATORY": "Oscillatory",
-        "PRODUCT_PEAK": "Product Peak",
-        "ROOS_ARNOLD": "Roos Arnold",
-        "ZHOU": "Bimodal Gaussian"
-    }
+    os.makedirs(output_folder, exist_ok=True)
 
     output = dict()
 
-    errors = [r'\ell_2', r'\ell_\infty']
     error_reductions = ['max']
+
     if not skip_mean_error:
-        error_reductions.insert(0, 'mean')
+        error_reductions.append('mean')
+        errors = [r'e_{\rm max}', r'e_{\rm mean}']
+    else:
+        errors = [r'e_{\rm max}^{\rm wc}', r'e_{\rm mean}^{\rm wc}']
 
     no_error_combinations = len(errors) * len(error_reductions)
     results = pd.read_csv(results_csv_path, sep=',', header=0, decimal='.')
+
+    # replace the function name by their abbreviation
+    results['f_name'] = results['f_name'].replace(abbreviation_dict)
 
     for scale_name, scale_df in results.groupby('scale'):
 
@@ -365,8 +350,8 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
 
                     if dim_index == 0:
                         if grid_index == 0:
-                            output[scale_name] += r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + abbreviation_dict[
-                                str(fun_name)] + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & "
+                            output[scale_name] += (r"\multirow{3}{*}{\thead[l]{\tiny\textbf{" + str(
+                                fun_name) + r"}\\" + r"$Q=" + str(min(n_functions_list)) + r"$}} & ")
                         else:
                             output[scale_name] += r" & "
                         output[scale_name] += method_name
@@ -385,20 +370,20 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, skip_m
                     if skip_mean_error:
                         output[scale_name] += (
                                 r" & "
-                                + highlight_matching_value(ell_2_max, min_values[str(dim)]['ell_2_max'])
-                                + r" & "
                                 + highlight_matching_value(ell_infty_max, min_values[str(dim)]['ell_infty_max'])
+                                + r" & "
+                                + highlight_matching_value(ell_2_max, min_values[str(dim)]['ell_2_max'])
                         )
                     else:
                         output[scale_name] += (
                                 r" & "
-                                + highlight_matching_value(ell_2_mean, min_values[str(dim)]['ell_2_mean'])
-                                + r" & "
-                                + highlight_matching_value(ell_infty_mean, min_values[str(dim)]['ell_infty_mean'])
+                                + highlight_matching_value(ell_infty_max, min_values[str(dim)]['ell_infty_max'])
                                 + r" & "
                                 + highlight_matching_value(ell_2_max, min_values[str(dim)]['ell_2_max'])
                                 + r" & "
-                                + highlight_matching_value(ell_infty_max, min_values[str(dim)]['ell_infty_max'])
+                                + highlight_matching_value(ell_infty_mean, min_values[str(dim)]['ell_infty_mean'])
+                                + r" & "
+                                + highlight_matching_value(ell_2_mean, min_values[str(dim)]['ell_2_mean'])
                         )
 
                 output[scale_name] += r"\\" + "\n"
@@ -441,13 +426,17 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
         \newcommand{\first}[1]{\textbf{#1}}
     """
 
+    os.makedirs(output_folder, exist_ok=True)
+
     output = dict()
 
-    errors = [r'\ell_2', r'\ell_\infty']
     error_reductions = ['max']
 
     if not skip_mean_error:
-        error_reductions.insert(0, 'mean')
+        error_reductions.append('mean')
+        errors = [r'e_{\rm max}', r'e_{\rm mean}', ]
+    else:
+        errors = [r'e_{\rm max}^{\rm wc}', r'e_{\rm mean}^{\rm wc}']
 
     no_error_combinations = len(errors) * len(error_reductions)
 
@@ -593,23 +582,23 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                         if skip_mean_error:
                             output[fun_name] += (
                                     r" & "
-                                    + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
-                                    + r" & "
                                     + highlight_matching_value(ell_infty_max,
                                                                min_values[str(scale_name)]['ell_infty_max'])
+                                    + r" & "
+                                    + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
                             )
                         else:
                             output[fun_name] += (
                                     r" & "
-                                    + highlight_matching_value(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
+                                    + highlight_matching_value(ell_infty_max,
+                                                               min_values[str(scale_name)]['ell_infty_max'])
+                                    + r" & "
+                                    + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
                                     + r" & "
                                     + highlight_matching_value(ell_infty_mean,
                                                                min_values[str(scale_name)]['ell_infty_mean'])
                                     + r" & "
-                                    + highlight_matching_value(ell_2_max, min_values[str(scale_name)]['ell_2_max'])
-                                    + r" & "
-                                    + highlight_matching_value(ell_infty_max,
-                                                               min_values[str(scale_name)]['ell_infty_max'])
+                                    + highlight_matching_value(ell_2_mean, min_values[str(scale_name)]['ell_2_mean'])
                             )
 
                 output[fun_name] += r"\\" + "\n"
@@ -628,8 +617,20 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 if __name__ == '__main__':
     input_path = "path/to/your/results_numerical_experiments.csv"
+    input_path = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")  # TODO: Remove
     output_folder = os.path.join("..", "results", "final_results", "tables")
-    os.makedirs(output_folder, exist_ok=True)
+
+    abbr_dict = {
+        "CONTINUOUS": "Cont.",
+        "CORNER_PEAK": "Corner Peak",
+        "DISCONTINUOUS": "Discont.",
+        "G_FUNCTION": "Ridge Prod.",
+        "GAUSSIAN": "Gauss.",
+        "MOROKOFF_CALFISCH_1": "Geo. Mean",
+        "OSCILLATORY": "Osci.",
+        "PRODUCT_PEAK": "Prod. Peak",
+        "ZHOU": "Bim. Gauss."
+    }
 
     ignore_scale = {
         "2": [1, 2],
@@ -642,14 +643,7 @@ if __name__ == '__main__':
         "9": [1, 2],
         "10": [1, 2],
     }
-    # ignore_dim = {
-    #     "2": [1, 3, 8],
-    #     "3": [9, 4, 2]
-    # }
 
-    # ignore_dim = None
-    # ignore_scale = None
-
-    generate_table_fixed_dim(input_path, output_folder, skip_mean_error=True, skip_scale=ignore_scale)
-    generate_table_fixed_scale(input_path, output_folder, skip_mean_error=True, skip_dim=None)
+    generate_table_fixed_dim(input_path, output_folder, abbr_dict, skip_mean_error=True, skip_scale=ignore_scale)
+    generate_table_fixed_scale(input_path, output_folder, abbr_dict, skip_mean_error=True, skip_dim=None)
     generate_table_fixed_fun(input_path, output_folder, skip_mean_error=True, skip_scale=[1, 2])

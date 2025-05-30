@@ -13,4 +13,5 @@ class FunctionType(Enum):
     MOROKOFF_CALFISCH_2 = 9,
     ROOS_ARNOLD = 10,
     BRATLEY = 11,
-    ZHOU = 12
+    ZHOU = 12,
+    NOISE = 13

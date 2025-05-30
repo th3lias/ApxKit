@@ -108,20 +108,24 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
-    def _approximate_scipy_lstsq(self, y: np.ndarray, lapack_driver: str = 'gelsy'):
+    def _approximate_scipy_lstsq(self, y: np.ndarray, lapack_driver: str = 'gelsy') -> None:
+        """
+        Solves the weighted least squares problem using SciPy's lstsq.
+        :param: y (np.ndarray): Target values.
+        :param: lapack_driver (str): LAPACK driver to use for lstsq. Default is 'gelsy'.
+        """
 
         if not self.include_bias:
-            print("Please be aware that the result may become significantly worse when using no intercept (bias)")
+            print("Warning: Accuracy may degrade significantly without an intercept (bias).")
 
         weight = self._get_weights_for_weighted_ls()
 
-        x_poly = (weight * self.basis.T).T
+        x_poly = self.basis * weight[:, np.newaxis]
+        y_prime = y * weight[:, np.newaxis]
+
         self.basis = None
-        y_prime = (weight * y.T).T
 
-        sol = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
-        coeff = sol[0]
-
+        coeff, *_ = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
         self.coeff = coeff
 
     def _get_weights_for_weighted_ls(self):
