@@ -4,13 +4,13 @@ from typing import Union
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
 from function.utils import oscillatory, product_peak, corner_peak, gaussian, continuous, discontinuous, g_function, \
-    morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, noise
+    morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, noise, zero
 
 
 class ParametrizedFunctionProvider:
     @staticmethod
     def get_function(function_type: FunctionType, d: int, c: Union[np.array, None] = None,
-                     w: Union[np.array, None] = None) -> ParametrizedFunction:
+                     w: Union[np.array, None] = None, test: bool = False) -> ParametrizedFunction:
         if not isinstance(function_type, FunctionType):
             raise ValueError("function_type must be of type FunctionType.")
         match function_type:
@@ -51,7 +51,10 @@ class ParametrizedFunctionProvider:
                 exe = lambda x: zhou(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Zhou")
             case FunctionType.NOISE:
-                exe = lambda x: noise(x, d, c, w)
+                if test:
+                    exe = lambda x: zero(x, d, c, w)
+                else:
+                    exe = lambda x: noise(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Noise")
             case _:
                 raise ValueError(f"Unknown Function type {function_type}")
