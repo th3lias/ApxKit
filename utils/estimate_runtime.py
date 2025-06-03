@@ -52,12 +52,11 @@ def estimate_runtimes(path: str, save: bool = False, output_path: str = None) ->
     for scale, runtimes in smolyak_runtimes.items():
         ax.plot(runtimes.keys(), runtimes.values(), label=f'Smolyak {scale}', marker='x')
     ax.set_xlabel('Dimension')
-    ax.set_yscale('log')
+    # ax.set_yscale('log')
     ax.set_ylabel('Runtime (seconds)')
     ax.set_title('Runtime of Algorithms vs Dimension')
     ax.legend()
     ax.grid(True)
-    plt.xticks(rotation=45)
     plt.tight_layout()
     if save:
         if output_path is None:
