@@ -46,6 +46,7 @@ class ExperimentExecutor:
                             'n_samples', 'seed', 'f_name', 'ell_2_error', 'ell_infty_error', 'datetime', 'needed_time']
         header = dict.fromkeys(self.header_keys, list())
         self.functions = None
+        self.test_functions = None
         self.cs = None
         self.ws = None
         self.f_names = None
@@ -125,13 +126,10 @@ class ExperimentExecutor:
                 self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
                                                     seed=test_grid_seed).generate(scale)
                 n_points = self.test_grid.get_num_points()
-                self.y_test = np.empty(dtype=np.float64, shape=(len(self.functions), n_points))
+                self.y_test = np.empty(dtype=np.float64, shape=(len(self.test_functions), n_points))
 
-                for i, function in enumerate(self.functions):
-                    if function.name == "Noise":
-                        self.y_test[i] = np.zeros(shape=(n_points,), dtype=np.float64)  # we test it against f=0
-                    else:
-                        self.y_test[i] = function(self.test_grid.grid)
+                for i, test_function in enumerate(self.test_functions):
+                    self.y_test[i] = test_function(self.test_grid.grid)
 
                 # Smolyak
                 progress_bar.set_description(f"Experiment: Dim:{dim},Scale:{scale},"
@@ -208,6 +206,7 @@ class ExperimentExecutor:
             function_types = [function_types]
 
         functions = []
+        test_functions = []
 
         cs = list()
         ws = list()
@@ -225,12 +224,15 @@ class ExperimentExecutor:
                 # get c and w
                 c, w = self._get_c_and_w(avg_c_fun, dim)
                 function = ParametrizedFunctionProvider.get_function(fun_type, dim, c=c, w=w)
+                test_function = ParametrizedFunctionProvider.get_function(fun_type, dim, c=c, w=w, test=True)
                 cs.append(c)
                 ws.append(w)
                 f_names.append(fun_type.name)
                 functions.append(function)
+                test_functions.append(test_function)
 
         self.functions = functions
+        self.test_functions = test_functions
         self.cs = cs
         self.ws = ws
         self.f_names = f_names

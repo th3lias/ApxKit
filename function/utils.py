@@ -101,7 +101,14 @@ def zhou(x, d, c, w):
 
 def noise(x, d, c, w):
     """
-        Imitates the 0-function.
+        Imitates the 0-function in the "training" process by providing Gaussian noise.
     """
     small_gaussian_noise = np.random.normal(0, 1e-7, x.shape[0])
     return small_gaussian_noise
+
+
+def zero(x, d, c, w):
+    """
+        Imitates the 0-function in the "test" process by returning the 0-function.
+    """
+    return np.zeros(x.shape[0], dtype=np.float64)
