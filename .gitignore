@@ -256,6 +256,8 @@ logs/
 !results/final_results/low_dim/
 !results/final_results/high_dim/
 
+!results/final_results/
+
 # Ignore the pdf images
 results/final_results/**/*.pdf
 
