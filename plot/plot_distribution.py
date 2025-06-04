@@ -370,7 +370,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 pbar.update(1)
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
-                axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares', fontsize=12,
+                axs[0].set_xlabel('$d$\npoints Smolyak\npoints Least Squares', fontsize=12,
                                   linespacing=1.1)
 
                 for ax in axs:
@@ -405,7 +405,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
                 plt.subplots_adjust(wspace=0.25)
 
-                fig.suptitle(f"{abbreviation_dict[f_type]}, $d={dim}$, $Q={min(n_functions_list)}$", fontsize=16,
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$", fontsize=16,
                              fontweight='bold', x=0.525)
 
                 if save:
@@ -428,7 +428,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "dim11_to_100_new", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
 
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
