@@ -252,11 +252,9 @@ logs/
 # Ignore everything in the results folder
 /results/*
 
-# Except the final_results folder
-!results/final_results/
-
-# And its contents
-!results/final_results/**
+# Except the final_results folder (and its subfolders)
+!results/final_results/low_dim/
+!results/final_results/high_dim/
 
 # Ignore the pdf images
 results/final_results/**/*.pdf
