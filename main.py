@@ -26,7 +26,8 @@ def main_method(folder_name: Union[str, None] = None):
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
-                      FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE]
+                      FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE,
+                      FunctionType.CONTINUOUS_NEW]
 
     seed = 42
 
@@ -40,11 +41,12 @@ def main_method(folder_name: Union[str, None] = None):
         FunctionType.MOROKOFF_CALFISCH_1: 1.0,
         FunctionType.PRODUCT_PEAK: 1.0,
         FunctionType.ZHOU: 1.0,
-        FunctionType.NOISE: 1.0
+        FunctionType.NOISE: 1.0,
+        FunctionType.CONTINUOUS_NEW: 1.0,
     }
 
     multiplier_fun = lambda x: 2 * x
-    n_fun_parallel = 10
+    n_fun_parallel = 50
 
     store_indices = True
 
@@ -64,8 +66,8 @@ def main_method(folder_name: Union[str, None] = None):
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
     # Plot error distribution
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 

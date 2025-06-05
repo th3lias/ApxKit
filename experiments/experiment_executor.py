@@ -158,6 +158,7 @@ class ExperimentExecutor:
         start_time = time.time()
 
         if self.smolyak_method == InterpolationMethod.STANDARD:  # Least Squares at the Sparse Grid points
+            raise DeprecationWarning("The standard Smolyak method is deprecated and will be removed in future versions.")
             si = SmolyakInterpolator(grid, self.smolyak_method, store_indices=self.store_indices)
             si.fit(self.functions)
             y_test_hat_smolyak = si.interpolate(self.test_grid)

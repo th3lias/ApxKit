@@ -4,7 +4,7 @@ from typing import Union
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
 from function.utils import oscillatory, product_peak, corner_peak, gaussian, continuous, discontinuous, g_function, \
-    morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, noise, zero
+    morokoff_calfisch_1, morokoff_calfisch_2, roos_arnold, bratley, zhou, noise, zero, continuous_new
 
 
 class ParametrizedFunctionProvider:
@@ -29,6 +29,9 @@ class ParametrizedFunctionProvider:
             case FunctionType.CONTINUOUS:
                 exe = lambda x: continuous(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Continuous")
+            case FunctionType.CONTINUOUS_NEW:
+                exe = lambda x: continuous_new(x,d,c,w)
+                return ParametrizedFunction(exe, d, c, w, name="Continuous New")
             case FunctionType.DISCONTINUOUS:
                 exe = lambda x: discontinuous(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Discontinuous")

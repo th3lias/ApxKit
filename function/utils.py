@@ -36,6 +36,13 @@ def continuous(x, d, c, w):
     return np.exp(-np.sum(np.multiply(c, np.abs(x - w)), axis=1))
 
 
+def continuous_new(x, d, c, w):
+    """
+        Continuous function with a normalization.
+    """
+    return np.exp(-np.sum(np.multiply(c, np.abs(x - w)) / d, axis=1))
+
+
 def discontinuous(x, d, c, w):
     """
         Discontinuous function.
