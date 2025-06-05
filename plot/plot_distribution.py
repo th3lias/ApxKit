@@ -392,8 +392,6 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
                     ax.tick_params(axis='y', labelsize=12)
-                    ax.tick_params(axis='x', labelsize=12)
-                    ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -405,7 +403,8 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
                 plt.subplots_adjust(wspace=0.25)
 
-                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$", fontsize=16,
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$",
+                             fontsize=16,
                              fontweight='bold', x=0.525)
 
                 if save:
@@ -433,4 +432,5 @@ if __name__ == '__main__':
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True,
+                                sparse_ticks=True)
