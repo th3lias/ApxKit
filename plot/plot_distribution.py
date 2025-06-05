@@ -37,7 +37,8 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
             "MOROKOFF_CALFISCH_1": "Geometric Mean",
             "OSCILLATORY": "Oscillatory",
             "PRODUCT_PEAK": "Product Peak",
-            "ZHOU": "Bimodal Gaussian"
+            "ZHOU": "Bimodal Gaussian",
+            "NOISE": "Noise"
         }
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
@@ -175,7 +176,7 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                                   linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.125, -0.02)
+                    ax.xaxis.set_label_coords(1.13, -0.02)
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -244,7 +245,8 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
             "MOROKOFF_CALFISCH_1": "Geometric Mean",
             "OSCILLATORY": "Oscillatory",
             "PRODUCT_PEAK": "Product Peak",
-            "ZHOU": "Bimodal Gaussian"
+            "ZHOU": "Bimodal Gaussian",
+            "NOISE": "Noise"
         }
 
     df = pd.read_csv(file_name, header=0, sep=',', decimal='.')
@@ -267,7 +269,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 data_scale = data_f_type[data_f_type['scale'] == scale].copy()
                 # Create the figure with two subplots
                 n_rows, n_cols = (1, 2)
-                figsize = (16, 7)
+                figsize = (16, 6)
                 share_x, share_y = (False, True)
                 fig, axs = plt.subplots(n_rows, n_cols, figsize=figsize, sharey=share_y, sharex=share_x)
                 axs[1].yaxis.set_tick_params(labelleft=True)
@@ -368,10 +370,11 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 pbar.update(1)
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
-                axs[0].set_xlabel('dim \npoints Smolyak\npoints Least Squares')
+                axs[0].set_xlabel('$d$\npoints Smolyak\npoints Least Squares', fontsize=12,
+                                  linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(-0.11, -0.025)
+                    ax.xaxis.set_label_coords(1.13, -0.02)
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -389,6 +392,8 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
                     ax.tick_params(axis='y', labelsize=12)
+                    ax.tick_params(axis='x', labelsize=12)
+                    ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -397,11 +402,11 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     axs[0].set_ylabel('$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
                     axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
-                # Adjust the layout and show the plot
-                plt.tight_layout(rect=(0.035, 0.03, 1.0, 0.95))
+                plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
+                plt.subplots_adjust(wspace=0.25)
 
-                plt.title(f"{abbreviation_dict[f_type]} $d={dim}$, Q={min(n_functions_list)}", fontsize=16,
-                          fontweight='bold')
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$", fontsize=16,
+                             fontweight='bold', x=0.525)
 
                 if save:
                     if only_maximum:
@@ -423,9 +428,9 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
 
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
