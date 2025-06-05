@@ -125,7 +125,20 @@ class LeastSquaresInterpolator(Interpolator):
 
         self.basis = None
 
-        coeff, *_ = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
+        try:
+            coeff, *_ = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
+
+        except ValueError as e: # TODO: Remove that after error handling is improved
+            print(f"Weight: {weight}")
+            print(f"X shape: {x_poly.shape}, Y shape: {y_prime.shape}")
+            print(f"X: {x_poly}")
+            print(f"Y: {y_prime}")
+            print(f"y Contains NaN: {np.isnan(y_prime).any()}")
+            print(f"y Contains Inf: {np.isinf(y_prime).any()}")
+            print(f"X Contains NaN: {np.isnan(x_poly).any()}")
+            print(f"X Contains Inf: {np.isinf(x_poly).any()}")
+            raise ValueError("An error occurred during the least squares fitting process.")
+
         self.coeff = coeff
 
     def _get_weights_for_weighted_ls(self):
