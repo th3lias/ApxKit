@@ -214,6 +214,7 @@ class Interpolator:
             polynomial. This dimension has length :math:`n+1` because it
             includes :math:`\\phi_0` which is equal to 1 :math:`\\forall x`
         """
+        x = 2 * x - 1  # scale x to [-1, 1]
         x = np.asarray(x)
         dim = x.shape
         results = np.zeros((n + 1,) + dim)
@@ -221,7 +222,7 @@ class Interpolator:
         results[1, ...] = x
         for i in range(2, n + 1):
             results[i, ...] = 2 * x * results[i - 1, ...] - results[i - 2, ...]
-        return results
+        return np.sqrt(2) * results
 
     @staticmethod
     def _load_basis_indices_if_existent(dim: int, scale: int, path=None):
