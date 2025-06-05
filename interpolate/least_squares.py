@@ -138,7 +138,7 @@ class LeastSquaresInterpolator(Interpolator):
                 points = 2 * points - 1
             elif self.grid.lower_bound != -1.0 or self.grid.upper_bound != 1.0:
                 raise ValueError("The Chebyshev rule only supports the range [-1, 1] or [0, 1]")
-            weight = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(points)/np.pi, axis=1))
+            weight = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(points), axis=1) / np.pi)
         elif self.grid.rule == RandomGridRule.UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
