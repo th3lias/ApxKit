@@ -30,6 +30,7 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
     if abbreviation_dict is None:
         abbreviation_dict = {
             "CONTINUOUS": "Continuous",
+            "CONTINUOUS_NEW": "Continuous_new",
             "CORNER_PEAK": "Corner Peak",
             "DISCONTINUOUS": "Discontinuous",
             "G_FUNCTION": "Ridge Product",
@@ -238,6 +239,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
     if abbreviation_dict is None:
         abbreviation_dict = {
             "CONTINUOUS": "Continuous",
+            "CONTINUOUS_NEW": "Continuous_new",
             "CORNER_PEAK": "Corner Peak",
             "DISCONTINUOUS": "Discontinuous",
             "G_FUNCTION": "Ridge Product",
@@ -392,6 +394,8 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
                     ax.tick_params(axis='y', labelsize=12)
+                    ax.tick_params(axis='x', labelsize=12)
+                    ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -403,8 +407,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
                 plt.subplots_adjust(wspace=0.25)
 
-                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$",
-                             fontsize=16,
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$", fontsize=16,
                              fontweight='bold', x=0.525)
 
                 if save:
@@ -429,8 +432,9 @@ if __name__ == '__main__':
 
     filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
 
+    # TODO: Change in the end
+
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True,
-                                sparse_ticks=True)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)

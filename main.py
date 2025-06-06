@@ -66,8 +66,8 @@ def main_method(folder_name: Union[str, None] = None):
     ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
 
     # Plot error distribution
-    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 

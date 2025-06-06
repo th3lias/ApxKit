@@ -125,25 +125,13 @@ class LeastSquaresInterpolator(Interpolator):
 
         self.basis = None
 
-        try:
-            coeff, *_ = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
-
-        except ValueError as e: # TODO: Remove that after error handling is improved
-            print(f"Weight: {weight}")
-            print(f"X shape: {x_poly.shape}, Y shape: {y_prime.shape}")
-            print(f"X: {x_poly}")
-            print(f"Y: {y_prime}")
-            print(f"y Contains NaN: {np.isnan(y_prime).any()}")
-            print(f"y Contains Inf: {np.isinf(y_prime).any()}")
-            print(f"X Contains NaN: {np.isnan(x_poly).any()}")
-            print(f"X Contains Inf: {np.isinf(x_poly).any()}")
-            raise ValueError("An error occurred during the least squares fitting process.")
+        coeff, *_ = lstsq(x_poly, y_prime, lapack_driver=lapack_driver)
 
         self.coeff = coeff
 
     def _get_weights_for_weighted_ls(self):
         """
-        Calculates the weights for the weighted least squares (vectorized method).
+        Calculates the weights for the weighted least squares.
         """
         points = self.grid.grid
         if self.grid.rule == RandomGridRule.CHEBYSHEV:
@@ -151,7 +139,11 @@ class LeastSquaresInterpolator(Interpolator):
                 points = 2 * points - 1
             elif self.grid.lower_bound != -1.0 or self.grid.upper_bound != 1.0:
                 raise ValueError("The Chebyshev rule only supports the range [-1, 1] or [0, 1]")
-            weight = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(points), axis=1) / np.pi)
+            # TODO: Check that
+            radius = np.linalg.norm(points, axis=1) / np.linalg.norm(self.dim)
+            assert radius.shape == (self.grid.get_num_points(),), "Radius should be a 1D array"
+            weight = np.sqrt(np.polynomial.chebyshev.chebweight(radius) / np.pi)
+            # weight = np.sqrt(np.prod(np.polynomial.chebyshev.chebweight(points), axis=1) / np.pi)
         elif self.grid.rule == RandomGridRule.UNIFORM:
             weight = np.ones(shape=(self.grid.get_num_points()), dtype=np.float64)
         else:
