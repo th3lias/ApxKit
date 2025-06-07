@@ -430,7 +430,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "new_high_dim", "dim11_to_100", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
 
     # TODO: Change in the end
 
