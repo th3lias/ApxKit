@@ -407,7 +407,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
                 plt.subplots_adjust(wspace=0.25)
 
-                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$", fontsize=16,
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q={min(n_functions_list)}$", fontsize=16,
                              fontweight='bold', x=0.525)
 
                 if save:
@@ -430,11 +430,11 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "new_high_dim", "dim11_to_100", "results_numerical_experiments.csv")
 
     # TODO: Change in the end
 
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
