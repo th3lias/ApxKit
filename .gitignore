@@ -261,5 +261,7 @@ logs/
 # Ignore the pdf images
 results/final_results/**/*.pdf
 
+results/final_results/high_dim/results_numerical_experiments.csv
+
 # run configurations
 .run/
