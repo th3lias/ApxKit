@@ -5,12 +5,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def estimate_runtimes(path: str, save: bool = False, output_path: str = None) -> None:
+def estimate_runtimes(path: str, save: bool = False, logarithmic: bool = False, output_path: str = None) -> None:
     """
     Estimates the runtimes of the experiments from the CSV file at the given path for each algorithm.
 
     :param path: Path to the CSV file containing the results.
     :param save: If True, save the plot in the specified output path.
+    :param logarithmic: If True, use a logarithmic scale for the y-axis.
     :param output_path: Path to save the plot if `save` is True.
     """
 
@@ -52,7 +53,8 @@ def estimate_runtimes(path: str, save: bool = False, output_path: str = None) ->
     for scale, runtimes in smolyak_runtimes.items():
         ax.plot(runtimes.keys(), runtimes.values(), label=f'Smolyak {scale}', marker='x')
     ax.set_xlabel('Dimension')
-    # ax.set_yscale('log')
+    if logarithmic:
+        ax.set_yscale('log')
     ax.set_ylabel('Runtime (seconds)')
     ax.set_title('Runtime of Algorithms vs Dimension')
     ax.legend()
@@ -65,10 +67,11 @@ def estimate_runtimes(path: str, save: bool = False, output_path: str = None) ->
     else:
         plt.show()
 
-    time.sleep(100)
     plt.close(fig)
 
 
+
+
 if __name__ == '__main__':
-    path = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")
-    estimate_runtimes(path, save = False)
+    path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
+    estimate_runtimes(path, save=False, logarithmic=True)
