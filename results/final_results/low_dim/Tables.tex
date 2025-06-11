@@ -1,0 +1,208 @@
+% Magic Comments
+% !TeX spellcheck = en_GB
+% !TeX encoding = utf8
+% !TeX program = pdflatex
+
+
+\documentclass[12pt, a4paper, english]{article}
+
+% Packages
+
+% Enconding
+
+\usepackage[utf8]{inputenc}
+
+% Mathematics
+\usepackage{amsmath} % Automatically loads amstext -> amsgen, amsbsy -> amsgen, amsopn -> amsgen
+\usepackage{amssymb} % Automatically loads amsfonts
+\usepackage{amsthm}
+
+% Fonts
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% Color
+\usepackage{xcolor}
+
+% Inkscape
+\usepackage{import}
+\usepackage{pdfpages}
+
+% Enumerate with roman-numbers etc.
+\usepackage{enumerate}
+
+% For tabular
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{makecell}
+
+\newcommand{\first}[1]{\textbf{#1}}
+
+\begin{document}
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim2}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		%(left and right column) 
+		for $d=2$, 
+		each scale 
+		%(see \eqref{eq:error_wc_max} and \eqref{eq:error_wc_mean}) 
+		for the different algorithms. 
+		% The lowest value is printed in bold.
+		Lowest value in bold.}
+	\label{tab:dim2_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim3}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		%(left and right column) 
+		for $d=3$, 
+		each scale 
+		%(see \eqref{eq:error_wc_max} and \eqref{eq:error_wc_mean}) 
+		for the different algorithms. 
+		% The lowest value is printed in bold.
+		Lowest value in bold.}
+	\label{tab:dim3_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim4}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=4$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim4_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim5}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=5$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim5_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim6}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=6$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim6_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim7}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=7$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim7_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim8}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=8$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim8_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim9}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=9$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim9_results}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+	\centering
+	\makebox[\linewidth]{%
+		\begin{adjustbox}{width=\linewidth}
+			\input{tables/dim10}
+		\end{adjustbox}%
+	}
+	\caption{The errors $e_{\rm max}^{\rm wc}$ and $e_{\rm mean}^{\rm wc}$ 
+		for $d=10$, 
+		each scale 
+		for the different algorithms. 
+		Lowest value in bold.}
+	\label{tab:dim10_results}
+\end{table}
+
+
+
+
+
+
+\end{document}

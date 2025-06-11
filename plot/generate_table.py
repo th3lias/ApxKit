@@ -617,8 +617,8 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 if __name__ == '__main__':
     input_path = "path/to/your/results_numerical_experiments.csv"
-    input_path = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")  # TODO: Remove
-    output_folder = os.path.join("..", "results", "final_results", "tables")
+    input_path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")  # TODO: Remove
+    output_folder = os.path.join("..", "results", "final_results", "low_dim", "tables")
 
     abbr_dict = {
         "CONTINUOUS": "Cont.",
@@ -629,7 +629,8 @@ if __name__ == '__main__':
         "MOROKOFF_CALFISCH_1": "Geo. Mean",
         "OSCILLATORY": "Osci.",
         "PRODUCT_PEAK": "Prod. Peak",
-        "ZHOU": "Bim. Gauss."
+        "ZHOU": "Bim. Gauss.",
+        "CONTINUOUS_NEW": "Cont. New", # TODO: Remove
     }
 
     ignore_scale = {
