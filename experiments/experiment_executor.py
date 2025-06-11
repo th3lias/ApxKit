@@ -35,6 +35,8 @@ class ExperimentExecutor:
         else:
             self.results_path = path
 
+        for dim in dim_scale_dict.keys():
+            dim_scale_dict[dim] = sorted(list(set(dim_scale_dict[dim])))
         self.dim_scale_dictionary = dim_scale_dict
         self.smolyak_method = smolyak_method
         self.least_squares_method = least_squares_method
