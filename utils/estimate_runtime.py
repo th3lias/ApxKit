@@ -1,15 +1,17 @@
 import os
-import time
+from typing import Union
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def estimate_runtimes(path: str, save: bool = False, logarithmic: bool = False, output_path: str = None) -> None:
+def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, logarithmic: bool = False,
+                      output_path: str = None) -> None:
     """
     Estimates the runtimes of the experiments from the CSV file at the given path for each algorithm.
 
     :param path: Path to the CSV file containing the results.
+    :param ylim: The upper limit for the y-axis in the plot.
     :param save: If True, save the plot in the specified output path.
     :param logarithmic: If True, use a logarithmic scale for the y-axis.
     :param output_path: Path to save the plot if `save` is True.
@@ -49,9 +51,9 @@ def estimate_runtimes(path: str, save: bool = False, logarithmic: bool = False, 
 
     # x-axis is scale, y-axis is runtime, each algorithm is plotted for each dim
     for scale, runtimes in ls_runtimes.items():
-        ax.plot(runtimes.keys(), runtimes.values(), label=f'LS {scale}', marker='o')
+        ax.plot(runtimes.keys(), runtimes.values(), label=f'LS scale{scale}', marker='o')
     for scale, runtimes in smolyak_runtimes.items():
-        ax.plot(runtimes.keys(), runtimes.values(), label=f'Smolyak {scale}', marker='x')
+        ax.plot(runtimes.keys(), runtimes.values(), label=f'SA scale{scale}', marker='x')
     ax.set_xlabel('Dimension')
     if logarithmic:
         ax.set_yscale('log')
@@ -59,6 +61,8 @@ def estimate_runtimes(path: str, save: bool = False, logarithmic: bool = False, 
     ax.set_title('Runtime of Algorithms vs Dimension')
     ax.legend()
     ax.grid(True)
+    if ylim is not None:
+        ax.set_ylim(0, ylim)
     plt.tight_layout()
     if save:
         if output_path is None:
@@ -70,8 +74,6 @@ def estimate_runtimes(path: str, save: bool = False, logarithmic: bool = False, 
     plt.close(fig)
 
 
-
-
 if __name__ == '__main__':
     path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    estimate_runtimes(path, save=False, logarithmic=True)
+    estimate_runtimes(path, save=False, ylim=None, logarithmic=False)
