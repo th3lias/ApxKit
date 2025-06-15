@@ -30,7 +30,6 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
     if abbreviation_dict is None:
         abbreviation_dict = {
             "CONTINUOUS": "Continuous",
-            "CONTINUOUS_NEW": "Continuous_new",
             "CORNER_PEAK": "Corner Peak",
             "DISCONTINUOUS": "Discontinuous",
             "G_FUNCTION": "Ridge Product",
@@ -239,7 +238,6 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
     if abbreviation_dict is None:
         abbreviation_dict = {
             "CONTINUOUS": "Continuous",
-            "CONTINUOUS_NEW": "Continuous_new",
             "CORNER_PEAK": "Corner Peak",
             "DISCONTINUOUS": "Discontinuous",
             "G_FUNCTION": "Ridge Product",
@@ -255,7 +253,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 
     prop_cycle = plt.rcParams['axes.prop_cycle']
     colors = prop_cycle.by_key()['color']
-    markers = ['o', 's', '^', 'D', 'v', '<', '>', 'P', 'X']  # Different markers
+    markers = ['o', 's', '^', 'D', 'v', '<', '>', 'P', 'X']
 
     # Get distinct values for dimension, function type, grids, methods, and scales
     scales = df['scale'].unique()

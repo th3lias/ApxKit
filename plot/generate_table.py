@@ -629,8 +629,7 @@ if __name__ == '__main__':
         "MOROKOFF_CALFISCH_1": "Geo. Mean",
         "OSCILLATORY": "Osci.",
         "PRODUCT_PEAK": "Prod. Peak",
-        "ZHOU": "Bim. Gauss.",
-        "CONTINUOUS_NEW": "Cont. New", # TODO: Remove
+        "ZHOU": "Bim. Gauss."
     }
 
     ignore_scale = {
