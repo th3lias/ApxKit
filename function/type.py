@@ -15,5 +15,4 @@ class FunctionType(Enum):
     BRATLEY = 11,
     ZHOU = 12,
     NOISE = 13,
-    CONTINUOUS_NEW = 14,
     

@@ -26,8 +26,7 @@ def main_method(folder_name: Union[str, None] = None):
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
-                      FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE,
-                      FunctionType.CONTINUOUS_NEW]
+                      FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE]
 
     seed = 42
 
@@ -42,7 +41,6 @@ def main_method(folder_name: Union[str, None] = None):
         FunctionType.PRODUCT_PEAK: 1.0,
         FunctionType.ZHOU: 1.0,
         FunctionType.NOISE: 1.0,
-        FunctionType.CONTINUOUS_NEW: 1.0,
     }
 
     multiplier_fun = lambda x: 2 * x
