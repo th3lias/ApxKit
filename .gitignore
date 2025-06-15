@@ -263,7 +263,7 @@ results/final_results/**/*.pdf
 
 results/final_results/high_dim/results_numerical_experiments.csv
 
-!results/final_results/low_dim/Tables.pdf
+!results/final_results/low_dim/tables_pdf/Tables.pdf
 
 # run configurations
 .run/
