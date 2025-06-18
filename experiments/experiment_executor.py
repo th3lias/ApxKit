@@ -63,7 +63,8 @@ class ExperimentExecutor:
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
 
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
-                            avg_c: Union[float, dict], ls_multiplier_fun: Callable = lambda x: 2 * x, ):
+                            avg_c: Union[float, dict], ls_multiplier_fun: Callable = lambda x: 2 * x,
+                            test_multiplier_fun: Callable = lambda x: 2 * x):
         """
             Execute a series of comparisons with the given function types.
         """
@@ -134,7 +135,8 @@ class ExperimentExecutor:
                 if not self.use_max_scale:
                     max_scale = scale
                 self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
-                                                    seed=test_grid_seed, rule=self.test_rule).generate(max_scale)
+                                                    seed=test_grid_seed, rule=self.test_rule,
+                                                    multiplier_fun=test_multiplier_fun).generate(max_scale)
                 n_points = self.test_grid.get_num_points()
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.test_functions), n_points))
 
