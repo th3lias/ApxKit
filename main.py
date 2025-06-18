@@ -25,6 +25,11 @@ def main_method(folder_name: Union[str, None] = None):
         10: [1, 2, 3, 4, 5, 6],
     }
 
+    dim_scale_dict = dict()
+
+    for d in range(11, 101):
+        dim_scale_dict[d] = [1, 2]
+
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
                       FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE]
@@ -44,7 +49,8 @@ def main_method(folder_name: Union[str, None] = None):
         FunctionType.NOISE: 1.0,
     }
 
-    multiplier_fun = lambda x: 2 * x
+    multiplier_fun_ls_train = lambda x: 2 * x
+    multiplier_fun_test = lambda x: x
     n_fun_parallel = 50
 
     store_indices = True
@@ -53,7 +59,7 @@ def main_method(folder_name: Union[str, None] = None):
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
     least_squares_basis_type = BasisType.CHEBYSHEV
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
-    test_rule = RandomGridRule.UNIFORM
+    test_rule = RandomGridRule.CHEBYSHEV
     use_max_scale = False  # Whether to use the maximum scale for the test grid
 
     if folder_name is not None:
@@ -65,13 +71,14 @@ def main_method(folder_name: Union[str, None] = None):
                             seed=seed, ls_basis_type=least_squares_basis_type, tasmanian_grid_type=tasmanian_grid_type,
                             test_rule=test_rule, use_max_scale=use_max_scale, path=path,
                             store_indices=store_indices)
-    ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun)
+    ex.execute_experiments(function_types, n_fun_parallel, avg_c=average_c, ls_multiplier_fun=multiplier_fun_ls_train,
+                           test_multiplier_fun=multiplier_fun_test)
 
     # Plot error distribution
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True, sparse_ticks=True)
 
 
 if __name__ == '__main__':

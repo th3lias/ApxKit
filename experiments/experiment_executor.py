@@ -72,12 +72,17 @@ class ExperimentExecutor:
         np.random.seed(self.seed)
 
         print(
-            f"Starting dimension/scale {self.dim_scale_dictionary} n_functions={n_functions_parallel} "
-            f"experiments with cpu {platform.processor()} and "
-            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM with random test rule: {self.test_rule.name} and using max_scale={self.use_max_scale} "
-            f"at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} ")
-        print(f"Results will be stored in {self.results_path}")
+            f"Starting experiments with:\n" +
+            "_" * 75 + "\n" +
+            f"* dimension/scale {self.dim_scale_dictionary}\n" +
+            f"* n_functions={n_functions_parallel}\n" +
+            f"* cpu={platform.processor()}\n" +
+            f"* RAM={psutil.virtual_memory().total / 1024 / 1024 / 1024} GB\n" +
+            f"* random test rule: {self.test_rule.name}\n" +
+            f"* max_scale={self.use_max_scale}\n" +
+            f"* starting time: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} ")
         print("_" * 75)
+        print(f"Results will be stored in {self.results_path}")
         print("")
 
         time.sleep(1)
