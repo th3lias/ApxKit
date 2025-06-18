@@ -25,7 +25,8 @@ class ExperimentExecutor:
     """
 
     def __init__(self, dim_scale_dict: dict[int, List[int]], smolyak_method: InterpolationMethod,
-                 least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
+                 least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType,
+                 test_rule: RandomGridRule, use_max_scale: bool, seed: int = None,
                  path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL,
                  store_indices: bool = True):
         current_datetime = datetime.datetime.now()
@@ -40,6 +41,8 @@ class ExperimentExecutor:
         self.dim_scale_dictionary = dim_scale_dict
         self.smolyak_method = smolyak_method
         self.least_squares_method = least_squares_method
+        self.test_rule = test_rule
+        self.use_max_scale = use_max_scale
         self.seed = seed
         self.least_squares_basis_type = ls_basis_type
         self.tasmanian_grid_type = tasmanian_grid_type
@@ -70,7 +73,8 @@ class ExperimentExecutor:
         print(
             f"Starting dimension/scale {self.dim_scale_dictionary} n_functions={n_functions_parallel} "
             f"experiments with cpu {platform.processor()} and "
-            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM with random test rule: {self.test_rule.name} and using max_scale={self.use_max_scale} "
+            f"at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} ")
         print(f"Results will be stored in {self.results_path}")
         print("_" * 75)
         print("")
@@ -103,6 +107,8 @@ class ExperimentExecutor:
             # Calculates the functions, their names, cs and ws and stores them on class--level
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
 
+            max_scale = max(self.dim_scale_dictionary[dim])
+
             for scale in self.dim_scale_dictionary.get(dim):
 
                 # Training Grids
@@ -125,8 +131,10 @@ class ExperimentExecutor:
                 test_grid_seed = self.seed + 42 if self.seed is not None else None
                 if test_grid_seed is not None and self.seed is not None:
                     assert not self.seed == test_grid_seed, "The seed for the test grid should be different from the training grid, otherwise uniform least squares is trained and tested on the same data"
+                if not self.use_max_scale:
+                    max_scale = scale
                 self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
-                                                    seed=test_grid_seed).generate(scale)
+                                                    seed=test_grid_seed, rule=self.test_rule).generate(max_scale)
                 n_points = self.test_grid.get_num_points()
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.test_functions), n_points))
 
