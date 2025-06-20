@@ -4,11 +4,12 @@ from typing import Union
 import matplotlib
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 
 def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, logarithmic: bool = False,
-                      scales: list = None, dims: list = None,
-                      output_path: str = None) -> None:
+                      scales: list = None, dims: list = None, output_path: str = None,
+                      sparse_ticks_fixed_scale: bool = False) -> None:
     """
     Estimates and plots runtimes: once as Runtime vs Dimension for each scale,
     and once as Runtime vs Scale for each dimension.
@@ -20,6 +21,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
     :param scales: List of scales to plot (for left plot).
     :param dims: List of dimensions to plot (for right plot).
     :param output_path: Path to save the figure if `save` is True.
+    :param sparse_ticks_fixed_scale: If True, use sparse ticks for fixed scale plots.
     """
     if not os.path.exists(path):
         raise FileNotFoundError(f"The file {path} does not exist.")
@@ -36,6 +38,8 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
     smolyak_runtimes_scale = {scale: dict() for scale in scales}
     ls_runtimes_dim = {dim: dict() for dim in dims}
     smolyak_runtimes_dim = {dim: dict() for dim in dims}
+
+    unique_dims = df['dim'].unique().tolist()
 
     for (dim_name, dim_df) in df.groupby('dim'):
         for (scale_name, scale_df) in dim_df.groupby('scale'):
@@ -73,6 +77,19 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         values = {k: sum(v) / len(v) for k, v in runtimes.items()}
         ax.plot(values.keys(), values.values(), label=f'SA scale {scale}', marker='x',
                 linestyle='--', color=scale_colors[scale])
+
+    xticklabels = [str(dim) for dim in unique_dims]
+    if sparse_ticks_fixed_scale:
+        tick_indices = [i for i, dim in enumerate(unique_dims) if i % 10 == 0]
+        tick_indices.append(len(unique_dims) - 1)  # Ensure the last tick is included
+        tick_dims = [unique_dims[i] for i in tick_indices]
+        tick_labels = [xticklabels[i] for i in tick_indices]
+    else:
+        tick_dims = unique_dims
+        tick_labels = xticklabels
+
+    ax.set_xticks(tick_dims)
+    ax.set_xticklabels(tick_labels)
     ax.set_xlabel('Dimension')
     ax.set_ylabel('Runtime (seconds)')
     ax.set_title('Runtime vs Dimension')
@@ -86,6 +103,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
     dim_colors = {dim: color_map(i % 10) for i, dim in enumerate(dims)}
 
     ax = axes[1]
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     for dim, runtimes in ls_runtimes_dim.items():
         if dim not in dims:
             continue
@@ -122,6 +140,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
 
 if __name__ == '__main__':
     path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    dims_to_plot = [2, 5, 10]
-    scales_to_plot = [2, 4, 6]
-    estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, dims=dims_to_plot)
+    dims_to_plot = [11, 50, 100]
+    scales_to_plot = [1, 2]
+    estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, dims=dims_to_plot,
+                      sparse_ticks_fixed_scale=True)

@@ -4,6 +4,7 @@ from typing import Union
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+from matplotlib.ticker import MaxNLocator
 
 
 def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, logarithmic: bool = False,
@@ -70,6 +71,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         ax.plot(values.keys(), values.values(), label=f'SA scale {scale}', marker='x',
                 linestyle='--', color=scale_colors[scale])
 
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_xlabel('Dimension')
     if logarithmic:
         ax.set_yscale('log')

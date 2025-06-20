@@ -391,7 +391,6 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     ax.set_xticks(tick_dims)
                     ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
-                    ax.tick_params(axis='x', labelsize=12)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -426,11 +425,11 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "high_dim_chebyshev_density", "results_numerical_experiments.csv")
 
     # TODO: Change in the end
 
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
