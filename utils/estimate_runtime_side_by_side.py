@@ -140,7 +140,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
 
 if __name__ == '__main__':
     path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    dims_to_plot = [11, 50, 100]
-    scales_to_plot = [1, 2]
+    dims_to_plot = [2, 5, 10]
+    scales_to_plot = [2, 4, 6]
     estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, dims=dims_to_plot,
-                      sparse_ticks_fixed_scale=True)
+                      sparse_ticks_fixed_scale=False)
