@@ -155,16 +155,16 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
 
                     if only_maximum:
                         axs[0].plot(scales, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
 
                     else:
                         axs[0].plot(scales, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
                     # get the number of points in smolyak for each scale uniquely
 
@@ -357,15 +357,15 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 
                     if only_maximum:
                         axs[0].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
                     else:
                         axs[0].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
                 pbar.update(1)
 
@@ -425,11 +425,12 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "high_dim_chebyshev_density", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
 
     # TODO: Change in the end
 
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True,
+    #                             sparse_ticks=True)
