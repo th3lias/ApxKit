@@ -25,11 +25,6 @@ def main_method(folder_name: Union[str, None] = None):
         10: [1, 2, 3, 4, 5, 6],
     }
 
-    dim_scale_dict = dict()
-
-    for d in range(11, 101):
-        dim_scale_dict[d] = [1, 2]
-
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
                       FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE]
@@ -75,10 +70,10 @@ def main_method(folder_name: Union[str, None] = None):
                            test_multiplier_fun=multiplier_fun_test)
 
     # Plot error distribution
-    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    # plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
+    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
+    plot_all_errors_fixed_dim(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
     # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True, sparse_ticks=True)
+    # plot_all_errors_fixed_scale(file_name=ex.results_path, save=True, latex=True, only_maximum=True)
 
 
 if __name__ == '__main__':
