@@ -171,12 +171,11 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                 pbar.update(1)
 
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
-                # axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
                 axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares', fontsize=12,
                                   linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.13, -0.02)
+                    ax.xaxis.set_label_coords(1.135, -0.02) # TODO: Move a little bit to the right
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -374,7 +373,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                                   linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.13, -0.02)
+                    ax.xaxis.set_label_coords(1.135, -0.02) # TODO: Move a little bit to the right
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -425,7 +424,9 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
+    filename = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
+
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
