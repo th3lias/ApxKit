@@ -84,14 +84,18 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         tick_labels = xticklabels
 
     ax.set_xticks(tick_dims)
-    ax.set_xticklabels(tick_labels)
+    ax.set_xticklabels(tick_labels, fontsize=15)
 
-    ax.set_xlabel('Dimension')
+    for label in ax.get_yticklabels():
+        label.set_fontsize(15)
+
+
+    ax.set_xlabel('Dimension', fontsize=18)
     if logarithmic:
         ax.set_yscale('log')
-    ax.set_ylabel('Runtime (seconds)')
-    ax.set_title('Runtime of Algorithms vs Dimension')
-    ax.legend(loc="upper left")
+    ax.set_ylabel('Runtime (seconds)', fontsize=18)
+    ax.set_title('Runtime of Algorithms vs Dimension', fontsize=18)
+    ax.legend(loc="upper left", fontsize=15)
     ax.grid(True)
     if ylim is not None:
         ax.set_ylim(0, ylim)
