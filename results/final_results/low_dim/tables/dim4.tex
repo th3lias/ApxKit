@@ -1,43 +1,47 @@
-% Created with Python on 2025-05-29 10:15:57
-% ..\results\final_results\results_numerical_experiments.csv, dim=4, scales = [3, 4, 5, 6, 7, 8, 9]
+% Created with Python on 2025-06-22 19:31:16
+% ..\results\final_results\low_dim\results_numerical_experiments.csv, dim=4, scales = [3, 4, 5, 6, 7, 8, 9]
 \begin{tabular}{ll|rr|rr|rr|rr|rr|rr|rr|}
- &   \multicolumn{1}{c}{} & \multicolumn{2}{c}{Scale3} & \multicolumn{2}{c}{Scale4} & \multicolumn{2}{c}{Scale5} & \multicolumn{2}{c}{Scale6} & \multicolumn{2}{c}{Scale7} & \multicolumn{2}{c}{Scale8} & \multicolumn{2}{c}{Scale9}\\
+ &   \multicolumn{1}{c}{} & \multicolumn{2}{c}{Scale 3} & \multicolumn{2}{c}{Scale 4} & \multicolumn{2}{c}{Scale 5} & \multicolumn{2}{c}{Scale 6} & \multicolumn{2}{c}{Scale 7} & \multicolumn{2}{c}{Scale 8} & \multicolumn{2}{c}{Scale 9}\\
  &   \multicolumn{1}{c}{} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm max}^{\rm wc}$} & \multicolumn{1}{c}{$e_{\rm mean}^{\rm wc}$}\\
 \toprule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Bim. Gauss.}\\$Q=10$}} & Smolyak & 8.98e-01 & 2.04e-01  & 8.55e-01 & 1.48e-01  & 5.99e-01 & 9.86e-02  & 4.13e-01 & 5.87e-02  & 2.78e-01 & 2.75e-02  & 1.87e-01 & 1.40e-02  & 8.42e-02 & 5.36e-03\\
- & LS-Uniform & 1.34e+00 & 2.27e-01  & 1.32e+00 & 1.25e-01  & 1.61e+00 & 1.14e-01  & 1.20e+00 & 5.98e-02  & 7.72e-01 & 3.02e-02  & 7.89e-01 & 1.46e-02  & 6.83e-01 & 7.05e-03\\
- & LS-Chebyshev & \first{5.76e-01} & \first{1.20e-01}  & \first{6.44e-01} & \first{9.35e-02}  & \first{4.86e-01} & \first{5.52e-02}  & \first{3.01e-01} & \first{2.84e-02}  & \first{1.75e-01} & \first{1.55e-02}  & \first{7.85e-02} & \first{6.31e-03}  & \first{3.84e-02} & \first{2.05e-03}\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Bim. Gauss.}\\$Q=50$}} & Smolyak & \first{6.34e-01} & 1.76e-01  & 6.14e-01 & 1.27e-01  & 3.43e-01 & 8.48e-02  & 1.77e-01 & 4.25e-02  & 1.01e-01 & 1.36e-02  & 3.60e-02 & 3.18e-03  & 9.18e-03 & 8.39e-04\\
+ & LS-Uniform & 1.40e+00 & 1.86e-01  & 1.15e+00 & 1.23e-01  & 1.10e+00 & 9.00e-02  & 7.49e-01 & 3.09e-02  & 4.71e-01 & 1.36e-02  & 3.80e-01 & 5.27e-03  & 1.39e+00 & 7.92e-03\\
+ & LS-Chebyshev & 7.14e-01 & \first{1.56e-01}  & \first{5.03e-01} & \first{8.22e-02}  & \first{2.35e-01} & \first{4.60e-02}  & \first{1.18e-01} & \first{1.95e-02}  & \first{4.77e-02} & \first{6.20e-03}  & \first{1.29e-02} & \first{1.29e-03}  & \first{3.03e-03} & \first{2.47e-04}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Cont.}\\$Q=25$}} & Smolyak & \first{1.16e-01} & 3.75e-02  & \first{5.44e-02} & 1.55e-02  & \first{3.96e-02} & 5.52e-03  & \first{2.29e-02} & 2.15e-03  & \first{1.42e-02} & 9.22e-04  & \first{1.04e-02} & 3.76e-04  & \first{4.97e-03} & 1.76e-04\\
- & LS-Uniform & 1.37e-01 & 2.70e-02  & 7.07e-02 & 1.09e-02  & 7.09e-02 & 6.80e-03  & 6.79e-02 & 2.87e-03  & 3.32e-02 & 1.55e-03  & 4.10e-02 & 8.18e-04  & 9.32e-02 & 6.25e-04\\
- & LS-Chebyshev & 1.19e-01 & \first{2.42e-02}  & 6.54e-02 & \first{9.02e-03}  & 4.28e-02 & \first{3.80e-03}  & 3.52e-02 & \first{1.79e-03}  & 1.95e-02 & \first{7.78e-04}  & 1.55e-02 & \first{3.32e-04}  & 9.79e-03 & \first{1.51e-04}\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Cont.}\\$Q=50$}} & Smolyak & 3.06e-02 & \first{7.22e-03}  & 1.51e-02 & 3.07e-03  & 9.36e-03 & 1.03e-03  & 4.98e-03 & 4.84e-04  & 2.80e-03 & 1.64e-04  & 1.13e-03 & 5.73e-05  & 6.76e-04 & 1.81e-05\\
+ & LS-Uniform & 6.82e-02 & 8.94e-03  & 3.20e-02 & 3.45e-03  & 1.81e-02 & 1.67e-03  & 1.81e-02 & 7.44e-04  & 1.05e-02 & 3.41e-04  & 2.03e-02 & 2.56e-04  & 2.02e-01 & 1.17e-03\\
+ & LS-Chebyshev & \first{2.80e-02} & 7.87e-03  & \first{1.33e-02} & \first{2.72e-03}  & \first{7.72e-03} & \first{9.94e-04}  & \first{3.78e-03} & \first{3.61e-04}  & \first{2.23e-03} & \first{1.29e-04}  & \first{8.58e-04} & \first{4.69e-05}  & \first{4.37e-04} & \first{1.74e-05}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Corner Peak}\\$Q=25$}} & Smolyak & 1.64e-01 & 2.22e-02  & 8.03e-02 & 1.35e-02  & 5.32e-02 & 5.65e-03  & 1.81e-02 & 2.31e-03  & 6.36e-03 & 6.39e-04  & 1.55e-03 & 1.35e-04  & 3.04e-04 & 2.16e-05\\
- & LS-Uniform & \first{7.21e-02} & \first{9.98e-03}  & 4.68e-02 & \first{3.51e-03}  & 3.03e-02 & \first{1.34e-03}  & 1.08e-02 & \first{2.63e-04}  & 2.61e-03 & \first{5.53e-05}  & 1.35e-03 & \first{1.53e-05}  & 2.53e-04 & \first{2.87e-06}\\
- & LS-Chebyshev & 1.08e-01 & 3.67e-02  & \first{3.26e-02} & 8.27e-03  & \first{1.05e-02} & 2.20e-03  & \first{2.84e-03} & 5.13e-04  & \first{9.73e-04} & 1.41e-04  & \first{1.94e-04} & 2.97e-05  & \first{4.72e-05} & 5.95e-06\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Corner Peak}\\$Q=50$}} & Smolyak & 1.62e-01 & 2.46e-02  & 8.14e-02 & 1.29e-02  & 5.39e-02 & 5.69e-03  & 1.89e-02 & 2.32e-03  & 6.42e-03 & 6.42e-04  & 1.60e-03 & 1.37e-04  & 3.10e-04 & 2.20e-05\\
+ & LS-Uniform & \first{9.45e-02} & \first{1.05e-02}  & 6.71e-02 & \first{4.08e-03}  & 2.02e-02 & \first{1.08e-03}  & 8.63e-03 & \first{2.20e-04}  & 6.64e-03 & \first{8.51e-05}  & 1.53e-03 & \first{2.20e-05}  & 3.41e-03 & 2.36e-05\\
+ & LS-Chebyshev & 1.14e-01 & 2.12e-02  & \first{4.08e-02} & 7.06e-03  & \first{1.23e-02} & 2.09e-03  & \first{2.51e-03} & 4.46e-04  & \first{7.63e-04} & 1.16e-04  & \first{1.81e-04} & 2.37e-05  & \first{3.76e-05} & \first{4.59e-06}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Discont.}\\$Q=25$}} & Smolyak & 2.15e+01 & 5.20e+00  & 2.32e+01 & 2.96e+00  & 2.51e+01 & 2.66e+00  & 1.88e+01 & 1.73e+00  & 2.16e+01 & 1.44e+00  & 2.74e+01 & 1.05e+00  & 2.60e+01 & \first{7.32e-01}\\
- & LS-Uniform & 2.31e+01 & 4.30e+00  & 3.05e+01 & \first{2.86e+00}  & 5.69e+01 & 3.68e+00  & 7.03e+01 & 3.26e+00  & 6.35e+01 & 2.47e+00  & 2.06e+02 & 2.95e+00  & 3.47e+02 & 3.06e+00\\
- & LS-Chebyshev & \first{1.27e+01} & \first{3.35e+00}  & \first{1.42e+01} & 3.79e+00  & \first{1.90e+01} & \first{2.37e+00}  & \first{1.65e+01} & \first{1.65e+00}  & \first{1.70e+01} & \first{1.44e+00}  & \first{1.88e+01} & \first{1.01e+00}  & \first{1.85e+01} & 7.34e-01\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Discont.}\\$Q=50$}} & Smolyak & 2.40e+01 & \first{3.96e+00}  & 3.61e+01 & 3.29e+00  & 3.36e+01 & 2.59e+00  & 2.92e+01 & 1.96e+00  & 2.90e+01 & 1.40e+00  & 3.14e+01 & \first{1.04e+00}  & 3.13e+01 & 7.74e-01\\
+ & LS-Uniform & \first{2.27e+01} & 4.40e+00  & \first{2.68e+01} & \first{3.24e+00}  & 5.96e+01 & 3.33e+00  & 4.40e+01 & 3.05e+00  & 1.19e+02 & 2.99e+00  & 5.04e+02 & 5.85e+00  & 1.13e+04 & 6.19e+01\\
+ & LS-Chebyshev & 2.49e+01 & 5.10e+00  & 2.99e+01 & 3.74e+00  & \first{2.35e+01} & \first{2.33e+00}  & \first{2.49e+01} & \first{1.78e+00}  & \first{1.98e+01} & \first{1.33e+00}  & \first{1.92e+01} & 1.07e+00  & \first{1.81e+01} & \first{7.73e-01}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Gauss.}\\$Q=10$}} & Smolyak & 7.22e-01 & 1.24e-01  & 5.96e-01 & 1.44e-01  & 5.03e-01 & 6.63e-02  & 4.50e-01 & 4.40e-02  & 2.88e-01 & 2.36e-02  & 1.49e-01 & 7.92e-03  & 5.70e-02 & 2.89e-03\\
- & LS-Uniform & \first{5.40e-01} & 8.75e-02  & 6.65e-01 & 7.67e-02  & 1.55e+00 & 8.00e-02  & 1.38e+00 & 5.39e-02  & 7.74e-01 & 2.20e-02  & 8.90e-01 & 1.51e-02  & 5.36e-01 & 6.43e-03\\
- & LS-Chebyshev & 6.70e-01 & \first{8.34e-02}  & \first{5.04e-01} & \first{5.52e-02}  & \first{3.89e-01} & \first{3.74e-02}  & \first{2.55e-01} & \first{1.97e-02}  & \first{1.23e-01} & \first{9.93e-03}  & \first{6.61e-02} & \first{4.57e-03}  & \first{2.36e-02} & \first{1.57e-03}\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Gauss.}\\$Q=50$}} & Smolyak & 6.42e-01 & 1.75e-01  & 4.80e-01 & 8.93e-02  & 3.24e-01 & 4.70e-02  & 1.98e-01 & 2.07e-02  & 1.04e-01 & 7.66e-03  & 3.94e-02 & 3.36e-03  & 9.55e-03 & 9.78e-04\\
+ & LS-Uniform & 8.28e-01 & 1.35e-01  & 1.03e+00 & 7.53e-02  & 1.01e+00 & 5.19e-02  & 1.30e+00 & 2.99e-02  & 3.52e-01 & 9.70e-03  & 3.41e-01 & 4.48e-03  & 1.31e+00 & 7.83e-03\\
+ & LS-Chebyshev & \first{5.90e-01} & \first{9.71e-02}  & \first{4.10e-01} & \first{5.53e-02}  & \first{2.14e-01} & \first{2.71e-02}  & \first{1.08e-01} & \first{1.13e-02}  & \first{3.82e-02} & \first{3.73e-03}  & \first{1.68e-02} & \first{1.06e-03}  & \first{5.26e-03} & \first{2.87e-04}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Geo. Mean}\\$Q=25$}} & Smolyak & 9.16e-02 & 2.37e-02  & 2.78e-02 & 5.54e-03  & 9.13e-03 & 1.45e-03  & 2.67e-03 & 3.31e-04  & 5.68e-04 & 5.50e-05  & 1.38e-04 & 7.10e-06  & \first{1.55e-05} & \first{6.67e-07}\\
- & LS-Uniform & 1.38e-01 & \first{1.37e-02}  & 4.08e-02 & \first{3.78e-03}  & 7.21e-03 & \first{5.87e-04}  & 4.33e-03 & \first{1.33e-04}  & 1.87e-03 & \first{3.66e-05}  & 3.30e-04 & \first{4.92e-06}  & 7.79e-05 & 9.31e-07\\
- & LS-Chebyshev & \first{8.95e-02} & 2.67e-02  & \first{1.76e-02} & 4.79e-03  & \first{7.21e-03} & 1.15e-03  & \first{1.38e-03} & 2.70e-04  & \first{4.05e-04} & 6.47e-05  & \first{1.25e-04} & 1.26e-05  & 1.61e-05 & 2.71e-06\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Geo. Mean}\\$Q=50$}} & Smolyak & \first{8.36e-02} & 2.25e-02  & 3.02e-02 & 5.43e-03  & 9.51e-03 & 1.15e-03  & 2.33e-03 & 2.05e-04  & 5.75e-04 & 3.13e-05  & 9.34e-05 & 4.02e-06  & 1.07e-05 & 4.43e-07\\
+ & LS-Uniform & 1.03e-01 & \first{1.27e-02}  & \first{2.90e-02} & \first{2.50e-03}  & 1.35e-02 & \first{5.94e-04}  & 5.62e-03 & \first{1.27e-04}  & 8.25e-04 & \first{1.35e-05}  & 1.25e-04 & \first{2.09e-06}  & 1.18e-04 & 9.63e-07\\
+ & LS-Chebyshev & 1.03e-01 & 3.31e-02  & 2.91e-02 & 7.40e-03  & \first{5.91e-03} & 1.19e-03  & \first{8.35e-04} & 2.12e-04  & \first{1.92e-04} & 2.86e-05  & \first{1.68e-05} & 2.98e-06  & \first{3.13e-06} & \first{2.92e-07}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Osci.}\\$Q=10$}} & Smolyak & \first{1.23e+00} & 3.79e-01  & \first{4.98e-01} & 1.46e-01  & 1.27e-01 & 2.85e-02  & 1.84e-02 & 4.18e-03  & 1.86e-03 & 3.76e-04  & 9.48e-05 & 1.83e-05  & 2.88e-06 & 4.60e-07\\
- & LS-Uniform & 1.89e+00 & \first{3.48e-01}  & 1.16e+00 & \first{1.03e-01}  & 2.60e-01 & \first{2.01e-02}  & 4.47e-02 & 2.38e-03  & 5.26e-03 & 1.63e-04  & 3.54e-04 & 7.82e-06  & 1.53e-05 & 2.46e-07\\
- & LS-Chebyshev & 1.39e+00 & 4.26e-01  & 7.82e-01 & 1.41e-01  & \first{9.51e-02} & 2.15e-02  & \first{1.13e-02} & \first{2.37e-03}  & \first{9.38e-04} & \first{1.49e-04}  & \first{5.47e-05} & \first{6.28e-06}  & \first{1.07e-06} & \first{1.51e-07}\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{NOISE}\\$Q=50$}} & Smolyak & 1.65e-06 & 4.23e-07  & 2.09e-06 & 5.18e-07  & 2.63e-06 & 5.34e-07  & 4.27e-06 & 6.76e-07  & 4.65e-06 & 7.53e-07  & 5.81e-06 & 9.02e-07  & 6.78e-06 & 1.02e-06\\
+ & LS-Uniform & 1.45e-06 & 1.96e-07  & 1.48e-06 & 1.88e-07  & 3.94e-06 & 2.58e-07  & 6.85e-06 & 2.78e-07  & 1.39e-05 & 4.01e-07  & 7.98e-05 & 9.71e-07  & 2.00e-03 & 1.32e-05\\
+ & LS-Chebyshev & \first{6.18e-07} & \first{1.75e-07}  & \first{7.31e-07} & \first{1.71e-07}  & \first{7.82e-07} & \first{1.49e-07}  & \first{8.05e-07} & \first{1.38e-07}  & \first{7.41e-07} & \first{1.39e-07}  & \first{7.44e-07} & \first{1.37e-07}  & \first{7.95e-07} & \first{1.37e-07}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Prod. Peak}\\$Q=10$}} & Smolyak & \first{3.52e-03} & 1.15e-03  & 6.69e-04 & 1.73e-04  & \first{9.33e-05} & 2.42e-05  & 1.29e-05 & 2.86e-06  & 1.40e-06 & 3.06e-07  & 1.25e-07 & 2.48e-08  & 8.86e-09 & 1.39e-09\\
- & LS-Uniform & 5.03e-03 & \first{8.61e-04}  & 5.62e-04 & \first{9.32e-05}  & 2.38e-04 & 1.71e-05  & 3.14e-05 & 1.41e-06  & 2.87e-06 & \first{1.11e-07}  & 4.81e-07 & 9.74e-09  & 4.08e-08 & 6.83e-10\\
- & LS-Chebyshev & 4.04e-03 & 1.29e-03  & \first{4.75e-04} & 1.37e-04  & 9.48e-05 & \first{1.65e-05}  & \first{8.91e-06} & \first{1.35e-06}  & \first{6.78e-07} & 1.15e-07  & \first{5.99e-08} & \first{7.92e-09}  & \first{3.40e-09} & \first{4.10e-10}\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Osci.}\\$Q=50$}} & Smolyak & \first{1.73e+00} & \first{3.71e-01}  & \first{6.40e-01} & 1.27e-01  & 1.47e-01 & 3.57e-02  & 2.27e-02 & 5.91e-03  & 2.29e-03 & 5.81e-04  & 1.65e-04 & 3.36e-05  & 6.86e-06 & 1.18e-06\\
+ & LS-Uniform & 2.57e+00 & 4.73e-01  & 1.12e+00 & \first{1.18e-01}  & 3.74e-01 & \first{2.14e-02}  & 8.01e-02 & \first{2.14e-03}  & 6.46e-03 & 1.75e-04  & 8.88e-04 & 1.58e-05  & 4.14e-04 & 3.25e-06\\
+ & LS-Chebyshev & 2.99e+00 & 6.38e-01  & 1.04e+00 & 2.00e-01  & \first{1.19e-01} & 2.60e-02  & \first{1.21e-02} & 2.29e-03  & \first{1.06e-03} & \first{1.60e-04}  & \first{6.54e-05} & \first{8.09e-06}  & \first{2.32e-06} & \first{2.84e-07}\\
 \midrule
-\multirow{3}{*}{\thead[l]{\tiny\textbf{Ridge Prod.}\\$Q=25$}} & Smolyak & 1.35e+00 & 3.74e-01  & 8.06e-01 & 1.72e-01  & 6.55e-01 & 7.73e-02  & 3.17e-01 & 3.29e-02  & 1.61e-01 & 1.43e-02  & 1.01e-01 & 6.03e-03  & \first{4.81e-02} & 2.51e-03\\
- & LS-Uniform & 2.64e+00 & \first{3.74e-01}  & 1.18e+00 & 1.37e-01  & 8.84e-01 & 8.55e-02  & 8.67e-01 & 3.78e-02  & 6.40e-01 & 1.60e-02  & 1.14e+00 & 1.19e-02  & 9.26e-01 & 7.67e-03\\
- & LS-Chebyshev & \first{1.27e+00} & 3.90e-01  & \first{5.23e-01} & \first{1.22e-01}  & \first{4.29e-01} & \first{5.15e-02}  & \first{2.02e-01} & \first{2.37e-02}  & \first{8.82e-02} & \first{1.10e-02}  & \first{7.14e-02} & \first{4.60e-03}  & 5.20e-02 & \first{1.99e-03}\\
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Prod. Peak}\\$Q=50$}} & Smolyak & 7.49e-03 & 1.86e-03  & 1.17e-03 & 2.97e-04  & 1.95e-04 & 4.47e-05  & 2.37e-05 & 5.74e-06  & 2.36e-06 & 5.40e-07  & 2.12e-07 & 3.75e-08  & 1.43e-08 & 1.83e-09\\
+ & LS-Uniform & 7.81e-03 & \first{1.60e-03}  & 3.43e-03 & \first{1.92e-04}  & 3.59e-04 & \first{2.02e-05}  & 7.85e-05 & 2.11e-06  & 5.35e-06 & \first{1.28e-07}  & 9.85e-07 & 1.64e-08  & 8.28e-07 & 5.47e-09\\
+ & LS-Chebyshev & \first{6.16e-03} & 2.04e-03  & \first{1.13e-03} & 2.97e-04  & \first{1.08e-04} & 2.55e-05  & \first{1.09e-05} & \first{2.09e-06}  & \first{1.10e-06} & 1.52e-07  & \first{7.08e-08} & \first{9.16e-09}  & \first{4.38e-09} & \first{4.44e-10}\\
+\midrule
+\multirow{3}{*}{\thead[l]{\tiny\textbf{Ridge Prod.}\\$Q=50$}} & Smolyak & 1.70e+00 & 3.83e-01  & 1.30e+00 & 2.05e-01  & 7.02e-01 & 8.54e-02  & 3.40e-01 & 3.77e-02  & 2.32e-01 & 1.58e-02  & 1.24e-01 & 6.54e-03  & 4.96e-02 & 2.72e-03\\
+ & LS-Uniform & 2.06e+00 & \first{2.88e-01}  & 1.16e+00 & 1.47e-01  & 1.02e+00 & 9.01e-02  & 1.02e+00 & 3.59e-02  & 6.19e-01 & 2.10e-02  & 2.03e+00 & 2.22e-02  & 1.28e+01 & 8.16e-02\\
+ & LS-Chebyshev & \first{9.88e-01} & 3.53e-01  & \first{5.30e-01} & \first{1.27e-01}  & \first{2.94e-01} & \first{5.48e-02}  & \first{2.30e-01} & \first{2.59e-02}  & \first{1.19e-01} & \first{9.61e-03}  & \first{6.77e-02} & \first{3.92e-03}  & \first{4.23e-02} & \first{1.60e-03}\\
 \bottomrule
 \end{tabular}

@@ -2,6 +2,7 @@ import numpy as np
 
 
 def rescale(grid: np.ndarray, lower_bound: float, upper_bound: float) -> np.ndarray:
+    """ Rescales a grid of points from the range [-1, 1] to the specified range [lower_bound, upper_bound]. """
     if lower_bound == -1. and upper_bound == 1.:
         return grid
     grid = (grid + 1) / 2

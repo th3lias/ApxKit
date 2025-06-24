@@ -25,7 +25,8 @@ class ExperimentExecutor:
     """
 
     def __init__(self, dim_scale_dict: dict[int, List[int]], smolyak_method: InterpolationMethod,
-                 least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType, seed: int = None,
+                 least_squares_method: LeastSquaresMethod, ls_basis_type: BasisType,
+                 test_rule: RandomGridRule, use_max_scale: bool, seed: int = None,
                  path: str = None, tasmanian_grid_type: TasmanianGridType = TasmanianGridType.STANDARD_GLOBAL,
                  store_indices: bool = True):
         current_datetime = datetime.datetime.now()
@@ -35,9 +36,13 @@ class ExperimentExecutor:
         else:
             self.results_path = path
 
+        for dim in dim_scale_dict.keys():
+            dim_scale_dict[dim] = sorted(list(set(dim_scale_dict[dim])))
         self.dim_scale_dictionary = dim_scale_dict
         self.smolyak_method = smolyak_method
         self.least_squares_method = least_squares_method
+        self.test_rule = test_rule
+        self.use_max_scale = use_max_scale
         self.seed = seed
         self.least_squares_basis_type = ls_basis_type
         self.tasmanian_grid_type = tasmanian_grid_type
@@ -58,7 +63,8 @@ class ExperimentExecutor:
         df.to_csv(self.results_path, index=False, sep=',', decimal='.', header=True)
 
     def execute_experiments(self, function_types: Union[List[FunctionType], FunctionType], n_functions_parallel: int,
-                            avg_c: Union[float, dict], ls_multiplier_fun: Callable = lambda x: 2 * x, ):
+                            avg_c: Union[float, dict], ls_multiplier_fun: Callable = lambda x: 2 * x,
+                            test_multiplier_fun: Callable = lambda x: 2 * x):
         """
             Execute a series of comparisons with the given function types.
         """
@@ -66,11 +72,17 @@ class ExperimentExecutor:
         np.random.seed(self.seed)
 
         print(
-            f"Starting dimension/scale {self.dim_scale_dictionary} n_functions={n_functions_parallel} "
-            f"experiments with cpu {platform.processor()} and "
-            f"{psutil.virtual_memory().total / 1024 / 1024 / 1024} GB RAM at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-        print(f"Results will be stored in {self.results_path}")
+            f"Starting experiments with:\n" +
+            "_" * 75 + "\n" +
+            f"* dimension/scale {self.dim_scale_dictionary}\n" +
+            f"* n_functions={n_functions_parallel}\n" +
+            f"* cpu={platform.processor()}\n" +
+            f"* RAM={psutil.virtual_memory().total / 1024 / 1024 / 1024} GB\n" +
+            f"* random test rule: {self.test_rule.name}\n" +
+            f"* max_scale={self.use_max_scale}\n" +
+            f"* starting time: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} ")
         print("_" * 75)
+        print(f"Results will be stored in {self.results_path}")
         print("")
 
         time.sleep(1)
@@ -101,6 +113,8 @@ class ExperimentExecutor:
             # Calculates the functions, their names, cs and ws and stores them on class--level
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
 
+            max_scale = max(self.dim_scale_dictionary[dim])
+
             for scale in self.dim_scale_dictionary.get(dim):
 
                 # Training Grids
@@ -123,8 +137,11 @@ class ExperimentExecutor:
                 test_grid_seed = self.seed + 42 if self.seed is not None else None
                 if test_grid_seed is not None and self.seed is not None:
                     assert not self.seed == test_grid_seed, "The seed for the test grid should be different from the training grid, otherwise uniform least squares is trained and tested on the same data"
+                if not self.use_max_scale:
+                    max_scale = scale
                 self.test_grid = RandomGridProvider(dim, lower_bound=0.0, upper_bound=1.0,
-                                                    seed=test_grid_seed).generate(scale)
+                                                    seed=test_grid_seed, rule=self.test_rule,
+                                                    multiplier_fun=test_multiplier_fun).generate(max_scale)
                 n_points = self.test_grid.get_num_points()
                 self.y_test = np.empty(dtype=np.float64, shape=(len(self.test_functions), n_points))
 
@@ -158,6 +175,8 @@ class ExperimentExecutor:
         start_time = time.time()
 
         if self.smolyak_method == InterpolationMethod.STANDARD:  # Least Squares at the Sparse Grid points
+            raise DeprecationWarning(
+                "The standard Smolyak method is deprecated and will be removed in future versions as it does not satisfy the desired numerical accuracy.")
             si = SmolyakInterpolator(grid, self.smolyak_method, store_indices=self.store_indices)
             si.fit(self.functions)
             y_test_hat_smolyak = si.interpolate(self.test_grid)

@@ -155,28 +155,27 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
 
                     if only_maximum:
                         axs[0].plot(scales, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(scales, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
 
                     else:
                         axs[0].plot(scales, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
                     # get the number of points in smolyak for each scale uniquely
 
                 pbar.update(1)
 
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
-                # axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares')
                 axs[0].set_xlabel('scale ($=q-d$)\npoints Smolyak\npoints Least Squares', fontsize=12,
                                   linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.13, -0.02)
+                    ax.xaxis.set_label_coords(1.135, -0.02) # TODO: Move a little bit to the right
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -253,7 +252,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 
     prop_cycle = plt.rcParams['axes.prop_cycle']
     colors = prop_cycle.by_key()['color']
-    markers = ['o', 's', '^', 'D', 'v', '<', '>', 'P', 'X']  # Different markers
+    markers = ['o', 's', '^', 'D', 'v', '<', '>', 'P', 'X']
 
     # Get distinct values for dimension, function type, grids, methods, and scales
     scales = df['scale'].unique()
@@ -357,15 +356,15 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 
                     if only_maximum:
                         axs[0].plot(dims, max_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(dims, max_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
                     else:
                         axs[0].plot(dims, mean_values_ellinf, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
                         axs[1].plot(dims, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
-                                    linestyle='-')
+                                    linestyle='-', alpha=0.7)
 
                 pbar.update(1)
 
@@ -374,7 +373,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                                   linespacing=1.1)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.13, -0.02)
+                    ax.xaxis.set_label_coords(1.135, -0.02) # TODO: Move a little bit to the right
                     ax.set_yscale('log')
                     ax.legend()
                     ax.grid(False)
@@ -391,9 +390,6 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     ax.set_xticks(tick_dims)
                     ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
-                    ax.tick_params(axis='y', labelsize=12)
-                    ax.tick_params(axis='x', labelsize=12)
-                    ax.tick_params(axis='y', labelsize=12)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -405,7 +401,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
                 plt.subplots_adjust(wspace=0.25)
 
-                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q\geq {min(n_functions_list)}$", fontsize=16,
+                fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q={min(n_functions_list)}$", fontsize=16,
                              fontweight='bold', x=0.525)
 
                 if save:
@@ -428,9 +424,9 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
 
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
+    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)

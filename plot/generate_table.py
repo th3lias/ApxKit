@@ -79,9 +79,9 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, abbrevia
         for i, scale in enumerate(scales):
             if i == 0:
                 output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
-                    no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
+                    no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
             else:
-                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
+                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
         output[dim_name] += r"\\" + "\n"
 
         if len(error_reductions) > 1:
@@ -463,9 +463,9 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
         for i, scale in enumerate(scales):
             if i == 0:
                 output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
-                    no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
+                    no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
             else:
-                output[fun_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale" + str(scale) + r"}"
+                output[fun_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
         output[fun_name] += r"\\" + "\n"
 
         if len(error_reductions) > 1:
@@ -617,8 +617,7 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 if __name__ == '__main__':
     input_path = "path/to/your/results_numerical_experiments.csv"
-    input_path = os.path.join("..", "results", "final_results", "results_numerical_experiments.csv")  # TODO: Remove
-    output_folder = os.path.join("..", "results", "final_results", "tables")
+    output_folder = os.path.join("..", "results", "final_results", "low_dim", "tables")
 
     abbr_dict = {
         "CONTINUOUS": "Cont.",
