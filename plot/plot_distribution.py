@@ -172,17 +172,17 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
 
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
                 axs[0].set_xlabel('scale$=q-d$\npoints SA$ =N(q,d)$\npoints LS$ =2\cdot N(q,d)$', fontsize=12,
-                                  linespacing=0.9)
+                                  linespacing=1.05)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.13, -0.017) # TODO: Move a little bit to the right
+                    ax.xaxis.set_label_coords(1.175, -0.017) # TODO: Move a little bit to the right
                     ax.set_yscale('log')
-                    ax.legend()
+                    ax.legend(fontsize=15)
                     ax.grid(False)
                     ax.set_xticks(scales)  # Ensure ticks correspond to original scales
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
-                    ax.tick_params(axis='x', labelsize=12)
-                    ax.tick_params(axis='y', labelsize=12)
+                    ax.tick_params(axis='x', labelsize=15)
+                    ax.tick_params(axis='y', labelsize=15)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -192,7 +192,7 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                     axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
-                plt.subplots_adjust(wspace=0.25)
+                plt.subplots_adjust(wspace=0.35)
 
                 fig.suptitle(f"{abbreviation_dict[f_type]}, $d={dim}$, $Q={min(n_functions_list)}$", fontsize=16,
                              fontweight='bold', x=0.525)
@@ -370,10 +370,10 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
                 axs[0].set_xlabel(f'$d$\npoints SA$ = N(d+{scale},d)$\npoints LS$ = 2\cdot N(q+{scale},d)$', fontsize=12,
-                                  linespacing=0.9)
+                                  linespacing=1.05)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.13, -0.017) # TODO: Move a little bit to the right
+                    ax.xaxis.set_label_coords(1.175, -0.017) # TODO: Move a little bit to the right
                     ax.set_yscale('log')
                     ax.legend(fontsize=15)
                     ax.grid(False)
@@ -399,7 +399,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     axs[1].set_ylabel('$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
                 plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
-                plt.subplots_adjust(wspace=0.25)
+                plt.subplots_adjust(wspace=0.35)
 
                 fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q={min(n_functions_list)}$", fontsize=16,
                              fontweight='bold', x=0.525)
