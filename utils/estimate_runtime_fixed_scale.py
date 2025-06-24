@@ -8,8 +8,7 @@ from matplotlib.ticker import MaxNLocator
 
 
 def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, logarithmic: bool = False,
-                      scales: list = None,
-                      output_path: str = None) -> None:
+                      scales: list = None, output_path: str = None, sparse_ticks:bool=False) -> None:
     """
     Estimates the runtimes of the experiments from the CSV file at the given path for each algorithm.
 
@@ -19,6 +18,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
     :param logarithmic: If True, use a logarithmic scale for the y-axis.
     :param scales: List of scales to plot. If None, all scales will be plotted.
     :param output_path: Path to save the plot if `save` is True.
+    :param sparse_ticks: If True, use sparse ticks on the x-axis.
     """
 
     if not os.path.exists(path):
@@ -31,6 +31,8 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
 
     ls_runtimes = dict()
     smolyak_runtimes = dict()
+
+    unique_dims = df['dim'].unique().tolist()
 
     for (dim_name, dim_df) in df.groupby('dim'):
         for (scale_name, scale_df) in dim_df.groupby('scale'):
@@ -71,7 +73,19 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         ax.plot(values.keys(), values.values(), label=f'SA scale {scale}', marker='x',
                 linestyle='--', color=scale_colors[scale])
 
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    xticklabels = [str(dim) for dim in unique_dims]
+    if sparse_ticks:
+        tick_indices = [i for i, dim in enumerate(unique_dims) if i % 10 == 0]
+        tick_indices.append(len(unique_dims) - 1)  # Ensure the last tick is included
+        tick_dims = [unique_dims[i] for i in tick_indices]
+        tick_labels = [xticklabels[i] for i in tick_indices]
+    else:
+        tick_dims = unique_dims
+        tick_labels = xticklabels
+
+    ax.set_xticks(tick_dims)
+    ax.set_xticklabels(tick_labels)
+
     ax.set_xlabel('Dimension')
     if logarithmic:
         ax.set_yscale('log')
@@ -93,6 +107,6 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
 
 
 if __name__ == '__main__':
-    path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    scales_to_plot = [2, 4, 6]
-    estimate_runtimes(path, save=False, ylim=None, logarithmic=True, scales=scales_to_plot)
+    path = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
+    scales_to_plot = [1, 2]
+    estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, sparse_ticks=True)
