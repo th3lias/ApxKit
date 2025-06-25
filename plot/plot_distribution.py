@@ -166,8 +166,6 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                         axs[1].plot(scales, mean_values_ell2, label=f'{method} - {grid}', color=c, marker=marker,
                                     linestyle='-', alpha=0.7)
 
-                    # get the number of points in smolyak for each scale uniquely
-
                 pbar.update(1)
 
                 xticklabels = [f"{scale}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, scale in enumerate(scales)]
@@ -175,7 +173,7 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                                   linespacing=1.2)
 
                 for ax in axs:
-                    ax.xaxis.set_label_coords(1.175, -0.025)
+                    ax.xaxis.set_label_coords(1.1875, -0.025)
                     ax.set_yscale('log')
                     ax.legend(fontsize=15)
                     ax.grid(False)
@@ -369,8 +367,8 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 pbar.update(1)
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
-                axs[0].set_xlabel(f'$d$\npoints SA$ = N(d+{scale},d)$\npoints LS$ = 2\cdot N(q+{scale},d)$', fontsize=14,
-                                  linespacing=1.2)
+                axs[0].set_xlabel(f'$d$\npoints SA$ = N(d+{scale},d)$\npoints LS$ = 2\cdot N(q+{scale},d)$', fontsize=12,
+                                  linespacing=1.05)
 
                 for ax in axs:
                     ax.xaxis.set_label_coords(1.175, -0.025)
@@ -390,6 +388,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     ax.set_xticks(tick_dims)
                     ax.set_xticklabels(tick_labels)
                     ax.tick_params(axis='x', labelsize=12)
+                    ax.tick_params(axis='y', labelsize=15)
 
                 if not only_maximum:
                     axs[0].set_ylabel('$e_{\mathrm{max}}$', fontsize=18)
@@ -424,9 +423,9 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
+    filename = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
 
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
-    # plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
     # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
