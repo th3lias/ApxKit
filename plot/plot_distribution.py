@@ -77,9 +77,9 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                     data_grid_type = data_dim[data_dim['grid_type'] == str(grid)].copy()
 
                     if grid == "SPARSE":
-                        method = "Smolyak"
+                        method = "SA"
                     elif grid == "UNIFORM" or grid == "CHEBYSHEV":
-                        method = "Least_Squares"
+                        method = "LS"
                     else:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
@@ -175,7 +175,7 @@ def plot_all_errors_fixed_dim(file_name: str, abbreviation_dict: dict = None, pl
                 for ax in axs:
                     ax.xaxis.set_label_coords(1.1875, -0.025)
                     ax.set_yscale('log')
-                    ax.legend(fontsize=15)
+                    ax.legend(fontsize=14)
                     ax.grid(False)
                     ax.set_xticks(scales)  # Ensure ticks correspond to original scales
                     ax.set_xticklabels(xticklabels)  # Explicitly label them as integers
@@ -282,9 +282,9 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                     data_grid_type = data_scale[data_scale['grid_type'] == str(grid)].copy()
 
                     if grid == "SPARSE":
-                        method = "Smolyak"
+                        method = "SA"
                     elif grid == "UNIFORM" or grid == "CHEBYSHEV":
-                        method = "Least_Squares"
+                        method = "LS"
                     else:
                         raise ValueError(f"Cannot handle the selected grid_type {grid}")
 
@@ -373,7 +373,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 for ax in axs:
                     ax.xaxis.set_label_coords(1.175, -0.025)
                     ax.set_yscale('log')
-                    ax.legend(fontsize=15)
+                    ax.legend(fontsize=14)
                     ax.grid(False)
 
                     if sparse_ticks:
@@ -423,9 +423,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
 if __name__ == '__main__':
     filename = "path/to/your/results_numerical_experiments.csv"
 
-    filename = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
     plot_all_errors_fixed_dim(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
-    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True, sparse_ticks=True)
-    # plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=True)
+    plot_all_errors_fixed_scale(filename, save=True, latex=True, plot_type="boxplot", only_maximum=False)
