@@ -260,7 +260,7 @@ logs/
 !results/final_results/
 
 # Ignore the pdf images
-results/final_results/**/*.pdf
+results/final_results/**/*.png
 
 results/final_results/high_dim/results_numerical_experiments.csv
 results/final_results/high_dim_chebyshev_test_points/results_numerical_experiments.csv
