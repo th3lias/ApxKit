@@ -255,6 +255,7 @@ logs/
 # Except the final_results folder (and its subfolders)
 !results/final_results/low_dim/
 !results/final_results/high_dim/
+!results/final_results/high_dim_chebyshev_test_points/
 
 !results/final_results/
 
@@ -262,8 +263,11 @@ logs/
 results/final_results/**/*.pdf
 
 results/final_results/high_dim/results_numerical_experiments.csv
+results/final_results/high_dim_chebyshev_test_points/results_numerical_experiments.csv
 
 !results/final_results/low_dim/tables_pdf/Tables.pdf
+
+
 
 # run configurations
 .run/
