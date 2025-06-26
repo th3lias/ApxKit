@@ -94,7 +94,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
     if logarithmic:
         ax.set_yscale('log')
     ax.set_ylabel('Runtime (seconds)', fontsize=18)
-    ax.set_title('Runtime of Algorithms vs Dimension', fontsize=18)
+    ax.set_title('Runtime vs. Dimension', fontsize=18)
     ax.legend(loc="upper left", fontsize=15)
     ax.grid(True)
     if ylim is not None:

@@ -95,7 +95,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
     ax.set_xticklabels(tick_labels, fontsize=15)
     ax.set_xlabel('Dimension', fontsize=18)
     ax.set_ylabel('Runtime (seconds)', fontsize=18)
-    ax.set_title('Runtime vs Dimension', fontsize=18)
+    ax.set_title('Runtime vs. Dimension', fontsize=18)
     if logarithmic:
         ax.set_yscale('log')
     if ylim is not None:
@@ -123,7 +123,7 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
                 linestyle='--', color=dim_colors[dim])
     ax.set_xlabel('Scale', fontsize=18)
     ax.set_ylabel('Runtime (seconds)', fontsize=18)
-    ax.set_title('Runtime vs Scale', fontsize=18)
+    ax.set_title('Runtime vs. Scale', fontsize=18)
     if logarithmic:
         ax.set_yscale('log')
     if ylim is not None:
