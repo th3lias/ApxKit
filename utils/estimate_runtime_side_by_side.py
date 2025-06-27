@@ -105,8 +105,6 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
 
     dim_colors = {dim: color_map(i % 10) for i, dim in enumerate(dims)}
 
-
-
     ax = axes[1]
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     for dim, runtimes in ls_runtimes_dim.items():
@@ -147,11 +145,3 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         plt.show()
 
     plt.close(fig)
-
-
-if __name__ == '__main__':
-    path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    dims_to_plot = [2, 5, 10]
-    scales_to_plot = [2, 4, 6]
-    estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, dims=dims_to_plot,
-                      sparse_ticks_fixed_scale=False)

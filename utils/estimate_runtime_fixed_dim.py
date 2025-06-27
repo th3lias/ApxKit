@@ -90,9 +90,3 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         plt.show()
 
     plt.close(fig)
-
-
-if __name__ == '__main__':
-    path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    dims_to_plot = [2, 4, 6]
-    estimate_runtimes(path, save=False, ylim=None, logarithmic=True, dims=dims_to_plot)

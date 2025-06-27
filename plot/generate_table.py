@@ -620,8 +620,7 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 if __name__ == '__main__':
     input_path = "path/to/your/results_numerical_experiments.csv"
-    input_path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    output_folder = os.path.join("..", "results", "final_results", "low_dim", "tables")
+    output_folder = "path/to/your/output/folder"
 
     abbr_dict = {
         "CONTINUOUS": "Continuous",
