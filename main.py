@@ -54,7 +54,7 @@ def main_method(folder_name: Union[str, None] = None):
     ls_method_type = LeastSquaresMethod.SCIPY_LSTSQ_GELSY
     least_squares_basis_type = BasisType.CHEBYSHEV
     tasmanian_grid_type = TasmanianGridType.STANDARD_GLOBAL
-    test_rule = RandomGridRule.CHEBYSHEV
+    test_rule = RandomGridRule.UNIFORM
     use_max_scale = False  # Whether to use the maximum scale for the test grid
 
     if folder_name is not None:

@@ -81,7 +81,8 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, abbrevia
                 output[dim_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
                     no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
             else:
-                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
+                output[dim_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale " + str(
+                    scale) + r"}"
         output[dim_name] += r"\\" + "\n"
 
         if len(error_reductions) > 1:
@@ -107,6 +108,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, abbrevia
         output[dim_name] += r"\\" + "\n" + r"\toprule" + "\n"
 
         dfg = dim_df.groupby('f_name')
+
         for fun_index, (fun_name, fun_df) in enumerate(dfg):
             min_values = {}
 
@@ -465,7 +467,8 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
                 output[fun_name] += r" \multicolumn{1}{c}{} & \multicolumn{" + str(
                     no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
             else:
-                output[fun_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale " + str(scale) + r"}"
+                output[fun_name] += r" & \multicolumn{" + str(no_error_combinations) + r"}{c}{Scale " + str(
+                    scale) + r"}"
         output[fun_name] += r"\\" + "\n"
 
         if len(error_reductions) > 1:
@@ -617,16 +620,17 @@ def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mea
 
 if __name__ == '__main__':
     input_path = "path/to/your/results_numerical_experiments.csv"
-    output_folder = os.path.join("..", "results", "final_results", "low_dim", "tables")
+    output_folder = "path/to/your/output/folder"
 
     abbr_dict = {
-        "CONTINUOUS": "Cont.",
+        "CONTINUOUS": "Continuous",
         "CORNER_PEAK": "Corner Peak",
         "DISCONTINUOUS": "Discont.",
         "G_FUNCTION": "Ridge Prod.",
-        "GAUSSIAN": "Gauss.",
+        "NOISE": "Noise",
+        "GAUSSIAN": "Gaussian",
         "MOROKOFF_CALFISCH_1": "Geo. Mean",
-        "OSCILLATORY": "Osci.",
+        "OSCILLATORY": "Oscillatory",
         "PRODUCT_PEAK": "Prod. Peak",
         "ZHOU": "Bim. Gauss."
     }

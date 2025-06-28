@@ -8,7 +8,7 @@ from matplotlib.ticker import MaxNLocator
 
 
 def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, logarithmic: bool = False,
-                      scales: list = None, output_path: str = None, sparse_ticks:bool=False) -> None:
+                      scales: list = None, output_path: str = None, sparse_ticks: bool = False) -> None:
     """
     Estimates the runtimes of the experiments from the CSV file at the given path for each algorithm.
 
@@ -84,14 +84,17 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         tick_labels = xticklabels
 
     ax.set_xticks(tick_dims)
-    ax.set_xticklabels(tick_labels)
+    ax.set_xticklabels(tick_labels, fontsize=15)
 
-    ax.set_xlabel('Dimension')
+    for label in ax.get_yticklabels():
+        label.set_fontsize(15)
+
+    ax.set_xlabel('Dimension', fontsize=18)
     if logarithmic:
         ax.set_yscale('log')
-    ax.set_ylabel('Runtime (seconds)')
-    ax.set_title('Runtime of Algorithms vs Dimension')
-    ax.legend(loc="upper left")
+    ax.set_ylabel('Runtime (seconds)', fontsize=18)
+    ax.set_title('Runtime vs. Dimension', fontsize=18)
+    ax.legend(loc="upper left", fontsize=15)
     ax.grid(True)
     if ylim is not None:
         ax.set_ylim(0, ylim)
@@ -104,9 +107,3 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         plt.show()
 
     plt.close(fig)
-
-
-if __name__ == '__main__':
-    path = os.path.join("..", "results", "final_results", "high_dim", "results_numerical_experiments.csv")
-    scales_to_plot = [1, 2]
-    estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, sparse_ticks=True)

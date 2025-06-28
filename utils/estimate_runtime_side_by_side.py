@@ -88,17 +88,20 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         tick_dims = unique_dims
         tick_labels = xticklabels
 
+    for label in ax.get_yticklabels():
+        label.set_fontsize(15)
+
     ax.set_xticks(tick_dims)
-    ax.set_xticklabels(tick_labels)
-    ax.set_xlabel('Dimension')
-    ax.set_ylabel('Runtime (seconds)')
-    ax.set_title('Runtime vs Dimension')
+    ax.set_xticklabels(tick_labels, fontsize=15)
+    ax.set_xlabel('Dimension', fontsize=18)
+    ax.set_ylabel('Runtime (seconds)', fontsize=18)
+    ax.set_title('Runtime vs. Dimension', fontsize=18)
     if logarithmic:
         ax.set_yscale('log')
     if ylim is not None:
         ax.set_ylim(0, ylim)
     ax.grid(True)
-    ax.legend(loc="upper left")
+    ax.legend(loc="upper left", fontsize=15)
 
     dim_colors = {dim: color_map(i % 10) for i, dim in enumerate(dims)}
 
@@ -116,15 +119,21 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         values = {k: sum(v) / len(v) for k, v in runtimes.items()}
         ax.plot(values.keys(), values.values(), label=f'SA dim {dim}', marker='x',
                 linestyle='--', color=dim_colors[dim])
-    ax.set_xlabel('Scale')
-    ax.set_ylabel('Runtime (seconds)')
-    ax.set_title('Runtime vs Scale')
+    ax.set_xlabel('Scale', fontsize=18)
+    ax.set_ylabel('Runtime (seconds)', fontsize=18)
+    ax.set_title('Runtime vs. Scale', fontsize=18)
     if logarithmic:
         ax.set_yscale('log')
     if ylim is not None:
         ax.set_ylim(0, ylim)
     ax.grid(True)
-    ax.legend(loc="upper left")
+    ax.legend(loc="upper left", fontsize=15)
+
+    for label in ax.get_yticklabels():
+        label.set_fontsize(15)
+
+    for label in ax.get_xticklabels():
+        label.set_fontsize(15)
 
     plt.tight_layout()
 
@@ -136,11 +145,3 @@ def estimate_runtimes(path: str, ylim: Union[None, int], save: bool = False, log
         plt.show()
 
     plt.close(fig)
-
-
-if __name__ == '__main__':
-    path = os.path.join("..", "results", "final_results", "low_dim", "results_numerical_experiments.csv")
-    dims_to_plot = [2, 5, 10]
-    scales_to_plot = [2, 4, 6]
-    estimate_runtimes(path, save=True, ylim=None, logarithmic=True, scales=scales_to_plot, dims=dims_to_plot,
-                      sparse_ticks_fixed_scale=False)
