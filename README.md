@@ -95,6 +95,6 @@ This toolbox was developed as part of a research project at the [Johannes Kepler
 
 If you have questions, feedback or want to reach out for any other reason, please contact us at
 
-    jakob (dot) eggl (at) jku (dot) at,
-    elias (dot) mindlberger (at) jku (dot) at,
+    research (dot) jakob (dot) eggl (at) gmail (dot) com,
+    research (at) mindlberger (dot) com,
     mario (dot) ullrich (at) jku (dot) at.
