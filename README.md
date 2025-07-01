@@ -87,9 +87,10 @@ This toolbox was developed as part of a research project at the [Johannes Kepler
 ```bibtex
 @article{EgglMindlbergerUllrich2025,
   title={Sparse grids vs. random points for high-dimensional polynomial approximation},
-  author={Eggl, Jakob and Mindlberger, Elias and Ullrich, Mario},
-  journal={//},
-  year={2025}
+  author={J. Eggl, E. Mindlberger and M. Ullrich},
+  journal={arXiv preprint: 2506.24054},
+  year={2025},
+  url={https://arxiv.org/abs/2506.24054}
 }
 ```
 
