@@ -27,7 +27,7 @@ class ParametrizedFunctionProvider:
                 exe = lambda x: gaussian(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Gaussian")
             case FunctionType.CONTINUOUS:
-                exe = lambda x: continuous(x,d,c,w)
+                exe = lambda x: continuous(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Continuous")
             case FunctionType.DISCONTINUOUS:
                 exe = lambda x: discontinuous(x, d, c, w)

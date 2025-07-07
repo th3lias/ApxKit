@@ -252,15 +252,10 @@ logs/
 # Ignore everything in the results folder
 /results/*
 
-# Except the final_results folder (and its subfolders)
-!results/final_results/low_dim/
-!results/final_results/high_dim/
-!results/final_results/high_dim_chebyshev_test_points/
-
+# Allow everything in final_results except specific large files
+!results/final_results/
 results/final_results/high_dim/results_numerical_experiments.csv
 results/final_results/high_dim_chebyshev_test_points/results_numerical_experiments.csv
-
-!results/final_results/low_dim/tables_pdf/Tables.pdf
 
 
 
