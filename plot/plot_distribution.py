@@ -367,8 +367,7 @@ def plot_all_errors_fixed_scale(file_name: str, abbreviation_dict: dict = None, 
                 pbar.update(1)
 
                 xticklabels = [f"{dim}\n{n_points_sy[j]}\n{n_points_ls[j]}" for j, dim in enumerate(dims)]
-                axs[0].set_xlabel(f'$d$\npoints SA$ = N(d+{scale},d)$\npoints LS$ = 2\cdot N(q+{scale},d)$',
-                                  fontsize=12,
+                axs[0].set_xlabel(f'$d$\npoints SA$ = N(q,d)$\npoints LS$ = 2\cdot N(q,d)$', fontsize=12,
                                   linespacing=1.05)
 
                 for ax in axs:
