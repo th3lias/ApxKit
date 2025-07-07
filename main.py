@@ -14,29 +14,34 @@ from plot.plot_distribution import plot_all_errors_fixed_dim, plot_all_errors_fi
 
 def main_method(folder_name: Union[str, None] = None):
     dim_scale_dict = {
-        # 2: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        # 3: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        # 4: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        # 5: [1, 2, 3, 4, 5, 6, 7, 8],
-        # 6: [1, 2, 3, 4, 5, 6, 7],
-        # 7: [1, 2, 3, 4, 5, 6, 7],
-        # 8: [1, 2, 3, 4, 5, 6],
-        # 9: [1, 2, 3, 4, 5, 6],
+        2: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        3: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        4: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        5: [1, 2, 3, 4, 5, 6, 7, 8],
+        6: [1, 2, 3, 4, 5, 6, 7],
+        7: [1, 2, 3, 4, 5, 6, 7],
+        8: [1, 2, 3, 4, 5, 6],
+        9: [1, 2, 3, 4, 5, 6],
         10: [1, 2, 3, 4, 5, 6],
     }
 
-    function_types = [FunctionType.BNR_OSCILLATORY, FunctionType.BNR_PRODUCT_PEAK, FunctionType.BNR_CORNER_PEAK,
-                      FunctionType.BNR_GAUSSIAN, FunctionType.BNR_CONTINUOUS, FunctionType.BNR_DISCONTINUOUS]
+    function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
+                      FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
+                      FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE]
 
     seed = 42
 
     average_c = {
-        FunctionType.BNR_CONTINUOUS: 2.04,
-        FunctionType.BNR_CORNER_PEAK: 0.185,
-        FunctionType.BNR_DISCONTINUOUS: 0.43,
-        FunctionType.BNR_GAUSSIAN: 0.703,
-        FunctionType.BNR_OSCILLATORY: 0.9,
-        FunctionType.BNR_PRODUCT_PEAK: 0.725,
+        FunctionType.CONTINUOUS: 1.0,
+        FunctionType.CORNER_PEAK: 1.0,
+        FunctionType.DISCONTINUOUS: 1.0,
+        FunctionType.GAUSSIAN: 1.0,
+        FunctionType.G_FUNCTION: 1.0,
+        FunctionType.OSCILLATORY: 1.0,
+        FunctionType.MOROKOFF_CALFISCH_1: 1.0,
+        FunctionType.PRODUCT_PEAK: 1.0,
+        FunctionType.ZHOU: 1.0,
+        FunctionType.NOISE: 1.0,
     }
 
     multiplier_fun_ls_train = lambda x: 2 * x

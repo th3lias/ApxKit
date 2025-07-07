@@ -5,7 +5,7 @@ def oscillatory(x, d, c, w):
     """
         Oscillatory function.
     """
-    return np.cos(np.dot(x, c) + 2 * np.pi * w[0])
+    return np.cos(3 * np.dot(x, c) + 2 * np.pi * w[0])
 
 
 def product_peak(x, d, c, w):
@@ -26,14 +26,14 @@ def gaussian(x, d, c, w):
     """
         Gaussian function.
     """
-    return np.exp(-np.sum(np.square(np.multiply(c, x - w)), axis=1))
+    return np.exp(-(50 / d) * np.sum(np.square(np.multiply(c, x - w)), axis=1))
 
 
 def continuous(x, d, c, w):
     """
         Continuous function.
     """
-    return np.exp(-np.sum(np.multiply(c, np.abs(x - w)), axis=1))
+    return np.exp(-np.sum(np.multiply(c, np.abs(x - w)) / d, axis=1))
 
 
 def discontinuous(x, d, c, w):

@@ -14,22 +14,22 @@ class ParametrizedFunctionProvider:
         if not isinstance(function_type, FunctionType):
             raise ValueError("function_type must be of type FunctionType.")
         match function_type:
-            case FunctionType.BNR_OSCILLATORY:
+            case FunctionType.OSCILLATORY:
                 exe = lambda x: oscillatory(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Oscillatory")
-            case FunctionType.BNR_PRODUCT_PEAK:
+            case FunctionType.PRODUCT_PEAK:
                 exe = lambda x: product_peak(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Product Peak")
-            case FunctionType.BNR_CORNER_PEAK:
+            case FunctionType.CORNER_PEAK:
                 exe = lambda x: corner_peak(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Corner Peak")
-            case FunctionType.BNR_GAUSSIAN:
+            case FunctionType.GAUSSIAN:
                 exe = lambda x: gaussian(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Gaussian")
-            case FunctionType.BNR_CONTINUOUS:
+            case FunctionType.CONTINUOUS:
                 exe = lambda x: continuous(x,d,c,w)
                 return ParametrizedFunction(exe, d, c, w, name="Continuous")
-            case FunctionType.BNR_DISCONTINUOUS:
+            case FunctionType.DISCONTINUOUS:
                 exe = lambda x: discontinuous(x, d, c, w)
                 return ParametrizedFunction(exe, d, c, w, name="Discontinuous")
             case FunctionType.G_FUNCTION:
