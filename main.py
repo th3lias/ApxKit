@@ -14,6 +14,8 @@ from grid.generator.rule_grid_generator import RuleGridGenerator
 from grid.generator.uniform_grid_generator import UniformGridGenerator
 from grid.generator.uniform_number_generator import UniformNumberGenerator
 from plot.plot_error_distribution import plot_all_errors_fixed_dim, plot_all_errors_fixed_scale
+from solver.cg_least_squares import ConjugateGradient_LS
+from solver.cg_normal_equation import ConjugateGradient_NE
 from solver.scipy_lstsq_solver import ScipyLstsqSolver
 from solver.solver import Solver
 import torch
@@ -94,6 +96,8 @@ def main_method(folder_name: str = None):
 
     scipy_lstsq_gelsy_solver = ScipyLstsqSolver(driver='gelsy')
     aux_smolyak_solver = Solver("TASMANIAN", "TM")
+    cg_ls_solver = ConjugateGradient_LS(max_iter=1000, tolerance=1e-6, device=device)
+    cg_ne_solver = ConjugateGradient_NE(max_iter=1000, tolerance=1e-6, device=device)
 
     # ── Function parameter generators ─────────────────────────────────
     uniform_value_generator_c = UniformNumberGenerator(seed=function_generation_c_seed)
@@ -106,6 +110,7 @@ def main_method(folder_name: str = None):
                                         solver=scipy_lstsq_gelsy_solver)
     sa = SmolyakAlgorithm(basis_generator=aux_smolyak_basis_generator, grid_generator=rule_grid_generator,
                           solver=aux_smolyak_solver)
+
     faber_ls = LeastSquaresAlgorithm(faber_basis_generator,
                                      twice_points_uniform_grid_generator,
                                      solver=scipy_lstsq_gelsy_solver)
@@ -114,7 +119,16 @@ def main_method(folder_name: str = None):
                                               twice_points_chebyshev_grid_generator,
                                               solver=scipy_lstsq_gelsy_solver)
 
-    algorithm_list = [sa, ls, wls, faber_ls, faber_wls]
+    ls_cg_ne = LeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_uniform_grid_generator,
+                                     solver=cg_ne_solver)
+    ls_cg_ls = LeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_uniform_grid_generator,
+                                     solver=cg_ls_solver)
+    wls_cg_ne = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
+                                              solver=cg_ne_solver)
+    wls_cg_ls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
+                                              solver=cg_ls_solver)
+
+    algorithm_list = [sa, ls, wls, faber_ls, faber_wls, ls_cg_ls, ls_cg_ne, wls_cg_ls, wls_cg_ne]
 
     if folder_name is not None:
         path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
