@@ -21,12 +21,12 @@ from solver.solver import Solver
 import torch
 
 
-def _plot_errors(results_df, save_dir, d=None, s=None):
+def _plot_errors(results_df, save_dir, d=None, s=None, verbose=False):
     """Generate all four error-distribution plots from the live DataFrame."""
-    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=False)
-    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=True)
-    # plot_all_errors_fixed_scale(df=results_df, save_dir=save_dir, scale=s, save=True, latex=True, only_maximum=False)
-    # plot_all_errors_fixed_scale(df=results_df, save_dir=save_dir, scale=s, save=True, latex=True, only_maximum=True)
+    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=False, verbose=verbose)
+    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=True, verbose=verbose)
+    # plot_all_errors_fixed_scale(df=results_df, save_dir=save_dir, scale=s, save=True, latex=True, only_maximum=False, verbose=verbose)
+    # plot_all_errors_fixed_scale(df=results_df, save_dir=save_dir, scale=s, save=True, latex=True, only_maximum=True, verbose=verbose)
 
 
 def main_method(folder_name: str = None):
@@ -49,14 +49,14 @@ def main_method(folder_name: str = None):
 
     dim_scale_dict = {
         2: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        5: [1, 2, 3, 4, 5, 6, 7, 8, ],
-        6: [1, 2, 3, 4, 5, 6, 7, ],
-        7: [1, 2, 3, 4, 5, 6, 7, ],
-        8: [1, 2, 3, 4, 5, 6, ],
-        9: [1, 2, 3, 4, 5, 6, ],
-        10: [1, 2, 3, 4, 5, 6, ],
+        # 3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        # 4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        # 5: [1, 2, 3, 4, 5, 6, 7, 8, ],
+        # 6: [1, 2, 3, 4, 5, 6, 7, ],
+        # 7: [1, 2, 3, 4, 5, 6, 7, ],
+        # 8: [1, 2, 3, 4, 5, 6, ],
+        # 9: [1, 2, 3, 4, 5, 6, ],
+        # 10: [1, 2, 3, 4, 5, 6, ],
     }
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,

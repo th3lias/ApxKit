@@ -149,12 +149,12 @@ class ExperimentExecutor:
 
                 # Plot callbacks
                 for cb in plot_callbacks:
-                    cb(self.results_df, save_dir, d=dim, s=scale)
+                    cb(self.results_df, save_dir, d=dim, s=scale, verbose=False)
 
         progress_bar.close()
 
         for cb in plot_callbacks:
-            cb(self.results_df, save_dir, d=None, s=None)
+            cb(self.results_df, save_dir, d=None, s=None, verbose=True)
 
         print(f"Done at {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
         return self.results_df
