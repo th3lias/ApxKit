@@ -85,15 +85,15 @@ class TestBreakpointExtraction:
         net = coefficients_to_network(0.0, {(1,): (1.0, 0.0)}, dim=1)
         bps, slopes, intercepts = _extract_breakpoints_depth1(net)
         np.testing.assert_allclose(bps, [0.0, 0.5, 1.0], atol=1e-14)
-        np.testing.assert_allclose(slopes, [-4.0, 4.0], atol=1e-10)
-        np.testing.assert_allclose(intercepts, [1.0, -3.0], atol=1e-10)
+        np.testing.assert_allclose(slopes, [-4.0, 4.0], atol=1e-14)
+        np.testing.assert_allclose(intercepts, [1.0, -3.0], atol=1e-14)
 
     def test_s1_breakpoints(self):
         """S_1(x) on [0,1] has breakpoints at 0.25 and 0.75."""
         net = coefficients_to_network(0.0, {(1,): (0.0, 1.0)}, dim=1)
         bps, slopes, intercepts = _extract_breakpoints_depth1(net)
         np.testing.assert_allclose(bps, [0.0, 0.25, 0.75, 1.0], atol=1e-14)
-        np.testing.assert_allclose(slopes, [4.0, -4.0, 4.0], atol=1e-10)
+        np.testing.assert_allclose(slopes, [4.0, -4.0, 4.0], atol=1e-14)
 
     def test_reconstruction_matches_network(self):
         """CPL reconstruction from breakpoints matches network evaluation."""
@@ -195,13 +195,13 @@ class TestFourierToRiesz:
         alpha_0, coeffs = fourier_to_riesz(a, b, max_k=10)
 
         assert abs(alpha_0) < 1e-14
-        np.testing.assert_allclose(coeffs[(1,)][0], 1.0, atol=1e-10)
-        np.testing.assert_allclose(coeffs[(1,)][1], 0.0, atol=1e-10)
+        np.testing.assert_allclose(coeffs[(1,)][0], 1.0, atol=1e-14)
+        np.testing.assert_allclose(coeffs[(1,)][1], 0.0, atol=1e-14)
 
         for k in range(2, 11):
-            np.testing.assert_allclose(coeffs[(k,)][0], 0.0, atol=1e-10,
+            np.testing.assert_allclose(coeffs[(k,)][0], 0.0, atol=1e-14,
                                        err_msg=f"α_{k} should be 0")
-            np.testing.assert_allclose(coeffs[(k,)][1], 0.0, atol=1e-10,
+            np.testing.assert_allclose(coeffs[(k,)][1], 0.0, atol=1e-14,
                                        err_msg=f"β_{k} should be 0")
 
     def test_s1_roundtrip(self):
@@ -211,8 +211,8 @@ class TestFourierToRiesz:
         alpha_0, coeffs = fourier_to_riesz(a, b, max_k=10)
 
         assert abs(alpha_0) < 1e-14
-        np.testing.assert_allclose(coeffs[(1,)][0], 0.0, atol=1e-10)
-        np.testing.assert_allclose(coeffs[(1,)][1], 1.0, atol=1e-10)
+        np.testing.assert_allclose(coeffs[(1,)][0], 0.0, atol=1e-14)
+        np.testing.assert_allclose(coeffs[(1,)][1], 1.0, atol=1e-14)
 
     def test_c3_roundtrip(self):
         """Fourier series of C_3 → Riesz gives α_3 = 1, rest ≈ 0."""
@@ -252,17 +252,17 @@ class TestNetworkToCoefficientsRoundtrip:
         max_k = max(k[0] for k in coeffs)
         for k_tuple, (a_orig, b_orig) in coeffs.items():
             a_rec, b_rec = rec_coeffs[k_tuple]
-            np.testing.assert_allclose(a_rec, a_orig, atol=1e-8,
+            np.testing.assert_allclose(a_rec, a_orig, atol=1e-14,
                                        err_msg=f"α_{k_tuple} mismatch")
-            np.testing.assert_allclose(b_rec, b_orig, atol=1e-8,
+            np.testing.assert_allclose(b_rec, b_orig, atol=1e-14,
                                        err_msg=f"β_{k_tuple} mismatch")
 
         # Indices beyond max_k in original should be ≈ 0
         for k in range(max_k + 1, max_freq + 1):
             a_rec, b_rec = rec_coeffs[(k,)]
-            np.testing.assert_allclose(a_rec, 0.0, atol=1e-8,
+            np.testing.assert_allclose(a_rec, 0.0, atol=1e-14,
                                        err_msg=f"α_{k} should be 0")
-            np.testing.assert_allclose(b_rec, 0.0, atol=1e-8,
+            np.testing.assert_allclose(b_rec, 0.0, atol=1e-14,
                                        err_msg=f"β_{k} should be 0")
 
     def test_higher_frequency_roundtrip(self):
@@ -272,13 +272,13 @@ class TestNetworkToCoefficientsRoundtrip:
         net = coefficients_to_network(0.5, coeffs, dim=1)
         rec_a0, rec_coeffs = network_to_coefficients(net, max_freq=60)
 
-        np.testing.assert_allclose(rec_a0, 0.5, atol=1e-10)
+        np.testing.assert_allclose(rec_a0, 0.5, atol=1e-14)
         for k in range(1, 6):
             a_orig, b_orig = coeffs[(k,)]
             a_rec, b_rec = rec_coeffs[(k,)]
-            np.testing.assert_allclose(a_rec, a_orig, atol=1e-8,
+            np.testing.assert_allclose(a_rec, a_orig, atol=1e-14,
                                        err_msg=f"α_{k} mismatch")
-            np.testing.assert_allclose(b_rec, b_orig, atol=1e-8,
+            np.testing.assert_allclose(b_rec, b_orig, atol=1e-14,
                                        err_msg=f"β_{k} mismatch")
 
     def test_function_values_match(self):
@@ -294,7 +294,7 @@ class TestNetworkToCoefficientsRoundtrip:
         x = np.linspace(0, 1, 500).reshape(-1, 1)
         y_orig = net(x)
         y_rec = net_rec(x)
-        np.testing.assert_allclose(y_rec, y_orig, atol=1e-8)
+        np.testing.assert_allclose(y_rec, y_orig, atol=1e-13)
 
 
 # ---------------------------------------------------------------------------

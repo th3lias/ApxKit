@@ -174,7 +174,7 @@ For networks produced by `coefficients_to_network`, the roundtrip
 
 $$(\alpha_0, \alpha_k, \beta_k) \;\xrightarrow{\texttt{coefficients\_to\_network}}\; \mathcal{N} \;\xrightarrow{\texttt{network\_to\_coefficients}}\; (\hat\alpha_0, \hat\alpha_k, \hat\beta_k)$$
 
-recovers the original coefficients to ~10⁻⁸ precision (limited only by floating-point arithmetic in the trigonometric evaluations and Möbius summation).
+recovers the original coefficients to ~10⁻¹⁵ precision (limited only by floating-point rounding in the trigonometric evaluations), i.e. essentially at machine epsilon.
 
 ### Limitations
 
