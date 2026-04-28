@@ -3,15 +3,13 @@ import pandas as pd
 import numpy as np
 import os
 
-from typing import List, Union, Dict
-
 
 def highlight_matching_value(value, min_value):
     return r"\first{" + f"{value:.2e}" + r"}" if np.isclose(value, min_value, atol=1e-17) else f"{value:.2e}"
 
 
 def generate_table_fixed_dim(results_csv_path: str, output_folder: str, abbreviation_dict: dict,
-                             skip_mean_error: bool = False, skip_scale: Union[Dict, None] = None):
+                             skip_mean_error: bool = False, skip_scale: dict = None):
     r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via
@@ -217,7 +215,7 @@ def generate_table_fixed_dim(results_csv_path: str, output_folder: str, abbrevia
 
 
 def generate_table_fixed_scale(results_csv_path: str, output_folder: str, abbreviation_dict: dict,
-                               skip_mean_error: bool = False, skip_dim: Union[Dict, None] = None):
+                               skip_mean_error: bool = False, skip_dim: dict = None):
     r""" Creates a tex file for each scale in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via
@@ -401,7 +399,7 @@ def generate_table_fixed_scale(results_csv_path: str, output_folder: str, abbrev
 
 
 def generate_table_fixed_fun(results_csv_path: str, output_folder: str, skip_mean_error: bool = False,
-                             skip_scale: Union[List, None] = None):
+                             skip_scale: list[int] = None):
     r""" Creates a tex file for each dimension in the specified csv file. The tex files will be stored in the given folder.
 
         In the LaTeX File, the table can be printed via

@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Union
 
 from function.parametrized_f import ParametrizedFunction
 from function.type import FunctionType
@@ -9,8 +8,8 @@ from function.utils import oscillatory, product_peak, corner_peak, gaussian, con
 
 class ParametrizedFunctionProvider:
     @staticmethod
-    def get_function(function_type: FunctionType, d: int, c: Union[np.array, None] = None,
-                     w: Union[np.array, None] = None, test: bool = False) -> ParametrizedFunction:
+    def get_function(function_type: FunctionType, d: int, c: np.ndarray = None,
+                     w: np.ndarray = None, test: bool = False) -> ParametrizedFunction:
         if not isinstance(function_type, FunctionType):
             raise ValueError("function_type must be of type FunctionType.")
         match function_type:
