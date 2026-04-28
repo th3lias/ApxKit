@@ -88,7 +88,7 @@ def main_method(folder_name: str = None):
     clenshawcurtis_basis_generator = ClenshawCurtisLevelPolynomialBasisGenerator(store_indices=store_indices)
     faber_basis_generator = FaberBasisGenerator()
     # Placeholder basis/solver for Smolyak (Tasmanian handles both internally)
-    aux_smolyak_basis_generator = BasisGenerator("CHEBYHSEV", "CS")
+    aux_smolyak_basis_generator = BasisGenerator("CHEBYSHEV", "CS")
 
     # ── Solver ────────────────────────────────────────────────────────
     device = torch.device("mps") if torch.backends.mps.is_available() else torch.device(
