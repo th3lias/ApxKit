@@ -3,6 +3,8 @@ from typing import Union, List, Tuple
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 from scipy.linalg import lstsq, lu
+from deepinv.optim.utils import least_squares
+import torch
 
 from fit import BasisType
 from function import Function
@@ -41,6 +43,8 @@ class LeastSquaresInterpolator(Interpolator):
             self._approximate_scipy_lstsq(y, 'gelss')
         elif self.method == LeastSquaresMethod.SCIPY_LSTSQ_GELSY:
             self._approximate_scipy_lstsq(y, 'gelsy')
+        elif self.method == LeastSquaresMethod.DEEPINV:
+            self._approximate_deepinv_least_squares(y)
         else:
             raise ValueError(f'The method {self.method.name} is not supported')
 
@@ -108,6 +112,29 @@ class LeastSquaresInterpolator(Interpolator):
         coeff = np.linalg.solve(self.U, np.linalg.solve(self.L, y_prime))
         self.coeff = coeff
 
+    def _approximate_deepinv_least_squares(self, y: np.ndarray):
+
+        torch_basis = torch.tensor(self.basis)
+
+        def A(x):
+            return torch_basis @ x
+
+        def AT(x):
+            return torch_basis.T @ x
+
+        y = torch.tensor(y)
+
+        lsr_rec = least_squares(
+            A,
+            AT,
+            y,
+            solver="lsqr",
+            gamma=2e5,
+            tol=1e-5,
+            max_iter=2000,
+            parallel_dim=-1,
+        )
+        self.coeff = lsr_rec.numpy()
     def _approximate_scipy_lstsq(self, y: np.ndarray, lapack_driver: str = 'gelsy') -> None:
         """
         Solves the weighted least squares problem using SciPy's lstsq.
