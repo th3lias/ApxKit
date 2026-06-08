@@ -85,12 +85,15 @@ for further information.
 This toolbox was developed as part of a research project at the [Johannes Kepler University Linz](https://www.jku.at/en), Austria, and is intended for educational and research purposes. If you intend to use this toolbox for your own research, please cite the following paper:
 
 ```bibtex
-@article{EMU2025,
-  title={Sparse grids vs. random points for high-dimensional polynomial approximation},
-  author={J. Eggl, E. Mindlberger and M. Ullrich},
-  journal={arXiv preprint: 2506.24054},
-  year={2025},
-  url={https://arxiv.org/abs/2506.24054}
+@article{EMU2026,
+  author  = {Eggl, Jakob and Mindlberger, Elias and Ullrich, Mario},
+  title   = {Sparse grids vs. random points for high-dimensional polynomial approximation},
+  journal = {Advances in Computational Mathematics},
+  year    = {2026},
+  volume  = {52},
+  number  = {3},
+  pages   = {44},
+  doi     = {10.1007/s10444-026-10316-5}
 }
 ```
 
