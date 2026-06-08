@@ -1,5 +1,5 @@
-from function.f import Function
+from .f import Function
 
-from function.type import FunctionType
+from .type import FunctionType
 
-from function.provider import ParametrizedFunctionProvider
+from .provider import ParametrizedFunctionProvider

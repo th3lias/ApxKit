@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 
 from basis.basis_generator import BasisGenerator
-from grid.generator.grid_generator import GridGenerator
 from function.f import Function
+from grid.generator.grid_generator import GridGenerator
 from grid.grid.grid import Grid
 from solver.solver import Solver
 
@@ -16,7 +16,10 @@ class Algorithm:
     An algorithm combines a BasisGenerator, GridGenerator, and Solver to
     construct a polynomial (or other) approximation of one or more functions.
     """
-    def __init__(self, name: str, abbr_name: str, basis_generator: BasisGenerator,
+    def __init__(self,
+                 name: str,
+                 abbr_name: str,
+                 basis_generator: BasisGenerator,
                  grid_generator: GridGenerator | None,
                  solver: Solver):
         self.abbr_name = abbr_name

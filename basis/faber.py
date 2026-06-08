@@ -72,7 +72,7 @@ class FaberBasisGenerator(SmolyakIndexing, BasisGenerator):
         N = pts.shape[0]
 
         # 1. Smolyak-structured basis indices --------------------------
-        b_idx = self._calculate_basis_indices(dim, scale)
+        b_idx = self.calculate_basis_indices(dim, scale)
 
         # 2. Hierarchical hat-function parameters ----------------------
         n_1d = self._m_i(scale + 1)                  # total 1-D functions

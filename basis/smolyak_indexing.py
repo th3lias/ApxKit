@@ -20,7 +20,7 @@ class SmolyakIndexing:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _calculate_basis_indices(dim: int, scale: int) -> list[tuple[int]]:
+    def calculate_basis_indices(dim: int, scale: int) -> list[tuple[int]]:
         """Return the full list of per-function index tuples for the
         Smolyak basis of dimension *dim* and depth *scale*."""
         idx = SmolyakIndexing._smolyak_idx(dim, scale)

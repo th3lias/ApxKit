@@ -33,7 +33,7 @@ class ClenshawCurtisLevelPolynomialBasisGenerator(SmolyakIndexing, BasisGenerato
         data = np.array(grid)
 
         if self._b_idx is None:
-            self._b_idx = self._calculate_basis_indices(dim, scale)
+            self._b_idx = self.calculate_basis_indices(dim, scale)
             if self.store_indices:
                 self._save_basis_indices(self._b_idx, dim, scale, path=path)
 

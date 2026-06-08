@@ -1,10 +1,9 @@
-
-from algorithm.algorithm import Algorithm
-from basis.basis_generator import BasisGenerator
-from function.f import Function
-from grid.generator.random_grid_generator import RandomGridGenerator
-from grid.grid.grid import Grid
-from solver.solver import Solver
+from algorithm import Algorithm
+from basis import BasisGenerator
+from function import Function
+from grid import Grid
+from grid.generator import RandomGridGenerator
+from solver import Solver
 
 
 class LeastSquaresAlgorithm(Algorithm):
