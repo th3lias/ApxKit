@@ -26,6 +26,7 @@ from algorithm.algorithm import Algorithm
 from function.f import Function
 from grid.generator.grid_generator import GridGenerator
 from grid.grid.grid import Grid
+from utils.utils import calculate_num_points
 
 
 class _Stub:
@@ -60,6 +61,31 @@ def _hyp_cross(dim: int, R: int) -> np.ndarray:
         block[:, 1:] = sub
         out.append(block)
     return np.vstack(out)
+
+
+def _hyp_cross_size(dim: int, R: int) -> int:
+    """Count |HC(dim, R)| without materialising the index array."""
+    if dim == 1:
+        return R + 1
+    total = 0
+    for k in range(R + 1):
+        total += _hyp_cross_size(dim - 1, R // max(1, k))
+    return total
+
+
+def _find_hc_bandwidth(dim: int, target_m: int) -> int:
+    """Return the smallest R >= 1 such that |HC(dim, R)| >= target_m."""
+    hi = 1
+    while _hyp_cross_size(dim, hi) < target_m:
+        hi *= 2
+    lo = hi // 2
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if _hyp_cross_size(dim, mid) >= target_m:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
 
 
 def _tchebychev_matrix(points_normalized: np.ndarray, indices: np.ndarray,
@@ -190,10 +216,14 @@ class OMP(Algorithm):
     grid_generator : GridGenerator
         Should be a ChebyshevGridGenerator to match the Tchebychev sampling
         measure.  Points are mapped from [lower, upper] to [-1, 1] internally.
-    hc_bandwidth : int
+    hc_bandwidth : int or None
         Hyperbolic-cross bandwidth R: the index set is
         HC(D, R) = { k in N_0^D : prod_d max(1, k_d) <= R }.
         Corresponds to the parameter ``M`` / ``J`` in SparseRecovery.
+        If ``None`` (default), R is chosen automatically at fit time as the
+        smallest value such that |HC(D, R)| >= calculate_num_points(dim, scale),
+        making the OMP dictionary at least as large as the LS basis for the
+        same (dim, scale).
     num_iters : int
         Maximum OMP iterations, i.e. the maximum number of basis functions
         that can be selected.  Corresponds to ``num_iters`` in SparseRecovery.
@@ -205,8 +235,8 @@ class OMP(Algorithm):
     def __init__(
         self,
         grid_generator: GridGenerator,
-        hc_bandwidth: int = 10,
-        num_iters: int = 5000,
+        hc_bandwidth: int | None = None,
+        num_iters: int = 20_000,
         tol: float = 1e-4,
         name: str = "OMP_Tchebychev",
         abbr_name: str = "OT",
@@ -224,8 +254,13 @@ class OMP(Algorithm):
         self._lower: float | None = None
         self._upper: float | None = None
 
-    def fit(self, dim: int, scale: int, f: Function | list[Function],
-            lower: float = 0.0, upper: float = 1.0) -> None:
+    def fit(self,
+            dim: int,
+            scale: int,
+            f: list[Function],
+            lower: float = 0.0,
+            upper: float = 1.0
+        ) -> None:
         self._lower = lower
         self._upper = upper
 
@@ -236,7 +271,11 @@ class OMP(Algorithm):
 
         y = self._calculate_y(f, self.grid)
 
-        self._indices = _hyp_cross(dim, self.hc_bandwidth)
+        if self.hc_bandwidth is None:
+            effective_R = _find_hc_bandwidth(dim, calculate_num_points(dim, scale))
+        else:
+            effective_R = self.hc_bandwidth
+        self._indices = _hyp_cross(dim, effective_R)
         self._norm_coeffs = (np.sqrt(2) ** np.clip(self._indices, 0, 1)
                              .sum(axis=1)).astype(np.float64)
 

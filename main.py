@@ -2,6 +2,7 @@ import argparse
 import os
 
 from algorithm.least_squares import LeastSquaresAlgorithm
+from algorithm.omp import OMP
 from algorithm.smolyak import SmolyakAlgorithm
 from algorithm.weighted_least_squares import WeightedLeastSquaresAlgorithm
 from basis.basis_generator import BasisGenerator
@@ -81,6 +82,8 @@ def main_method(folder_name: str = None):
                                                                multiplier_fun=multiplier_fun_ls_train)
     twice_points_chebyshev_grid_generator = ChebyshevGridGenerator(seed=chebyshev_seed,
                                                                    multiplier_fun=multiplier_fun_ls_train)
+    omp_chebyshev_grid_generator = ChebyshevGridGenerator(seed=47,
+                                                          multiplier_fun=multiplier_fun_ls_train)
     rule_grid_generator = RuleGridGenerator(output_dim=n_fun_parallel * len(function_types))
     test_grid_generator = UniformGridGenerator(seed=test_seed, multiplier_fun=multiplier_fun_test)
 
@@ -108,6 +111,7 @@ def main_method(folder_name: str = None):
                                solver=scipy_lstsq_gelsy_solver)
     wls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
                                         solver=scipy_lstsq_gelsy_solver)
+    omp = OMP(grid_generator=omp_chebyshev_grid_generator, num_iters=20_000, tol=1e-4)
     sa = SmolyakAlgorithm(basis_generator=aux_smolyak_basis_generator, grid_generator=rule_grid_generator,
                           solver=aux_smolyak_solver)
 
@@ -128,7 +132,7 @@ def main_method(folder_name: str = None):
     wls_cg_ls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
                                               solver=cg_ls_solver)
 
-    algorithm_list = [sa, ls, wls, faber_ls, faber_wls, ls_cg_ls, ls_cg_ne, wls_cg_ls, wls_cg_ne]
+    algorithm_list = [sa, ls, wls, omp, faber_ls, faber_wls, ls_cg_ls, ls_cg_ne, wls_cg_ls, wls_cg_ne]
 
     if folder_name is not None:
         path = os.path.join("results", folder_name, "results_numerical_experiments.csv")

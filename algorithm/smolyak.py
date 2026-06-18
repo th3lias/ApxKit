@@ -23,15 +23,12 @@ class SmolyakAlgorithm(Algorithm):
             solver=solver
         )
 
-    def fit(self, dim: int, scale: int, f: Function | list[Function], lower: float = 0.0, upper: float = 1.0):
+    def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0, upper: float = 1.0):
         self.grid = self.grid_generator.get_grid(input_dim=dim, scale=scale, lower=lower, upper=upper,
                                                   strategy=SelectionStrategy.LEVEL,
                                                   rule=RuleGridRule.CLENSHAW_CURTIS,
                                                   sparse_grid_type=SparseGridType.STANDARD_GLOBAL)
         self.basis = None  # Tasmanian handles the basis internally
-
-        if isinstance(f, Function):
-            f = [f]
 
         model_values = self._calculate_y(f, self.grid)
         self.grid.load_needed_values(model_values)

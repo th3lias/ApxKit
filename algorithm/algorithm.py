@@ -32,7 +32,7 @@ class Algorithm:
         self.basis = None
         self.coeff = None
 
-    def fit(self, dim: int, scale: int, f: Function | list[Function], lower: float = 0.0, upper: float = 1.0):
+    def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0, upper: float = 1.0):
         raise NotImplementedError("Subclasses should implement this method")
 
     def evaluate(self, grid: Grid):
@@ -45,9 +45,7 @@ class Algorithm:
         return self.grid.get_num_points()
 
     @staticmethod
-    def _calculate_y(f: Function | list[Function], grid: Grid):
-        """Evaluate function(s) at grid points, returning an (n_points, n_functions) array."""
-        if isinstance(f, Function):
-            f = [f]
+    def _calculate_y(f: list[Function], grid: Grid):
+        """Evaluate functions at grid points, returning an (n_points, n_functions) array."""
         data = np.array(grid)
         return np.column_stack([f_i(data) for f_i in f])
