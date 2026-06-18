@@ -23,9 +23,21 @@ from main import _plot_errors
 from solver.scipy_lstsq_solver import ScipyLstsqSolver
 
 # ── Parameters ────────────────────────────────────────────────────────────────
-dim_scale_dict  = {2: [1, 2, 3, 4, 5, 6, 7, 8], 3: [1, 2, 3, 4, 5, 6, 7, 8], 4: [1, 2, 3, 4, 5, 6, 7, 8]}
-function_types  = [FunctionType.CONTINUOUS, FunctionType.PRODUCT_PEAK, FunctionType.GAUSSIAN]
-n_fun_parallel  = 10
+dim_scale_dict = {
+        2: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        5: [1, 2, 3, 4, 5, 6, 7, 8, ],
+        6: [1, 2, 3, 4, 5, 6, 7, ],
+        7: [1, 2, 3, 4, 5, 6, 7, ],
+        8: [1, 2, 3, 4, 5, 6, ],
+        9: [1, 2, 3, 4, 5, 6, ],
+        10: [1, 2, 3, 4, 5, 6, ],
+    }
+function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
+                      FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
+                      FunctionType.G_FUNCTION, FunctionType.OSCILLATORY, FunctionType.PRODUCT_PEAK, FunctionType.NOISE]
+n_fun_parallel  = 3
 avg_c           = {ft: 1.0 for ft in function_types}
 seed_list       = [42, 44, 45, 46]
 multiplier      = lambda x: 2 * x
@@ -48,7 +60,7 @@ w_gen = UniformNumberGenerator(seed=46)
 # ── Algorithms ────────────────────────────────────────────────────────────────
 ls  = LeastSquaresAlgorithm(basis, uniform_gen, solver)
 wls = WeightedLeastSquaresAlgorithm(basis, cheb_gen, solver)
-omp = OMP(grid_generator=omp_gen, num_iters=20_000, tol=1e-4)
+omp = OMP(grid_generator=omp_gen, num_iters=20_000, tol=1e-6)
 
 # ── Run ───────────────────────────────────────────────────────────────────────
 ex = ExperimentExecutor(
