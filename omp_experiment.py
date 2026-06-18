@@ -24,15 +24,15 @@ from solver.scipy_lstsq_solver import ScipyLstsqSolver
 
 # ── Parameters ────────────────────────────────────────────────────────────────
 dim_scale_dict = {
-        2: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        5: [1, 2, 3, 4, 5, 6, 7, 8, ],
-        6: [1, 2, 3, 4, 5, 6, 7, ],
-        7: [1, 2, 3, 4, 5, 6, 7, ],
-        8: [1, 2, 3, 4, 5, 6, ],
-        9: [1, 2, 3, 4, 5, 6, ],
-        10: [1, 2, 3, 4, 5, 6, ],
+        2: [1, 2, 3, 4, 5, 6, 7, 8 ],
+        3: [1, 2, 3, 4, 5, 6, 7, 8 ],
+        4: [1, 2, 3, 4, 5, 6, 7, 8],
+        5: [1, 2, 3, 4, 5, 6, 7 ],
+        6: [1, 2, 3, 4, 5, 6 ],
+        7: [1, 2, 3, 4, 5, 6 ],
+        8: [1, 2, 3, 4, 5 ],
+        9: [1, 2, 3, 4, 5 ],
+        10: [1, 2, 3, 4, 5 ],
     }
 function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
