@@ -32,6 +32,7 @@ class SmolyakAlgorithm(Algorithm):
 
         model_values = self._calculate_y(f, self.grid)
         self.grid.load_needed_values(model_values)
+        # TODO: Place a "_save_coefficients"-call method somewhere here
 
     def evaluate(self, grid: RandomGrid):
         test_array = np.array(grid)

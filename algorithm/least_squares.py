@@ -25,6 +25,7 @@ class LeastSquaresAlgorithm(Algorithm):
 
         y = self._calculate_y(f, self.grid)
         self.coeff = self.solver.solve(self.basis.basis, y)
+        # TODO: Place a "_save_coefficients"-call method somewhere here
         self.basis = None  # free memory after fitting
 
     def evaluate(self, grid: Grid):

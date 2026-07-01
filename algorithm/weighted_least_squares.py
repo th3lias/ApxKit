@@ -40,6 +40,8 @@ class WeightedLeastSquaresAlgorithm(Algorithm):
         self.coeff = self.solver.solve(x_poly, y_prime)
         self.basis = None  # free memory after fitting
 
+        # TODO: Place a "_save_coefficients"-call method somewhere here
+
     def evaluate(self, grid: Grid):
         test_basis = self.basis_generator.create_basis(grid)
         return test_basis.basis @ self.coeff

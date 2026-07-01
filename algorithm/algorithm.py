@@ -44,6 +44,9 @@ class Algorithm:
             raise ValueError("Grid has not been generated yet. Call fit() first.")
         return self.grid.get_num_points()
 
+    def _save_coefficients(self):
+        raise NotImplementedError("Not yet implemented") # TODO: Implement this
+
     @staticmethod
     def _calculate_y(f: list[Function], grid: Grid):
         """Evaluate functions at grid points, returning an (n_points, n_functions) array."""

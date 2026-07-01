@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import os
 
 from algorithm.least_squares import LeastSquaresAlgorithm
@@ -7,7 +8,6 @@ from algorithm.smolyak import SmolyakAlgorithm
 from algorithm.weighted_least_squares import WeightedLeastSquaresAlgorithm
 from basis.basis_generator import BasisGenerator
 from basis.clenshaw_curtis_level_polynomial_basis_generator import ClenshawCurtisLevelPolynomialBasisGenerator
-from basis.faber import FaberBasisGenerator
 from experiment.experiment_executor import ExperimentExecutor
 from function.type import FunctionType
 from grid.generator.chebyshev_grid_generator import ChebyshevGridGenerator
@@ -15,8 +15,7 @@ from grid.generator.rule_grid_generator import RuleGridGenerator
 from grid.generator.uniform_grid_generator import UniformGridGenerator
 from grid.generator.uniform_number_generator import UniformNumberGenerator
 from plot.plot_error_distribution import plot_all_errors_fixed_dim, plot_all_errors_fixed_scale
-from solver.cg_least_squares import ConjugateGradient_LS
-from solver.cg_normal_equation import ConjugateGradient_NE
+from solver.torch_omp_solver import TorchOMPSolver
 from solver.scipy_lstsq_solver import ScipyLstsqSolver
 from solver.solver import Solver
 import torch
@@ -24,21 +23,26 @@ import torch
 
 def _plot_errors(results_df, save_dir, d=None, s=None, verbose=False):
     """Generate all four error-distribution plots from the live DataFrame."""
-    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=False, verbose=verbose)
-    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=True, verbose=verbose)
+    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=False,
+                              verbose=verbose)
+    plot_all_errors_fixed_dim(df=results_df, save_dir=save_dir, dim=d, save=True, latex=True, only_maximum=True,
+                              verbose=verbose)
     # plot_all_errors_fixed_scale(df=results_df, save_dir=save_dir, scale=s, save=True, latex=True, only_maximum=False, verbose=verbose)
     # plot_all_errors_fixed_scale(df=results_df, save_dir=save_dir, scale=s, save=True, latex=True, only_maximum=True, verbose=verbose)
 
 
 def main_method(folder_name: str = None):
     # ── Fixed seeds for reproducibility (do not change) ───────────────
-    uniform_seed = 42
-    chebyshev_seed = 43
-    test_seed = 44
-    function_generation_c_seed = 45
-    function_generation_w_seed = 46
 
-    seed_list = [uniform_seed, test_seed, function_generation_c_seed, function_generation_w_seed]
+    seeds = {
+        "uniform_seed": 42,
+        "chebyshev_seed": 43,
+        "test_seed": 44,
+        "function_generation_c_seed": 45,
+        "function_generation_w_seed": 46
+    }
+    seed_list = [seeds["uniform_seed"], seeds["chebyshev_seed"], seeds["test_seed"],
+                 seeds["function_generation_c_seed"], seeds["function_generation_w_seed"]]
 
     # ── Experiment parameters ─────────────────────────────────────────
     multiplier_fun_ls_train = lambda x: 2 * x  # oversampling factor for LS training grids
@@ -49,15 +53,16 @@ def main_method(folder_name: str = None):
     use_max_scale = False  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        5: [1, 2, 3, 4, 5, 6, 7, 8, ],
-        6: [1, 2, 3, 4, 5, 6, 7, ],
-        7: [1, 2, 3, 4, 5, 6, 7, ],
-        8: [1, 2, 3, 4, 5, 6, ],
-        9: [1, 2, 3, 4, 5, 6, ],
-        10: [1, 2, 3, 4, 5, 6, ],
+        2: [1,2,3,4,5]
+        # 2: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        # 3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        # 4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
+        # 5: [1, 2, 3, 4, 5, 6, 7, 8, ],
+        # 6: [1, 2, 3, 4, 5, 6, 7, ],
+        # 7: [1, 2, 3, 4, 5, 6, 7, ],
+        # 8: [1, 2, 3, 4, 5, 6, ],
+        # 9: [1, 2, 3, 4, 5, 6, ],
+        # 10: [1, 2, 3, 4, 5, 6, ],
     }
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
@@ -78,18 +83,17 @@ def main_method(folder_name: str = None):
     }
 
     # ── Grid generators ───────────────────────────────────────────────
-    twice_points_uniform_grid_generator = UniformGridGenerator(seed=uniform_seed,
+    twice_points_uniform_grid_generator = UniformGridGenerator(seed=seeds['uniform_seed'],
                                                                multiplier_fun=multiplier_fun_ls_train)
-    twice_points_chebyshev_grid_generator = ChebyshevGridGenerator(seed=chebyshev_seed,
+    twice_points_chebyshev_grid_generator = ChebyshevGridGenerator(seed=seeds['chebyshev_seed'],
                                                                    multiplier_fun=multiplier_fun_ls_train)
-    omp_chebyshev_grid_generator = ChebyshevGridGenerator(seed=47,
-                                                          multiplier_fun=multiplier_fun_ls_train)
-    rule_grid_generator = RuleGridGenerator(output_dim=n_fun_parallel * len(function_types))
-    test_grid_generator = UniformGridGenerator(seed=test_seed, multiplier_fun=multiplier_fun_test)
+
+    rule_grid_generator = RuleGridGenerator(output_dim=n_fun_parallel * len(function_types))  # for Tasmanian
+    test_grid_generator = UniformGridGenerator(seed=seeds['test_seed'], multiplier_fun=multiplier_fun_test)
 
     # ── Basis generators ──────────────────────────────────────────────
     clenshawcurtis_basis_generator = ClenshawCurtisLevelPolynomialBasisGenerator(store_indices=store_indices)
-    faber_basis_generator = FaberBasisGenerator()
+
     # Placeholder basis/solver for Smolyak (Tasmanian handles both internally)
     aux_smolyak_basis_generator = BasisGenerator("CHEBYSHEV", "CS")
 
@@ -98,46 +102,101 @@ def main_method(folder_name: str = None):
         "cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     scipy_lstsq_gelsy_solver = ScipyLstsqSolver(driver='gelsy')
+    omp_solver = TorchOMPSolver(num_iters=20_000, tol=1e-6, device=device)
     aux_smolyak_solver = Solver("TASMANIAN", "TM")
-    cg_ls_solver = ConjugateGradient_LS(max_iter=1000, tolerance=1e-6, device=device)
-    cg_ne_solver = ConjugateGradient_NE(max_iter=1000, tolerance=1e-6, device=device)
 
     # ── Function parameter generators ─────────────────────────────────
-    uniform_value_generator_c = UniformNumberGenerator(seed=function_generation_c_seed)
-    uniform_value_generator_w = UniformNumberGenerator(seed=function_generation_w_seed)
+    uniform_value_generator_c = UniformNumberGenerator(seed=seeds['function_generation_c_seed'])
+    uniform_value_generator_w = UniformNumberGenerator(seed=seeds['function_generation_w_seed'])
 
     # ── Algorithms ────────────────────────────────────────────────────
     ls = LeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_uniform_grid_generator,
                                solver=scipy_lstsq_gelsy_solver)
     wls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
                                         solver=scipy_lstsq_gelsy_solver)
-    omp = OMP(grid_generator=omp_chebyshev_grid_generator, num_iters=20_000, tol=1e-4)
+
+    omp_uniform_grid_hyperbolic_twice = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                            basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                            solver=omp_solver,
+                                            device=device,
+                                            hc_bandwidth=None,
+                                            index_set_type='hyperbolic',  # TODO: Make ENUM
+                                            bandwidth_multiplier_function=lambda x: 2 * x)
+
+    omp_uniform_grid_hyperbolic_10 = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                         basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                         solver=omp_solver,
+                                         device=device,
+                                         hc_bandwidth=None,
+                                         index_set_type='hyperbolic',  # TODO: Make ENUM
+                                         bandwidth_multiplier_function=lambda x: 10 * x)
+
+    omp_uniform_grid_hyperbolic_100 = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                          basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                          solver=omp_solver,
+                                          device=device,
+                                          hc_bandwidth=None,
+                                          index_set_type='hyperbolic',  # TODO: Make ENUM
+                                          bandwidth_multiplier_function=lambda x: 100 * x)
+
+    omp_uniform_grid_hyperbolic_square = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                             basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                             solver=omp_solver,
+                                             device=device,
+                                             hc_bandwidth=None,
+                                             index_set_type='hyperbolic',  # TODO: Make ENUM
+                                             bandwidth_multiplier_function=lambda x: x * x)
+
+    omp_chebyshev_grid_hyperbolic_twice = OMP(grid_generator=twice_points_chebyshev_grid_generator,
+                                              basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                              solver=omp_solver,
+                                              device=device,
+                                              hc_bandwidth=None,
+                                              index_set_type='hyperbolic',  # TODO: Make ENUM
+                                              bandwidth_multiplier_function=lambda x: 2 * x)
+
+    omp_chebyshev_grid_hyperbolic_10 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
+                                           basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                           solver=omp_solver,
+                                           device=device,
+                                           hc_bandwidth=None,
+                                           index_set_type='hyperbolic',  # TODO: Make ENUM
+                                           bandwidth_multiplier_function=lambda x: 10 * x)
+
+    omp_chebyshev_grid_hyperbolic_100 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
+                                            basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                            solver=omp_solver,
+                                            device=device,
+                                            hc_bandwidth=None,
+                                            index_set_type='hyperbolic',  # TODO: Make ENUM
+                                            bandwidth_multiplier_function=lambda x: 100 * x)
+
+    omp_chebyshev_grid_hyperbolic_square = OMP(grid_generator=twice_points_chebyshev_grid_generator,
+                                               basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                               solver=omp_solver,
+                                               device=device,
+                                               hc_bandwidth=None,
+                                               index_set_type='hyperbolic',  # TODO: Make ENUM
+                                               bandwidth_multiplier_function=lambda x: x * x)
+
     sa = SmolyakAlgorithm(basis_generator=aux_smolyak_basis_generator, grid_generator=rule_grid_generator,
                           solver=aux_smolyak_solver)
 
-    faber_ls = LeastSquaresAlgorithm(faber_basis_generator,
-                                     twice_points_uniform_grid_generator,
-                                     solver=scipy_lstsq_gelsy_solver)
-
-    faber_wls = WeightedLeastSquaresAlgorithm(faber_basis_generator,
-                                              twice_points_chebyshev_grid_generator,
-                                              solver=scipy_lstsq_gelsy_solver)
-
-    ls_cg_ne = LeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_uniform_grid_generator,
-                                     solver=cg_ne_solver)
-    ls_cg_ls = LeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_uniform_grid_generator,
-                                     solver=cg_ls_solver)
-    wls_cg_ne = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
-                                              solver=cg_ne_solver)
-    wls_cg_ls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
-                                              solver=cg_ls_solver)
-
-    algorithm_list = [sa, ls, wls, omp, faber_ls, faber_wls, ls_cg_ls, ls_cg_ne, wls_cg_ls, wls_cg_ne]
+    algorithm_list = [sa, ls, wls,
+                      omp_uniform_grid_hyperbolic_twice,
+                      omp_uniform_grid_hyperbolic_10,
+                      omp_uniform_grid_hyperbolic_100,
+                      omp_uniform_grid_hyperbolic_square,
+                      omp_chebyshev_grid_hyperbolic_twice,
+                      omp_chebyshev_grid_hyperbolic_10,
+                      omp_chebyshev_grid_hyperbolic_100,
+                      omp_chebyshev_grid_hyperbolic_square]
 
     if folder_name is not None:
-        path = os.path.join("results", folder_name, "results_numerical_experiments.csv")
+        run_dir = os.path.join("results", folder_name)
     else:
-        path = None
+        run_dir = os.path.join("results", datetime.datetime.now().strftime('%d_%m_%Y_%H_%M_%S'))
+    path = os.path.join(run_dir, "results_numerical_experiments.csv")
 
     ex = ExperimentExecutor(dim_scale_dict,
                             test_grid_generator=test_grid_generator,

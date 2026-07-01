@@ -11,7 +11,7 @@ from basis.smolyak_indexing import SmolyakIndexing
 from grid.grid.grid import Grid
 
 
-class ClenshawCurtisLevelPolynomialBasisGenerator(SmolyakIndexing, BasisGenerator):
+class ClenshawCurtisLevelPolynomialBasisGenerator(SmolyakIndexing, BasisGenerator): # TODO: Maybe remove the Smolyak indexing and replace the "self" by SmolyakIndexing in the code
     """
     Chebyshev polynomial basis with Smolyak-level index selection.
 
