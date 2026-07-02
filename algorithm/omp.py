@@ -146,6 +146,7 @@ class OMP(Algorithm):
         return np.stack([m.flatten() for m in mesh], axis=-1)
 
     @staticmethod
+    # TODO: Utilize basis_generator.create_basis() here
     def _chebyshev_matrix(points_normalized: np.ndarray, indices: np.ndarray, norm_coeffs: np.ndarray,
                           device: torch.device, dtype: torch.dtype) -> np.ndarray:
         """Materializes the tensor evaluations mapping your multi-index system explicitly."""

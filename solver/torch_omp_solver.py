@@ -56,7 +56,7 @@ class TorchOMPSolver(Solver):
         N, M = A.shape
         eps = torch.finfo(A.dtype).eps
 
-        num_iters = min(self.num_iters, M, N)
+        num_iters = min(self.num_iters, M, N // 2) # TODO: Change this. It is now hardcoded to the same number as in LS (E(q,d))
         selected_indices = torch.zeros(num_iters, device=self.device, dtype=torch.long)
         L = torch.zeros((num_iters, num_iters), device=self.device, dtype=self.dtype)
         rhs = torch.zeros((num_iters, 1), device=self.device, dtype=self.dtype)
