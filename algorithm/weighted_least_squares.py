@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from algorithm.algorithm import Algorithm
@@ -40,11 +42,19 @@ class WeightedLeastSquaresAlgorithm(Algorithm):
         self.coeff = self.solver.solve(x_poly, y_prime)
         self.basis = None  # free memory after fitting
 
-        # TODO: Place a "_save_coefficients"-call method somewhere here
-
     def evaluate(self, grid: Grid):
         test_basis = self.basis_generator.create_basis(grid)
         return test_basis.basis @ self.coeff
+
+    def save_coefficients(self, results_path: str, dim: int, scale: int):
+        if self.coeff is None:
+            raise ValueError("Coefficients have not been computed yet. Call fit() first.")
+
+        filename = os.path.join("coefficients", f"wLS_coefficients_d{dim}_s{scale}.npz")
+        path = os.path.join(results_path.replace("results_numerical_experiments.csv", ""), filename)
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        np.savez(path, coeff=self.coeff)
 
     def _get_weights_for_weighted_ls(self):
         """

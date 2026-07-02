@@ -42,10 +42,13 @@ class TorchOMPSolver(Solver):
         normalization = torch.sqrt((A ** 2).sum(dim=0, keepdim=True))
 
         # TODO: Parallelize this loop using multiprocessing
-
-
         for col in range(n_funcs):
             coeff[:, col] = self._omp_solve_single(A, y[:, col:col + 1], normalization).flatten()
+
+        # delete cuda memory
+        del A, y, normalization
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         return coeff.cpu().numpy()
 

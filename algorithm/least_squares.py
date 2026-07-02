@@ -1,3 +1,7 @@
+import os
+
+import numpy as np
+
 from algorithm import Algorithm
 from basis import BasisGenerator
 from function import Function
@@ -25,9 +29,19 @@ class LeastSquaresAlgorithm(Algorithm):
 
         y = self._calculate_y(f, self.grid)
         self.coeff = self.solver.solve(self.basis.basis, y)
-        # TODO: Place a "_save_coefficients"-call method somewhere here
         self.basis = None  # free memory after fitting
 
     def evaluate(self, grid: Grid):
         test_basis = self.basis_generator.create_basis(grid)
         return test_basis.basis @ self.coeff
+
+    def save_coefficients(self, results_path: str, dim: int, scale: int):
+        # TODO: Maybe shift this one layer up to the Algorithm base class, since it's almost the same for all
+        if self.coeff is None:
+            raise ValueError("Coefficients have not been computed yet. Call fit() first.")
+
+        filename = os.path.join("coefficients", f"LS_coefficients_d{dim}_s{scale}.npz")
+        path = os.path.join(results_path.replace("results_numerical_experiments.csv", ""), filename)
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        np.savez(path, coeff=self.coeff)

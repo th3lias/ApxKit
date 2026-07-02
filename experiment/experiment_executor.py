@@ -128,6 +128,7 @@ class ExperimentExecutor:
 
                     start_time = time.time()
                     algo.fit(dim=dim, scale=scale, f=self.functions, lower=0.0, upper=1.0)
+                    algo.save_coefficients(self.results_path, dim=dim, scale=scale)
                     y_hat_test = algo.evaluate(test_grid)
                     ell_2, ell_infty = self._calc_error(y_test, y_hat_test)
                     needed_time = time.time() - start_time

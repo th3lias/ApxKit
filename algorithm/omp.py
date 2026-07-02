@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import torch
 from algorithm.algorithm import Algorithm
@@ -7,6 +9,7 @@ from grid.generator.grid_generator import GridGenerator
 from grid.grid.grid import Grid
 from solver.solver import Solver
 from collections.abc import Callable
+from utils.utils import calculate_num_points
 
 
 class OMP(Algorithm):
@@ -16,7 +19,8 @@ class OMP(Algorithm):
 
     # TODO: Allow to use basis generator by using A = self.basis_generator.get_matrix(self.grid, self._indices, self._norm_coeffs) or similar. Adapt this everywhere.
     def __init__(self, basis_generator: BasisGenerator, grid_generator: GridGenerator, solver: Solver, device: torch.device,
-                 hc_bandwidth: int | None, index_set_type, bandwidth_multiplier_function: Callable):
+                 hc_bandwidth: int | None, index_set_type, bandwidth_multiplier_function: Callable,
+                 name:str = "Orthogonal_Matching_Pursuit", abbr_name: str = "OMP"):
         """
         Args:
             basis_generator: Framework basis generator.
@@ -28,8 +32,8 @@ class OMP(Algorithm):
             bandwidth_multiplier_function: Scale up the candidate space size beyond the minimal envelope (e.g., 1.5 or 2.0).
         """
         super().__init__(
-            name="Orthogonal_Matching_Pursuit",
-            abbr_name="OMP",
+            name=name,
+            abbr_name=abbr_name,
             basis_generator=basis_generator,
             grid_generator=grid_generator,
             solver=solver
@@ -60,7 +64,6 @@ class OMP(Algorithm):
 
         # 2. Derive Base Bandwidth
         if self.hc_bandwidth is None:
-            from utils.utils import calculate_num_points
             base_R = _find_hc_bandwidth(dim, calculate_num_points(dim, scale))
         else:
             base_R = self.hc_bandwidth
@@ -88,14 +91,24 @@ class OMP(Algorithm):
         # 5. Hand system matrix over to the abstract solver pipeline
         self.coeff = self.solver.solve(A, y)
 
-        # TODO: Store coefficients to disk
-
     def evaluate(self, grid: Grid) -> np.ndarray:
         """Evaluates the fitted Chebyshev approximation model on target validation points."""
         points = np.array(grid)
         points_norm = 2.0 * (points - self._lower) / (self._upper - self._lower) - 1.0
         A_test = self._chebyshev_matrix(points_norm, self._indices, self._norm_coeffs, self.device, self.dtype)
         return A_test @ self.coeff
+
+    def save_coefficients(self, results_path: str, dim: int, scale: int):
+        if self.coeff is None:
+            raise ValueError("Coefficients have not been computed yet. Call fit() first.")
+
+        # TODO: Make this more dynamic
+        name = self.abbr_name
+        filename = os.path.join("coefficients", f"{name}_coefficients_d{dim}_s{scale}.npz")
+        path = os.path.join(results_path.replace("results_numerical_experiments.csv", ""), filename)
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        np.savez(path, coeff=self.coeff)
 
     @staticmethod
     def _hyp_cross(dim: int, R: int) -> np.ndarray:

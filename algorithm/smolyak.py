@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from algorithm.algorithm import Algorithm
@@ -32,7 +34,18 @@ class SmolyakAlgorithm(Algorithm):
 
         model_values = self._calculate_y(f, self.grid)
         self.grid.load_needed_values(model_values)
-        # TODO: Place a "_save_coefficients"-call method somewhere here
+        self.coeff = self.grid.grid.getHierarchicalCoefficients()
+
+    def save_coefficients(self, results_path: str, dim: int, scale: int):
+
+        if self.coeff is None:
+            raise ValueError("Coefficients have not been computed yet. Call fit() first.")
+
+        filename = os.path.join("coefficients", f"SA_coefficients_d{dim}_s{scale}.npz")
+        path = os.path.join(results_path.replace("results_numerical_experiments.csv", ""), filename)
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        np.savez(path, coeff=self.coeff)
 
     def evaluate(self, grid: RandomGrid):
         test_array = np.array(grid)
