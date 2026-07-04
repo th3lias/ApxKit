@@ -53,12 +53,12 @@ def main_method(folder_name: str = None):
     use_max_scale = False  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2, 3, 4, 5, 6, 7 ],
-        3: [1, 2, 3, 4, 5 ],
+        2: [1, 2, 3, 4, 5, 6, 7],
+        3: [1, 2, 3, 4, 5],
         4: [1, 2, 3, 4, 5],
         5: [1, 2, 3, 4, 5, ],
-        6: [1, 2, 3, 4,  ],
-        7: [1, 2, 3, 4,  ],
+        6: [1, 2, 3, 4, ],
+        7: [1, 2, 3, 4, ],
         8: [1, 2, 3, 4, ],
         9: [1, 2, 3, 4, ],
         10: [1, 2, 3, 4, ],
@@ -114,15 +114,25 @@ def main_method(folder_name: str = None):
     wls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
                                         solver=scipy_lstsq_gelsy_solver)
 
-    omp_uniform_grid_hyperbolic_twice = OMP(grid_generator=twice_points_uniform_grid_generator,
-                                            basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                            solver=omp_solver,
-                                            device=device,
-                                            hc_bandwidth=None,
-                                            index_set_type='hyperbolic',  # TODO: Make ENUM
-                                            name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
-                                            abbr_name="OMP_Unif_hyp_2",
-                                            bandwidth_multiplier_function=lambda x: 2 * x)
+    omp_uniform_grid_hyperbolic_2 = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                        solver=omp_solver,
+                                        device=device,
+                                        hc_bandwidth=None,
+                                        index_set_type='hyperbolic',  # TODO: Make ENUM
+                                        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
+                                        abbr_name="OMP_Unif_hyp_2",
+                                        bandwidth_multiplier_function=lambda x: 2 * x)
+
+    omp_uniform_grid_hyperbolic_5 = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                        solver=omp_solver,
+                                        device=device,
+                                        hc_bandwidth=None,
+                                        index_set_type='hyperbolic',  # TODO: Make ENUM
+                                        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
+                                        abbr_name="OMP_Unif_hyp_10",
+                                        bandwidth_multiplier_function=lambda x: 5 * x)
 
     omp_uniform_grid_hyperbolic_10 = OMP(grid_generator=twice_points_uniform_grid_generator,
                                          basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
@@ -130,39 +140,39 @@ def main_method(folder_name: str = None):
                                          device=device,
                                          hc_bandwidth=None,
                                          index_set_type='hyperbolic',  # TODO: Make ENUM
-                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
-                                         abbr_name="OMP_Unif_hyp_10",
+                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_100",
+                                         abbr_name="OMP_Unif_hyp_100",
                                          bandwidth_multiplier_function=lambda x: 10 * x)
 
-    omp_uniform_grid_hyperbolic_100 = OMP(grid_generator=twice_points_uniform_grid_generator,
+    omp_uniform_grid_hyperbolic_20 = OMP(grid_generator=twice_points_uniform_grid_generator,
+                                         basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                         solver=omp_solver,
+                                         device=device,
+                                         hc_bandwidth=None,
+                                         index_set_type='hyperbolic',  # TODO: Make ENUM
+                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_sq",
+                                         abbr_name="OMP_Unif_hyp_sq",
+                                         bandwidth_multiplier_function=lambda x: 20 * x)
+
+    omp_chebyshev_grid_hyperbolic_2 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
                                           basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
                                           solver=omp_solver,
                                           device=device,
                                           hc_bandwidth=None,
                                           index_set_type='hyperbolic',  # TODO: Make ENUM
-                                          name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_100",
-                                          abbr_name="OMP_Unif_hyp_100",
-                                          bandwidth_multiplier_function=lambda x: 100 * x)
+                                          name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
+                                          abbr_name="OMP_Cheb_hyp_2",
+                                          bandwidth_multiplier_function=lambda x: 2 * x)
 
-    omp_uniform_grid_hyperbolic_square = OMP(grid_generator=twice_points_uniform_grid_generator,
-                                             basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                             solver=omp_solver,
-                                             device=device,
-                                             hc_bandwidth=None,
-                                             index_set_type='hyperbolic',  # TODO: Make ENUM
-                                             name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_sq",
-                                             abbr_name="OMP_Unif_hyp_sq",
-                                             bandwidth_multiplier_function=lambda x: x * x)
-
-    omp_chebyshev_grid_hyperbolic_twice = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                              basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                              solver=omp_solver,
-                                              device=device,
-                                              hc_bandwidth=None,
-                                              index_set_type='hyperbolic',  # TODO: Make ENUM
-                                              name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
-                                              abbr_name="OMP_Cheb_hyp_2",
-                                              bandwidth_multiplier_function=lambda x: 2 * x)
+    omp_chebyshev_grid_hyperbolic_5 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
+                                          basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                          solver=omp_solver,
+                                          device=device,
+                                          hc_bandwidth=None,
+                                          index_set_type='hyperbolic',  # TODO: Make ENUM
+                                          name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
+                                          abbr_name="OMP_Cheb_hyp_10",
+                                          bandwidth_multiplier_function=lambda x: 5 * x)
 
     omp_chebyshev_grid_hyperbolic_10 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
                                            basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
@@ -170,42 +180,32 @@ def main_method(folder_name: str = None):
                                            device=device,
                                            hc_bandwidth=None,
                                            index_set_type='hyperbolic',  # TODO: Make ENUM
-                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
-                                           abbr_name="OMP_Cheb_hyp_10",
+                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_100",
+                                           abbr_name="OMP_Cheb_hyp_100",
                                            bandwidth_multiplier_function=lambda x: 10 * x)
 
-    omp_chebyshev_grid_hyperbolic_100 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                            basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                            solver=omp_solver,
-                                            device=device,
-                                            hc_bandwidth=None,
-                                            index_set_type='hyperbolic',  # TODO: Make ENUM
-                                            name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_100",
-                                            abbr_name="OMP_Cheb_hyp_100",
-                                            bandwidth_multiplier_function=lambda x: 100 * x)
-
-    omp_chebyshev_grid_hyperbolic_square = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                               basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                               solver=omp_solver,
-                                               device=device,
-                                               hc_bandwidth=None,
-                                               index_set_type='hyperbolic',  # TODO: Make ENUM
-                                               name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_sq",
-                                               abbr_name="OMP_Cheb_hyp_sq",
-                                               bandwidth_multiplier_function=lambda x: x * x)
+    omp_chebyshev_grid_hyperbolic_20 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
+                                           basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+                                           solver=omp_solver,
+                                           device=device,
+                                           hc_bandwidth=None,
+                                           index_set_type='hyperbolic',  # TODO: Make ENUM
+                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_sq",
+                                           abbr_name="OMP_Cheb_hyp_sq",
+                                           bandwidth_multiplier_function=lambda x: 20 * x)
 
     sa = SmolyakAlgorithm(basis_generator=aux_smolyak_basis_generator, grid_generator=rule_grid_generator,
                           solver=aux_smolyak_solver)
 
     algorithm_list = [sa, ls, wls,
-                      omp_uniform_grid_hyperbolic_twice,
+                      omp_uniform_grid_hyperbolic_2,
+                      omp_uniform_grid_hyperbolic_5,
                       omp_uniform_grid_hyperbolic_10,
-                      omp_uniform_grid_hyperbolic_100,
-                      omp_uniform_grid_hyperbolic_square,
-                      omp_chebyshev_grid_hyperbolic_twice,
+                      omp_uniform_grid_hyperbolic_20,
+                      omp_chebyshev_grid_hyperbolic_2,
+                      omp_chebyshev_grid_hyperbolic_5,
                       omp_chebyshev_grid_hyperbolic_10,
-                      omp_chebyshev_grid_hyperbolic_100,
-                      omp_chebyshev_grid_hyperbolic_square]
+                      omp_chebyshev_grid_hyperbolic_20]
 
     if folder_name is not None:
         run_dir = os.path.join("results", folder_name)
