@@ -89,7 +89,7 @@ class ExperimentExecutor:
             f"* RAM={psutil.virtual_memory().total / 1024 / 1024 / 1024} GB\n" +
             f"* random test rule: {self.test_grid_generator.name}\n" +
             f"* max_scale={self.use_max_scale}\n" +
-            f"* device if needed: {device})\n" +
+            f"* device (if needed): {device}\n" +
             f"* starting time: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')} ")
         print("_" * 75)
         print(f"Results will be stored in {self.results_path}\n")

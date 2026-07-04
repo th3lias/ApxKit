@@ -3,6 +3,7 @@
 #SBATCH --partition=gpu-v100s
 #SBATCH --nodes=1
 #SBATCH --gres=gpu:1
+#SBATCH --nodelist=gpunode006
 
 # timestamp
 CUR_DATE_TIME=$(date +"%d_%m_%Y_%H_%M_%S")
