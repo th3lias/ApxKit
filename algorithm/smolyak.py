@@ -47,6 +47,6 @@ class SmolyakAlgorithm(Algorithm):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         np.savez(path, coeff=self.coeff)
 
-    def evaluate(self, grid: RandomGrid):
+    def evaluate(self, grid: RandomGrid, scale:int):
         test_array = np.array(grid)
         return self.grid.grid.evaluateBatch(test_array)

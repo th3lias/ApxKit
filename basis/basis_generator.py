@@ -9,7 +9,7 @@ class BasisGenerator:
         self.name = name
         self.abbr_name = abbr_name
 
-    def create_basis(self, grid: Grid) -> Basis:
+    def create_basis(self, grid: Grid, scale:int) -> Basis:
         raise NotImplementedError("Subclasses should implement this method")
 
     def _basis_rule(self):

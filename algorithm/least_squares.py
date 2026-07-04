@@ -31,8 +31,8 @@ class LeastSquaresAlgorithm(Algorithm):
         self.coeff = self.solver.solve(self.basis.basis, y)
         self.basis = None  # free memory after fitting
 
-    def evaluate(self, grid: Grid):
-        test_basis = self.basis_generator.create_basis(grid)
+    def evaluate(self, grid: Grid, scale: int):
+        test_basis = self.basis_generator.create_basis(grid, scale)
         return test_basis.basis @ self.coeff
 
     def save_coefficients(self, results_path: str, dim: int, scale: int):

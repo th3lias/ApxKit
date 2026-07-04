@@ -35,8 +35,10 @@ class Algorithm:
     def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0, upper: float = 1.0):
         raise NotImplementedError("Subclasses should implement this method")
 
-    def evaluate(self, grid: Grid):
-        """Evaluate the fitted approximant at the given grid points."""
+    def evaluate(self, grid: Grid, scale:int):
+        """Evaluate the fitted approximant at the given grid points.
+        Uses scale to create the right basis
+        # TODO: Remove scale and maybe later replace it with indices"""
         raise NotImplementedError("Subclasses should implement this method")
 
     def get_n_points(self):

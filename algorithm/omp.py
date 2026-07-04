@@ -93,7 +93,7 @@ class OMP(Algorithm):
 
         del A, y
 
-    def evaluate(self, grid: Grid) -> np.ndarray:
+    def evaluate(self, grid: Grid, scale) -> np.ndarray:
         """Evaluates the fitted Chebyshev approximation model on target validation points."""
         points = np.array(grid)
         points_norm = 2.0 * (points - self._lower) / (self._upper - self._lower) - 1.0

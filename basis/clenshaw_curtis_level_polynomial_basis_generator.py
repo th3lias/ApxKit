@@ -24,9 +24,8 @@ class ClenshawCurtisLevelPolynomialBasisGenerator(SmolyakIndexing, BasisGenerato
         self._b_idx = None
         self.store_indices = store_indices
 
-    def create_basis(self, grid: Grid, path: str = None) -> Basis:
+    def create_basis(self, grid: Grid, scale:int, path: str = None) -> Basis:
         dim = grid.input_dim
-        scale = grid.scale
 
         self._b_idx = self._load_basis_indices_if_existent(dim, scale, path=path)
 

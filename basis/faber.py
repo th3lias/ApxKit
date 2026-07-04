@@ -47,7 +47,7 @@ class FaberBasisGenerator(SmolyakIndexing, BasisGenerator):
     # Public interface
     # ------------------------------------------------------------------
 
-    def create_basis(self, grid: Grid) -> Basis:
+    def create_basis(self, grid: Grid, scale :int) -> Basis:
         """
         Build the Vandermonde matrix of hierarchical hat functions
         evaluated at all grid points.
@@ -65,7 +65,6 @@ class FaberBasisGenerator(SmolyakIndexing, BasisGenerator):
             Dense Vandermonde of shape ``(N_pts, N_basis)``.
         """
         dim = grid.input_dim
-        scale = grid.scale
         lower = grid.lower_bound
         upper = grid.upper_bound
         pts = np.asarray(grid)                       # (N, dim)

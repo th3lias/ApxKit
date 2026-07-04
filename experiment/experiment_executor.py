@@ -102,10 +102,10 @@ class ExperimentExecutor:
 
         for dim in self.dim_scale_dictionary.keys():
             self._get_functions(function_types, n_functions_parallel, dim, avg_c)
-            max_scale = max(self.dim_scale_dictionary[dim])
 
             # Pre-evaluate test function values (reused across scales if use_max_scale)
             if self.use_max_scale:
+                max_scale = max(self.dim_scale_dictionary[dim])
                 test_grid = self.test_grid_generator.get_grid(dim=dim, scale=max_scale,
                                                               lower_bound=0.0, upper_bound=1.0)
                 n_points_test = test_grid.get_num_points()
@@ -129,7 +129,7 @@ class ExperimentExecutor:
                     start_time = time.time()
                     algo.fit(dim=dim, scale=scale, f=self.functions, lower=0.0, upper=1.0)
                     algo.save_coefficients(self.results_path, dim=dim, scale=scale)
-                    y_hat_test = algo.evaluate(test_grid)
+                    y_hat_test = algo.evaluate(test_grid, scale=scale)
                     ell_2, ell_infty = self._calc_error(y_test, y_hat_test)
                     needed_time = time.time() - start_time
 
