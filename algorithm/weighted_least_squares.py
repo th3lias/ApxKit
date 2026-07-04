@@ -30,7 +30,7 @@ class WeightedLeastSquaresAlgorithm(Algorithm):
     def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0,
             upper: float = 1.0) -> None:
         self.grid = self.grid_generator.get_grid(dim=dim, scale=scale, lower_bound=lower, upper_bound=upper)
-        self.basis = self.basis_generator.create_basis(self.grid)
+        self.basis = self.basis_generator.create_basis(self.grid, scale)
 
         y = self._calculate_y(f, self.grid)
         weight = self._get_weights_for_weighted_ls()
@@ -42,7 +42,7 @@ class WeightedLeastSquaresAlgorithm(Algorithm):
         self.coeff = self.solver.solve(x_poly, y_prime)
         self.basis = None  # free memory after fitting
 
-    def evaluate(self, grid: Grid, scale:int):
+    def evaluate(self, grid: Grid, scale: int):
         test_basis = self.basis_generator.create_basis(grid, scale)
         return test_basis.basis @ self.coeff
 

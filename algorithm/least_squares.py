@@ -25,7 +25,7 @@ class LeastSquaresAlgorithm(Algorithm):
     def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0,
             upper: float = 1.0) -> None:
         self.grid = self.grid_generator.get_grid(dim=dim, scale=scale, lower_bound=lower, upper_bound=upper)
-        self.basis = self.basis_generator.create_basis(self.grid)
+        self.basis = self.basis_generator.create_basis(self.grid, scale)
 
         y = self._calculate_y(f, self.grid)
         self.coeff = self.solver.solve(self.basis.basis, y)
