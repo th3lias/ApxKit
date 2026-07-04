@@ -91,6 +91,8 @@ class OMP(Algorithm):
         # 5. Hand system matrix over to the abstract solver pipeline
         self.coeff = self.solver.solve(A, y)
 
+        del A, y
+
     def evaluate(self, grid: Grid) -> np.ndarray:
         """Evaluates the fitted Chebyshev approximation model on target validation points."""
         points = np.array(grid)
