@@ -46,11 +46,11 @@ def main_method(folder_name: str = None):
 
     # ── Experiment parameters ─────────────────────────────────────────
     multiplier_fun_ls_train = lambda x: 2 * x  # oversampling factor for LS training grids
-    multiplier_fun_test = lambda x: x
+    multiplier_fun_test = lambda x: 100 * x
     n_fun_parallel = 5  # number of random function instances per type
 
     store_indices = True
-    use_max_scale = False  # whether to use the maximum scale for the test grid
+    use_max_scale = True  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
         2: [1, 2, 3, 4, 5, 6, 7],
@@ -63,6 +63,12 @@ def main_method(folder_name: str = None):
         9: [1, 2, 3, 4, ],
         10: [1, 2, 3, 4, ],
     }
+
+    dim_scale_dict = dict()
+
+    for d in range(11, 101):
+        dim_scale_dict[d] = [1, 2]
+
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
