@@ -47,21 +47,21 @@ def main_method(folder_name: str = None):
     # ── Experiment parameters ─────────────────────────────────────────
     multiplier_fun_ls_train = lambda x: 2 * x  # oversampling factor for LS training grids
     multiplier_fun_test = lambda x: x
-    n_fun_parallel = 3  # number of random function instances per type
+    n_fun_parallel = 5  # number of random function instances per type
 
     store_indices = True
     use_max_scale = False  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        3: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        # 4: [1, 2, 3, 4, 5, 6, 7, 8, 9, ],
-        # 5: [1, 2, 3, 4, 5, 6, 7, 8, ],
-        # 6: [1, 2, 3, 4, 5, 6, 7, ],
-        # 7: [1, 2, 3, 4, 5, 6, 7, ],
-        # 8: [1, 2, 3, 4, 5, 6, ],
-        # 9: [1, 2, 3, 4, 5, 6, ],
-        # 10: [1, 2, 3, 4, 5, 6, ],
+        2: [1, 2, 3, 4, 5, 6, 7 ],
+        3: [1, 2, 3, 4, 5, 6, 7 ],
+        4: [1, 2, 3, 4, 5, 6, 7],
+        5: [1, 2, 3, 4, 5, 6, ],
+        6: [1, 2, 3, 4, 5,  ],
+        7: [1, 2, 3, 4, 5,  ],
+        8: [1, 2, 3, 4, ],
+        9: [1, 2, 3, 4, ],
+        10: [1, 2, 3, 4, ],
     }
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
