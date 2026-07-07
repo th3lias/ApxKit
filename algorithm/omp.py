@@ -76,8 +76,6 @@ class OMP(Algorithm):
             self._indices = self._hyp_cross(dim, effective_R)
         elif self.index_set_type == "total_degree":
             self._indices = self._total_degree_cross(dim, effective_R)
-        elif self.index_set_type == "full_degree":
-            self._indices = self._full_degree_cross(dim, effective_R)
         else:
             raise ValueError(
                 f"Unknown index_set_type: {self.index_set_type}. Choose 'hyperbolic', 'total_degree', or 'full_degree'.")
@@ -141,13 +139,6 @@ class OMP(Algorithm):
         return np.vstack(out)
 
     @staticmethod
-    def _full_degree_cross(dim: int, R: int) -> np.ndarray:
-        """Builds a massive Full Tensor Product space: max(k_i) <= R for all i"""
-        grids = [np.arange(0, R + 1, dtype=np.int32) for _ in range(dim)]
-        mesh = np.meshgrid(*grids, indexing='ij')
-        return np.stack([m.flatten() for m in mesh], axis=-1)
-
-    @staticmethod
     # TODO: Utilize basis_generator.create_basis() here
     def _chebyshev_matrix(points_normalized: np.ndarray, indices: np.ndarray, norm_coeffs: np.ndarray,
                           device: torch.device, dtype: torch.dtype) -> np.ndarray:
@@ -160,7 +151,7 @@ class OMP(Algorithm):
         samples_acos = torch.acos(torch.clamp(pts, -1.0 + eps, 1.0 - eps))
 
         angle = samples_acos[:, None, :] * idx[None, :, :]
-        mat = torch.prod(torch.cos(angle), dim=2)
+        mat = torch.prod(torch.cos(angle), dim=2) # TODO: remove dim but loop
         mat *= coeffs[None, :]
 
         return mat.cpu().numpy()
