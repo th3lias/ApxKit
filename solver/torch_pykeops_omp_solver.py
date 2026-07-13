@@ -5,7 +5,7 @@ from solver.solver import Solver
 # TODO: deepinv as solver??
 
 
-class TorchOMPSolver(Solver):
+class TorchPyKeopsOMPSolver(Solver):
     """
     Orthogonal Matching Pursuit (OMP) Solver using PyTorch for GPU acceleration.
     Solves Az = y column-by-column using incremental Cholesky updates.
