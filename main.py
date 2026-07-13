@@ -53,21 +53,16 @@ def main_method(folder_name: str = None):
     use_max_scale = True  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2, 3, 4, 5, 6, 7],
-        3: [1, 2, 3, 4, 5],
-        4: [1, 2, 3, 4, 5],
-        5: [1, 2, 3, 4, 5, ],
-        6: [1, 2, 3, 4, ],
-        7: [1, 2, 3, 4, ],
-        8: [1, 2, 3, 4, ],
-        9: [1, 2, 3, 4, ],
-        10: [1, 2, 3, 4, ],
+        2: [1, 2, 3, 4, 5],
+        3: [1, 2, 3, 4],
+        # 4: [1, 2, 3, 4, 5],
+        # 5: [1, 2, 3, 4, 5, ],
+        # 6: [1, 2, 3, 4, ],
+        # 7: [1, 2, 3, 4, ],
+        # 8: [1, 2, 3, 4, ],
+        # 9: [1, 2, 3, 4, ],
+        # 10: [1, 2, 3, 4, ],
     }
-
-    dim_scale_dict = dict()
-
-    for d in range(11, 101):
-        dim_scale_dict[d] = [1, 2]
 
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
