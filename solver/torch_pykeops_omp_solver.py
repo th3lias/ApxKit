@@ -12,7 +12,8 @@ class TorchPyKeopsOMPSolver(Solver):
     """
 
     def __init__(self, num_iters: int, tol: float, device: torch.device,
-                 name: str = "Torch_OMP_Solver", abbr_name: str = "OMP"):
+                 name: str = "Torch_OMP_PyKeops_Solver", abbr_name: str = "OMP_PyKeops",
+                 ):
         super().__init__(name=name, abbr_name=abbr_name)
         self.num_iters = num_iters
         self.tol = tol
@@ -30,6 +31,10 @@ class TorchPyKeopsOMPSolver(Solver):
         and returns coefficients back as a NumPy array.
         """
         # Convert arrays to 32-bit float tensors on the requested device
+
+
+
+
         A = torch.from_numpy(A_np).to(dtype=self.dtype, device=self.device)
         y = torch.from_numpy(y_np).to(dtype=self.dtype, device=self.device)
 
@@ -113,3 +118,163 @@ class TorchPyKeopsOMPSolver(Solver):
             x.flatten()[selected_indices[:actual_iters]] = out[:actual_iters].flatten()
 
         return x
+
+    # TODO: check if staticmethods are more appropriate here
+    def _A(self):
+        pass
+
+    def _AT(self):
+        pass
+
+    def _col_extractor(self):
+        pass
+
+
+    # TODO: add "requires_grad" everywhere, as we don't need it I guess
+    def _omp_solve_single_pykeops(self,
+                                  col_extractor,
+                                  A,
+                                  AT,
+                                  normalization,
+                                  b,
+                                  f,
+                                  p,
+                                  num_iters=1500,
+                                  tol=1e-5):
+        device = p.device
+        dtype = p.dtype
+        eps = torch.finfo(dtype).eps
+        N = b.size(0)
+        corr = AT(b)
+        x = torch.zeros_like(corr, device=device, dtype=dtype, requires_grad=False)
+
+        selected_indices = torch.zeros(
+            num_iters, device=device, dtype=torch.long, requires_grad=False
+        )
+
+        num_iters = min(self.num_iters, M, N // 2)
+        L = torch.zeros((num_iters, num_iters), device=self.device, dtype=self.dtype)
+        rhs = torch.zeros((num_iters, 1), device=self.device, dtype=self.dtype)
+
+        diag = torch.clamp(normalization.flatten(), min=eps)
+        z_2 = torch.empty_like(diag)
+        res = b.clone()
+
+        for j in range(num_iters):
+            # Compute and mask correlations
+            torch.abs(AT(res).flatten() / diag, out=z_2)
+            if j > 0:
+                z_2[selected_indices[:j]] = -1
+
+            # Find maximum correlation
+            max_ind = torch.argmax(z_2)
+            selected_indices[j] = max_ind
+
+            # Recursive construction of Cholesky decomposition
+            # See https://ieeexplore.ieee.org/document/6333943/
+            new_col = col_extractor(p, f, max_ind)
+
+            if j == 0:
+                L[0, 0] = torch.linalg.vector_norm(new_col)
+            else:
+                corr = AT(new_col, mask_indices=selected_indices[:j])
+                v = torch.linalg.solve_triangular(L[:j, :j], corr, upper=False)
+                L[j, :j] = v.T
+                L[j, j] = torch.sqrt(
+                    torch.clamp(diag[max_ind] ** 2 - torch.sum(v ** 2), min=eps ** 2)
+                )
+
+            rhs[j, :] = torch.dot(new_col.flatten(), b.flatten())
+            out = torch.cholesky_solve(rhs[: j + 1, :], L[: j + 1, : j + 1])
+            res = b - A(out[: j + 1], mask_indices=selected_indices[: j + 1])
+
+            residual = torch.linalg.vector_norm(res) / math.sqrt(N)
+            if j % 100 == 0:
+                print("Iteration:", j + 1, " Residual:", residual.item())
+            if residual < tol:
+                num_iters = j + 1
+                break
+
+        # Update solution using selected indices
+        x.flatten()[selected_indices[:num_iters]] = out[:num_iters].flatten()
+
+        return x
+
+    def aTchebychev_eval(p_acos, D):
+        # Adjoint Techebychev Transform (multidimensional)
+        # x : tensor of type torch.Tensor and shape (N,1), real valued
+        # p, k : tensors of type torch.Tensor and shapes (N,D), (M,D)
+        k_i = Vi(1, D)  # (M, 1, D) LazyTensor
+        pre_i = Vi(2, 1)  # (M, 1, 1) LazyTensor
+        p_acos_j = Vj(p_acos)  # (1, N, D) LazyTensor
+        x_j = Vj(0, 1)  # (1, N, 1) LazyTensor
+
+        tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
+        for d in range(D - 1):
+            tmp *= (k_i[:, :, d + 1] * p_acos_j[:, :, d + 1]).cos()
+        return (pre_i * tmp * x_j).sum_reduction(dim=1, use_double_acc=True)
+
+    def Tchebychev_eval(p_acos, D):
+        # Techebychev Transform (multidimensional)
+        # x : tensor of type torch.Tensor and shape (N,1), real valued
+        # p, k : tensors of type torch.Tensor and shapes (N,D), (M,D)
+        k_j = Vj(1, D)  # (1, M, D) LazyTensor
+        pre_j = Vj(2, 1)  # (1, M, 1) LazyTensor
+        p_acos_i = Vi(p_acos)  # (N, 1, D) LazyTensor
+        x_j = Vj(0, 1)  # (1, M, 1) LazyTensor
+
+        tmp = (k_j[:, :, 0] * p_acos_i[:, :, 0]).cos()
+        for d in range(D - 1):
+            tmp *= (k_j[:, :, d + 1] * p_acos_i[:, :, d + 1]).cos()
+        return (pre_j * tmp * x_j).sum_reduction(dim=1, use_double_acc=True)
+
+    def normalization_Techebychev(p_acos, k, pre, D):
+        # normalization of matrix columns
+        k_i = Vi(k)  # (M, 1, D) LazyTensor
+        pre_i = Vi(pre)  # (M, 1, 1) LazyTensor
+        p_acos_j = Vj(p_acos)  # (1, N, D) LazyTensor
+
+        tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
+        for d in range(D - 1):
+            tmp *= (k_i[:, :, d + 1] * p_acos_j[:, :, d + 1]).cos()
+        return ((pre_i * tmp) ** 2).sum_reduction(dim=1, use_double_acc=True)
+
+    def aCosine_eval(p, D):
+        # Adjoint Cosine transform (multidimensional)
+        # x : tensor of type torch.Tensor and shape (N,1), real valued
+        # p, k : tensors of type torch.Tensor and shapes (N,D), (M,D)
+        k_i = Vi(1, D)  # (M, 1, D) LazyTensor
+        k_i = math.pi * k_i
+        pre_i = Vi(2, 1)  # (M, 1, 1) LazyTensor
+        p_j = Vj((p + 1) / 2)  # (N, 1, D) LazyTensor
+        x_j = Vj(0, 1)  # (1, N, 1) LazyTensor
+
+        tmp = (k_i[:, :, 0] * p_j[:, :, 0]).cos()
+        for d in range(D - 1):
+            tmp *= (k_i[:, :, d + 1] * p_j[:, :, d + 1]).cos()
+        return (pre_i * tmp * x_j).sum_reduction(dim=1, use_double_acc=True)
+
+    def Cosine_eval(p, D):
+        # Cosine transform (multidimensional)
+        # x : tensor of type torch.Tensor and shape (N,1), real valued
+        # p, k : tensors of type torch.Tensor and shapes (N,D), (M,D)
+        k_j = Vj(1, D)  # (1, M, D) LazyTensor
+        k_j = math.pi * k_j
+        pre_j = Vj(2, 1)  # (1, M, 1) LazyTensor
+        p_i = Vi((p + 1) / 2)  # (N, 1, D) LazyTensor
+        x_j = Vj(0, 1)  # (1, M, 1) LazyTensor
+
+        tmp = (k_j[:, :, 0] * p_i[:, :, 0]).cos()
+        for d in range(D - 1):
+            tmp *= (k_j[:, :, d + 1] * p_i[:, :, d + 1]).cos()
+        return (pre_j * tmp * x_j).sum_reduction(dim=1, use_double_acc=True)
+
+    def normalization_Cosine(p, k, pre, D):
+        # normalization of matrix columns
+        k_i = Vi(math.pi * k)  # (M, 1, D) LazyTensor
+        pre_i = Vi(pre)  # (M, 1, 1) LazyTensor
+        p_j = Vj((p + 1) / 2)  # (N, 1, D) LazyTensor
+        tmp = (k_i[:, :, 0] * p_j[:, :, 0]).cos()
+        for d in range(D - 1):
+            tmp *= (k_i[:, :, d + 1] * p_j[:, :, d + 1]).cos()
+        return ((pre_i * tmp) ** 2).sum_reduction(dim=1, use_double_acc=True)
