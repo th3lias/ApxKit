@@ -33,6 +33,8 @@ class Algorithm:
         self.coeff = None
 
     def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0, upper: float = 1.0):
+        # TODO: Look for already done experiments and load them instead of recomputing. This is important for reproducibility.
+        # TODO: If no finished experiment with this configuration is found, compute it and save it for future use.
         raise NotImplementedError("Subclasses should implement this method")
 
     def evaluate(self, grid: Grid, scale:int):
