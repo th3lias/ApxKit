@@ -46,7 +46,7 @@ def main_method(folder_name: str = None):
 
     # ── Experiment parameters ─────────────────────────────────────────
     multiplier_fun_ls_train = lambda x: 2 * x  # oversampling factor for LS training grids
-    multiplier_fun_test = lambda x: 100 * x
+    multiplier_fun_test = lambda x: 1 * x
     n_fun_parallel = 5  # number of random function instances per type
 
     store_indices = True
