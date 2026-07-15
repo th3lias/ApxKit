@@ -190,44 +190,27 @@ def plot_all_errors_fixed_dim(file_name: str = None, df: pd.DataFrame = None,
 
 
 
-        xticklabels = [f"{scale}\n{min(n_points_train[scale])}\n{min(n_points_test[scale])}" for scale in
-                       scales]
-        axs[0].set_xlabel('scale\nmin points train\nmin points test', fontsize=14, linespacing=1.2)
+        xticklabels = [f"{scale}\n{min(n_points_train[scale])}" for scale in scales]
+        axs[0].set_xlabel('scale\npoints', fontsize=14, linespacing=1.2)
 
         for ax in axs:
-            ax.xaxis.set_label_coords(1.1875, -0.025)
+            ax.xaxis.set_label_coords(1.15, -0.025)
             ax.set_yscale('log')
-            # ax.legend(fontsize=14)
             ax.grid(False)
             ax.set_xticks(scales)
             ax.set_xticklabels(xticklabels)
             ax.tick_params(axis='x', labelsize=15)
             ax.tick_params(axis='y', labelsize=15)
 
-        # NEU: Nach der Schleife über die Achsen platziert # TODO: Check that. If ok -> Use it also for scale.
-        # handles, labels = axs[0].get_legend_handles_labels()
-        # fig.legend(handles, labels, loc='center', bbox_to_anchor=(0.5, 0.5), fontsize=12)
-
-        # 1. Legend setup (stays mostly the same, but we position it relative to the bottom margin)
         handles, labels = axs[0].get_legend_handles_labels()
-
         fig.legend(
             handles,
             labels,
-            loc="lower center",
-            bbox_to_anchor=(0.5, 0.02),  # Shifted slightly up so it sits nicely inside the bottom margin
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.15),
             ncol=4,
-            fontsize=14,
+            fontsize=12,
             frameon=False,
-        )
-
-        # 2. Adjust the subplots manually (DO NOT use plt.tight_layout() after this!)
-        fig.subplots_adjust(
-            left=0.08,
-            right=0.98,
-            top=0.88,  # Lowered slightly to make room for the suptitle
-            bottom=0.22,  # Creates plenty of blank space at the bottom for your legend & multi-line x-labels
-            wspace=0.35,
         )
 
         if not only_maximum:
@@ -237,8 +220,13 @@ def plot_all_errors_fixed_dim(file_name: str = None, df: pd.DataFrame = None,
             axs[0].set_ylabel(r'$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
             axs[1].set_ylabel(r'$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
-        plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
-        plt.subplots_adjust(wspace=0.35)
+        fig.subplots_adjust(
+            left=0.08,
+            right=0.95,
+            top=0.88,
+            bottom=0.25,
+            wspace=0.30
+        )
 
         fig.suptitle(f"{abbreviation_dict[f_type]}, $d={dim}$, $Q={min(n_functions_list)}$", fontsize=16,
                      fontweight='bold', x=0.525)
@@ -429,14 +417,13 @@ def plot_all_errors_fixed_scale(file_name: str = None, df: pd.DataFrame = None,
                             marker=marker,
                             linestyle='-', alpha=0.7)
 
-        xticklabels = [f"{dim}\n{min(n_points_train[dim])}\n{min(n_points_test[dim])}" for dim in dims]
-        axs[0].set_xlabel(f'$d$\nmin points train\nmin points test', fontsize=12, linespacing=1.05)
+        xticklabels = [f"{dim}\n{min(n_points_train[dim])}" for dim in dims]
+        axs[0].set_xlabel(f'$d$\npoints', fontsize=12, linespacing=1.05)
 
         for ax in axs:
 
             ax.xaxis.set_label_coords(1.175, -0.025)
             ax.set_yscale('log')
-            ax.legend(fontsize=14)
             ax.grid(False)
 
             if sparse_ticks:
@@ -453,6 +440,17 @@ def plot_all_errors_fixed_scale(file_name: str = None, df: pd.DataFrame = None,
             ax.tick_params(axis='x', labelsize=12)
             ax.tick_params(axis='y', labelsize=15)
 
+        handles, labels = axs[0].get_legend_handles_labels()
+        fig.legend(
+            handles,
+            labels,
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.15),
+            ncol=4,
+            fontsize=12,
+            frameon=False,
+        )
+
         if not only_maximum:
             axs[0].set_ylabel(r'$e_{\mathrm{max}}$', fontsize=18)
             axs[1].set_ylabel(r'$e_{\mathrm{mean}}$', fontsize=18)
@@ -460,8 +458,13 @@ def plot_all_errors_fixed_scale(file_name: str = None, df: pd.DataFrame = None,
             axs[0].set_ylabel(r'$e_{\mathrm{max}}^{\mathrm{wc}}$', fontsize=18)
             axs[1].set_ylabel(r'$e_{\mathrm{mean}}^{\mathrm{wc}}$', fontsize=18)
 
-        plt.tight_layout(rect=(0.00, 0.00, 1.0, 0.95))
-        plt.subplots_adjust(wspace=0.35)
+        fig.subplots_adjust(
+            left=0.08,
+            right=0.95,
+            top=0.88,
+            bottom=0.25,
+            wspace=0.30
+        )
 
         fig.suptitle(f"{abbreviation_dict[f_type]}, $scale={scale}$, $Q={min(n_functions_list)}$", fontsize=16,
                      fontweight='bold', x=0.525)
