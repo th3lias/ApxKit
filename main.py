@@ -3,7 +3,7 @@ import datetime
 import os
 
 from algorithm.least_squares import LeastSquaresAlgorithm
-from algorithm.omp import OMP
+from algorithm.omp import OMP, IndexSetType
 from algorithm.smolyak import SmolyakAlgorithm
 from algorithm.weighted_least_squares import WeightedLeastSquaresAlgorithm
 from basis.basis_generator import BasisGenerator
@@ -53,8 +53,8 @@ def main_method(folder_name: str = None):
     use_max_scale = True  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2, 3, 4, 5],
-        3: [1, 2, 3, 4],
+        2: [1, 2],
+        # 3: [1, 2],
         # 4: [1, 2, 3, 4, 5],
         # 5: [1, 2, 3, 4, 5, ],
         # 6: [1, 2, 3, 4, ],
@@ -120,7 +120,7 @@ def main_method(folder_name: str = None):
                                         solver=omp_solver,
                                         device=device,
                                         hc_bandwidth=None,
-                                        index_set_type='hyperbolic',  # TODO: Make ENUM
+                                        index_set_type=IndexSetType.HYPERBOLIC,
                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
                                         abbr_name="OMP_Unif_hyp_2",
                                         bandwidth_multiplier_function=lambda x: 2 * x)
@@ -130,7 +130,7 @@ def main_method(folder_name: str = None):
                                         solver=omp_solver,
                                         device=device,
                                         hc_bandwidth=None,
-                                        index_set_type='hyperbolic',  # TODO: Make ENUM
+                                        index_set_type=IndexSetType.HYPERBOLIC,
                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_5",
                                         abbr_name="OMP_Unif_hyp_5",
                                         bandwidth_multiplier_function=lambda x: 5 * x)
@@ -140,7 +140,7 @@ def main_method(folder_name: str = None):
                                          solver=omp_solver,
                                          device=device,
                                          hc_bandwidth=None,
-                                         index_set_type='hyperbolic',  # TODO: Make ENUM
+                                         index_set_type=IndexSetType.HYPERBOLIC,
                                          name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
                                          abbr_name="OMP_Unif_hyp_10",
                                          bandwidth_multiplier_function=lambda x: 10 * x)
@@ -150,7 +150,7 @@ def main_method(folder_name: str = None):
                                          solver=omp_solver,
                                          device=device,
                                          hc_bandwidth=None,
-                                         index_set_type='hyperbolic',  # TODO: Make ENUM
+                                         index_set_type=IndexSetType.HYPERBOLIC,
                                          name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_20",
                                          abbr_name="OMP_Unif_hyp_20",
                                          bandwidth_multiplier_function=lambda x: 20 * x)
@@ -160,7 +160,7 @@ def main_method(folder_name: str = None):
                                           solver=omp_solver,
                                           device=device,
                                           hc_bandwidth=None,
-                                          index_set_type='hyperbolic',  # TODO: Make ENUM
+                                          index_set_type=IndexSetType.HYPERBOLIC,
                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
                                           abbr_name="OMP_Cheb_hyp_2",
                                           bandwidth_multiplier_function=lambda x: 2 * x)
@@ -170,7 +170,7 @@ def main_method(folder_name: str = None):
                                           solver=omp_solver,
                                           device=device,
                                           hc_bandwidth=None,
-                                          index_set_type='hyperbolic',  # TODO: Make ENUM
+                                          index_set_type=IndexSetType.HYPERBOLIC,
                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_5",
                                           abbr_name="OMP_Cheb_hyp_5",
                                           bandwidth_multiplier_function=lambda x: 5 * x)
@@ -180,7 +180,7 @@ def main_method(folder_name: str = None):
                                            solver=omp_solver,
                                            device=device,
                                            hc_bandwidth=None,
-                                           index_set_type='hyperbolic',  # TODO: Make ENUM
+                                           index_set_type=IndexSetType.HYPERBOLIC,
                                            name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
                                            abbr_name="OMP_Cheb_hyp_10",
                                            bandwidth_multiplier_function=lambda x: 10 * x)
@@ -190,7 +190,7 @@ def main_method(folder_name: str = None):
                                            solver=omp_solver,
                                            device=device,
                                            hc_bandwidth=None,
-                                           index_set_type='hyperbolic',  # TODO: Make ENUM
+                                           index_set_type=IndexSetType.HYPERBOLIC,
                                            name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_20",
                                            abbr_name="OMP_Cheb_hyp_20",
                                            bandwidth_multiplier_function=lambda x: 20 * x)

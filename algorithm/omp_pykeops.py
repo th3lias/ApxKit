@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import numpy as np
 import torch
@@ -17,6 +18,9 @@ import math
 
 # TODO: deepinv as solver??
 
+class IndexSetType(Enum): # TODO: Duplicate to omp.py -> find a solution
+    HYPERBOLIC = 1
+    TOTAL_DEGREE = 2
 
 class OMPPyKeops(Algorithm):
     """
@@ -24,7 +28,7 @@ class OMPPyKeops(Algorithm):
     """
 
     def __init__(self, basis_generator: BasisGenerator, grid_generator: GridGenerator, solver: Solver, device: torch.device,
-                 hc_bandwidth: int | None, index_set_type, bandwidth_multiplier_function: Callable,
+                 hc_bandwidth: int | None, index_set_type:IndexSetType, bandwidth_multiplier_function: Callable,
                  name:str = "Orthogonal_Matching_Pursuit", abbr_name: str = "OMP"):
         """
         Args:
@@ -50,8 +54,8 @@ class OMPPyKeops(Algorithm):
             print("Warning: MPS backend is not tested. Consider using CPU or CUDA if available.")
 
         self.hc_bandwidth = hc_bandwidth
-        self.index_set_type = index_set_type.lower()
         self.bandwidth_multiplier_function = bandwidth_multiplier_function
+        self.index_set_type = index_set_type
 
         self._indices = None
         self._norm_coeffs = None
@@ -77,23 +81,18 @@ class OMPPyKeops(Algorithm):
         effective_R = int(np.ceil(self.bandwidth_multiplier_function(base_R)))
 
         # 3. Generate the selected pool of candidate indices
-        if self.index_set_type == "hyperbolic":
+        if self.index_set_type == IndexSetType.HYPERBOLIC:
             self._indices = self._hyp_cross(dim, effective_R)
-        elif self.index_set_type == "total_degree":
+        elif self.index_set_type == IndexSetType.TOTAL_DEGREE:
             self._indices = self._total_degree_cross(dim, effective_R)
         else:
-            raise ValueError(
-                f"Unknown index_set_type: {self.index_set_type}. Choose 'hyperbolic', 'total_degree', or 'full_degree'.")
+            raise ValueError(f"Unknown index_set_type: {self.index_set_type}.")
 
         self._norm_coeffs = (np.sqrt(2) ** np.clip(self._indices, 0, 1).sum(axis=1)).astype(np.float64)
 
         # Generate Lazy Matrix
 
-
         # 4. Materialize dense Chebyshev Matrix (pure PyTorch tensor transformation)
-
-
-
 
         # A = self._chebyshev_matrix(points_norm, self._indices, self._norm_coeffs, self.device, self.dtype)
         # y = self._calculate_y(f, self.grid)
@@ -153,17 +152,45 @@ class OMPPyKeops(Algorithm):
     @staticmethod
     # TODO: Utilize basis_generator.create_basis() here
     def _chebyshev_matrix(points_normalized: np.ndarray, indices: np.ndarray, norm_coeffs: np.ndarray,
-                          device: torch.device, dtype: torch.dtype) -> np.ndarray:
-        """Materializes the tensor evaluations mapping your multi-index system explicitly."""
+                          device: torch.device, dtype: torch.dtype, save_memory: bool = True) -> np.ndarray:
+        """Materializes the tensor evaluations mapping your multi-index system explicitly.
+        If save_memory is True, we loop over the dimension, which creates a smaller intermediate tensor and reduces
+        memory usage. If False, we create a larger tensor in one go, which may be faster but uses more memory.
+
+        """
         pts = torch.from_numpy(points_normalized).to(dtype=dtype, device=device)
         idx = torch.from_numpy(indices).to(dtype=dtype, device=device)
         coeffs = torch.from_numpy(norm_coeffs).to(dtype=dtype, device=device)
 
         eps = torch.finfo(dtype).eps
+
+        if save_memory:
+            num_samples = pts.shape[0]
+            num_indices = idx.shape[0]
+            num_dimensions = pts.shape[1]
+
+            # Initialize the matrix with ones
+            mat = torch.ones((num_samples, num_indices), dtype=dtype, device=device)
+
+            for d in range(num_dimensions):
+                pts_d = pts[:, d]  # Shape: (num_samples,)
+                idx_d = idx[:, d]  # Shape: (num_indices,)
+
+                # Compute 1D Chebyshev component for this dimension
+                acos_d = torch.acos(torch.clamp(pts_d, -1.0 + eps, 1.0 - eps))
+                angle_d = acos_d[:, None] * idx_d[None, :]  # Shape: (num_samples, num_indices)
+
+                # Multiply in-place into our running product
+                mat *= torch.cos(angle_d)
+
+            mat *= coeffs[None, :]
+
+            return mat.cpu().numpy()
+
         samples_acos = torch.acos(torch.clamp(pts, -1.0 + eps, 1.0 - eps))
 
-        angle = samples_acos[:, None, :] * idx[None, :, :]
-        mat = torch.prod(torch.cos(angle), dim=2) # TODO: remove dim but loop
+        cosine_argument = samples_acos[:, None, :] * idx[None, :, :]
+        mat = torch.prod(torch.cos(cosine_argument), dim=2)
         mat *= coeffs[None, :]
 
         return mat.cpu().numpy()

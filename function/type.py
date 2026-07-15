@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class FunctionType(Enum):
     OSCILLATORY = 1
     PRODUCT_PEAK = 2

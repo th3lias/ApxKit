@@ -188,6 +188,8 @@ def plot_all_errors_fixed_dim(file_name: str = None, df: pd.DataFrame = None,
                             marker=marker,
                             linestyle='-', alpha=0.7)
 
+
+
         xticklabels = [f"{scale}\n{min(n_points_train[scale])}\n{min(n_points_test[scale])}" for scale in
                        scales]
         axs[0].set_xlabel('scale\nmin points train\nmin points test', fontsize=14, linespacing=1.2)
@@ -195,12 +197,38 @@ def plot_all_errors_fixed_dim(file_name: str = None, df: pd.DataFrame = None,
         for ax in axs:
             ax.xaxis.set_label_coords(1.1875, -0.025)
             ax.set_yscale('log')
-            ax.legend(fontsize=14)
+            # ax.legend(fontsize=14)
             ax.grid(False)
             ax.set_xticks(scales)
             ax.set_xticklabels(xticklabels)
             ax.tick_params(axis='x', labelsize=15)
             ax.tick_params(axis='y', labelsize=15)
+
+        # NEU: Nach der Schleife über die Achsen platziert # TODO: Check that. If ok -> Use it also for scale.
+        # handles, labels = axs[0].get_legend_handles_labels()
+        # fig.legend(handles, labels, loc='center', bbox_to_anchor=(0.5, 0.5), fontsize=12)
+
+        # 1. Legend setup (stays mostly the same, but we position it relative to the bottom margin)
+        handles, labels = axs[0].get_legend_handles_labels()
+
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, 0.02),  # Shifted slightly up so it sits nicely inside the bottom margin
+            ncol=4,
+            fontsize=14,
+            frameon=False,
+        )
+
+        # 2. Adjust the subplots manually (DO NOT use plt.tight_layout() after this!)
+        fig.subplots_adjust(
+            left=0.08,
+            right=0.98,
+            top=0.88,  # Lowered slightly to make room for the suptitle
+            bottom=0.22,  # Creates plenty of blank space at the bottom for your legend & multi-line x-labels
+            wspace=0.35,
+        )
 
         if not only_maximum:
             axs[0].set_ylabel(r'$e_{\mathrm{max}}$', fontsize=18)
