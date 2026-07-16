@@ -27,8 +27,8 @@ class ClenshawCurtisPyKeopsBasisGenerator(BasisGenerator):
 
     def __init__(self,
                  device: torch.device,
-                 name: str = "Clenshaw_Curtis_PyKeops_Basis_Generator",
-                 abbr_name: str = "CS"):
+                 name: str = "Clenshaw_Curtis_Lazy_Basis_Generator",
+                 abbr_name: str = "CSLazy"):
         """
         Args:
             device: Computing device ('cpu', 'cuda', 'mps').

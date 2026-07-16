@@ -1,4 +1,6 @@
 import os
+from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum
 
 import numpy as np
@@ -12,20 +14,61 @@ from solver.solver import Solver
 from collections.abc import Callable
 from utils.utils import calculate_num_points
 
+# TODO: deepinv as solver??
+# TODO: Go through all files and format them inkl. removal of non-used imported libraries
 
 class IndexSetType(Enum):
     HYPERBOLIC = 1
     TOTAL_DEGREE = 2
 
+@dataclass
+class ChebyshevPyKeopsSystem:
+    """
+    Bundles everything the PyKeOps-based OMP solver needs to evaluate the Chebyshev
+    dictionary lazily, without ever materializing the dense (n_points x n_indices) matrix.
+
+    Attributes:
+        forward: Lazy KeOps reduction implementing A @ x (coefficients -> function values).
+            Called as forward(x, indices, norm_coeffs).
+        adjoint: Lazy KeOps reduction implementing A.T @ x (function values -> coefficients).
+            Called as adjoint(x, indices, norm_coeffs).
+        normalization: Lazy KeOps reduction returning sum_i A_ij^2 for every candidate
+            column j. Called as normalization(indices, norm_coeffs).
+        points_acos: arccos of the normalized sample points, shape (n_points, dim). Needed
+            to explicitly extract single dictionary columns during the Cholesky update.
+        indices: Candidate multi-indices, shape (n_indices, dim).
+        norm_coeffs: Chebyshev normalization prefactors, shape (n_indices, 1).
+    """
+    forward: Callable
+    adjoint: Callable
+    normalization: Callable
+    points_acos: torch.Tensor
+    indices: torch.Tensor
+    norm_coeffs: torch.Tensor
+
+
 class OMP(Algorithm):
     """
-    OMP Algorithm using customizable multidimensional index sets (Hyperbolic Cross, Full Degree, Total Degree).
+    OMP Algorithm using a PyKeOps-backed lazy Chebyshev dictionary.
+
+    Functionally equivalent to `OMP`, but never materializes the dense
+    (n_points x n_indices) Chebyshev matrix. Instead, the forward/adjoint transforms
+    are evaluated on the fly by PyKeOps,
+    trading a bit of extra compute for a large reduction in memory usage. This makes
+    it feasible to use much larger candidate dictionaries and/or point sets than the
+    dense `OMP` variant.
     """
 
-    # TODO: Allow to use basis generator by using A = self.basis_generator.get_matrix(self.grid, self._indices, self._norm_coeffs) or similar. Adapt this everywhere.
-    def __init__(self, basis_generator: BasisGenerator, grid_generator: GridGenerator, solver: Solver, device: torch.device,
-                 hc_bandwidth: int | None, index_set_type:IndexSetType, bandwidth_multiplier_function: Callable,
-                 name:str = "Orthogonal_Matching_Pursuit", abbr_name: str = "OMP"):
+    def __init__(self,
+                 basis_generator: BasisGenerator,
+                 grid_generator: GridGenerator,
+                 solver: Solver,
+                 device: torch.device,
+                 hc_bandwidth: int | None,
+                 index_set_type:IndexSetType,
+                 bandwidth_multiplier_function: Callable,
+                 name:str = "Orthogonal_Matching_Pursuit",
+                 abbr_name: str = "OMP"):
         """
         Args:
             basis_generator: Framework basis generator.
@@ -53,19 +96,27 @@ class OMP(Algorithm):
         self.bandwidth_multiplier_function = bandwidth_multiplier_function
         self.index_set_type = index_set_type
 
-        self._indices = None
-        self._norm_coeffs = None
+        self._indices = None # np.ndarray, kept around for saving/inspection
+        self._indices_t = None  # torch tensor version, used by the PyKeOps operators (t stands for tensor)
+        self._norm_coeffs_t = None  # torch tensor version, shape (n_indices, 1) (t stands for tensor)
+        self._dim = None
         self._lower = None
         self._upper = None
 
-    def fit(self, dim: int, scale: int, f: list[Function], lower: float = 0.0, upper: float = 1.0):
+    def fit(self,
+            dim: int,
+            scale: int,
+            f: list[Function],
+            lower: float = 0.0,
+            upper: float = 1.0):
+
         self._lower = lower
         self._upper = upper
+        self._dim = dim
 
-        # 1. Fetch grid and normalize coordinates to [-1, 1]
+        # 1. Fetch grid and calculate arccos of the [-1, 1]-normalized coordinates
         self.grid = self.grid_generator.get_grid(dim=dim, scale=scale, lower_bound=lower, upper_bound=upper)
-        points = np.array(self.grid)
-        points_norm = 2.0 * (points - lower) / (upper - lower) - 1.0  # transform to [-1, 1] for Chebyshev evaluation
+        points_acos = self._points_to_acos(np.array(self.grid), lower, upper) # TODO: Check if correctly transformed to [-1, 1] for Chebyshev evaluation
 
         # 2. Derive Base Bandwidth
         if self.hc_bandwidth is None:
@@ -84,23 +135,29 @@ class OMP(Algorithm):
         else:
             raise ValueError(f"Unknown index_set_type: {self.index_set_type}.")
 
-        self._norm_coeffs = (np.sqrt(2) ** np.clip(self._indices, 0, 1).sum(axis=1)).astype(np.float64)
+        norm_coeffs = (np.sqrt(2) ** np.clip(self._indices, 0, 1).sum(axis=1)).astype(np.float64)
 
-        # 4. Materialize dense Chebyshev Matrix (pure PyTorch tensor transformation)
-        A = self._chebyshev_matrix(points_norm, self._indices, self._norm_coeffs, self.device, self.dtype)
+        self._indices_t = torch.from_numpy(self._indices).to(dtype=self.dtype, device=self.device)
+        self._norm_coeffs_t = torch.from_numpy(norm_coeffs).to(dtype=self.dtype, device=self.device).unsqueeze(1)
+
+        # 4. Build the lazy Chebyshev system (no dense matrix is ever created here)
+        system = self._build_system(points_acos)
         y = self._calculate_y(f, self.grid)
 
         # 5. Hand system matrix over to the abstract solver pipeline
-        self.coeff = self.solver.solve(A, y)
+        self.coeff = self.solver.solve(system, y)
 
-        del A, y
-
-    def evaluate(self, grid: Grid, scale) -> np.ndarray:
+    def evaluate(self,
+                 grid: Grid,
+                 scale) -> np.ndarray:
         """Evaluates the fitted Chebyshev approximation model on target validation points."""
-        points = np.array(grid)
-        points_norm = 2.0 * (points - self._lower) / (self._upper - self._lower) - 1.0
-        A_test = self._chebyshev_matrix(points_norm, self._indices, self._norm_coeffs, self.device, self.dtype)
-        return A_test @ self.coeff
+
+        points_acos = self._points_to_acos(np.array(grid), self._lower, self._upper)
+        system = self._build_system(points_acos)
+
+        coeff_t = torch.from_numpy(self.coeff).to(dtype=self.dtype, device=self.device)
+        values = system.forward(coeff_t, self._indices_t, self._norm_coeffs_t) # forward transform: A @ coeff -> values
+        return values.cpu().numpy()
 
     def save_coefficients(self, results_path: str, dim: int, scale: int):
         if self.coeff is None:
@@ -113,6 +170,31 @@ class OMP(Algorithm):
 
         os.makedirs(os.path.dirname(path), exist_ok=True)
         np.savez(path, coeff=self.coeff)
+
+    def _points_to_acos(self, points: np.ndarray, lower: float, upper: float) -> torch.Tensor:
+        """Normalizes physical grid points to [-1, 1] and returns their arccos, ready to be
+        fed into the Chebyshev PyKeOps operators."""
+        points_norm = 2.0 * (points - lower) / (upper - lower) - 1.0
+        pts = torch.from_numpy(points_norm).to(dtype=self.dtype, device=self.device)
+        eps = torch.finfo(self.dtype).eps
+        return torch.acos(torch.clamp(pts, -1.0 + eps, 1.0 - eps))
+
+    def _build_system(self, points_acos: torch.Tensor) -> ChebyshevPyKeopsSystem:
+        """Builds the lazy forward/adjoint/normalization operators bound to the given
+        (arccos-transformed) sample points, and bundles them together with the current
+        candidate indices into a ChebyshevPyKeopsSystem."""
+        forward = self.basis_generator.build_forward_operator(points_acos, self._dim)
+        adjoint = self.basis_generator.build_adjoint_operator(points_acos, self._dim)
+        normalization = self.basis_generator.build_normalization_operator(points_acos, self._dim)
+
+        return ChebyshevPyKeopsSystem(
+            forward=forward,
+            adjoint=adjoint,
+            normalization=normalization,
+            points_acos=points_acos,
+            indices=self._indices_t,
+            norm_coeffs=self._norm_coeffs_t,
+        )
 
     @staticmethod
     def _hyp_cross(dim: int, R: int) -> np.ndarray:
@@ -145,7 +227,7 @@ class OMP(Algorithm):
     @staticmethod
     # TODO: Utilize basis_generator.create_basis() here
     def _chebyshev_matrix(points_normalized: np.ndarray, indices: np.ndarray, norm_coeffs: np.ndarray,
-                          device: torch.device, dtype: torch.dtype, save_memory:bool=True) -> np.ndarray:
+                          device: torch.device, dtype: torch.dtype, save_memory: bool = True) -> np.ndarray:
         """Materializes the tensor evaluations mapping your multi-index system explicitly.
         If save_memory is True, we loop over the dimension, which creates a smaller intermediate tensor and reduces
         memory usage. If False, we create a larger tensor in one go, which may be faster but uses more memory.
@@ -179,7 +261,6 @@ class OMP(Algorithm):
             mat *= coeffs[None, :]
 
             return mat.cpu().numpy()
-
 
         samples_acos = torch.acos(torch.clamp(pts, -1.0 + eps, 1.0 - eps))
 
