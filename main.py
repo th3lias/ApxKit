@@ -54,7 +54,7 @@ def main_method(folder_name: str = None):
     n_fun_parallel = 10  # number of random function instances per type
 
     store_indices = True
-    use_max_scale = True  # whether to use the maximum scale for the test grid
+    use_max_scale = False  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
         2: [1, 2, 3, 4, 5, 6, 7, 8, 9],
