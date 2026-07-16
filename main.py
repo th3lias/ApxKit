@@ -51,21 +51,21 @@ def main_method(folder_name: str = None):
     # ── Experiment parameters ─────────────────────────────────────────
     multiplier_fun_ls_train = lambda x: 2 * x  # oversampling factor for LS training grids
     multiplier_fun_test = lambda x: 1 * x
-    n_fun_parallel = 5  # number of random function instances per type
+    n_fun_parallel = 10  # number of random function instances per type
 
     store_indices = True
     use_max_scale = True  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2, 3],
-        3: [1, 2],
-        # 4: [1, 2, 3, 4, 5],
-        # 5: [1, 2, 3, 4, 5, ],
-        # 6: [1, 2, 3, 4, ],
-        # 7: [1, 2, 3, 4, ],
-        # 8: [1, 2, 3, 4, ],
-        # 9: [1, 2, 3, 4, ],
-        # 10: [1, 2, 3, 4, ],
+        2: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        3: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        4: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        5: [1, 2, 3, 4, 5, 6, 7, 8],
+        6: [1, 2, 3, 4, 5, 6, 7],
+        7: [1, 2, 3, 4, 5, 6, 7],
+        8: [1, 2, 3, 4, 5, 6],
+        9: [1, 2, 3, 4, 5, 6],
+        10: [1, 2, 3, 4, 5, 6],
     }
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
@@ -306,21 +306,13 @@ def main_method(folder_name: str = None):
         sa,
         # ls,
         # wls,
-        # omp_uniform_grid_hyperbolic_2,
-        omp_uniform_grid_hyperbolic_5,
-        # omp_uniform_grid_hyperbolic_10,
-        omp_uniform_grid_hyperbolic_20,
-        # omp_chebyshev_grid_hyperbolic_2,
-        omp_chebyshev_grid_hyperbolic_5,
-        # omp_chebyshev_grid_hyperbolic_10,
-        omp_chebyshev_grid_hyperbolic_20,
-        # omp_uniform_grid_hyperbolic_2_pykeops,
+        omp_uniform_grid_hyperbolic_2_pykeops,
         omp_uniform_grid_hyperbolic_5_pykeops,
-        # omp_uniform_grid_hyperbolic_10_pykeops,
+        omp_uniform_grid_hyperbolic_10_pykeops,
         omp_uniform_grid_hyperbolic_20_pykeops,
-        # omp_chebyshev_grid_hyperbolic_2_pykeops,
+        omp_chebyshev_grid_hyperbolic_2_pykeops,
         omp_chebyshev_grid_hyperbolic_5_pykeops,
-        # omp_chebyshev_grid_hyperbolic_10_pykeops,
+        omp_chebyshev_grid_hyperbolic_10_pykeops,
         omp_chebyshev_grid_hyperbolic_20_pykeops
     ]
 
