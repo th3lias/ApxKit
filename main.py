@@ -129,8 +129,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
-        abbr_name="PK_OMP_Unif_hyp_2",
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
+        abbr_name="OMP_Unif_hyp_2",
         bandwidth_multiplier_function=lambda x: 2 * x)
 
     omp_uniform_grid_hyperbolic_5_pykeops = OMPPyKeops(
@@ -140,8 +140,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_5",
-        abbr_name="PK_OMP_Unif_hyp_5",
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_5",
+        abbr_name="OMP_Unif_hyp_5",
         bandwidth_multiplier_function=lambda x: 5 * x)
 
     omp_uniform_grid_hyperbolic_10_pykeops = OMPPyKeops(
@@ -151,8 +151,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
-        abbr_name="PK_OMP_Unif_hyp_10",
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
+        abbr_name="OMP_Unif_hyp_10",
         bandwidth_multiplier_function=lambda x: 10 * x)
 
     omp_uniform_grid_hyperbolic_20_pykeops = OMPPyKeops(
@@ -162,8 +162,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_20",
-        abbr_name="PK_OMP_Unif_hyp_20",
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_20",
+        abbr_name="OMP_Unif_hyp_20",
         bandwidth_multiplier_function=lambda x: 20 * x)
 
     omp_chebyshev_grid_hyperbolic_2_pykeops = OMPPyKeops(
@@ -173,8 +173,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
-        abbr_name="PK_OMP_Cheb_hyp_2",
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
+        abbr_name="OMP_Cheb_hyp_2",
         bandwidth_multiplier_function=lambda x: 2 * x)
 
     omp_chebyshev_grid_hyperbolic_5_pykeops = OMPPyKeops(
@@ -184,8 +184,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_5",
-        abbr_name="PK_OMP_Cheb_hyp_5",
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_5",
+        abbr_name="OMP_Cheb_hyp_5",
         bandwidth_multiplier_function=lambda x: 5 * x)
 
     omp_chebyshev_grid_hyperbolic_10_pykeops = OMPPyKeops(
@@ -195,8 +195,8 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
-        abbr_name="PK_OMP_Cheb_hyp_10",
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
+        abbr_name="OMP_Cheb_hyp_10",
         bandwidth_multiplier_function=lambda x: 10 * x)
 
     omp_chebyshev_grid_hyperbolic_20_pykeops = OMPPyKeops(
@@ -206,94 +206,101 @@ def main_method(folder_name: str = None):
         device=device,
         hc_bandwidth=None,
         index_set_type=IndexSetType.HYPERBOLIC,
-        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_20",
-        abbr_name="PK_OMP_Cheb_hyp_20",
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_20",
+        abbr_name="OMP_Cheb_hyp_20",
         bandwidth_multiplier_function=lambda x: 20 * x)
 
-    omp_uniform_grid_hyperbolic_2 = OMP(grid_generator=twice_points_uniform_grid_generator,
-                                        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                        solver=omp_solver,
-                                        device=device,
-                                        hc_bandwidth=None,
-                                        index_set_type=IndexSetType.HYPERBOLIC,
-                                        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
-                                        abbr_name="OMP_Unif_hyp_2",
-                                        bandwidth_multiplier_function=lambda x: 2 * x)
+    omp_uniform_grid_hyperbolic_2 = OMP(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
+        abbr_name="OMP_Unif_hyp_2",
+        bandwidth_multiplier_function=lambda x: 2 * x)
 
-    omp_uniform_grid_hyperbolic_5 = OMP(grid_generator=twice_points_uniform_grid_generator,
-                                        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                        solver=omp_solver,
-                                        device=device,
-                                        hc_bandwidth=None,
-                                        index_set_type=IndexSetType.HYPERBOLIC,
-                                        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_5",
-                                        abbr_name="OMP_Unif_hyp_5",
-                                        bandwidth_multiplier_function=lambda x: 5 * x)
+    omp_uniform_grid_hyperbolic_5 = OMP(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_5",
+        abbr_name="OMP_Unif_hyp_5",
+        bandwidth_multiplier_function=lambda x: 5 * x)
 
-    omp_uniform_grid_hyperbolic_10 = OMP(grid_generator=twice_points_uniform_grid_generator,
-                                         basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                         solver=omp_solver,
-                                         device=device,
-                                         hc_bandwidth=None,
-                                         index_set_type=IndexSetType.HYPERBOLIC,
-                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
-                                         abbr_name="OMP_Unif_hyp_10",
-                                         bandwidth_multiplier_function=lambda x: 10 * x)
+    omp_uniform_grid_hyperbolic_10 = OMP(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
+        abbr_name="OMP_Unif_hyp_10",
+        bandwidth_multiplier_function=lambda x: 10 * x)
 
-    omp_uniform_grid_hyperbolic_20 = OMP(grid_generator=twice_points_uniform_grid_generator,
-                                         basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                         solver=omp_solver,
-                                         device=device,
-                                         hc_bandwidth=None,
-                                         index_set_type=IndexSetType.HYPERBOLIC,
-                                         name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_20",
-                                         abbr_name="OMP_Unif_hyp_20",
-                                         bandwidth_multiplier_function=lambda x: 20 * x)
+    omp_uniform_grid_hyperbolic_20 = OMP(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Uniform_Hyperbolic_20",
+        abbr_name="OMP_Unif_hyp_20",
+        bandwidth_multiplier_function=lambda x: 20 * x)
 
-    omp_chebyshev_grid_hyperbolic_2 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                          basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                          solver=omp_solver,
-                                          device=device,
-                                          hc_bandwidth=None,
-                                          index_set_type=IndexSetType.HYPERBOLIC,
-                                          name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
-                                          abbr_name="OMP_Cheb_hyp_2",
-                                          bandwidth_multiplier_function=lambda x: 2 * x)
+    omp_chebyshev_grid_hyperbolic_2 = OMP(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
+        abbr_name="OMP_Cheb_hyp_2",
+        bandwidth_multiplier_function=lambda x: 2 * x)
 
-    omp_chebyshev_grid_hyperbolic_5 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                          basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                          solver=omp_solver,
-                                          device=device,
-                                          hc_bandwidth=None,
-                                          index_set_type=IndexSetType.HYPERBOLIC,
-                                          name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_5",
-                                          abbr_name="OMP_Cheb_hyp_5",
-                                          bandwidth_multiplier_function=lambda x: 5 * x)
+    omp_chebyshev_grid_hyperbolic_5 = OMP(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_5",
+        abbr_name="OMP_Cheb_hyp_5",
+        bandwidth_multiplier_function=lambda x: 5 * x)
 
-    omp_chebyshev_grid_hyperbolic_10 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                           basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                           solver=omp_solver,
-                                           device=device,
-                                           hc_bandwidth=None,
-                                           index_set_type=IndexSetType.HYPERBOLIC,
-                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
-                                           abbr_name="OMP_Cheb_hyp_10",
-                                           bandwidth_multiplier_function=lambda x: 10 * x)
+    omp_chebyshev_grid_hyperbolic_10 = OMP(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
+        abbr_name="OMP_Cheb_hyp_10",
+        bandwidth_multiplier_function=lambda x: 10 * x)
 
-    omp_chebyshev_grid_hyperbolic_20 = OMP(grid_generator=twice_points_chebyshev_grid_generator,
-                                           basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
-                                           solver=omp_solver,
-                                           device=device,
-                                           hc_bandwidth=None,
-                                           index_set_type=IndexSetType.HYPERBOLIC,
-                                           name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_20",
-                                           abbr_name="OMP_Cheb_hyp_20",
-                                           bandwidth_multiplier_function=lambda x: 20 * x)
+    omp_chebyshev_grid_hyperbolic_20 = OMP(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
+        solver=omp_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_20",
+        abbr_name="OMP_Cheb_hyp_20",
+        bandwidth_multiplier_function=lambda x: 20 * x)
 
     sa = SmolyakAlgorithm(basis_generator=aux_smolyak_basis_generator, grid_generator=rule_grid_generator,
 
                           solver=aux_smolyak_solver)
-
 
     algorithm_list = [sa, ls, wls,
                       # omp_uniform_grid_hyperbolic_2,
@@ -329,6 +336,7 @@ def main_method(folder_name: str = None):
 
     ex.execute_experiments(algorithm_list, function_types, n_fun_parallel, avg_c=average_c, seed_list=seed_list,
                            device=device, plot_callbacks=[_plot_errors])
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')

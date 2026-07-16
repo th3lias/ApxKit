@@ -31,7 +31,7 @@ class TorchPyKeopsOMPSolver(Solver):
                  tol: float,
                  device: torch.device,
                  name: str = "Torch_OMP_PyKeops_Solver",
-                 abbr_name: str = "OMP_PyKeops",
+                 abbr_name: str = "OMP_PK",
                  ):
         super().__init__(name=name, abbr_name=abbr_name)
         self.num_iters = num_iters
