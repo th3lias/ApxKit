@@ -303,7 +303,7 @@ def main_method(folder_name: str = None):
                           solver=aux_smolyak_solver)
 
     algorithm_list = [
-        # sa,
+        sa,
         # ls,
         # wls,
         # omp_uniform_grid_hyperbolic_2,
