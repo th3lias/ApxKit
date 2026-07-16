@@ -6,6 +6,7 @@ from enum import Enum
 import numpy as np
 import torch
 from algorithm.algorithm import Algorithm
+from algorithm.omp import IndexSetType
 from basis.basis_generator import BasisGenerator
 from function.f import Function
 from grid.generator.grid_generator import GridGenerator
@@ -16,13 +17,10 @@ from utils.utils import calculate_num_points
 from pykeops.torch import Vi, Vj
 from deepinv.optim.utils import least_squares
 import math
+from algorithm.omp import OMP
 
 
 # TODO: deepinv as solver??
-
-class IndexSetType(Enum): # TODO: Duplicate to omp.py -> find a solution
-    HYPERBOLIC = 1
-    TOTAL_DEGREE = 2
 
 
 @dataclass
