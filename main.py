@@ -302,24 +302,27 @@ def main_method(folder_name: str = None):
 
                           solver=aux_smolyak_solver)
 
-    algorithm_list = [sa, ls, wls,
-                      # omp_uniform_grid_hyperbolic_2,
-                      # omp_uniform_grid_hyperbolic_5,
-                      # omp_uniform_grid_hyperbolic_10,
-                      # omp_uniform_grid_hyperbolic_20,
-                      # omp_chebyshev_grid_hyperbolic_2,
-                      # omp_chebyshev_grid_hyperbolic_5,
-                      # omp_chebyshev_grid_hyperbolic_10,
-                      # omp_chebyshev_grid_hyperbolic_20,
-                      omp_uniform_grid_hyperbolic_2_pykeops,
-                      omp_uniform_grid_hyperbolic_5_pykeops,
-                      omp_uniform_grid_hyperbolic_10_pykeops,
-                      omp_uniform_grid_hyperbolic_20_pykeops,
-                      omp_chebyshev_grid_hyperbolic_2_pykeops,
-                      omp_chebyshev_grid_hyperbolic_5_pykeops,
-                      omp_chebyshev_grid_hyperbolic_10_pykeops,
-                      omp_chebyshev_grid_hyperbolic_20_pykeops
-                      ]
+    algorithm_list = [
+        # sa,
+        # ls,
+        # wls,
+        # omp_uniform_grid_hyperbolic_2,
+        omp_uniform_grid_hyperbolic_5,
+        # omp_uniform_grid_hyperbolic_10,
+        omp_uniform_grid_hyperbolic_20,
+        # omp_chebyshev_grid_hyperbolic_2,
+        omp_chebyshev_grid_hyperbolic_5,
+        # omp_chebyshev_grid_hyperbolic_10,
+        omp_chebyshev_grid_hyperbolic_20,
+        # omp_uniform_grid_hyperbolic_2_pykeops,
+        omp_uniform_grid_hyperbolic_5_pykeops,
+        # omp_uniform_grid_hyperbolic_10_pykeops,
+        omp_uniform_grid_hyperbolic_20_pykeops,
+        # omp_chebyshev_grid_hyperbolic_2_pykeops,
+        omp_chebyshev_grid_hyperbolic_5_pykeops,
+        # omp_chebyshev_grid_hyperbolic_10_pykeops,
+        omp_chebyshev_grid_hyperbolic_20_pykeops
+    ]
 
     if folder_name is not None:
         run_dir = os.path.join("results", folder_name)
