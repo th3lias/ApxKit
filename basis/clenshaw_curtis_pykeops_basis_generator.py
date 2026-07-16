@@ -63,89 +63,67 @@ class ClenshawCurtisPyKeopsBasisGenerator(BasisGenerator):
 
     @staticmethod
     def build_forward_operator(points_acos: torch.Tensor, dim: int):
-        """
-        Builds the lazy forward Chebyshev transform, bound to a fixed set of sample points.
+        # points_acos: (N_points, dim) -> Vi (dimension i, since output is on grid points)
+        p_acos_i = Vi(points_acos)
 
-        The returned callable maps coefficients to function values:
-            values_i = sum_j pre_j * prod_d cos(k_jd * acos(points_i)_d) * x_j
-        i.e. `values = A @ x`, where A is the (never materialized) Chebyshev dictionary.
+        def forward_op(coeffs: torch.Tensor, indices: torch.Tensor, norm_coeffs: torch.Tensor):
+            # coeffs: (N_indices, 1) -> Vj (dimension j)
+            c_j = Vj(coeffs)
+            # indices: (N_indices, dim) -> Vj (dimension j)
+            k_j = Vj(indices)
+            # norm_coeffs: (N_indices, 1) -> Vj (dimension j)
+            pre_j = Vj(norm_coeffs)
 
-        Args:
-            points_acos: arccos of the normalized sample points, shape (n_points, dim).
-            dim: Number of spatial dimensions (D).
+            tmp = (k_j[:, :, 0] * p_acos_i[:, :, 0]).cos()
+            for d in range(dim - 1):
+                tmp = tmp * (k_j[:, :, d + 1] * p_acos_i[:, :, d + 1]).cos()
 
-        Returns:
-            A callable operator(x, indices, norm_coeffs) -> values, shape (n_points, 1).
-            `x`, `indices` and `norm_coeffs` may have any (matching) number of rows, i.e.
-            the operator can be called with the full candidate set or any subset of it.
-        """
-        k_j = Vj(1, dim)  # candidate multi-indices, one per dictionary atom (column)
-        pre_j = Vj(2, 1)  # per-atom Chebyshev normalization prefactor
-        p_acos_i = Vi(points_acos)  # fixed sample points (row variable)
-        x_j = Vj(0, 1)  # coefficient vector, one entry per atom
+            # We reduce over Vj (dim=1) to yield an output of size (N_points, 1)
+            return ((pre_j * tmp) * c_j).sum_reduction(dim=1, use_double_acc=True)
 
-        tmp = (k_j[:, :, 0] * p_acos_i[:, :, 0]).cos()
-        for d in range(dim - 1):
-            tmp = tmp * (k_j[:, :, d + 1] * p_acos_i[:, :, d + 1]).cos()
-
-        return (pre_j * tmp * x_j).sum_reduction(dim=1, use_double_acc=True)
+        return forward_op
 
     @staticmethod
     def build_adjoint_operator(points_acos: torch.Tensor, dim: int):
-        """
-        Builds the lazy adjoint Chebyshev transform, bound to a fixed set of sample points.
+        # points_acos: (N_points, dim) -> Vj (dimension j)
+        p_acos_j = Vj(points_acos)
 
-        The returned callable maps function values to coefficient-space correlations:
-            coeffs_j = sum_i pre_j * prod_d cos(k_jd * acos(points_i)_d) * x_i
-        i.e. `coeffs = A.T @ x`.
+        def adjoint_op(y: torch.Tensor, indices: torch.Tensor, norm_coeffs: torch.Tensor):
+            # y (values): (N_points, 1) -> Vj (dimension j)
+            y_j = Vj(y)
+            # indices: (N_indices, dim) -> Vi (dimension i)
+            k_i = Vi(indices)
+            # norm_coeffs: (N_indices, 1) -> Vi (dimension i)
+            pre_i = Vi(norm_coeffs)
 
-        Args:
-            points_acos: arccos of the normalized sample points, shape (n_points, dim).
-            dim: Number of spatial dimensions (D).
+            tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
+            for d in range(dim - 1):
+                tmp = tmp * (k_i[:, :, d + 1] * p_acos_j[:, :, d + 1]).cos()
 
-        Returns:
-            A callable operator(x, indices, norm_coeffs) -> coeffs, shape (n_indices, 1).
-            `indices`/`norm_coeffs` may be the full candidate set or any subset of it;
-            `x` must always be aligned with the (fixed) sample points.
-        """
-        k_i = Vi(1, dim)  # candidate multi-indices (now the output/row variable)
-        pre_i = Vi(2, 1)
-        p_acos_j = Vj(points_acos)  # fixed sample points (column variable)
-        x_j = Vj(0, 1)  # function values, one entry per sample point
+            # We reduce over Vj (dim=1) to yield an output of size (N_indices, 1)
+            return ((pre_i * tmp) * y_j).sum_reduction(dim=1, use_double_acc=True)
 
-        tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
-        for d in range(dim - 1):
-            tmp = tmp * (k_i[:, :, d + 1] * p_acos_j[:, :, d + 1]).cos()
-
-        return (pre_i * tmp * x_j).sum_reduction(dim=1, use_double_acc=True)
+        return adjoint_op
 
     @staticmethod
     def build_normalization_operator(points_acos: torch.Tensor, dim: int):
-        """
-        Builds the lazy column-normalization reduction, bound to a fixed set of sample points.
-
-        The returned callable computes the squared L2 norm of every dictionary column
-        without ever forming the columns themselves:
-            norm_j = sum_i (pre_j * prod_d cos(k_jd * acos(points_i)_d))^2
-
-        Args:
-            points_acos: arccos of the normalized sample points, shape (n_points, dim).
-            dim: Number of spatial dimensions (D).
-
-        Returns:
-            A callable operator(indices, norm_coeffs) -> norm, shape (n_indices, 1).
-            Note this returns the squared norm; take a square root to get the norm itself.
-        """
-
-        k_i = Vi(0, dim)  # If you absolutely must use manual indices, you must start from 0!
-        pre_i = Vi(1, 1)  # 0, 1, and then p_acos_j will auto-bind to 2.
+        # points_acos: (N_points, dim) -> Vj (dimension j)
         p_acos_j = Vj(points_acos)
 
-        tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
-        for d in range(dim - 1):
-            tmp = tmp * (k_i[:, :, d + 1] * p_acos_j[:, :, d + 1]).cos()
+        def normalization_op(indices: torch.Tensor, norm_coeffs: torch.Tensor):
+            # indices: (N_indices, dim) -> Vi (dimension i)
+            k_i = Vi(indices)
+            # norm_coeffs: (N_indices, 1) -> Vi (dimension i)
+            pre_i = Vi(norm_coeffs)
 
-        return ((pre_i * tmp) ** 2).sum_reduction(dim=1, use_double_acc=True)
+            tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
+            for d in range(dim - 1):
+                tmp = tmp * (k_i[:, :, d + 1] * p_acos_j[:, :, d + 1]).cos()
+
+            # Sum over Vj (dim=1) to get the norm of each candidate column (N_indices, 1)
+            return ((pre_i * tmp) ** 2).sum_reduction(dim=1, use_double_acc=True)
+
+        return normalization_op
 
     @staticmethod
     def extract_column(points_acos: torch.Tensor, indices: torch.Tensor, norm_coeffs: torch.Tensor,
