@@ -136,8 +136,9 @@ class ClenshawCurtisPyKeopsBasisGenerator(BasisGenerator):
             A callable operator(indices, norm_coeffs) -> norm, shape (n_indices, 1).
             Note this returns the squared norm; take a square root to get the norm itself.
         """
-        k_i = Vi(1, dim)
-        pre_i = Vi(2, 1)
+
+        k_i = Vi(0, dim)  # If you absolutely must use manual indices, you must start from 0!
+        pre_i = Vi(1, 1)  # 0, 1, and then p_acos_j will auto-bind to 2.
         p_acos_j = Vj(points_acos)
 
         tmp = (k_i[:, :, 0] * p_acos_j[:, :, 0]).cos()
