@@ -4,10 +4,12 @@ import os
 
 from algorithm.least_squares import LeastSquaresAlgorithm
 from algorithm.omp import OMP, IndexSetType
+from algorithm.omp_pykeops import OMPPyKeops
 from algorithm.smolyak import SmolyakAlgorithm
 from algorithm.weighted_least_squares import WeightedLeastSquaresAlgorithm
 from basis.basis_generator import BasisGenerator
 from basis.clenshaw_curtis_level_polynomial_basis_generator import ClenshawCurtisLevelPolynomialBasisGenerator
+from basis.clenshaw_curtis_pykeops_basis_generator import ClenshawCurtisPyKeopsBasisGenerator
 from experiment.experiment_executor import ExperimentExecutor
 from function.type import FunctionType
 from grid.generator.chebyshev_grid_generator import ChebyshevGridGenerator
@@ -19,6 +21,8 @@ from solver.torch_omp_solver import TorchOMPSolver
 from solver.scipy_lstsq_solver import ScipyLstsqSolver
 from solver.solver import Solver
 import torch
+
+from solver.torch_pykeops_omp_solver import TorchPyKeopsOMPSolver
 
 
 def _plot_errors(results_df, save_dir, d=None, s=None, verbose=False):
@@ -53,8 +57,8 @@ def main_method(folder_name: str = None):
     use_max_scale = True  # whether to use the maximum scale for the test grid
 
     dim_scale_dict = {
-        2: [1, 2],
-        # 3: [1, 2],
+        2: [1, 2, 3],
+        3: [1, 2],
         # 4: [1, 2, 3, 4, 5],
         # 5: [1, 2, 3, 4, 5, ],
         # 6: [1, 2, 3, 4, ],
@@ -63,7 +67,6 @@ def main_method(folder_name: str = None):
         # 9: [1, 2, 3, 4, ],
         # 10: [1, 2, 3, 4, ],
     }
-
 
     function_types = [FunctionType.ZHOU, FunctionType.CONTINUOUS, FunctionType.CORNER_PEAK,
                       FunctionType.DISCONTINUOUS, FunctionType.GAUSSIAN, FunctionType.MOROKOFF_CALFISCH_1,
@@ -82,6 +85,10 @@ def main_method(folder_name: str = None):
         FunctionType.NOISE: 1.0,
     }
 
+    # Device
+    device = torch.device("mps") if torch.backends.mps.is_available() else torch.device(
+        "cuda") if torch.cuda.is_available() else torch.device("cpu")
+
     # ── Grid generators ───────────────────────────────────────────────
     twice_points_uniform_grid_generator = UniformGridGenerator(seed=seeds['uniform_seed'],
                                                                multiplier_fun=multiplier_fun_ls_train)
@@ -93,16 +100,16 @@ def main_method(folder_name: str = None):
 
     # ── Basis generators ──────────────────────────────────────────────
     clenshawcurtis_basis_generator = ClenshawCurtisLevelPolynomialBasisGenerator(store_indices=store_indices)
+    pykeops_clenshaw_curtis_basis_generator = ClenshawCurtisPyKeopsBasisGenerator(device=device)
 
     # Placeholder basis/solver for Smolyak (Tasmanian handles both internally)
     aux_smolyak_basis_generator = BasisGenerator("CHEBYSHEV", "CS")
 
     # ── Solver ────────────────────────────────────────────────────────
-    device = torch.device("mps") if torch.backends.mps.is_available() else torch.device(
-        "cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     scipy_lstsq_gelsy_solver = ScipyLstsqSolver(driver='gelsy')
     omp_solver = TorchOMPSolver(num_iters=20_000, tol=1e-6, device=device)
+    omp_pykeops_solver = TorchPyKeopsOMPSolver(num_iters=20_000, tol=1e-6, device=device)
     aux_smolyak_solver = Solver("TASMANIAN", "TM")
 
     # ── Function parameter generators ─────────────────────────────────
@@ -114,6 +121,94 @@ def main_method(folder_name: str = None):
                                solver=scipy_lstsq_gelsy_solver)
     wls = WeightedLeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_chebyshev_grid_generator,
                                         solver=scipy_lstsq_gelsy_solver)
+
+    omp_uniform_grid_hyperbolic_2_pykeops = OMPPyKeops(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_2",
+        abbr_name="PK_OMP_Unif_hyp_2",
+        bandwidth_multiplier_function=lambda x: 2 * x)
+
+    omp_uniform_grid_hyperbolic_5_pykeops = OMPPyKeops(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_5",
+        abbr_name="PK_OMP_Unif_hyp_5",
+        bandwidth_multiplier_function=lambda x: 5 * x)
+
+    omp_uniform_grid_hyperbolic_10_pykeops = OMPPyKeops(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_10",
+        abbr_name="PK_OMP_Unif_hyp_10",
+        bandwidth_multiplier_function=lambda x: 10 * x)
+
+    omp_uniform_grid_hyperbolic_20_pykeops = OMPPyKeops(
+        grid_generator=twice_points_uniform_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Uniform_Hyperbolic_20",
+        abbr_name="PK_OMP_Unif_hyp_20",
+        bandwidth_multiplier_function=lambda x: 20 * x)
+
+    omp_chebyshev_grid_hyperbolic_2_pykeops = OMPPyKeops(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_2",
+        abbr_name="PK_OMP_Cheb_hyp_2",
+        bandwidth_multiplier_function=lambda x: 2 * x)
+
+    omp_chebyshev_grid_hyperbolic_5_pykeops = OMPPyKeops(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_5",
+        abbr_name="PK_OMP_Cheb_hyp_5",
+        bandwidth_multiplier_function=lambda x: 5 * x)
+
+    omp_chebyshev_grid_hyperbolic_10_pykeops = OMPPyKeops(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_10",
+        abbr_name="PK_OMP_Cheb_hyp_10",
+        bandwidth_multiplier_function=lambda x: 10 * x)
+
+    omp_chebyshev_grid_hyperbolic_20_pykeops = OMPPyKeops(
+        grid_generator=twice_points_chebyshev_grid_generator,
+        basis_generator=pykeops_clenshaw_curtis_basis_generator,
+        solver=omp_pykeops_solver,
+        device=device,
+        hc_bandwidth=None,
+        index_set_type=IndexSetType.HYPERBOLIC,
+        name="Pykeops_Orthonal_Matching_Pursuit_Chebyshev_Hyperbolic_20",
+        abbr_name="PK_OMP_Cheb_hyp_20",
+        bandwidth_multiplier_function=lambda x: 20 * x)
 
     omp_uniform_grid_hyperbolic_2 = OMP(grid_generator=twice_points_uniform_grid_generator,
                                         basis_generator=clenshawcurtis_basis_generator,  # TODO: Not used now
@@ -196,7 +291,9 @@ def main_method(folder_name: str = None):
                                            bandwidth_multiplier_function=lambda x: 20 * x)
 
     sa = SmolyakAlgorithm(basis_generator=aux_smolyak_basis_generator, grid_generator=rule_grid_generator,
+
                           solver=aux_smolyak_solver)
+
 
     algorithm_list = [sa, ls, wls,
                       omp_uniform_grid_hyperbolic_2,
@@ -206,7 +303,16 @@ def main_method(folder_name: str = None):
                       omp_chebyshev_grid_hyperbolic_2,
                       omp_chebyshev_grid_hyperbolic_5,
                       omp_chebyshev_grid_hyperbolic_10,
-                      omp_chebyshev_grid_hyperbolic_20]
+                      omp_chebyshev_grid_hyperbolic_20,
+                      omp_uniform_grid_hyperbolic_2_pykeops,
+                      omp_uniform_grid_hyperbolic_5_pykeops,
+                      omp_uniform_grid_hyperbolic_10_pykeops,
+                      omp_uniform_grid_hyperbolic_20_pykeops,
+                      omp_chebyshev_grid_hyperbolic_2_pykeops,
+                      omp_chebyshev_grid_hyperbolic_5_pykeops,
+                      omp_chebyshev_grid_hyperbolic_10_pykeops,
+                      omp_chebyshev_grid_hyperbolic_20_pykeops
+                      ]
 
     if folder_name is not None:
         run_dir = os.path.join("results", folder_name)
@@ -224,10 +330,9 @@ def main_method(folder_name: str = None):
     ex.execute_experiments(algorithm_list, function_types, n_fun_parallel, avg_c=average_c, seed_list=seed_list,
                            device=device, plot_callbacks=[_plot_errors])
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run the main method and store the results in the given folder')
-    parser.add_argument('-f', '--folder_name', default=None, type=str, required=False,
-                        help='The name of the folder where the results will be stored')
-    args = parser.parse_args()
-    main_method(folder_name=args.folder_name)
+parser.add_argument('-f', '--folder_name', default=None, type=str, required=False,
+                    help='The name of the folder where the results will be stored')
+args = parser.parse_args()
+main_method(folder_name=args.folder_name)
