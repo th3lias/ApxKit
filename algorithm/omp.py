@@ -225,52 +225,6 @@ class OMP(Algorithm):
         return np.vstack(out)
 
     @staticmethod
-    # TODO: Utilize basis_generator.create_basis() here
-    def _chebyshev_matrix(points_normalized: np.ndarray, indices: np.ndarray, norm_coeffs: np.ndarray,
-                          device: torch.device, dtype: torch.dtype, save_memory: bool = True) -> np.ndarray:
-        """Materializes the tensor evaluations mapping your multi-index system explicitly.
-        If save_memory is True, we loop over the dimension, which creates a smaller intermediate tensor and reduces
-        memory usage. If False, we create a larger tensor in one go, which may be faster but uses more memory.
-
-        """
-        pts = torch.from_numpy(points_normalized).to(dtype=dtype, device=device)
-        idx = torch.from_numpy(indices).to(dtype=dtype, device=device)
-        coeffs = torch.from_numpy(norm_coeffs).to(dtype=dtype, device=device)
-
-        eps = torch.finfo(dtype).eps
-
-        if save_memory:
-            num_samples = pts.shape[0]
-            num_indices = idx.shape[0]
-            num_dimensions = pts.shape[1]
-
-            # Initialize the matrix with ones
-            mat = torch.ones((num_samples, num_indices), dtype=dtype, device=device)
-
-            for d in range(num_dimensions):
-                pts_d = pts[:, d]  # Shape: (num_samples,)
-                idx_d = idx[:, d]  # Shape: (num_indices,)
-
-                # Compute 1D Chebyshev component for this dimension
-                acos_d = torch.acos(torch.clamp(pts_d, -1.0 + eps, 1.0 - eps))
-                angle_d = acos_d[:, None] * idx_d[None, :]  # Shape: (num_samples, num_indices)
-
-                # Multiply in-place into our running product
-                mat *= torch.cos(angle_d)
-
-            mat *= coeffs[None, :]
-
-            return mat.cpu().numpy()
-
-        samples_acos = torch.acos(torch.clamp(pts, -1.0 + eps, 1.0 - eps))
-
-        cosine_argument = samples_acos[:, None, :] * idx[None, :, :]
-        mat = torch.prod(torch.cos(cosine_argument), dim=2)
-        mat *= coeffs[None, :]
-
-        return mat.cpu().numpy()
-
-    @staticmethod
     def _hyp_cross_size(dim: int, R: int) -> int:
         if dim == 1:
             return R + 1
