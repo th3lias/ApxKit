@@ -8,6 +8,7 @@ from grid.generator.grid_generator import GridGenerator
 from grid.grid.grid import Grid
 from solver.solver import Solver
 
+# TODO: Add imports to the __init__ file
 
 class Algorithm:
     """

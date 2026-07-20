@@ -4,7 +4,7 @@ import numpy as np
 import torch
 
 from algorithm.omp import ChebyshevPyKeopsSystem
-from basis.clenshaw_curtis_pykeops_basis_generator import ClenshawCurtisPyKeopsBasisGenerator
+# from basis.clenshaw_curtis_pykeops_basis_generator import ClenshawCurtisPyKeopsBasisGenerator
 from solver.solver import Solver
 
 # TODO: Requires_Grad could probably be turned off everywhere.

@@ -1,4 +1,5 @@
 import hashlib
+import os.path
 from collections.abc import Callable
 
 import numpy as np
@@ -22,6 +23,8 @@ class ChebyshevGridGenerator(RandomGridGenerator):
         self._cache = dict()
         self._multiplier_fun = multiplier_fun
 
+        self.used_grids_filepath = os.path.join("used_grids", "chebyshev_grid_")
+
     def _generate_seed(self, n_points: int, dim: int, scale: int, lower_bound: float = 0.,
                        upper_bound: float = 1.) -> int:
         """Deterministic seed derived from all grid parameters via SHA-256."""
@@ -30,6 +33,17 @@ class ChebyshevGridGenerator(RandomGridGenerator):
         return int(hash_digest[:16], 16) % (2 ** 32)
 
     def get_grid(self, dim: int, scale: int, lower_bound: float = 0., upper_bound: float = 1.) -> RandomGrid:
+        store = False
+        stored_grid = None
+        if lower_bound == 0. and upper_bound == 1.0:
+            stored_grid = self._load_grid_if_available(self.used_grids_filepath + f"dim{dim}_scale{scale}.npz")
+
+        if stored_grid is not None:
+            print("Loaded_Random Grid")
+            return RandomGrid(dim, scale, calculate_num_points(dim=dim, scale=scale), stored_grid, RandomGridRule.CHEBYSHEV, lower_bound, upper_bound, self.seed)
+        else:
+            store = True
+
         # Reuse a cached lower-scale grid and extend it if available
         if not scale == 1:
             n_points_scale_minus_one = int(self._multiplier_fun(calculate_num_points(dim=dim, scale=scale - 1)))
