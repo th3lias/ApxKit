@@ -1,5 +1,7 @@
 import hashlib
 
+import os
+
 import numpy as np
 from collections.abc import Callable
 
@@ -12,10 +14,12 @@ from utils.utils import calculate_num_points
 class UniformGridGenerator(RandomGridGenerator):
     """Generate random grids with uniformly distributed points."""
 
-    def __init__(self, seed=42, multiplier_fun: Callable = lambda x: x):
+    def __init__(self, seed=42, multiplier_fun: Callable = lambda x: x, store_path:str = None):
         super().__init__("UNIFORM", "UF", seed)
         self._cache = dict()
         self._multiplier_fun = multiplier_fun
+
+        self.used_grids_filepath = store_path
 
     def _generate_seed(self, n_points: int, dim: int, scale, lower_bound: float = 0., upper_bound: float = 1.) -> int:
         """Deterministic seed derived from all grid parameters via SHA-256."""
@@ -24,14 +28,31 @@ class UniformGridGenerator(RandomGridGenerator):
         return int(hash_digest[:16], 16) % (2 ** 32)
 
     def get_grid(self, dim: int, scale: int, lower_bound: float = 0., upper_bound: float = 1.) -> RandomGrid:
+        stored_grid = None
+
+        n_points = int(self._multiplier_fun(calculate_num_points(dim=dim, scale=scale)))
+
+        if lower_bound == 0. and upper_bound == 1.0:
+            stored_grid = self._load_grid_if_available(self.used_grids_filepath + f"dim{dim}_scale{scale}.npz")
+
+        if stored_grid is not None:
+            return RandomGrid(dim, scale, n_points, stored_grid,
+                              RandomGridRule.UNIFORM, lower_bound, upper_bound, self.seed)
+
         # Reuse a cached lower-scale grid and extend it if available
         if not scale == 1:
             n_points_scale_minus_one = int(self._multiplier_fun(calculate_num_points(dim=dim, scale=scale - 1)))
             key_scale_minus_one = (n_points_scale_minus_one, dim, scale - 1, lower_bound, upper_bound)
             if key_scale_minus_one in self._cache:
-                return self._increase_scale(dim, scale - 1, 1, lower_bound, upper_bound)
+                increased_grid = self._increase_scale(dim, scale - 1, 1, lower_bound, upper_bound)
 
-        n_points = int(self._multiplier_fun(calculate_num_points(dim=dim, scale=scale)))
+                # store grid as it was not on the drive yet
+                if self.used_grids_filepath is not None:
+                    np.savez(self.used_grids_filepath + f"dim{dim}_scale{scale}.npz", increased_grid.grid)
+                    print(f"Stored a new grid: {self.name} with dim {dim} and scale {scale}.")
+                return increased_grid
+
+
         key = (n_points, dim, scale, lower_bound, upper_bound)
         if key not in self._cache:
             np.random.seed(self._generate_seed(*key))
@@ -39,6 +60,11 @@ class UniformGridGenerator(RandomGridGenerator):
             grid = RandomGrid(dim, scale, n_points, array, RandomGridRule.UNIFORM, lower_bound, upper_bound, self.seed)
             self._cache[key] = grid
             self._current_config = key
+
+            # store grid as it was not on the drive yet
+            if self.used_grids_filepath is not None:
+                np.savez(self.used_grids_filepath + f"dim{dim}_scale{scale}.npz", self._cache[key].grid)
+                print(f"Stored a new grid: {self.name} with dim {dim} and scale {scale}.")
         return self._cache[key]
 
     def _increase_scale(self, dim: int, scale: int, delta: int, lower: float = 0.0, upper: float = 1.0) -> RandomGrid:

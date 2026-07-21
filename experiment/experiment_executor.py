@@ -149,6 +149,8 @@ class ExperimentExecutor:
                     progress_bar.update(1)
 
                 # Plot callbacks
+                cur_datetime = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                progress_bar.set_description(f"Plotting for dim {dim}, scale {scale}...,    {cur_datetime}")
                 for cb in plot_callbacks:
                     cb(self.results_df, save_dir, d=dim, s=scale, verbose=False)
 

@@ -88,13 +88,24 @@ def main_method(folder_name: str = None):
         "cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     # ── Grid generators ───────────────────────────────────────────────
-    twice_points_uniform_grid_generator = UniformGridGenerator(seed=seeds['uniform_seed'],
-                                                               multiplier_fun=multiplier_fun_ls_train)
-    twice_points_chebyshev_grid_generator = ChebyshevGridGenerator(seed=seeds['chebyshev_seed'],
-                                                                   multiplier_fun=multiplier_fun_ls_train)
+    twice_points_uniform_grid_generator = UniformGridGenerator(
+        seed=seeds['uniform_seed'],
+        multiplier_fun=multiplier_fun_ls_train,
+        store_path=os.path.join("experiment", "used_grids", "uniform_grid_")
+    )
+
+    twice_points_chebyshev_grid_generator = ChebyshevGridGenerator(
+        seed=seeds['chebyshev_seed'],
+        multiplier_fun=multiplier_fun_ls_train,
+        store_path=os.path.join("experiment", "used_grids", "chebyshev_grid_")
+    )
 
     rule_grid_generator = RuleGridGenerator(output_dim=n_fun_parallel * len(function_types))  # for Tasmanian
-    test_grid_generator = UniformGridGenerator(seed=seeds['test_seed'], multiplier_fun=multiplier_fun_test)
+
+    test_grid_generator = UniformGridGenerator(
+        seed=seeds['test_seed'],
+        multiplier_fun=multiplier_fun_test,
+        store_path=os.path.join("experiment", "used_grids", "test_grid_"))
 
     # ── Basis generators ──────────────────────────────────────────────
     clenshawcurtis_basis_generator = ClenshawCurtisLevelPolynomialBasisGenerator(store_indices=store_indices)
@@ -110,8 +121,13 @@ def main_method(folder_name: str = None):
     aux_smolyak_solver = Solver("TASMANIAN", "TM")
 
     # ── Function parameter generators ─────────────────────────────────
-    uniform_value_generator_c = UniformNumberGenerator(seed=seeds['function_generation_c_seed'])
-    uniform_value_generator_w = UniformNumberGenerator(seed=seeds['function_generation_w_seed'])
+    uniform_value_generator_c = UniformNumberGenerator(
+        seed=seeds['function_generation_c_seed']
+    )
+
+    uniform_value_generator_w = UniformNumberGenerator(
+        seed=seeds['function_generation_w_seed']
+    )
 
     # ── Algorithms ────────────────────────────────────────────────────
     ls = LeastSquaresAlgorithm(clenshawcurtis_basis_generator, twice_points_uniform_grid_generator,
